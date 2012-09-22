@@ -1,0 +1,24 @@
+MAKE=make
+CODE_ROOT=/root/thesis/Ideas/PlacementImprovement/code
+OBJDIR=$(CODE_ROOT)/objdir
+INCLUDE_DIR=$(CODE_ROOT)/include
+
+CFLAGS= ""
+LFLAGS= ""
+
+OFILE=the_exec
+
+CC=g++
+
+TARGETS = all 
+
+SRCDIRS = Cell Design Net Pin
+
+.PHONY: $(SRCDIRS)
+$(SRCDIRS): 
+	cd $(CODE_ROOT)/$(SRCDIRS)
+	$(MAKE) -C $@
+
+.PHONY: all
+all: $(SRCDIRS)
+
