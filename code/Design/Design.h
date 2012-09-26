@@ -38,6 +38,8 @@ class Design {
  private:
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
+  map<string, Cell*> DesignClusters;
+
   int NumCells;
   int NumNets;
   string Name;
@@ -48,11 +50,14 @@ class Design {
   void DesignFileReadHeader(ifstream&);
   void DesignProcessProperty(ifstream&, string &, 
 			     string &);
-  void DesignAddOneCellToDesignDB(string, int, int, bool);
-  void DesignFileReadOneNet(ifstream &);
-  void DesignFileReadNets(ifstream &);
+  void DesignAddOneCellToDesignDB(Cell *);
+  void DesignAddOneNetToDesignDB(Net *);
   void DesignFileReadOneNode(ifstream &);
   void DesignFileReadNodes(ifstream &);
+  void DesignFileReadPins(ifstream &, unsigned int,
+			  Net &);
+  void DesignFileReadOneNet(ifstream &);
+  void DesignFileReadNets(ifstream &);
   void DesignOpenFile(string);
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);
@@ -66,6 +71,9 @@ class Design {
   void DesignReadDesign(string, string);
   string DesignGetName();
   string DesignGetPath() { }
+  void DesignClusterCells(vector<Cell*>& CellSet);
+    void DesignCollapseCluster(Cell& MasterCell);
+
 };
 
 

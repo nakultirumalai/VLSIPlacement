@@ -20,19 +20,18 @@ class Cell {
   int numPins;
   char orientation;
   bool terminalCell;
-  vector <Pin> Pins;
+  bool isCluster;
+  vector<Pin*> Pins;
+
  public:
   string name;
-
   /* Constructor & Destructor */
   Cell(int, int);
   Cell(int, int, string);
   Cell(int, int, string, bool);  
-
   Cell(int, int, int, int);
   Cell(int, int, int, int, string);
   Cell(int, int, int, int, string, bool);
-
   Cell(int, int, int, int, char);
   Cell(int, int, int, int, char, string);
   Cell(int, int, int, int, char, string, bool);
@@ -47,6 +46,7 @@ class Cell {
   void CellSetName(const string &);
   void CellSetTerminal(const bool& terminalCell);
   void CellSetNumPins(int);
+  void CellSetIsCluster(const bool& isCluster);
   
   /* Get functions */
   int CellGetXpos(void);
@@ -56,8 +56,9 @@ class Cell {
   int CellGetNumPins(void);
   int CellGetOrientation(void);
   bool CellGetTerminal(void);
+  bool CellGetIsCluster(void);
   string CellGetName(void);
-  vector<Pin> CellGetPins(void);
+  vector<Pin*> CellGetPins(void);
 
   /* Other functions */
   void CellMoveRight(int);
@@ -67,4 +68,20 @@ class Cell {
   void CellMoveCell(int, int);
 };
 
+/* Define the iterators here */
+# define BEGIN_PINS_OF_CELL_ITER(CellObj, Dir, PinObj)	\
+  vector<Pin*> CellPins = CellObj.CellGetPins();	\
+  Pin* PinPtr;						\
+  for (int n=0; n<CellPins.size(); n++) {		\
+    PinPtr = CellPins[n];				\
+    PinObj = *PinPtr;                                   \
+    if (Dir != PIN_DIR_ALL &&				\
+	Dir != PinObj.PinGetDirection()) {		\
+      continue;						\
+    }							
+
+# define END_ITER \
+  }
+
 # endif
+

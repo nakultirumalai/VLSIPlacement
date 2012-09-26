@@ -21,7 +21,7 @@ TARGETS = all debug
 
 SRCDIRS:= Pin Cell Net Design common
 
-OBJFILES:= $(SRCDIRS:=.o)
+OBJFILES:= $(OBJDIR)/*.o
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
 
 all: COMPILE_ALL GEN_EXEC
@@ -33,8 +33,6 @@ COMPILE_ALL: $(SRCDIRS)
 	done	
 
 GEN_EXEC: main.cxx
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJFILES) main.cxx -o the_exec -I $(INCLUDE_DIR)
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx -o the_exec -I $(INCLUDE_DIR)
 
 debug: COMPILE_ALL GEN_EXEC
-
-

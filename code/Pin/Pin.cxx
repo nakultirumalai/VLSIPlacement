@@ -1,173 +1,6 @@
 # include <Pin.h>
 # include <common.h>
 
-Pin::Pin() 
-{
-  Id = 0;
-  Name = NIL(string);
-  xOffset = 0;
-  yOffset = 0;
-  dir = PIN_DIR_INPUT;
-}
-Pin::Pin(int id) 
-{
-  Id = id;
-  ParentCell = NULL;
-  ConnectedNet = NULL;
-  xOffset = 0;
-  yOffset = 0;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset) 
-{
-  Id = id;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  ParentCell = NULL;
-  ConnectedNet = NULL;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, char direction) 
-{
-  Id = id;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  ParentCell = NULL;
-  ConnectedNet = NULL;
-}
-
-Pin::Pin(int id, const string& name) 
-{
-  Id = id;
-  Name = name;
-  xOffset = 0;
-  yOffset = 0;
-  dir = PIN_DIR_INPUT;
-  ConnectedNet = NULL;
-  ParentCell = NULL;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, const string& name) 
-{
-  Id = id;
-  Name = name;
-  ConnectedNet = NULL;
-  ParentCell = NULL;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, char direction, const string& name)
-{
-  Id = id;
-  Name = name;
-  ConnectedNet = NULL;
-  ParentCell = NULL;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = direction;
-}
-
-Pin::Pin(int id, const Cell& parentCell) 
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  ConnectedNet = NULL;
-  xOffset = 0;
-  yOffset = 0;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell) 
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  ConnectedNet = NULL;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, char direction, const Cell& parentCell) 
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  ConnectedNet = NULL;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = direction;
-}
-
-Pin::Pin(int id, const Cell& parentCell, const string& name) 
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  Name = name;
-  ConnectedNet = NULL;
-  xOffset = 0;
-  yOffset = 0;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell, 
-	 const string& name) 
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  Name = name;
-  ConnectedNet = NULL;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, char direction, 
-	 const Cell& parentCell, const string& name) 
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  Name = name;
-  ConnectedNet = NULL;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = direction;
-}
-
-Pin::Pin(int id, const Cell& parentCell, const Net& connectedNet)
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  ConnectedNet = (Net *) &connectedNet;
-  xOffset = 0;
-  yOffset = 0;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell, 
-	 const Net& connectedNet)
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  ConnectedNet = (Net *) &connectedNet;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = PIN_DIR_INPUT;
-}
-
-Pin::Pin(int id, int xoffset, int yoffset, char direction, 
-	 const Cell& parentCell, const Net& connectedNet)
-{
-  Id = id;
-  ParentCell = (Cell *) &parentCell;
-  ConnectedNet = (Net *) &connectedNet;
-  xOffset = xoffset;
-  yOffset = yoffset;
-  dir = direction;
-}
-
 /* Set functions */
 void
 Pin::PinSetId(int id)
@@ -270,5 +103,180 @@ Pin::PinGetXposYpos(int *xpos, int *ypos)
 {
   *xpos = xOffset;
   *ypos = yOffset;
+}
+
+
+Pin::Pin() 
+{
+  PinSetId(0);
+  PinSetXOffset(0);
+  PinSetYOffset(0);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+
+Pin::Pin(int id) 
+{
+  PinSetId(id);
+  PinSetXOffset(0);
+  PinSetYOffset(0);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+
+Pin::Pin(int id, int xoffset, int yoffset) 
+{
+  PinSetId(id);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+
+Pin::Pin(int id, int xoffset, int yoffset, char direction) 
+{
+  PinSetId(id);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection(direction);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+
+Pin::Pin(int id, const string& name) 
+{
+  PinSetId(id);
+  PinSetName(name);
+  PinSetXOffset(0);
+  PinSetYOffset(0);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, const string& name) 
+{
+  PinSetId(id);
+  PinSetName(name);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, char direction, const string& name)
+{
+  PinSetId(id);
+  PinSetName(name);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection(direction);
+  _setNULL(ParentCell, Cell*);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, const Cell& parentCell) 
+{
+  PinSetId(id);
+  PinSetXOffset(0);
+  PinSetYOffset(0);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell) 
+{
+  PinSetId(id);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, char direction, const Cell& parentCell) 
+{
+  PinSetId(id);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection(direction);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, const Cell& parentCell, const string& name) 
+{
+  PinSetId(id);
+  PinSetName(name);
+  PinSetXOffset(0);
+  PinSetYOffset(0);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell, 
+	 const string& name) 
+{
+  PinSetId(id);
+  PinSetName(name);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, char direction, 
+	 const Cell& parentCell, const string& name) 
+{
+  PinSetId(id);
+  PinSetName(name);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection(direction);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, const Cell& parentCell, const Net& connectedNet)
+{
+  PinSetId(id);
+  PinSetXOffset(0);
+  PinSetYOffset(0);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetParentCell(parentCell);
+  _setNULL(ConnectedNet, Net*);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell, 
+	 const Net& connectedNet)
+{
+  PinSetId(id);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetParentCell(parentCell);
+  Connect(connectedNet);
+}
+
+Pin::Pin(int id, int xoffset, int yoffset, char direction, 
+	 const Cell& parentCell, const Net& connectedNet)
+{
+  PinSetId(id);
+  PinSetXOffset(xoffset);
+  PinSetYOffset(yoffset);
+  PinSetDirection(direction);
+  PinSetParentCell(parentCell);
+  Connect(connectedNet);
 }
 

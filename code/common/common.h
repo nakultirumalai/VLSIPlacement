@@ -7,6 +7,8 @@
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1
+# define _setNULL(arg, type) \
+  arg = NIL(type)
 
 using namespace std;
 

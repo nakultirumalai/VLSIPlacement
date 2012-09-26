@@ -3,5 +3,15 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-Net.o: Net.cxx Net.h $(INCLUDE_DIR)/Pin.h
-	g++ $(CFLAGS_LOCAL) Net.cxx -I $(INCLUDE_DIR) -o $(OBJDIR)/Net.o
+SRCFILES:=  Net
+
+HFILES:= Net.h Pin.h
+HFILES:= $(addprefix $(INCLUDE_DIR)/, $(HFILES))
+
+SRCCPPFILES:= $(SRCFILES:=.cxx)
+
+MAKE_DESIGN: $(SRCCPPFILES) $(HFILES)
+	for file in $(SRCFILES); do \
+		g++ $(CFLAGS_LOCAL) $$file.cxx -I $(INCLUDE_DIR) -o $(OBJDIR)/$$file.o; \
+	done
+

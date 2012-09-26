@@ -14,7 +14,7 @@ void
 common_message(std::string MessageString)
 {
 # ifdef COMMON_DEBUG
-  std::cout << std::endl << "Message from program:" << MessageString << std::endl;
+  //  std::cout << std::endl << "Message from program:" << MessageString << std::endl;
 # endif 
 }
 

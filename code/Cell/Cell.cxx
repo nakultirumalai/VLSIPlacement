@@ -55,6 +55,12 @@ Cell::CellSetNumPins(int numPins)
   this->numPins = numPins;
 }
 
+void
+Cell::CellSetIsCluster(const bool& isCluster)
+{
+  this->isCluster = isCluster;
+}
+
 inline void
 Cell::CellMoveRight(int offset)
 {
@@ -92,40 +98,52 @@ Cell::CellGetXpos(void)
   return (x);
 }
 
-int 
+inline int 
 Cell::CellGetYpos(void)
 {
   return (y);
 }
 
-int 
+inline int 
 Cell::CellGetHeight(void)
 {
   return (height);
 }
 
-int 
+inline int 
 Cell::CellGetWidth(void)
 {
   return (width);
 }
 
-int 
+inline int 
 Cell::CellGetNumPins(void)
 {
   return (numPins);
 }
 
-int 
+inline int 
 Cell::CellGetOrientation(void)
 {
   return (orientation);
 }
 
-bool 
+inline bool 
 Cell::CellGetTerminal(void)
 {
   return (terminalCell);
+}
+
+inline bool
+Cell::CellGetIsCluster(void)
+{
+  return (isCluster);
+}
+
+string
+Cell::CellGetName(void)
+{
+  return name;
 }
 
 Cell::Cell(int Height, int Width) 
@@ -136,6 +154,7 @@ Cell::Cell(int Height, int Width)
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(false);
+  CellSetIsCluster(false);
 }
 
 Cell::Cell(int Height, int Width, string Name)
@@ -147,6 +166,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(false);
+  CellSetIsCluster(false);
 }
 
 

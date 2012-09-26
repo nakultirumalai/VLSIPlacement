@@ -7,6 +7,7 @@
 # define PIN_DIR_INPUT 0x1
 # define PIN_DIR_OUTPUT 0x1 << 1
 # define PIN_DIR_INOUT 0x1 << 2
+# define PIN_DIR_ALL 0x1 << 3
 
 class Cell;
 class Net;
