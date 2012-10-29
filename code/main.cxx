@@ -1,17 +1,35 @@
 # include <common.h>
 # include <Design.h>
+# include <HyperGraph.h>
+
+HyperGraph& convertDesignToGraph(Design& thisDesign)
+{
+  HyperGraph *myGraph = new HyperGraph();
+  
+  DesignCreateGraph(thisDesign, (*myGraph));
+
+  return (*myGraph);
+}
 
 int main(int argc, char *argv[])
 {
   string designName, designPath;
-
+  
   if (argc > 1 && argc < 4) {
     designPath = string(argv[1]);
     designName = string(argv[2]);
+
     Design myDesign;
-    
     myDesign.DesignReadDesign(designPath, designName);
+    cout << "Netlist read successfully" << endl;
+
+    HyperGraph &myGraph = convertDesignToGraph(myDesign);
+    cout << endl << "Graph construction complete" << endl;
+
+    cout << "Added " << myGraph.GetNumNodes() << " nodes" << endl;
+    cout << "Added " << myGraph.GetNumEdges() << " edges" << endl;
   }
 
   return 0;
 }
+

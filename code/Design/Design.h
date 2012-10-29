@@ -2,6 +2,8 @@
 # include <common.h>
 # include <Cell.h>
 # include <Net.h>
+# include <Pin.h>
+# include <HyperGraph.h>
 
 # ifndef DESIGN_H
 # define DESIGN_H
@@ -36,8 +38,6 @@
 
 class Design {
  private:
-  map<string, Cell*> DesignCells;
-  map<string, Net*> DesignNets;
   map<string, Cell*> DesignClusters;
 
   int NumCells;
@@ -62,19 +62,23 @@ class Design {
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);
  public:
+  map<string, Cell*> DesignCells;
+  map<string, Net*> DesignNets;
   Design() { NumNets = 0; NumCells = 0; }
   Design(string, string);
   void DesignSetPath();
   void DesignReadCells();
   void DesignReadNets();
+  map<string, Net*>& DesignGetNets(void);
+  map<string, Cell*>& DesignGetCells(void);
   void DesignSetName(string);
   void DesignReadDesign(string, string);
   string DesignGetName();
   string DesignGetPath() { }
   void DesignClusterCells(vector<Cell*>& CellSet);
-    void DesignCollapseCluster(Cell& MasterCell);
-
+  void DesignCollapseCluster(Cell& MasterCell);
 };
 
+extern void DesignCreateGraph(Design&, HyperGraph&);
 
 #endif

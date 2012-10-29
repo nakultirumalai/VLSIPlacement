@@ -48,3 +48,7 @@ Net::NetGetName(void)
   return name;
 }
 
+map<string, Pin*>& Net::NetGetPins(void)
+{
+  return this->Pins;
+}

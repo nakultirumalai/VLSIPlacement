@@ -4,6 +4,7 @@
 # include <vector>
 # include <map>
 # include <utility>
+# include <commonIter.h>
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1

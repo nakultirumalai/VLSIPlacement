@@ -19,7 +19,7 @@ CC=g++
 
 TARGETS = all debug
 
-SRCDIRS:= Pin Cell Net Design common
+SRCDIRS:= Pin Cell Net Design HyperGraph common
 
 OBJFILES:= $(OBJDIR)/*.o
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))

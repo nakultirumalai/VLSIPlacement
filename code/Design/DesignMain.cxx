@@ -2,6 +2,22 @@
 
 using namespace std;
 
+map<string,Net*>& Design::DesignGetNets(void)
+{
+  map<string, Net*>& retVal = this->DesignNets;
+
+  return (retVal);
+}
+
+
+map<string,Cell*>& Design::DesignGetCells(void)
+{
+  map<string, Cell*>& retVal = this->DesignCells;
+
+  return (retVal);
+}
+
+
 Cell *
 Design::DesignGetNode(string nodeName)
 {
@@ -50,4 +66,5 @@ Design::Design(string DesignPath, string DesignName)
 {
   DesignReadDesign(DesignPath, DesignName);
 }
+
 
