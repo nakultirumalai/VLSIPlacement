@@ -1,6 +1,0 @@
-OBJDIR=$(CODE_ROOT)/objdir
-INCLUDE_DIR=$(CODE_ROOT)/include
-CFLAGS_LOCAL:= $(CFLAGS) -c
-
-Cell.o: Cell.cxx Cell.h 
-	g++ $(CFLAGS_LOCAL) Cell.cxx -I $(INCLUDE_DIR) -o $(OBJDIR)/Cell.o

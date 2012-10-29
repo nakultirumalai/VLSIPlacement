@@ -3,9 +3,9 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-SRCFILES:=  HyperGraph
+SRCFILES:=  HyperGraph Node Edge
 
-HFILES:= HyperGraph.h
+HFILES:= HyperGraph.h Node.h Edge.h
 HFILES:= $(addprefix $(INCLUDE_DIR)/, $(HFILES))
 
 SRCCPPFILES:= $(SRCFILES:=.cxx)

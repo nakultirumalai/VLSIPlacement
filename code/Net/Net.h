@@ -1,4 +1,5 @@
 # include <common.h>
+# include <NetIter.h>
 # include <Pin.h>
 
 # ifndef NET_H
@@ -9,9 +10,9 @@ using namespace std;
 class Net {
  private:
   int Id;
-  map <string, Pin*> Pins;
 
  public:
+  map<string, Pin*> Pins;
   string name;
   Net();
   Net(int);
@@ -19,12 +20,12 @@ class Net {
   
   void NetSetName(const string&);
   void NetSetId(int);
-  
   void NetAddPin(const Pin&);
-  
+
   int NetGetId(void);
   string NetGetName(void);
-  
+
+  map<string, Pin*>& NetGetPins(void);
   ~Net();
 };
 
