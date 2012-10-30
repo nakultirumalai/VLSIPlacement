@@ -1,30 +1,51 @@
 # include <HyperGraph.h>
 # include <Cell.h>
 
-/* HyperGraph functions */
-void HyperGraph::AddNodeInt(void *object, Node *newNode)
+int HyperGraph::AddNodeInt(void *object)
 {
-  nodeList[object] = newNode;
-  numNodes++;
+  unsigned int nodeIdx;
+
+  Node *newNode = new Node(object);
+  nodeIdx = numNodes++;
+  (*newNode).NodeSetIdx(nodeIdx++);
+
+  /* Create link in the map */
+  idx2Node[nodeIdx] = newNode;
+  /* Create link for the object */
+  obj2idx[object] = nodeIdx;
+  
+  return (nodeIdx);
+}
+
+int HyperGraph::AddEdgeInt(void *object)
+{
+  unsigned int edgeIdx;
+
+  Edge *newEdge = new Edge(object);
+  edgeIdx = numEdge++;
+  (*newEdge).EdgeSetIdx(edgeIdx++);
+
+  /* Create link in the map */
+  idx2Edge[edgeIdx] = newEdge;
+  
+  return (nodeIdx);
 }
 
 void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject)
 {
+  vector<unsigned int> nodeIdxArray;
+  unsigned int nodeIdx;
   void *object;
-  Edge *newEdge = new Edge();
-  Node *ExistingNode;
 
-  VECTOR_FOR_ALL_CELLS(cellList, void*, object) {
-    ExistingNode = nodeList[(void*)object];
-    if (ExistingNode == NULL) {
-      ExistingNode = new Node(object);
-      AddNodeInt(object, ExistingNode);
-    }
-    (*newEdge).EdgeAddNode(ExistingNode);
-    (*newEdge).EdgeSetObject(EdgeObject);
-    (*ExistingNode).NodeAddEdge(newEdge);
+  AddEdgeInt(EdgeObject);
+  VECTOR_FOR_ALL_ELEMS(cellList, void*, object) {
+    nodeIdxArray.insert(nodeIdxArray.end(), obj2idx[object]);
   } END_FOR;
-  numEdges++;
+  
+  VECTOR_FOR_ALL_ELEMS(nodeIdxArray, unsigned int, nodeIdx) {
+    
+  } END_FOR;
+
 }
 
 void HyperGraph::AddNode(void *object)
