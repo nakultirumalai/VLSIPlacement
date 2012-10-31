@@ -6,6 +6,7 @@
 /* Macros for iteration over elements of the design */
 
 # define DESIGN_FOR_ALL_CELLS(Design, CellName, CellPtr) \
+  { \
   map<string, Cell*> DesignCells = Design.DesignGetCells(); \
   map<string, Cell*>::iterator mapIter; \
   for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
@@ -13,13 +14,14 @@
     CellPtr = mapIter->second;
 
 # define DESIGN_FOR_ALL_NETS(Design, NetName, NetPtr) \
+  { \
   map<string, Net*> DesignNets = Design.DesignGetNets(); \
   map<string, Net*>::iterator mapIter; \
   for (mapIter = DesignNets.begin(); mapIter != DesignNets.end(); mapIter++) { \
-    NetName = (string)mapIter->first;		\
+    NetName = (string)mapIter->first; \
     NetPtr = (Net *)mapIter->second;
 
-# define DESIGN_END_FOR }
+# define DESIGN_END_FOR }}
   
 # endif
 

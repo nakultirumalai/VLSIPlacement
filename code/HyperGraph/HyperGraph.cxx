@@ -7,12 +7,14 @@ int HyperGraph::AddNodeInt(void *object)
 
   Node *newNode = new Node(object);
   nodeIdx = numNodes++;
-  (*newNode).NodeSetIdx(nodeIdx++);
-
+  (*newNode).NodeSetIdx(nodeIdx);
   /* Create link in the map */
   idx2Node[nodeIdx] = newNode;
   /* Create link for the object */
   obj2idx[object] = nodeIdx;
+  /* Create an entry in the connectivity table 
+     for this object */
+  Connectivity.push_back(vector<pair<int,int> > ());
   
   return (nodeIdx);
 }
@@ -22,41 +24,46 @@ int HyperGraph::AddEdgeInt(void *object)
   unsigned int edgeIdx;
 
   Edge *newEdge = new Edge(object);
-  edgeIdx = numEdge++;
-  (*newEdge).EdgeSetIdx(edgeIdx++);
+  edgeIdx = numEdges++;
+  (*newEdge).EdgeSetIdx(edgeIdx);
 
   /* Create link in the map */
   idx2Edge[edgeIdx] = newEdge;
   
-  return (nodeIdx);
+  return (edgeIdx);
 }
 
 void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject)
 {
   vector<unsigned int> nodeIdxArray;
-  unsigned int nodeIdx;
+  vector<unsigned int> nodeIdxArrayCopy;
+  unsigned int nodeIdx, nodeIdxCopy;
+  unsigned int edgeIdx;
   void *object;
 
-  AddEdgeInt(EdgeObject);
+  edgeIdx = AddEdgeInt(EdgeObject);
+  /* Collect the node indices. O(k) where there are k nodes 
+     on an edge. */
   VECTOR_FOR_ALL_ELEMS(cellList, void*, object) {
     nodeIdxArray.insert(nodeIdxArray.end(), obj2idx[object]);
-  } END_FOR;
-  
-  VECTOR_FOR_ALL_ELEMS(nodeIdxArray, unsigned int, nodeIdx) {
-    
+    nodeIdxArrayCopy.insert(nodeIdxArrayCopy.end(), obj2idx[object]);
   } END_FOR;
 
+  /* Establish adjacency of all nodes on the edge 
+     This is an O(k^2). */
+  VECTOR_FOR_ALL_ELEMS(nodeIdxArray, unsigned int, nodeIdx) {
+    VECTOR_FOR_ALL_ELEMS(nodeIdxArrayCopy, unsigned int, nodeIdxCopy) {
+      if (nodeIdxCopy != nodeIdx) {
+	pair<int,int> mypair(nodeIdxCopy, edgeIdx);
+	(Connectivity[nodeIdx]).push_back(mypair);
+      }
+    } END_FOR;
+  } END_FOR;
 }
 
 void HyperGraph::AddNode(void *object)
 {
-  Node *newNode;
-
-  newNode = nodeList[(void*)object];
-  if (newNode == NULL) {
-    newNode = new Node(object);
-    AddNodeInt(object, newNode);
-  }
+  (void) AddNodeInt(object);
 }
 
 unsigned int HyperGraph::GetNumNodes(void)
@@ -72,5 +79,6 @@ unsigned int HyperGraph::GetNumEdges(void)
 HyperGraph::HyperGraph() 
 {
   numEdges = 0;
+  numNodes = 0;
 }
 

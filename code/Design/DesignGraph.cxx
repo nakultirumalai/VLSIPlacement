@@ -13,11 +13,16 @@ void DesignCreateGraph(Design& myDesign, HyperGraph& thisGraph)
   Net *NetPtr;
   Pin *PinPtr;
   string Name;
+
+  /* First add all the nodes */
+  DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
+    thisGraph.AddNode((void *)(CellPtr));
+  } DESIGN_END_FOR;
+
   /* Iterate over all hyperedges and use them to create
      a hypergraph */
   DESIGN_FOR_ALL_NETS(myDesign, Name, NetPtr) {
     NET_FOR_ALL_CELLS((*NetPtr), CellPtr) {
-      thisGraph.AddNode((void *)(CellPtr));
       listOfCells.insert(listOfCells.end(), (void *)CellPtr);
     } NET_END_FOR;
     thisGraph.AddEdge(listOfCells, (void *)NetPtr);

@@ -15,6 +15,11 @@ void Edge::EdgeSetObject(void *object)
   this->object = object;
 }
 
+void Edge::EdgeSetIdx(unsigned int edgeIdx)
+{
+  this->edgeIdx = edgeIdx;
+}
+
 vector<Node*>& Edge::EdgeGetNodes(void)
 {
 
@@ -23,5 +28,10 @@ vector<Node*>& Edge::EdgeGetNodes(void)
 Edge::Edge() 
 {
 
+}
+
+Edge::Edge(void *object)
+{
+  EdgeSetObject(object);
 }
 

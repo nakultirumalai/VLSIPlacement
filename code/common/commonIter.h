@@ -4,9 +4,8 @@
 /* Macros for iteration over pins and cells of the net */
 
 # define VECTOR_FOR_ALL_ELEMS(VectorObj, Type, Obj) \
-  vector<Type>::iterator vectorIter;					\
-  for (vectorIter = VectorObj.begin(); vectorIter != VectorObj.end(); vectorIter++) { \
-  Obj = (Type)(*vectorIter);
+  for (int i = 0;  i < VectorObj.size(); i++) { \
+    Obj = (Type)VectorObj[i];
 
 # define END_FOR }
   

@@ -48,6 +48,11 @@ vector<Node *>& Node::NodeGetAdjacentNodes(void)
 
 }
 
+void Node::NodeSetIdx(unsigned int nodeIdx)
+{
+  this->nodeIdx = nodeIdx;
+}
+
 void Node::NodeSetData(void *object)
 {
   data = object;

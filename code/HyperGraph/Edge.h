@@ -10,14 +10,17 @@ class Node;
 class Edge {
  private:
   void *object;
+  unsigned int edgeIdx;
  public:
   vector<Node*>nodeSet;
   void EdgeAddNode(Node *);
-  void EdgeSetObject(void *object);
   void *EdgeGetObject(void);
   vector<Node*>& EdgeGetNodes(void);
 
+  void EdgeSetObject(void *object);
+  void EdgeSetIdx(unsigned int);
   Edge();
+  Edge(void *);
   ~Edge();
 };
 

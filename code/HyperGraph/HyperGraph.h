@@ -5,15 +5,6 @@
 # include <Node.h>
 # include <Edge.h>
 
-class pair {
- private:
-  unsigned int int1;
-  unsigned int int2;
- public:
-  pair();
-  ~pair();
-};
-
 class HyperGraph {
  private:
   /* Fastest lookup can come when nodes are indexed
@@ -37,21 +28,24 @@ class HyperGraph {
   /* Map from index to edges.
      space complexity O(n2)*/
   map<unsigned int, Edge *> idx2Edge;
+
+  vector<vector<int> > Edges;
+  vector<vector<pair<int,int> > > Connectivity;
   /* Array of edges. Each element is another array of 
      node indices */
-  vector<vector<int>> Edges;
+  //  vector<vector<int> > Edges;
   /* Array of a pair. Each pair is made of
      node index, edge index */
-  vector<vector<pair>> Connectivity;
+  //  vector<vector<pair> > Connectivity;
 
   /* Internal function for inserting the 
      Node * type into the graph directly */
-  void AddNodeInt(void *, Node *);
-
+  int AddNodeInt(void *);
+  int AddEdgeInt(void *);
  public:
   /* Insertion routines */
-  void AddEdge(vector<void *>&, void *);
   void AddNode(void *);
+  void AddEdge(vector<void *>&, void *);
 
   unsigned int GetNumNodes(void);
   unsigned int GetNumEdges(void);

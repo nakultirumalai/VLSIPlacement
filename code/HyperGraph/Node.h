@@ -32,6 +32,7 @@ class Node {
 
   /* Set functions */
   void NodeSetData(void *);
+  void NodeSetIdx(unsigned int);
   void NodeAddEdge(Edge *);
   void NodeAddEdge(Edge *, edgeType);
 
