@@ -3,17 +3,20 @@
 Net::Net()
 {
   NetSetId(0);
+  NetSetWeight(0);
 }
 
 Net::Net(int id)
 {
   NetSetId(id);
+  NetSetWeight(0);
 }
 
 Net::Net(int id, const string& Name)
 {
   NetSetId(id);
   NetSetName(Name);
+  NetSetWeight(0);
 }
 
 void 
@@ -29,6 +32,12 @@ Net::NetSetId(int id)
 }
 
 void
+Net::NetSetWeight(unsigned int weight)
+{
+  this->weight = weight;
+}
+
+void
 Net::NetAddPin(const Pin& pinToAdd)
 {
   string Name = pinToAdd.PinGetName();
@@ -40,6 +49,12 @@ int
 Net::NetGetId(void)
 {
   return Id;
+}
+
+unsigned int
+Net::NetGetWeight(void)
+{
+  return weight;
 }
 
 string

@@ -19,13 +19,14 @@ int HyperGraph::AddNodeInt(void *object)
   return (nodeIdx);
 }
 
-int HyperGraph::AddEdgeInt(void *object)
+int HyperGraph::AddEdgeInt(void *object, unsigned int weight)
 {
   unsigned int edgeIdx;
 
   Edge *newEdge = new Edge(object);
   edgeIdx = numEdges++;
   (*newEdge).EdgeSetIdx(edgeIdx);
+  (*newEdge).EdgeSetWeight(weight);
 
   /* Create link in the map */
   idx2Edge[edgeIdx] = newEdge;
@@ -33,7 +34,8 @@ int HyperGraph::AddEdgeInt(void *object)
   return (edgeIdx);
 }
 
-void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject)
+void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject, 
+			 unsigned int weight)
 {
   vector<unsigned int> nodeIdxArray;
   vector<unsigned int> nodeIdxArrayCopy;
@@ -41,7 +43,7 @@ void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject)
   unsigned int edgeIdx;
   void *object;
 
-  edgeIdx = AddEdgeInt(EdgeObject);
+  edgeIdx = AddEdgeInt(EdgeObject, weight);
   /* Collect the node indices. O(k) where there are k nodes 
      on an edge. */
   VECTOR_FOR_ALL_ELEMS(cellList, void*, object) {

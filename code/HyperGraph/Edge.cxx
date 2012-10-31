@@ -20,6 +20,11 @@ void Edge::EdgeSetIdx(unsigned int edgeIdx)
   this->edgeIdx = edgeIdx;
 }
 
+void Edge::EdgeSetWeight(unsigned int weight)
+{
+  this->weight = weight;
+}
+
 vector<Node*>& Edge::EdgeGetNodes(void)
 {
 

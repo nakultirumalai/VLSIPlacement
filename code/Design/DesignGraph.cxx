@@ -25,7 +25,8 @@ void DesignCreateGraph(Design& myDesign, HyperGraph& thisGraph)
     NET_FOR_ALL_CELLS((*NetPtr), CellPtr) {
       listOfCells.insert(listOfCells.end(), (void *)CellPtr);
     } NET_END_FOR;
-    thisGraph.AddEdge(listOfCells, (void *)NetPtr);
+    thisGraph.AddEdge(listOfCells, (void *)NetPtr, 
+		      (*NetPtr).NetGetWeight());
     listOfCells.clear();
   } DESIGN_END_FOR;
 }

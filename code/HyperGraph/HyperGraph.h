@@ -41,11 +41,11 @@ class HyperGraph {
   /* Internal function for inserting the 
      Node * type into the graph directly */
   int AddNodeInt(void *);
-  int AddEdgeInt(void *);
+  int AddEdgeInt(void *, unsigned int);
  public:
   /* Insertion routines */
   void AddNode(void *);
-  void AddEdge(vector<void *>&, void *);
+  void AddEdge(vector<void *>&, void *, unsigned int);
 
   unsigned int GetNumNodes(void);
   unsigned int GetNumEdges(void);

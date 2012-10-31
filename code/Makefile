@@ -4,9 +4,9 @@ OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 
 ifeq ($(MAKECMDGOALS), debug)
-	CFLAGS= -g
+	CFLAGS= -g 
 else
-	CFLAGS=
+	CFLAGS= -O3
 endif
 
 export CFLAGS
@@ -19,7 +19,7 @@ CC=g++
 
 TARGETS = all debug
 
-SRCDIRS:= Pin Cell Net Design HyperGraph common
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat
 
 OBJFILES:= $(OBJDIR)/*.o
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
@@ -33,6 +33,6 @@ COMPILE_ALL: $(SRCDIRS)
 	done	
 
 GEN_EXEC: main.cxx
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx -o the_exec -I $(INCLUDE_DIR)
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx -o the_exec -I $(INCLUDE_DIR) 
 
 debug: COMPILE_ALL GEN_EXEC

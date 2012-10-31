@@ -11,6 +11,7 @@ class Edge {
  private:
   void *object;
   unsigned int edgeIdx;
+  unsigned int weight;
  public:
   vector<Node*>nodeSet;
   void EdgeAddNode(Node *);
@@ -19,6 +20,7 @@ class Edge {
 
   void EdgeSetObject(void *object);
   void EdgeSetIdx(unsigned int);
+  void EdgeSetWeight(unsigned int);
   Edge();
   Edge(void *);
   ~Edge();
