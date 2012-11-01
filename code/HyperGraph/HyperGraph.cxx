@@ -39,16 +39,23 @@ void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject,
 {
   vector<unsigned int> nodeIdxArray;
   vector<unsigned int> nodeIdxArrayCopy;
+  Node *nodePtr;
+  Edge *edgePtr;
   unsigned int nodeIdx, nodeIdxCopy;
   unsigned int edgeIdx;
   void *object;
 
   edgeIdx = AddEdgeInt(EdgeObject, weight);
+  edgePtr = idx2Edge[edgeIdx];
   /* Collect the node indices. O(k) where there are k nodes 
      on an edge. */
   VECTOR_FOR_ALL_ELEMS(cellList, void*, object) {
-    nodeIdxArray.insert(nodeIdxArray.end(), obj2idx[object]);
-    nodeIdxArrayCopy.insert(nodeIdxArrayCopy.end(), obj2idx[object]);
+    nodeIdx = obj2idx[object];
+    nodeIdxArray.insert(nodeIdxArray.end(), nodeIdx);
+    nodeIdxArrayCopy.insert(nodeIdxArrayCopy.end(), nodeIdx);
+    nodePtr = idx2Node[nodeIdx];
+    (*nodePtr).NodeAddEdge(edgeIdx);
+    (*edgePtr).EdgeAddNode(nodeIdx);
   } END_FOR;
 
   /* Establish adjacency of all nodes on the edge 

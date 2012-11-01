@@ -1,8 +1,8 @@
 # include <Edge.h>
 
-void Edge::EdgeAddNode(Node *newNode)
+void Edge::EdgeAddNode(unsigned int nodeIdx)
 {
-  nodeSet.insert(nodeSet.end(), newNode);
+  nodeSet.insert(nodeSet.end(), nodeIdx);
 }
 
 void* Edge::EdgeGetObject(void)
@@ -25,18 +25,22 @@ void Edge::EdgeSetWeight(unsigned int weight)
   this->weight = weight;
 }
 
-vector<Node*>& Edge::EdgeGetNodes(void)
+vector<unsigned int>& Edge::EdgeGetNodes(void)
 {
-
+  return nodeSet;
 }
 
 Edge::Edge() 
 {
-
+  EdgeSetIdx(0);
+  EdgeSetObject(NIL(void*));
+  EdgeSetWeight(0);
 }
 
 Edge::Edge(void *object)
 {
+  EdgeSetIdx(0);
   EdgeSetObject(object);
+  EdgeSetWeight(0);
 }
 
