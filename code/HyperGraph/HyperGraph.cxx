@@ -1,5 +1,6 @@
 # include <HyperGraph.h>
 # include <Cell.h>
+# include <Stat.h>
 
 unsigned int 
 HyperGraph::AddNodeInt(void *object)
@@ -38,6 +39,12 @@ HyperGraph::AddEdgeInt(void *object, unsigned int weight)
 }
 
 void 
+HyperGraph::HyperGraphAddNode(void *object)
+{
+  AddNodeInt(object);
+}
+
+void 
 HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject, 
 			 unsigned int weight)
 {
@@ -62,6 +69,8 @@ HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject,
     (*edgePtr).EdgeAddNode(nodeIdx);
   } END_FOR;
 
+  cout << "DEBUG1      :Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
+  
   /* Establish adjacency of all nodes on the edge 
      This is an O(k^2). */
   VECTOR_FOR_ALL_ELEMS(nodeIdxArray, unsigned int, nodeIdx) {
@@ -73,6 +82,8 @@ HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject,
     } END_FOR;
     nodeConnectivity[nodeIdx] = nodeConnectivity[nodeIdx] + getEdgeWeight(edgeIdx);
   } END_FOR;
+
+  cout << "DEBUG2      :Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 }
 
 unsigned int
@@ -93,6 +104,101 @@ HyperGraph::getEdgeWeight(unsigned int edgeIdx)
   }
   
   return edgeWeight;
+}
+
+
+/* Function to check, set and clear if a node index 
+   represents a top node of a cluster */
+void 
+HyperGraph::nodeSetIsTop(unsigned int nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeIsTop();
+}
+
+void 
+HyperGraph::nodeClearIsTop(unsigned int nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeClearIsTop();
+}
+
+bool 
+HyperGraph::nodeIsTop(unsigned int nodeIdx)
+{
+  Node *node;
+  bool result;
+
+  node = idx2Node[nodeIdx];
+  result = (*node).NodeIsTop();
+  
+  return (result);
+}
+
+/* Function to check, set and clear if a node index represents a child node of a cluster */
+void 
+HyperGraph::nodeSetIsClusterParent(unsigned int nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeSetIsClusterParent();
+}
+
+void 
+HyperGraph::nodeClearIsClusterParent(unsigned int nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeClearIsClusterParent();
+}
+
+bool 
+HyperGraph::nodeIsClusterParent(unsigned int nodeIdx)
+{
+  Node *node;
+  bool result;
+
+  node = idx2Node[nodeIdx];
+  result = (*node).NodeIsClusterParent();
+
+  return (result);
+}
+
+/* Function to check, set and clear if a node index represents a child node of a cluster */
+void 
+HyperGraph::nodeSetIsClusterChild(unsigned int nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeSetIsClusterChild();
+}
+
+void 
+HyperGraph::nodeClearIsClusterChild(unsigned int nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeClearIsClusterChild();
+}
+
+bool 
+HyperGraph::nodeIsClusterChild(unsigned int nodeIdx)
+{
+  Node *node;
+  bool result;
+
+  node = idx2Node[nodeIdx];
+  result = (*node).NodeIsClusterChild();
+
+  return (result);
 }
 
 vector<unsigned int>& 

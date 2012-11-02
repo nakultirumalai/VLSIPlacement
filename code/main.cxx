@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
     cout << endl << "Graph construction complete" << endl;
 
-    cout << "Added " << myGraph.GetNumNodes() << " nodes" << endl;
-    cout << "Added " << myGraph.GetNumEdges() << " edges" << endl;
+    cout << "Added " << myGraph.HyperGraphGetNumNodes() << " nodes" << endl;
+    cout << "Added " << myGraph.HyperGraphGetNumEdges() << " edges" << endl;
     
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
   }

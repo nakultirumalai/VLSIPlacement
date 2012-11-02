@@ -1,5 +1,4 @@
-# include <HyperGraph.h>
-# include <Cell.h>
+# include <Node.h>
 
 void 
 Node::NodeAddEdge(unsigned int edgeIdx, edgeType type)
@@ -73,6 +72,42 @@ Node::NodeGetNumEdges(void)
   return (numInEdges + numOutEdges);
 }
 
+bool
+Node::NodeIsTop(void)
+{
+  unsigned int flags;
+  bool result;
+  
+  flags = NodeGetFlags();
+  result = (flags & NODE_FLAG_IS_TOP);
+
+  return (result);
+}
+
+bool
+Node::NodeIsClusterChild(void)
+{
+  unsigned int flags;
+  bool result;
+  
+  flags = NodeGetFlags();
+  result = (flags & NODE_FLAG_IS_CLUSTER_CHILD);
+
+  return (result);
+}
+
+bool
+Node::NodeIsClusterParent(void)
+{
+  unsigned int flags;
+  bool result;
+  
+  flags = NodeGetFlags();
+  result = (flags & NODE_FLAG_IS_CLUSTER_PARENT);
+
+  return (result);
+}
+
 void 
 Node::NodeSetIdx(unsigned int nodeIdx)
 {
@@ -119,6 +154,69 @@ void
 Node::NodeSetNumOutEdges(unsigned int numOutEdges)
 {
   this->numOutEdges = numOutEdges;
+}
+
+void
+Node::NodeSetIsTop(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_TOP;
+  NodeSetFlags(flags);
+}
+
+void
+Node::NodeClearIsTop(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_TOP;
+  flags = flags ^ NODE_FLAG_IS_TOP;
+  NodeSetFlags(flags);
+}
+
+void
+Node::NodeSetIsClusterChild(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_CLUSTER_CHILD;
+  NodeSetFlags(flags);
+}
+
+void
+Node::NodeClearIsClusterChild(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_CLUSTER_CHILD;
+  flags = flags ^ NODE_FLAG_IS_CLUSTER_CHILD;
+  NodeSetFlags(flags);
+}
+
+void
+Node::NodeSetIsClusterParent(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_CLUSTER_PARENT;
+  NodeSetFlags(flags);
+}
+
+void
+Node::NodeClearIsClusterParent(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_CLUSTER_PARENT;
+  flags = flags ^ NODE_FLAG_IS_CLUSTER_PARENT;
+  NodeSetFlags(flags);
 }
 
 Node::Node() 
