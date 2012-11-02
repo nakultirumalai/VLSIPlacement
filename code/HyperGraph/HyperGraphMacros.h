@@ -1,0 +1,4 @@
+# ifndef HYPERGRAPH_MACROS_H
+# define HYPERGRAPH_MACROS_H
+
+# endif

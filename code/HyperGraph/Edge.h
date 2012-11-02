@@ -17,6 +17,8 @@ class Edge {
 
   void EdgeAddNode(unsigned int);
   void *EdgeGetObject(void);
+
+  unsigned int EdgeGetWeight(void);
   vector<unsigned int>& EdgeGetNodes(void);
 
   void EdgeSetObject(void *object);

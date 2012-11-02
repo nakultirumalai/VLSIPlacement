@@ -1,7 +1,8 @@
 # include <HyperGraph.h>
 # include <Cell.h>
 
-int HyperGraph::AddNodeInt(void *object)
+unsigned int 
+HyperGraph::AddNodeInt(void *object)
 {
   unsigned int nodeIdx;
 
@@ -15,11 +16,13 @@ int HyperGraph::AddNodeInt(void *object)
   /* Create an entry in the connectivity table 
      for this object */
   Connectivity.push_back(vector<pair<int,int> > ());
-  
+  nodeConnectivity.push_back(0);
+
   return (nodeIdx);
 }
 
-int HyperGraph::AddEdgeInt(void *object, unsigned int weight)
+unsigned int 
+HyperGraph::AddEdgeInt(void *object, unsigned int weight)
 {
   unsigned int edgeIdx;
 
@@ -34,7 +37,8 @@ int HyperGraph::AddEdgeInt(void *object, unsigned int weight)
   return (edgeIdx);
 }
 
-void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject, 
+void 
+HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject, 
 			 unsigned int weight)
 {
   vector<unsigned int> nodeIdxArray;
@@ -67,20 +71,50 @@ void HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject,
 	(Connectivity[nodeIdx]).push_back(mypair);
       }
     } END_FOR;
+    nodeConnectivity[nodeIdx] = nodeConnectivity[nodeIdx] + getEdgeWeight(edgeIdx);
   } END_FOR;
 }
 
-void HyperGraph::AddNode(void *object)
+unsigned int
+HyperGraph::getNodeConnectivity(unsigned int nodeIdx)
 {
-  (void) AddNodeInt(object);
+  
 }
 
-unsigned int HyperGraph::GetNumNodes(void)
+unsigned int 
+HyperGraph::getEdgeWeight(unsigned int edgeIdx)
+{
+  Edge *thisEdge;
+  unsigned int edgeWeight;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  if (thisEdge != NULL) {
+    edgeWeight = (*thisEdge).EdgeGetWeight();
+  }
+  
+  return edgeWeight;
+}
+
+vector<unsigned int>& 
+HyperGraph::HyperGraphGetNodes(void)
+{
+  
+}
+
+vector<unsigned int>& 
+HyperGraph::HyperGraphGetEdges(void)
+{
+  
+}
+
+unsigned int 
+HyperGraph::HyperGraphGetNumNodes(void)
 {
   return (numNodes);
 }
 
-unsigned int HyperGraph::GetNumEdges(void)
+unsigned int 
+HyperGraph::HyperGraphGetNumEdges(void)
 {
   return (numEdges);
 }

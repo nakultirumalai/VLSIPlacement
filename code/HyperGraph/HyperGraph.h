@@ -31,24 +31,41 @@ class HyperGraph {
 
   vector<vector<int> > Edges;
   vector<vector<pair<int,int> > > Connectivity;
-  /* Array of edges. Each element is another array of 
-     node indices */
-  //  vector<vector<int> > Edges;
-  /* Array of a pair. Each pair is made of
-     node index, edge index */
-  //  vector<vector<pair> > Connectivity;
+  vector<unsigned int> nodeConnectivity;
+
+  /* Graph update variable: Everytime a node or an edge is added, 
+     this variable indicates if the graph is dirty or not */
+  bool dirtyGraph;
 
   /* Internal function for inserting the 
      Node * type into the graph directly */
-  int AddNodeInt(void *);
-  int AddEdgeInt(void *, unsigned int);
+  unsigned int AddNodeInt(void *);
+  unsigned int AddEdgeInt(void *, unsigned int);
+  unsigned int getNodeConnectivity(unsigned int);
+  unsigned int getEdgeWeight(unsigned int);
+  void setDirty(void);
+  void clearDirty(void);
  public:
+  /* Set functions */
+  void HyperGraphSetNumNodes(unsinged int);
+  void HyperGraphSetNumEdges(unsinged int);
+  
   /* Insertion routines */
-  void AddNode(void *);
-  void AddEdge(vector<void *>&, void *, unsigned int);
+  void HyperGraphAddNode(void *);
+  void HyperGraphAddEdge(vector<void *>&, void *, 
+			 unsigned int);
 
-  unsigned int GetNumNodes(void);
-  unsigned int GetNumEdges(void);
+  /* Cluster routines */
+  void HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet);
+  void HyperGraphUnclusterNodes(void);
+
+  /* Get routines */
+  unsigned int HyperGraphGetNumNodes(void);
+  unsigned int HyperGraphGetNumEdges(void);
+
+  /* Support for iterators */
+  vector<unsigned int>& HyperGraphGetNodes(void);
+  vector<unsigned int>& HyperGraphGetEdges(void);
 
   HyperGraph();
   ~HyperGraph();

@@ -10,6 +10,11 @@ void* Edge::EdgeGetObject(void)
   return (object);
 }
 
+unsigned int Edge::EdgeGetWeight(void)
+{
+  return (this->weight);
+}
+
 void Edge::EdgeSetObject(void *object)
 {
   this->object = object;
