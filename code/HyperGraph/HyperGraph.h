@@ -4,6 +4,9 @@
 # include <common.h>
 # include <Node.h>
 # include <Edge.h>
+# include <algorithm>
+
+typedef std::map<unsigned int, std::vector<unsigned int > > mapOfVectors;
 
 class HyperGraph {
  private:
@@ -23,11 +26,10 @@ class HyperGraph {
   /* Array whose indices are Edges and values are 
      other arrays whose elements are indices of nodes
      that are connected to the edges */
-  vector<vector<int> > Edges;
-  /* Array whose indices are Nodes and values are
-     other arrays whose elements are a pair of 
-     indiced: <connected node index, connection through edge index> */
-  vector<vector<pair<int,int> > > Connectivity;
+  vector<map<unsigned int, unsigned int > > Edges2Nodes;
+  /* Array whose indices are Nodes and value is another
+     array whose elements are connected edge indices */
+  vector<vector<unsigned int> > Nodes2Edges;
   /* Array whose indices are nodes and elements are a metric which 
      represents the total connectivity of the node in the graph */
   vector<unsigned int> nodeConnectivity;
@@ -35,12 +37,15 @@ class HyperGraph {
      this variable indicates if the graph is dirty or not. If the
      graph is dirty, perform some action to update the connectivity
      information */
+  map<unsigned int, mapOfVectors> ClusterInfo;
   bool dirtyGraph;
 
   /* Private functions begin */
   /* Internal function for inserting the Node* type into 
      the hypergraph */
+  unsigned int AddNodeInt();
   unsigned int AddNodeInt(void *);
+
   /* Internal function for inserting the Edge* type into 
      the hypergraph */
   unsigned int AddEdgeInt(void *, unsigned int);
@@ -48,6 +53,23 @@ class HyperGraph {
   unsigned int getNodeConnectivity(unsigned int);
   /* Given an edge index, return the weight of the edge */
   unsigned int getEdgeWeight(unsigned int);
+
+  /* Gets the index at which a new node can be inserted into 
+     the graph */
+  unsigned int getNewNodeIdx(void);
+  /* Gets the index at which a new edge can be created in
+     the graph */
+  unsigned int getNewEdgeIdx(void);
+
+  /* Internal function to cluster a set of nodes */
+  bool clusterNodes(vector<unsigned int> &);
+  /* Internal function to uncluster */
+  bool unclusterNode(unsigned int);
+
+  /* Internal function to sort the data in the node array 
+     also keeping graph data up-to-date is performed 
+     by this function */
+  void graphUpdate(void);
   /* Function to mark the graph as dirty */
   void setDirty(void);
   /* Function to clear the dirty flag on the graph */
@@ -69,15 +91,12 @@ class HyperGraph {
   void nodeClearIsClusterChild(unsigned int);
 
  public:
-  /* Set functions */
-  void HyperGraphSetNumNodes(unsigned int);
-  void HyperGraphSetNumEdges(unsigned int);
   /* Insertion routines */
   void HyperGraphAddNode(void *);
   void HyperGraphAddEdge(vector<void *>&, void *, unsigned int);
   /* Cluster routines */
-  void HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet);
-  void HyperGraphUnclusterNodes(void);
+  bool HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet);
+  bool HyperGraphUnclusterNodes(vector<unsigned int> nodeSet);
   /* Get routines */
   unsigned int HyperGraphGetNumNodes(void);
   unsigned int HyperGraphGetNumEdges(void);
@@ -91,6 +110,9 @@ class HyperGraph {
 
   HyperGraph();
   ~HyperGraph();
+
+  /* Clustering test functions */
+  void testClustering(void);
 };
 
 # endif 
