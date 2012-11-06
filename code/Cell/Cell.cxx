@@ -104,19 +104,19 @@ Cell::CellGetYpos(void)
   return (y);
 }
 
-inline int 
+int 
 Cell::CellGetHeight(void)
 {
   return (height);
 }
 
-inline int 
+int 
 Cell::CellGetWidth(void)
 {
   return (width);
 }
 
-inline int 
+int 
 Cell::CellGetNumPins(void)
 {
   return (numPins);
@@ -126,6 +126,12 @@ inline int
 Cell::CellGetOrientation(void)
 {
   return (orientation);
+}
+
+unsigned int
+Cell::CellGetArea(void)
+{
+  return (height * width);
 }
 
 inline bool 

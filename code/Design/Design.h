@@ -80,5 +80,5 @@ class Design {
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);
-
+extern void DesignWriteDesignStats(Design& myDesign);
 #endif

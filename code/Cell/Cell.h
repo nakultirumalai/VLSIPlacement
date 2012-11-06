@@ -55,6 +55,7 @@ class Cell {
   int CellGetWidth(void);
   int CellGetNumPins(void);
   int CellGetOrientation(void);
+  unsigned int CellGetArea(void);
   bool CellGetTerminal(void);
   bool CellGetIsCluster(void);
   string CellGetName(void);
