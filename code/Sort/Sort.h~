@@ -1,0 +1,2 @@
+template<class T>
+extern MergeSortVector(vector<T>&, int, int);

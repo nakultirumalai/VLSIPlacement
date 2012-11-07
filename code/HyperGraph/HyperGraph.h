@@ -94,15 +94,19 @@ class HyperGraph {
   /* Insertion routines */
   void HyperGraphAddNode(void *);
   void HyperGraphAddEdge(vector<void *>&, void *, unsigned int);
+
   /* Cluster routines */
   bool HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet);
   bool HyperGraphUnclusterNodes(vector<unsigned int> nodeSet);
+
   /* Get routines */
   unsigned int HyperGraphGetNumNodes(void);
   unsigned int HyperGraphGetNumEdges(void);
+
   /* Support for iterators */
   vector<unsigned int>& HyperGraphGetNodes(void);
   vector<unsigned int>& HyperGraphGetEdges(void);
+
   /* Node properties check */
   bool nodeIsTop(unsigned int);
   bool nodeIsClusterParent(unsigned int);
