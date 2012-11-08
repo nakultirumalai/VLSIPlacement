@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
     myDesign.DesignReadDesign(designPath, designName);
     cout << "Netlist read successfully" << endl;
-    
+
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     DesignWriteDesignStats(myDesign);
