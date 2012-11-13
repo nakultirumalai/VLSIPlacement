@@ -3,6 +3,7 @@
 
 # include <common.h>
 # include <Pin.h>
+# include <CellMacros.h>
 
 # define CELL_ORIENTATION_ZERO_DEG 0x1
 # define CELL_ORIENTATION_NINETY_DEG 0x1 << 1
@@ -53,12 +54,14 @@ class Cell {
   int CellGetYpos(void);
   int CellGetHeight(void);
   int CellGetWidth(void);
+  int CellGetNumPins(int);
   int CellGetNumPins(void);
   int CellGetOrientation(void);
   unsigned int CellGetArea(void);
   bool CellGetTerminal(void);
   bool CellGetIsCluster(void);
   string CellGetName(void);
+  vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);
 
   /* Other functions */
@@ -68,21 +71,6 @@ class Cell {
   void CellMoveDown(int);
   void CellMoveCell(int, int);
 };
-
-/* Define the iterators here */
-# define BEGIN_PINS_OF_CELL_ITER(CellObj, Dir, PinObj)	\
-  vector<Pin*> CellPins = CellObj.CellGetPins();	\
-  Pin* PinPtr;						\
-  for (int n=0; n<CellPins.size(); n++) {		\
-    PinPtr = CellPins[n];				\
-    PinObj = *PinPtr;                                   \
-    if (Dir != PIN_DIR_ALL &&				\
-	Dir != PinObj.PinGetDirection()) {		\
-      continue;						\
-    }							
-
-# define END_ITER \
-  }
 
 # endif
 

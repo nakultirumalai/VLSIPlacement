@@ -117,9 +117,25 @@ Cell::CellGetWidth(void)
 }
 
 int 
+Cell::CellGetNumPins(int pinDir)
+{
+  int pinDirCount;
+  Pin *newPin;
+
+  pinDirCount = 0;
+  CELL_FOR_ALL_PINS((*this), pinDir, newPin) {
+    if (pinDir == (*newPin).PinGetDirection()) {
+      pinDirCount++;
+    }
+  } CELL_END_FOR;
+  
+  return (pinDirCount);
+}
+
+int 
 Cell::CellGetNumPins(void)
 {
-  return (numPins);
+  return (CellGetNumPins(PIN_DIR_ALL));
 }
 
 inline int 
@@ -150,6 +166,31 @@ string
 Cell::CellGetName(void)
 {
   return name;
+}
+
+vector<Pin *>
+Cell::CellGetPins(int pinDir)
+{
+  vector<Pin *> cellPins = CellGetPins();
+  vector<Pin *> returnPins;
+  Pin *newPin;
+
+  VECTOR_FOR_ALL_ELEMS(cellPins, Pin*, newPin) {
+    if ((*newPin).PinGetDirection() != pinDir) {
+      continue;
+    }
+    returnPins.push_back(newPin);
+  } END_FOR;
+  
+  return (returnPins);
+}
+
+vector<Pin *>
+Cell::CellGetPins(void)
+{
+  vector <Pin *> Pins = this->Pins;
+  
+  return (Pins);
 }
 
 Cell::Cell(int Height, int Width) 

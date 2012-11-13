@@ -5,6 +5,7 @@ BEEN READ TO A HYPERGRAPH
 # include <Design.h>
 # include <DesignIter.h>
 # include <Cell.h>
+# include <Pin.h>
 
 /**************/
 void DesignWriteDesignStats(Design& myDesign)
@@ -12,10 +13,11 @@ void DesignWriteDesignStats(Design& myDesign)
   Cell *CellPtr;
   string Name;
   unsigned int width, height, area, max_area, max_width, max_height;
+  unsigned int numOutPins, numInPins;
   map<unsigned int, unsigned long>widthRanges;
   map<unsigned int, unsigned long>areaRanges;
   map<unsigned int, unsigned long>heightRanges;
-
+  vector<map<unsigned int, unsigned long > > cellNumOutputs(6);
   unsigned int areaRange[17];
   string areaRangeStr[17];
   
@@ -31,8 +33,58 @@ void DesignWriteDesignStats(Design& myDesign)
     if (area > max_area) max_area = area;
     if (width > max_width) max_width = width;
     if (height > max_height) max_height = height;
+    
+    numOutPins = (*CellPtr).CellGetNumPins(PIN_DIR_OUTPUT);
 
-
+    if (numOutPins == 1) {
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[0];
+      numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
+      if (mapSelect.find(numInPins) == mapSelect.end()) {
+	mapSelect[numInPins] = 1;
+      } else {
+	mapSelect[numInPins] = mapSelect[numInPins] + 1;
+      }
+    } else if (numOutPins == 2) {
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[1];
+      numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
+      if (mapSelect.find(numInPins) == mapSelect.end()) {
+	mapSelect[numInPins] = 1;
+      } else {
+	mapSelect[numInPins] = mapSelect[numInPins] + 1;
+      }
+    } else if (numOutPins == 3) {
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[2];
+      numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
+      if (mapSelect.find(numInPins) == mapSelect.end()) {
+	mapSelect[numInPins] = 1;
+      } else {
+	mapSelect[numInPins] = mapSelect[numInPins] + 1;
+      }
+    } else if (numOutPins == 4) {
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[3];
+      numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
+      if (mapSelect.find(numInPins) == mapSelect.end()) {
+	mapSelect[numInPins] = 1;
+      } else {
+	mapSelect[numInPins] = mapSelect[numInPins] + 1;
+      }
+    } else if (numOutPins == 5) {
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[4];
+      numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
+      if (mapSelect.find(numInPins) == mapSelect.end()) {
+	mapSelect[numInPins] = 1;
+      } else {
+	mapSelect[numInPins] = mapSelect[numInPins] + 1;
+      }
+    } else if (numOutPins == 6) {
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[5];
+      numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
+      if (mapSelect.find(numInPins) == mapSelect.end()) {
+	mapSelect[numInPins] = 1;
+      } else {
+	mapSelect[numInPins] = mapSelect[numInPins] + 1;
+      }
+    }    
     if (widthRanges.find(width) != widthRanges.end()) {
       widthRanges[width]++;
     } else {
@@ -50,14 +102,28 @@ void DesignWriteDesignStats(Design& myDesign)
     } else {
       heightRanges[height] = 1;
     }
-
   } DESIGN_END_FOR;
+
+  {
+    for (int i = 0; i < cellNumOutputs.size(); i++) {
+      ofstream outputFile;
+      string outputFileName;
+      outputFileName = "DesignCellOutputs" + getStrFromInt(i) + ".txt";
+      outputFile.open(outputFileName.data(), ifstream::out);
+      unsigned long count;
+      unsigned int numInputs;
+      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[i];
+      MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, unsigned long, numInputs, count) {
+	outputFile << count << "   " << numInputs << endl;
+      } END_FOR;
+    }
+  }
 
   {
     ofstream outputFile;
     outputFile.open("DesignCellWidthAnalysis.txt");
     unsigned int count;
-    MAP_FOR_ALL_ELEMS(widthRanges, unsigned int, unsigned int, width, count) {
+    MAP_FOR_ALL_ELEMS(widthRanges, unsigned int, unsigned long, width, count) {
       outputFile << count << "   " << width << endl;
     } END_FOR;
     outputFile.close();
@@ -67,7 +133,7 @@ void DesignWriteDesignStats(Design& myDesign)
     ofstream outputFile;
     outputFile.open("DesignCellHeightAnalysis.txt");
     unsigned int count;
-    MAP_FOR_ALL_ELEMS(heightRanges, unsigned int, unsigned int, height, count) {
+    MAP_FOR_ALL_ELEMS(heightRanges, unsigned int, unsigned long, height, count) {
       outputFile << count << "   " << height << endl;
     } END_FOR;
     outputFile.close();
@@ -113,7 +179,7 @@ void DesignWriteDesignStats(Design& myDesign)
     areaRangeStr[15] = "500000-1000000";
     areaRangeStr[16] = "1000000+";
 
-    MAP_FOR_ALL_ELEMS(areaRanges, unsigned int, unsigned int, area, count) {
+    MAP_FOR_ALL_ELEMS(areaRanges, unsigned int, unsigned long, area, count) {
       if (area > 0 && area <= 100) {
 	areaRange[0] += count;
       } else if (area > 100 && area <= 500) {
