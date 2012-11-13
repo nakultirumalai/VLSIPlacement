@@ -1,1 +1,1 @@
-extern MergeSortVector(vector<vector<unsigned int > >&, int, int);
+extern void MergeSortVector(vector<vector<unsigned int > >&, int, int);

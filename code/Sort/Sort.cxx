@@ -1,11 +1,15 @@
+# include <common.h>
+# include <Sort.h>
+
+void
 DoMerge(vector<vector<unsigned int > > &thisVector, int Left, int Mid, int Right) 
 {
-  vector<T> tempVector;
-  int numElements = Right - Left + 1;
+  vector<vector<unsigned int > > tempVector;
+  int numElements = (Right - Left + 1);
   int i,j;
   
-  for (i = left; (i < numElements && Mid <= Right); i++) {
-    if (thisVector[i] < thisVector[Mid]) {
+  for (i = Left; (i < numElements && Mid <= Right); i++) {
+    if ((thisVector[i]).size() < (thisVector[Mid]).size()) {
       tempVector.push_back(thisVector[i]);
     } else {
       tempVector.push_back(thisVector[Mid]);
@@ -30,8 +34,7 @@ DoMerge(vector<vector<unsigned int > > &thisVector, int Left, int Mid, int Right
 }
 
 void 
-MergeSortVector(vector<unsigned int > > &thisVector, 
-		int Left, int Right)
+MergeSortVector(vector<vector<unsigned int > > &thisVector, int Left, int Right)
 {
   if (Left < Right) { 
     int Mid = ((Left + Right) / 2);
