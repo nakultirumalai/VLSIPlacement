@@ -27,7 +27,8 @@ int main(int argc, char *argv[])
 
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
-    DesignWriteDesignStats(myDesign);
+    DesignCollectStats(myDesign);
+    DesignWriteStats(myDesign);
     //    HyperGraph &myGraph = convertDesignToGraph(myDesign);
     //myGraph.testClustering();
     //    cout << endl << "Graph construction complete" << endl;

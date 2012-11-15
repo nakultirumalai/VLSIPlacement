@@ -1,37 +1,37 @@
 # include <Cell.h>
 
-inline void 
+void 
 Cell::CellSetXpos(int Xpos) 
 {
   x = Xpos;
 }
 
-inline void
+void
 Cell::CellSetYpos(int Ypos)
 {
   y = Ypos;
 }
 
-inline void
+void
 Cell::CellSetPos(int Xpos, int Ypos) 
 {
   x = Xpos;
   y = Ypos;
 }
 
-inline void
+void
 Cell::CellSetHeight(int Height) 
 {
   height = Height;
 }
 
-inline void
+void
 Cell::CellSetWidth(int Width)
 {
   width = Width;
 }
 
-inline void
+void
 Cell::CellSetOrientation(int Orientation)
 {
   orientation = Orientation;
@@ -55,50 +55,79 @@ Cell::CellSetNumPins(int numPins)
   this->numPins = numPins;
 }
 
+void 
+Cell::CellSetNumInPins(int numInPins)
+{
+  this->numInPins = numInPins;
+}
+
+void 
+Cell::CellSetNumOutPins(int numOutPins)
+{
+  this->numOutPins = numOutPins;
+}
+
 void
 Cell::CellSetIsCluster(const bool& isCluster)
 {
   this->isCluster = isCluster;
 }
 
-inline void
+void
+Cell::CellAddPin(Pin *pinPtr)
+{
+  int pinDir;
+
+  Pins.push_back(pinPtr);
+  
+  pinDir = (*pinPtr).PinGetDirection();
+  if (pinDir == PIN_DIR_INPUT) {
+    numInPins++;
+  } else {
+    numOutPins++;
+  }
+
+  numPins++;
+}
+
+void
 Cell::CellMoveRight(int offset)
 {
   x += offset;
 }
 
-inline void
+void
 Cell::CellMoveLeft(int offset)
 {
   x -= offset;
 }
 
-inline void
+void
 Cell::CellMoveUp(int offset)
 {
   y += offset;
 }
 
-inline void
+void
 Cell::CellMoveDown(int offset)
 {
   y -= offset;
 }
 
-inline void
+void
 Cell::CellMoveCell(int XOffset, int YOffset)
 {
   x = x + XOffset;
   y = y + YOffset;
 }
 
-inline int 
+int 
 Cell::CellGetXpos(void)
 {
   return (x);
 }
 
-inline int 
+int 
 Cell::CellGetYpos(void)
 {
   return (y);
@@ -119,17 +148,15 @@ Cell::CellGetWidth(void)
 int 
 Cell::CellGetNumPins(int pinDir)
 {
-  int pinDirCount;
-  Pin *newPin;
+  int pinCount = 0;
 
-  pinDirCount = 0;
-  CELL_FOR_ALL_PINS((*this), pinDir, newPin) {
-    if (pinDir == (*newPin).PinGetDirection()) {
-      pinDirCount++;
-    }
-  } CELL_END_FOR;
+  if (pinDir == PIN_DIR_INPUT) {
+    pinCount = numInPins;
+  } else {
+    pinCount = numOutPins;
+  }
   
-  return (pinDirCount);
+  return (pinCount);
 }
 
 int 
@@ -138,7 +165,7 @@ Cell::CellGetNumPins(void)
   return (CellGetNumPins(PIN_DIR_ALL));
 }
 
-inline int 
+int 
 Cell::CellGetOrientation(void)
 {
   return (orientation);
@@ -150,13 +177,13 @@ Cell::CellGetArea(void)
   return (height * width);
 }
 
-inline bool 
+bool 
 Cell::CellGetTerminal(void)
 {
   return (terminalCell);
 }
 
-inline bool
+bool
 Cell::CellGetIsCluster(void)
 {
   return (isCluster);
@@ -202,6 +229,8 @@ Cell::Cell(int Height, int Width)
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(false);
   CellSetIsCluster(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, string Name)
@@ -214,6 +243,8 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(false);
   CellSetIsCluster(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 
@@ -226,6 +257,8 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(terminalCell);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos)
@@ -236,6 +269,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
@@ -247,6 +282,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name, 
@@ -259,6 +296,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
   CellSetTerminal(terminalCell);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation)
@@ -269,6 +308,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation)
   CellSetNumPins(0);
   CellSetOrientation(Orientation);
   CellSetTerminal(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string Name)
@@ -280,6 +321,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string N
   CellSetNumPins(0);
   CellSetOrientation(Orientation);
   CellSetTerminal(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string Name, bool terminalCell)
@@ -291,4 +334,6 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string N
   CellSetNumPins(0);
   CellSetOrientation(Orientation);
   CellSetTerminal(terminalCell);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }

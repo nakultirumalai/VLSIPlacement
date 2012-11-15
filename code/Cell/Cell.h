@@ -19,6 +19,8 @@ class Cell {
   int height;
   int width;
   int numPins;
+  int numInPins;
+  int numOutPins;
   char orientation;
   bool terminalCell;
   bool isCluster;
@@ -47,7 +49,10 @@ class Cell {
   void CellSetName(const string &);
   void CellSetTerminal(const bool& terminalCell);
   void CellSetNumPins(int);
+  void CellSetNumInPins(int);
+  void CellSetNumOutPins(int);
   void CellSetIsCluster(const bool& isCluster);
+  void CellAddPin(Pin *);
   
   /* Get functions */
   int CellGetXpos(void);

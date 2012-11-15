@@ -73,12 +73,13 @@ class Design {
   map<string, Cell*>& DesignGetCells(void);
   void DesignSetName(string);
   void DesignReadDesign(string, string);
-  string DesignGetName();
+  string DesignGetName(void);
   string DesignGetPath() { }
   void DesignClusterCells(vector<Cell*>& CellSet);
   void DesignCollapseCluster(Cell& MasterCell);
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);
-extern void DesignWriteDesignStats(Design& myDesign);
+extern void DesignCollectStats(Design& myDesign);
+extern void DesignWriteStats(Design& myDesign);
 #endif

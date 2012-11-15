@@ -119,6 +119,7 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     (*newPin).Connect(newNet);
     node = DesignGetNode(nodeName);
     (*newPin).PinSetParentCell(*node);
+    (*node).CellAddPin(newPin);
     newNet.NetAddPin(*newPin);
   }
 

@@ -28,6 +28,11 @@ Design::DesignGetNode(string nodeName)
   return (foundNode);
 }
 
+string
+Design::DesignGetName(void)
+{
+  return (this->Name);
+}
 
 void
 Design::DesignAddOneCellToDesignDB(Cell *newCell)
