@@ -2,16 +2,20 @@
 
 using namespace std;
 
-void 
+void
 Design::DesignProcessProperty(ifstream& file, string& Property, 
 			      string& Value)
 {
   string line;
   unsigned int numNodes, numTerms;
   int idx1, idx2, idx3;
+  bool result;
 
   if (!file.eof()) getline(file, line);
-  
+
+  while (line == "" && !file.eof()) 
+    getline(file, line);
+
   idx1 = 0;
   while (line[idx1] == ' ' || line[idx1] == '\t') 
     idx1++;
@@ -41,3 +45,4 @@ Design::DesignFileReadHeader(ifstream& file)
     i++;
   }
 }
+

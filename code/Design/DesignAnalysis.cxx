@@ -6,8 +6,11 @@ BEEN READ TO A HYPERGRAPH
 # include <DesignIter.h>
 # include <Cell.h>
 # include <Pin.h>
+# include <sys/stat.h>
+# include <sys/types.h>
 
 # define MAX_OUTPUTS 1000
+# define MCOMMA ,
 /**************/
 
 /***********************************************************
@@ -35,9 +38,34 @@ vector<map<unsigned int, unsigned long > > cellNumOutputs(MAX_OUTPUTS);
    There are three maps in all, each providing a height, width and 
    area distribution respectively */
 vector<map<unsigned int, vector<map<unsigned int, unsigned int > > > > cellStats(MAX_OUTPUTS);
-map<unsigned int, unsigned long>widthRanges;
-map<unsigned int, unsigned long>areaRanges;
-map<unsigned int, unsigned long>heightRanges;
+
+/*****************************************************
+ STANDARD CELL DETAILS
+*****************************************************/
+/* Capture widths of standard cells in this map */
+map<unsigned int, unsigned long>widthStdRanges;
+* Capture areas of standard cells in this map */
+map<unsigned int, unsigned long>areaStdRanges;
+/* Capture heights of standard cells in this map */
+map<unsigned int, unsigned long>heightStdRanges;
+
+/* Rule for classification:
+   Any cell whose height is different from the row height 
+   specified in the .scl file is a standard cell */
+/*****************************************************
+ MACRO CELL DETAILS
+*****************************************************/
+/* Capture widths of cells in this map */
+map<unsigned int, unsigned long>widthMacroRanges;
+/* Capture areas of cells in this map */
+map<unsigned int, unsigned long>areaMacroRanges;
+/* Capture heights of cells in this map */
+map<unsigned int, unsigned long>heightMacroRanges;
+
+/* Other variables for benchmark details */
+unsigned int numCells;
+unsigned int numNets;
+unsigned int rowHeight;
 
 void 
 updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) 
@@ -68,11 +96,15 @@ updateCellOutputs(Cell *CellPtr, unsigned int numOutputs)
   unsigned int height, width;
   height = (*CellPtr).CellGetHeight();
   width = (*CellPtr).CellGetWidth();
-  if (subMapSelect1.find(height) == subMapSelect1.end()) {
+  if (subMapSelect1.find(height) != subMapSelect1.end()) {
     subMapSelect1[height] = subMapSelect1[height] + 1;
+  } else {
+    subMapSelect1[height] = 1;
   }
-  if (subMapSelect2.find(width) == subMapSelect2.end()) {
+  if (subMapSelect2.find(width) != subMapSelect2.end()) {
     subMapSelect2[width] = subMapSelect2[width] + 1;
+  } else {
+    subMapSelect2[width] = 1;
   }
   mapSelect1[numInPins] = mapSelect1[numInPins] + 1;
 }
@@ -117,7 +149,7 @@ DesignCollectStats(Design& myDesign)
 
 void DesignWriteStats(Design& myDesign)
 {
-  string DesignName;
+  string DesignName, DesignDir;
   Cell* CellPtr;
   string Name;
   unsigned int numOutPins;
@@ -126,7 +158,16 @@ void DesignWriteStats(Design& myDesign)
   
   /* Write the gnuplot script file to generate the pdf */
   DesignName = myDesign.DesignGetName();
+  DesignDir = DesignName + "_Analysis";
+  string DesignDirFullName = "./" + DesignDir;
   
+  int result = mkdir(DesignDirFullName.data(), 0777);
+  if (result == 0) {
+    cout << "Analysis directory created successfully." << endl;
+  } else if (result == -1) {
+    cout << "Analysis directory could not be created as there are no permissions or it may already exist." << endl;
+  }
+
   /* Write a gnuplot file header */
 
   /***********************************/
@@ -140,7 +181,7 @@ void DesignWriteStats(Design& myDesign)
       if (mapSelect.size() > 0) {
 	ofstream outputFile;
 	string outputFileName;
-	outputFileName = "DesignCellOutputs" + getStrFromInt(i) + ".txt";
+	outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + "Outputs" +  + ".txt";
 	outputFile.open(outputFileName.data(), ifstream::out);
 	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, unsigned long, numInputs, count) {
 	  outputFile << count << "   " << numInputs << endl;
@@ -150,8 +191,49 @@ void DesignWriteStats(Design& myDesign)
     }
   }
 
-  /* Write files for outputs */
-  return;
+  /**********************************************************/
+  /* For a cell of given number of inputs and outputs write */ 
+  /* out the height and width distribution.                 */
+  /**********************************************************/
+  {
+    unsigned long count;
+    unsigned int numInputs;
+    for (int i = 0; i < cellNumOutputs.size(); i++) {
+      map<unsigned int, vector<map<unsigned int, unsigned int > > >& mapSelect = cellStats[i];
+      if (mapSelect.size() > 0) {
+	vector<map<unsigned int, unsigned int > > myVector;
+	/* Hack for macro substitution */
+	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, vector<map<unsigned int MCOMMA unsigned int > >, numInputs, myVector) {
+	  ofstream outputFile;
+	  string outputFileName;
+	  unsigned int width, height;
+
+	  map<unsigned int, unsigned int>& subMapSelect1 = myVector[PROP_HEIGHT];
+	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
+	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Heights" + ".txt";
+	  outputFile.open(outputFileName.data(), ifstream::out);
+	  MAP_FOR_ALL_ELEMS(subMapSelect1, unsigned int, unsigned int, height, count) {
+	    outputFile << count << "  " << height << endl;
+	  } END_FOR;
+	  outputFile.close();
+
+	  map<unsigned int, unsigned int>& subMapSelect2 = myVector[PROP_WIDTH];
+	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
+	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Widths" + ".txt";
+	  outputFile.open(outputFileName.data(), ifstream::out);
+	  MAP_FOR_ALL_ELEMS(subMapSelect2, unsigned int, unsigned int, width, count) {
+	    outputFile << count << "  " << width << endl;
+	  } END_FOR;
+	  outputFile.close();
+	} END_FOR;
+      }
+    }
+  }
+  
+
+  /**********************************************************/
+  /* Write cell width analysis                              */ 
+  /**********************************************************/
   {
     ofstream outputFile;
     outputFile.open("DesignCellWidthAnalysis.txt");

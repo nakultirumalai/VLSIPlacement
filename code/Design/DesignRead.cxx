@@ -52,6 +52,8 @@ Design::DesignFileReadNodes(ifstream& file)
   unsigned int numNodes, numTerminals;
   int idx, cellCount;
 
+  /* Skip empty lines */
+  
   for (idx = 0; idx < NUM_NODE_PROPERTIES; idx++) {
     DesignProcessProperty(file, Property, Value);
     if (Property == NUM_NODES_PROPERTY) {

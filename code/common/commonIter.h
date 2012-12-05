@@ -8,13 +8,13 @@
   for (int i = 0;  i < VectorObj.size(); i++) { \
   Obj = (Type)VectorObj[i];
 
-# define MAP_FOR_ALL_ELEMS(MapObj, KeyType, ValType, Key, Value) \
+# define MAP_FOR_ALL_ELEMS(MapObj, KeyType, ValType, Key, Value)	\
   { \
   for(map<KeyType,ValType>::iterator iter = MapObj.begin(); iter != MapObj.end(); ++iter) { \
     Key = (KeyType)iter->first;	\
     Value = (ValType)iter->second;
 
-# define MAP_FOR_ALL_KEYS(MapObj, KeyType, ValType, Key) \
+# define MAP_FOR_ALL_KEYS(MapObj, KeyType, ValType, Key)	\
   { \
   ValType mapValue; \
   for(map<KeyType,ValType>::iterator iter = MapObj.begin(); iter != MapObj.end(); ++iter) { \
