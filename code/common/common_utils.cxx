@@ -18,6 +18,7 @@ common_message(std::string MessageString)
 # endif 
 }
 
+
 string 
 getStrFromInt(int thisInt)
 {

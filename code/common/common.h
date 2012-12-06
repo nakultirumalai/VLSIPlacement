@@ -5,11 +5,18 @@
 # include <map>
 # include <utility>
 # include <commonIter.h>
+# include <assert.h>
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1
 # define _setNULL(arg, type) \
   arg = NIL(type)
+
+# define _ASSERT(txt, expr) \
+  if (expr)  {		    \
+    cout << txt << endl;    \
+    assert(1);		    \
+  }
 
 using namespace std;
 

@@ -1,17 +1,63 @@
 # include <Design.h>
-
+# include <assert.h>
 
 void
 Design::DesignReadDesign(string DesignPath, string DesignName)
 {
-  Name = DesignName;
+  string fullFileName, fileName;
+  string listOfFiles;
+  string fullDesignPath;
+  bool rowBasedPlacement;
+  vector<string> fileList;
+  
+  fullDesignPath = DesignPath + DIR_SEP + DesignName + DIR_SEP;
+  fullFileName = fullDesignPath + DesignName + DESIGN_AUX_FILE_EXT;
 
-  DesignCellFileName = DesignPath + DIR_SEP + DesignName + DIR_SEP + DesignName + DESIGN_CELL_FILE_EXT;
-  DesignNetFileName = DesignPath + DIR_SEP + DesignName + DIR_SEP + DesignName + DESIGN_NET_FILE_EXT;
+  /* Open the aux fle and read all the other files that need to be
+     read */
+  ifstream DesignFile(fullFileName.data(), ios_base::in);
+  getline(inpFile, listOfFiles);
+  if (listOfFiles == "") {
+    return;
+  }
+
+  /* Collect all files to be read from the aux file */
+  istringstream stream(listOfFiles, istringstream::in);
+  do {
+    stream >> fileName;
+    if (fileName == ROW_BASED_PLACEMENT) {
+      RowBasedPlacement = true;
+    } else if (fileName.find('.', 0) == string::npos) {
+      continue;
+    }
+    fileList.push_back(fileName);
+  } while (stream);
+  
+  VECTOR_FOR_ALL_ELEMS(fileList, string, fileName) {
+    int dot_pos = fileName.find('.', 0);
+    _ASSERT("Filename of unexpected type", dot_pos < 0);
+
+    string ext = fileName.substr(dotpos);
+    if (ext == DESIGN_CELL_FILE_EXT) {
+      DesignCellFileName = fullDesignPath + fileName;
+    } else if (ext == DESIGN_NET_FILE_EXT) {
+      DesignNetFileName = fullDesignPath + fileName;
+    } else if (ext == DESIGN_NET_WTS_FILE_EXT) {
+      DesignNetWtsFileName = fullDesignPath + fileName;
+    } else if (ext == DESIGN_SCL_FILE_EXT) {
+      DesignSclFileName = fullDesignPath + fileName;
+    } else if (ext == DESIGN_PL_FILE_EXT) {
+      DesignPlFileName = fullDesignPath + fileName;
+    } else {
+      _ASSERT("Unknown file type found in aux file", 1);
+    }
+  } END_FOR;
 
   DesignReadCells();
   DesignReadNets();
-
+  DesignReadRowsInfo();
+  DesignReadCellPlacement();
+  
   DesignFile.close();
 }
 
@@ -205,3 +251,17 @@ Design::DesignReadNets()
 
   common_message(Msg);
 }
+
+void
+Design::DesignReadRowsInfo()
+{
+  
+}
+
+void 
+Design::DesignReadCellPlacement()
+{
+
+}
+
+

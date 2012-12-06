@@ -14,6 +14,8 @@
 # define NUM_NODE_PROPERTIES 2
 # define NUM_NET_PROPERTIES 2
 
+# define ROW_BASED_PLACEMENT "RowBasedPlacement"
+
 # define NUM_NODES_PROPERTY "NumNodes"
 # define NUM_TERMINALS_PROPERTY "NumTerminals"
 
@@ -27,6 +29,8 @@
 # define DESIGN_CELL_FILE_EXT ".nodes"
 # define DESIGN_NET_FILE_EXT ".nets"
 # define DESIGN_NET_WTS_FILE_EXT ".wts"
+# define DESIGN_SCL_FILE_EXT ".scl"
+# define DESIGN_PL_FILE_EXT ".pl"
 
 # define PIN_DIR_INPUT_STRING "I"
 # define PIN_DIR_OUTPUT_STRING "O"
@@ -40,12 +44,18 @@ class Design {
  private:
   map<string, Cell*> DesignClusters;
 
-  int NumCells;
-  int NumNets;
+  unsigned int NumCells;
+  unsigned int NumNets;
+  vector<unsigned int> rowHeights;
+
   string Name;
   string DesignPath;
   string DesignCellFileName;
   string DesignNetFileName;
+  string DesignNetWtsFileName;
+  string DesignSclFileName;
+  bool RowBasedPlacement;
+
   ifstream DesignFile;
   void DesignFileReadHeader(ifstream&);
   void DesignProcessProperty(ifstream&, string &, 
@@ -61,6 +71,7 @@ class Design {
   void DesignOpenFile(string);
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);
+
  public:
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;

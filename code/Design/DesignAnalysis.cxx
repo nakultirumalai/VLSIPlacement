@@ -39,19 +39,20 @@ vector<map<unsigned int, unsigned long > > cellNumOutputs(MAX_OUTPUTS);
    area distribution respectively */
 vector<map<unsigned int, vector<map<unsigned int, unsigned int > > > > cellStats(MAX_OUTPUTS);
 
+/* Rule for classification:
+   Any cell whose height is different from the row height 
+   specified in the .scl file is a standard cell */
+
 /*****************************************************
  STANDARD CELL DETAILS
 *****************************************************/
 /* Capture widths of standard cells in this map */
 map<unsigned int, unsigned long>widthStdRanges;
-* Capture areas of standard cells in this map */
+/* Capture areas of standard cells in this map */
 map<unsigned int, unsigned long>areaStdRanges;
 /* Capture heights of standard cells in this map */
 map<unsigned int, unsigned long>heightStdRanges;
 
-/* Rule for classification:
-   Any cell whose height is different from the row height 
-   specified in the .scl file is a standard cell */
 /*****************************************************
  MACRO CELL DETAILS
 *****************************************************/
@@ -65,7 +66,7 @@ map<unsigned int, unsigned long>heightMacroRanges;
 /* Other variables for benchmark details */
 unsigned int numCells;
 unsigned int numNets;
-unsigned int rowHeight;
+vector<unsigned int> rowHeights;
 
 void 
 updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) 
@@ -118,6 +119,7 @@ DesignCollectStats(Design& myDesign)
   unsigned int width, height, area;
   unsigned int max_area, max_width, max_height;
 
+  /* Get the row heights from design 
   /* Collect stats for number of outputs standard cells */
   DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
     numOutPins = (*CellPtr).CellGetNumPins(PIN_DIR_OUTPUT);
