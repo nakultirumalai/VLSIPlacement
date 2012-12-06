@@ -55,7 +55,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
 
   DesignReadCells();
   DesignReadNets();
-  DesignReadRowsInfo();
+  DesignReadRows();
   DesignReadCellPlacement();
   
   DesignFile.close();
@@ -245,7 +245,7 @@ Design::DesignReadNets()
 
   DesignOpenFile(DesignNetFileName);
   DesignFileReadHeader(DesignFile);
-  DesignFileReadNets(DesignFile);
+  DesignFileReadRows(DesignFile);
 
   Msg += "Loaded " + getStrFromInt(DesignNets.size()) + " nets";
 
@@ -253,9 +253,75 @@ Design::DesignReadNets()
 }
 
 void
-Design::DesignReadRowsInfo()
+Design::DesignFileReadOneRow(ifstream &file)
 {
   
+  unsigned int netDegree;
+  Cell *node;
+  Net *newNet;
+
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+
+    istringstream stream(line, istringstream::in);
+    stream >> NetDegree;
+
+    if (NetDegree != NET_DEGREE_PROPERTY) {
+      string Msg = "Error in benchmark file.";
+      common_error(Msg);
+    }
+
+    stream >> garbage; stream >> netDegree;
+    stream >> NetName;
+    Net *newNet;
+    string Msg;
+
+    newNet = new Net(0, NetName);
+    DesignNets[NetName] = newNet;
+
+    Msg = "Created Net " + NetName + " of Degree " + getStrFromInt(netDegree);
+    DesignFileReadPins(file, netDegree, *newNet);
+    DesignAddOneNetToDesignDB(newNet);
+    break;
+  }
+}
+
+void
+Design::DesignFileReadRows(ifstream& file)
+{
+  string Property, Value;
+  unsigned int numRows
+  int idx, netCount;
+
+  for (idx = 0; idx < NUM_ROWS_PROPERTIES; idx++) {
+    do {
+      DesignProcessProperty(file, Property, Value);
+    } while (Property != "" && !file.eof());
+    if (Property == NUM_ROWS_PROPERTY) {
+      numRows = atoi(Value.data());
+    }
+  }
+  for (idx = 0; idx < numRows; idx++) {
+    DesignFileReadOneRow(file);
+  }
+}
+
+void
+Design::DesignReadRows()
+{
+  int NumRows;
+  string Msg;
+
+  DesignOpenFile(DesignSclFileName);
+  DesignFileReadHeader(DesignFile);
+  DesignFileReadPhysRows(DesignFile);
+
+  Msg += "Loaded " + getStrFromInt(DesignPhysRows.size()) + " rows";
+
+  common_message(Msg);
 }
 
 void 
