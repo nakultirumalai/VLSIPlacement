@@ -38,6 +38,7 @@ void
 Design::DesignAddOneCellToDesignDB(Cell *newCell)
 {
   DesignCells[(*newCell).CellGetName()] = newCell;
+  this->NumCells++;
 }
 
 
@@ -45,8 +46,15 @@ void
 Design::DesignAddOneNetToDesignDB(Net *newNet)
 {
   DesignNets[(*newNet).NetGetName()] = newNet;
+  this->NumNets++;
 }
 
+void
+Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
+{
+  DesignPhysRows.push_back(row);
+  this->NumPhysRows++;
+}
 
 void
 Design::DesignOpenFile(string FileName)

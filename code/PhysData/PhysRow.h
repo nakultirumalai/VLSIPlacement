@@ -63,7 +63,9 @@ class PhysRow {
   PhysRow(rowOrientation, int);
   PhysRow(rowOrientation, unsigned int);
   PhysRow(rowOrientation, int, unsigned int);
-  PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int, unsigned int);
+  PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int);
+  PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int, siteOrientation, 
+	  siteSymmetry);
   PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int, unsigned int, 
 	  map<unsigned int, unsigned int>);
   PhysRow(rowOrientation, int, unsigned int, map<unsigned int, unsigned int>);
@@ -99,6 +101,10 @@ class PhysRow {
   /* Add a subrow to an existing row */
   void PhysRowAddSubRow(unsigned int, unsigned int);
 };
+
+extern rowOrientation PhysRowGetRowTypeFromStr(string);
+extern siteOrientation PhysRowGetSiteOrientationFromStr(string);
+extern siteSymmetry PhysRowGetSiteSymmetryFromStr(string);
 
 # endif
 

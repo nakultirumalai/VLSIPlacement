@@ -64,6 +64,7 @@
 /*******************************************************************************
   Properties of each row defined in the SCL file
 *******************************************************************************/
+# define ROW_BEGIN_KEYWORD "CoreRow"
 # define ROW_COORDINATE "Coordinate"
 # define ROW_HEIGHT "Height"
 # define ROW_SITE_WIDTH "Sitewidth"
@@ -72,6 +73,7 @@
 # define ROW_SITE_SYMMETRY "Sitesymmetry"
 # define SUBROW_ORIGIN "SubrowOrigin"
 # define SUBROW_NUM_SITES "NumSites"
+# define ROW_END_KEYWORD "End"
 
 # define PIN_DIR_INPUT_STRING "I"
 # define PIN_DIR_OUTPUT_STRING "O"
@@ -84,10 +86,10 @@
 class Design {
  private:
   map<string, Cell*> DesignClusters;
-
+  
   unsigned int NumCells;
   unsigned int NumNets;
-  vector<unsigned int> rowHeights;
+  unsigned int NumPhysRows;
 
   string Name;
   string DesignPath;
@@ -95,6 +97,7 @@ class Design {
   string DesignNetFileName;
   string DesignNetWtsFileName;
   string DesignSclFileName;
+  string DesignPlFileName;
   bool RowBasedPlacement;
 
   ifstream DesignFile;
@@ -109,7 +112,9 @@ class Design {
   void DesignFileReadPins(ifstream &, unsigned int,
 			  Net &);
   void DesignFileReadOneNet(ifstream &);
+  void DesignFileReadOneRow(ifstream &);
   void DesignFileReadNets(ifstream &);
+  void DesignFileReadRows(ifstream &);
   void DesignOpenFile(string);
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);
@@ -118,11 +123,15 @@ class Design {
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
   vector<PhysRow*> DesignPhysRows;
+  
   Design() { NumNets = 0; NumCells = 0; }
   Design(string, string);
   void DesignSetPath();
   void DesignReadCells();
   void DesignReadNets();
+  void DesignReadRows();
+  void DesignReadCellPlacement();
+
   map<string, Net*>& DesignGetNets(void);
   map<string, Cell*>& DesignGetCells(void);
   void DesignSetName(string);

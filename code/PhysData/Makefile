@@ -3,9 +3,9 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-SRCFILES:=  PhysRows
+SRCFILES:=  PhysRow
 
-HFILES:= PhysRows.h 
+HFILES:= PhysRow.h 
 HFILES:= $(addprefix $(INCLUDE_DIR)/, $(HFILES))
 
 SRCCPPFILES:= $(SRCFILES:=.cxx)
