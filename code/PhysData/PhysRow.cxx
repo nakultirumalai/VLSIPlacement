@@ -183,7 +183,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height)
 }
 
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
-		 unsigned int siteWidth, unsigned int siteSpacing, unsigned int numSubRows)
+		 unsigned int siteWidth, unsigned int siteSpacing) 
 {
   PhysRowSetType(orient);
   PhysRowSetCoordinate(DEFAULT_COORDINATE);
@@ -192,6 +192,22 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
   PhysRowSetHeight(DEFAULT_SITE_HEIGHT);
   PhysRowSetSiteSpacing(DEFAULT_SITE_SPACING);
   PhysRowSetSiteWidth(DEFAULT_SITE_WIDTH);
+  PhysRowSetNumSites(DEFAULT_NUM_SITES);
+  PhysRowSetNumSubRows(DEFAULT_NUM_SUBROWS);
+  PhysRowSetSubRows(DEFAULT_SUBROWS);
+}
+
+PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
+		 unsigned int siteWidth, unsigned int siteSpacing, 
+		 siteOrientation siteOrient, siteSymmetry symmetry)
+{
+  PhysRowSetType(orient);
+  PhysRowSetCoordinate(coordinate);
+  PhysRowSetSiteOrientation(siteOrient);
+  PhysRowSetSiteSymmetry(symmetry);
+  PhysRowSetHeight(height);
+  PhysRowSetSiteSpacing(siteSpacing);
+  PhysRowSetSiteWidth(siteWidth);
   PhysRowSetNumSites(DEFAULT_NUM_SITES);
   PhysRowSetNumSubRows(DEFAULT_NUM_SUBROWS);
   PhysRowSetSubRows(DEFAULT_SUBROWS);

@@ -8,6 +8,14 @@
   for (int i = 0;  i < VectorObj.size(); i++) { \
   Obj = (Type)VectorObj[i];
 
+# define VECTOR_FOR_ALL_ELEMS_DOUBLE(VectorObj1, Type1, Obj1, VectorObj2, Type2, Obj2) \
+  { \
+  _ASSERT("Sizes of the vectors passed to VECTOR_FOR_ALL_ELEMS_DOUBLE are unequal", \
+	  VectorObj1.size() != VectorObj2.size()); \
+  for (int i = 0;  i < VectorObj1.size(); i++) { \
+  Obj1 = (Type1)VectorObj1[i]; \
+  Obj2 = (Type2)VectorObj2[i];
+
 # define MAP_FOR_ALL_ELEMS(MapObj, KeyType, ValType, Key, Value)	\
   { \
   for(map<KeyType,ValType>::iterator iter = MapObj.begin(); iter != MapObj.end(); ++iter) { \

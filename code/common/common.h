@@ -17,6 +17,9 @@
     cout << txt << endl;    \
     assert(1);		    \
   }
+# define _ASSERT_TRUE(txt)  \
+    cout << txt << endl;    \
+    assert(1);		    
 
 using namespace std;
 

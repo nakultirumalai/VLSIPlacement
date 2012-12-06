@@ -16,7 +16,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   /* Open the aux fle and read all the other files that need to be
      read */
   ifstream DesignFile(fullFileName.data(), ios_base::in);
-  getline(inpFile, listOfFiles);
+  getline(DesignFile, listOfFiles);
   if (listOfFiles == "") {
     return;
   }
@@ -34,8 +34,8 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   } while (stream);
   
   VECTOR_FOR_ALL_ELEMS(fileList, string, fileName) {
-    int dot_pos = fileName.find('.', 0);
-    _ASSERT("Filename of unexpected type", dot_pos < 0);
+    int dotpos = fileName.find('.', 0);
+    _ASSERT("Filename of unexpected type", dotpos < 0);
 
     string ext = fileName.substr(dotpos);
     if (ext == DESIGN_CELL_FILE_EXT) {
@@ -255,38 +255,88 @@ Design::DesignReadNets()
 void
 Design::DesignFileReadOneRow(ifstream &file)
 {
-  
-  unsigned int netDegree;
-  Cell *node;
-  Net *newNet;
+  string rowProperty, garbage, line;
+  bool rowBegin;
+  int rowCoordinate, subRowOrigin;
+  unsigned int height, siteWidth, siteSpacing, numSites;
+  rowOrientation rowType;
+  siteOrientation siteOrient;
+  siteSymmetry symmetry;
+  vector<int> subRowOrigins;
+  vector<unsigned int> numSitesForSubRows;
 
+  rowBegin = false;
   while (!file.eof()) {
     getline(file, line);
     if (line == "") {
       continue;
     }
-
     istringstream stream(line, istringstream::in);
-    stream >> NetDegree;
-
-    if (NetDegree != NET_DEGREE_PROPERTY) {
-      string Msg = "Error in benchmark file.";
-      common_error(Msg);
+    stream >> rowProperty;
+    if (rowProperty == ROW_BEGIN_KEYWORD) {
+      if (rowBegin == true) _ASSERT_TRUE("Benchmark error");
+      rowBegin = true;
+      stream >> rowProperty;
+      rowType = PhysRowGetRowTypeFromStr(rowProperty);
+    } else if (rowProperty == ROW_COORDINATE) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> rowCoordinate;
+    } else if (rowProperty == ROW_HEIGHT) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> height;
+    } else if (rowProperty == ROW_SITE_WIDTH) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> siteWidth;
+    } else if (rowProperty == ROW_SITE_SPACING) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> siteSpacing;
+    } else if (rowProperty == ROW_SITE_ORIENTATION) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> rowProperty;
+      siteOrient = PhysRowGetSiteOrientationFromStr(rowProperty);
+    } else if (rowProperty == ROW_SITE_SYMMETRY) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> rowProperty;
+      symmetry = PhysRowGetSiteSymmetryFromStr(rowProperty);
+    } else if (rowProperty == SUBROW_ORIGIN) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> subRowOrigin;
+      stream >> garbage;
+      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      stream >> numSites;
+      subRowOrigins.push_back(subRowOrigin);
+      numSitesForSubRows.push_back(numSites);
+    } else if (rowProperty == ROW_END_KEYWORD) {
+      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      rowBegin = false;
+    } else {
+      _ASSERT_TRUE("Benchmark error: Unknown keyword");
     }
-
-    stream >> garbage; stream >> netDegree;
-    stream >> NetName;
-    Net *newNet;
-    string Msg;
-
-    newNet = new Net(0, NetName);
-    DesignNets[NetName] = newNet;
-
-    Msg = "Created Net " + NetName + " of Degree " + getStrFromInt(netDegree);
-    DesignFileReadPins(file, netDegree, *newNet);
-    DesignAddOneNetToDesignDB(newNet);
     break;
   }
+  PhysRow *row;
+  row = new PhysRow(rowType, rowCoordinate, height, siteWidth, siteSpacing,
+		    siteOrient, symmetry);
+
+  VECTOR_FOR_ALL_ELEMS_DOUBLE(subRowOrigins, int, subRowOrigin,
+			      numSitesForSubRows, unsigned int, numSites) {
+    (*row).PhysRowAddSubRow(subRowOrigin, numSites);
+  } END_FOR;
+  DesignAddOnePhysRowToDesignDB(row);
 }
 
 void
