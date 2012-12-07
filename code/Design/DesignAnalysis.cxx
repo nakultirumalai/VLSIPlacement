@@ -10,6 +10,7 @@ BEEN READ TO A HYPERGRAPH
 # include <sys/types.h>
 
 # define MAX_OUTPUTS 1000
+# define SPACES "   "
 # define MCOMMA ,
 /**************/
 
@@ -56,17 +57,48 @@ map<unsigned int, unsigned long>heightStdRanges;
 /*****************************************************
  MACRO CELL DETAILS
 *****************************************************/
-/* Capture widths of cells in this map */
+/* Capture widths of macro cells in this map */
 map<unsigned int, unsigned long>widthMacroRanges;
-/* Capture areas of cells in this map */
+/* Capture areas of macro cells in this map */
 map<unsigned int, unsigned long>areaMacroRanges;
-/* Capture heights of cells in this map */
+/* Capture heights of macro cells in this map */
 map<unsigned int, unsigned long>heightMacroRanges;
+/* Capture the aspect ratios of the macro cells 
+   which are of the same height */
+map<unsigned int, map<double, unsigned int > > aspectRatioMacroRanges; 
 
 /* Other variables for benchmark details */
 unsigned int numCells;
+unsigned int numFixedCells;
+unsigned int numStdCells;
+unsigned int numMacroCells;
+unsigned int numFixedMacros;
+unsigned int numTerminalCells;
 unsigned int numNets;
-vector<unsigned int> rowHeights;
+
+/*****************************************************
+ NET DETAILS
+*****************************************************/
+/* Structure for storing net details using a single map */
+typedef struct NetStats {
+  /* Total pin count on each net */
+  unsigned int pinCount;
+  /* Total number of drivers on the net */
+  unsigned int driverCount;
+  /* Total number of sinks on the net */
+  unsigned int sinkCount;
+  /* Total number of end points which are std cells */
+  unsigned int stdCellEps;
+  /* Total number of end points which are macro cells */
+  unsigned int macroCellEps;
+  /* Pointer to the actual net */
+  Net *NetPtr;
+} NetStats;
+
+/* For each net: */
+/* Number of pins on the net indexed by net name?*/
+map<string, NetStats> netAnalysis;
+
 
 void 
 updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) 
@@ -118,10 +150,15 @@ DesignCollectStats(Design& myDesign)
   unsigned int numOutPins;
   unsigned int width, height, area;
   unsigned int max_area, max_width, max_height;
+  bool stdCell;
+  map<unsigned int, unsigned int>rowHeights;
 
-  /* Get the row heights from design 
+  /* Get the row heights from design */
+  rowHeights = myDesign.DesignGetRowHeights();
+  
   /* Collect stats for number of outputs standard cells */
   DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
+    stdCell = false;
     numOutPins = (*CellPtr).CellGetNumPins(PIN_DIR_OUTPUT);
     updateCellOutputs(CellPtr, numOutPins);
     width = (*CellPtr).CellGetWidth();
@@ -131,20 +168,55 @@ DesignCollectStats(Design& myDesign)
     if (width > max_width) max_width = width;
     if (height > max_height) max_height = height;
 
-    if (widthRanges.find(width) != widthRanges.end()) {
-      widthRanges[width]++;
-    } else {
-      widthRanges[width] = 1;
+    if (myDesign.DesignGetSingleRowHeight() == -1) {
+      if (rowHeights.find(height) != rowHeights.end()) {
+	stdCell = true;
+      }
     }
-    if (areaRanges.find(area) != areaRanges.end()) {
-      areaRanges[area]++;
+    
+    if (stdCell == false) {
+      if (widthMacroRanges.find(width) != widthMacroRanges.end()) {
+	widthMacroRanges[width]++;
+      } else {
+	widthMacroRanges[width] = 1;
+      }
+      if (areaMacroRanges.find(area) != areaMacroRanges.end()) {
+	areaMacroRanges[area]++;
+      } else {
+	areaMacroRanges[area] = 1;
+      }
+      if (heightMacroRanges.find(height) != heightMacroRanges.end()) {
+	heightMacroRanges[height]++;
+      } else {
+	heightMacroRanges[height] = 1;
+      }
+      if (aspectRatioMacroRanges.find(height) == aspectRatioMacroRanges.end()) {
+	aspectRatioMacroRanges[height] = map<double, unsigned int> ();
+      }
+      map<double, unsigned int> &subMapSelect = aspectRatioMacroRanges[height];
+      double aspectRatio = ((double)width)/height;
+      aspectRatio = dround(aspectRatio);
+      if (subMapSelect.find(aspectRatio) != subMapSelect.end()) {
+	subMapSelect[aspectRatio]++;
+      } else {
+	subMapSelect[aspectRatio] = 1;
+      }
     } else {
-      areaRanges[area] = 1;
-    }
-    if (heightRanges.find(height) != heightRanges.end()) {
-      heightRanges[height]++;
-    } else {
-      heightRanges[height] = 1;
+      if (widthStdRanges.find(width) != widthStdRanges.end()) {
+	widthStdRanges[width]++;
+      } else {
+	widthStdRanges[width] = 1;
+      }
+      if (areaStdRanges.find(area) != areaStdRanges.end()) {
+	areaStdRanges[area]++;
+      } else {
+	areaStdRanges[area] = 1;
+      }
+      if (heightStdRanges.find(height) != heightStdRanges.end()) {
+	heightStdRanges[height]++;
+      } else {
+	heightStdRanges[height] = 1;
+      }
     }
   } DESIGN_END_FOR;
 }
@@ -171,7 +243,6 @@ void DesignWriteStats(Design& myDesign)
   }
 
   /* Write a gnuplot file header */
-
   /***********************************/
   /* Write output to top level table */
   /***********************************/
@@ -185,8 +256,9 @@ void DesignWriteStats(Design& myDesign)
 	string outputFileName;
 	outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + "Outputs" +  + ".txt";
 	outputFile.open(outputFileName.data(), ifstream::out);
+	outputFile << "#COUNT" << SPACES << "INPUTS" << endl;
 	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, unsigned long, numInputs, count) {
-	  outputFile << count << "   " << numInputs << endl;
+	  outputFile << count << SPACES << numInputs << endl;
 	} END_FOR;
 	outputFile.close();
       }
@@ -204,8 +276,11 @@ void DesignWriteStats(Design& myDesign)
       map<unsigned int, vector<map<unsigned int, unsigned int > > >& mapSelect = cellStats[i];
       if (mapSelect.size() > 0) {
 	vector<map<unsigned int, unsigned int > > myVector;
-	/* Hack for macro substitution */
-	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, vector<map<unsigned int MCOMMA unsigned int > >, numInputs, myVector) {
+	/* Hack to bypass C++ macro substitution use MCOMMA 
+	   inside iterators instead of ',' */
+	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, 
+			  vector<map<unsigned int MCOMMA unsigned int > >, 
+			  numInputs, myVector) {
 	  ofstream outputFile;
 	  string outputFileName;
 	  unsigned int width, height;
@@ -214,8 +289,9 @@ void DesignWriteStats(Design& myDesign)
 	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
 	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Heights" + ".txt";
 	  outputFile.open(outputFileName.data(), ifstream::out);
+	  outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
 	  MAP_FOR_ALL_ELEMS(subMapSelect1, unsigned int, unsigned int, height, count) {
-	    outputFile << count << "  " << height << endl;
+	    outputFile << count << SPACES << height << endl;
 	  } END_FOR;
 	  outputFile.close();
 
@@ -223,8 +299,9 @@ void DesignWriteStats(Design& myDesign)
 	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
 	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Widths" + ".txt";
 	  outputFile.open(outputFileName.data(), ifstream::out);
+	  outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
 	  MAP_FOR_ALL_ELEMS(subMapSelect2, unsigned int, unsigned int, width, count) {
-	    outputFile << count << "  " << width << endl;
+	    outputFile << count << SPACES << width << endl;
 	  } END_FOR;
 	  outputFile.close();
 	} END_FOR;
@@ -232,111 +309,59 @@ void DesignWriteStats(Design& myDesign)
     }
   }
   
-
   /**********************************************************/
   /* Write cell width analysis                              */ 
   /**********************************************************/
   {
     ofstream outputFile;
-    outputFile.open("DesignCellWidthAnalysis.txt");
+    /* Width of standard cells */
+    outputFile.open("DesignStdCellWidthAnalysis.txt");
     unsigned int count;
-    MAP_FOR_ALL_ELEMS(widthRanges, unsigned int, unsigned long, width, count) {
-      outputFile << count << "   " << width << endl;
+    outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
+    MAP_FOR_ALL_ELEMS(widthStdRanges, unsigned int, unsigned long, width, count) {
+      outputFile << count << SPACES << width << endl;
+    } END_FOR;
+    outputFile.close();
+
+    /* Width of macro cells */
+    outputFile.open("DesignMacroCellWidthAnalysis.txt");
+    outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
+    MAP_FOR_ALL_ELEMS(widthMacroRanges, unsigned int, unsigned long, width, count) {
+      outputFile << count << SPACES << width << endl;
     } END_FOR;
     outputFile.close();
   }
 
+  /**********************************************************/
+  /* Write cell height analysis                             */ 
+  /**********************************************************/
   {
     ofstream outputFile;
-    outputFile.open("DesignCellHeightAnalysis.txt");
+    /* Height of standard cells */
+    outputFile.open("DesignStdCellHeightAnalysis.txt");
     unsigned int count;
-    MAP_FOR_ALL_ELEMS(heightRanges, unsigned int, unsigned long, height, count) {
-      outputFile << count << "   " << height << endl;
+    outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
+    MAP_FOR_ALL_ELEMS(heightStdRanges, unsigned int, unsigned long, height, count) {
+      outputFile << count << SPACES << height << endl;
+    } END_FOR;
+    outputFile.close();
+
+    /* Height of macro cells */
+    outputFile.open("DesignMacroCellHeightAnalysis.txt");
+    outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
+    MAP_FOR_ALL_ELEMS(heightMacroRanges, unsigned int, unsigned long, height, count) {
+      outputFile << count << SPACES << height << endl;
     } END_FOR;
     outputFile.close();
   }
 
+  /**********************************************************/
+  /* Write cell area analysis                               */ 
+  /**********************************************************/
   {
     ofstream outputFile;
     outputFile.open("DesignCellAreaAnalysis.txt");
-    unsigned int count;
-  /* Have 20 ranges 
-     0-100
-     100-500
-     500-1000
-     1000-2000
-     2000-3000
-     3000-4000
-     4000-5000
-     5000-6000
-     6000-7000
-     7000-8000
-     8000-9000
-     9000-10000
-     10000-50000
-     50000-100000
-     100000-1000000
-     1000000+
-   */
-    string areaRangeStr[17], areaRange[17];
-    areaRangeStr[0] = "0-100";
-    areaRangeStr[1] = "100-500";
-    areaRangeStr[2] = "500-1000";
-    areaRangeStr[3] = "1000-2000";
-    areaRangeStr[4] = "2000-3000";
-    areaRangeStr[5] = "3000-4000";
-    areaRangeStr[6] = "4000-5000";
-    areaRangeStr[7] = "5000-6000";
-    areaRangeStr[8] = "6000-7000";
-    areaRangeStr[9] = "7000-8000";
-    areaRangeStr[10] = "8000-9000";
-    areaRangeStr[11] = "9000-10000";
-    areaRangeStr[12] = "10000-50000";
-    areaRangeStr[13] = "50000-100000";
-    areaRangeStr[14] = "100000-500000";
-    areaRangeStr[15] = "500000-1000000";
-    areaRangeStr[16] = "1000000+";
-
-    MAP_FOR_ALL_ELEMS(areaRanges, unsigned int, unsigned long, area, count) {
-      if (area > 0 && area <= 100) {
-	areaRange[0] += count;
-      } else if (area > 100 && area <= 500) {
-	areaRange[1] += count;
-      } else if (area > 500 && area <= 1000) {
-	areaRange[2] += count;
-      } else if (area > 1000 && area <= 2000) {
-	areaRange[3] += count;
-      } else if (area > 2000 && area <= 3000) {
-	areaRange[4] += count;
-      } else if (area > 3000 && area <= 4000) {
-	areaRange[5] += count;
-      } else if (area > 4000 && area <= 5000) {
-	areaRange[6] += count;
-      } else if (area > 5000 && area <= 6000) {
-	areaRange[7] += count;
-      } else if (area > 6000 && area <= 7000) {
-	areaRange[8] += count;
-      } else if (area > 7000 && area <= 8000) {
-	areaRange[9] += count;
-      } else if (area > 8000 && area <= 9000) {
-	areaRange[10] += count;
-      } else if (area > 9000 && area <= 10000) {
-	areaRange[11] += count;
-      } else if (area > 10000 && area <= 50000) {
-	areaRange[12] += count;
-      } else if (area > 50000 && area <= 100000) {
-	areaRange[13] += count;
-      } else if (area > 100000 && area <= 500000) {
-	areaRange[14] += count;
-      } else if (area > 500000 && area <= 1000000) {
-	areaRange[15] += count;
-      } else if (area > 1000000) {
-	areaRange[16] += count;
-      }
-    } END_FOR;
-    for (int i=0; i < 17; i++) {
-      outputFile << i << "   " << areaRangeStr[i] << "  " << areaRange[i] << endl;
-    }
+    outputFile << "Blah" << endl;
     outputFile.close();
   }
 }

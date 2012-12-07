@@ -27,6 +27,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
     stream >> fileName;
     if (fileName == ROW_BASED_PLACEMENT) {
       RowBasedPlacement = true;
+      continue;
     } else if (fileName.find('.', 0) == string::npos) {
       continue;
     }
@@ -53,6 +54,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
     }
   } END_FOR;
 
+  this->Name = DesignName;
   DesignReadCells();
   DesignReadNets();
   DesignReadRows();
@@ -127,7 +129,7 @@ Design::DesignReadCells()
 
   Msg += "Loaded " + getStrFromInt(DesignCells.size()) + " cells";
 
-  common_message(Msg);
+  cout << Msg << endl;
 }
 
 
@@ -245,11 +247,11 @@ Design::DesignReadNets()
 
   DesignOpenFile(DesignNetFileName);
   DesignFileReadHeader(DesignFile);
-  DesignFileReadRows(DesignFile);
+  DesignFileReadNets(DesignFile);
 
   Msg += "Loaded " + getStrFromInt(DesignNets.size()) + " nets";
 
-  common_message(Msg);
+  cout << Msg << endl;
 }
 
 void
@@ -274,59 +276,63 @@ Design::DesignFileReadOneRow(ifstream &file)
     istringstream stream(line, istringstream::in);
     stream >> rowProperty;
     if (rowProperty == ROW_BEGIN_KEYWORD) {
-      if (rowBegin == true) _ASSERT_TRUE("Benchmark error");
+      if (rowBegin == true) {_ASSERT_TRUE("Benchmark error");break;}
       rowBegin = true;
       stream >> rowProperty;
       rowType = PhysRowGetRowTypeFromStr(rowProperty);
     } else if (rowProperty == ROW_COORDINATE) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowCoordinate;
     } else if (rowProperty == ROW_HEIGHT) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> height;
     } else if (rowProperty == ROW_SITE_WIDTH) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> siteWidth;
     } else if (rowProperty == ROW_SITE_SPACING) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> siteSpacing;
     } else if (rowProperty == ROW_SITE_ORIENTATION) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowProperty;
       siteOrient = PhysRowGetSiteOrientationFromStr(rowProperty);
     } else if (rowProperty == ROW_SITE_SYMMETRY) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowProperty;
       symmetry = PhysRowGetSiteSymmetryFromStr(rowProperty);
     } else if (rowProperty == SUBROW_ORIGIN) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
+      if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> subRowOrigin;
-      stream >> garbage;
-      if (garbage != ":") _ASSERT_TRUE("Benchmark error: Missing ':'");
-      stream >> numSites;
+      stream >> rowProperty;
+      if (rowProperty == SUBROW_NUM_SITES) {
+	stream >> garbage;
+	if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
+	stream >> numSites;
+      } else {_ASSERT_TRUE("Benchmark error: Cannot find NumSites for a subRow");break;}
       subRowOrigins.push_back(subRowOrigin);
       numSitesForSubRows.push_back(numSites);
     } else if (rowProperty == ROW_END_KEYWORD) {
-      if (rowBegin == false) _ASSERT_TRUE("Benchmark error: Row begin unspecified");
+      if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       rowBegin = false;
+      break;
     } else {
-      _ASSERT_TRUE("Benchmark error: Unknown keyword");
+      {_ASSERT_TRUE("Benchmark error: Unknown keyword");break;}
+      break;
     }
-    break;
   }
   PhysRow *row;
   row = new PhysRow(rowType, rowCoordinate, height, siteWidth, siteSpacing,
@@ -343,13 +349,13 @@ void
 Design::DesignFileReadRows(ifstream& file)
 {
   string Property, Value;
-  unsigned int numRows
+  unsigned int numRows;
   int idx, netCount;
 
-  for (idx = 0; idx < NUM_ROWS_PROPERTIES; idx++) {
+  for (idx = 0; idx < NUM_ROW_PROPERTIES; idx++) {
     do {
       DesignProcessProperty(file, Property, Value);
-    } while (Property != "" && !file.eof());
+    } while (Property == "" && !file.eof());
     if (Property == NUM_ROWS_PROPERTY) {
       numRows = atoi(Value.data());
     }
@@ -367,11 +373,11 @@ Design::DesignReadRows()
 
   DesignOpenFile(DesignSclFileName);
   DesignFileReadHeader(DesignFile);
-  DesignFileReadPhysRows(DesignFile);
+  DesignFileReadRows(DesignFile);
 
   Msg += "Loaded " + getStrFromInt(DesignPhysRows.size()) + " rows";
 
-  common_message(Msg);
+  cout << Msg << endl;
 }
 
 void 

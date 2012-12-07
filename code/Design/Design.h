@@ -86,10 +86,13 @@
 class Design {
  private:
   map<string, Cell*> DesignClusters;
-  
+  map<unsigned int, unsigned int>RowHeights;
+
   unsigned int NumCells;
   unsigned int NumNets;
   unsigned int NumPhysRows;
+
+  unsigned int singleRowHeight;
 
   string Name;
   string DesignPath;
@@ -101,6 +104,8 @@ class Design {
   bool RowBasedPlacement;
 
   ifstream DesignFile;
+  
+  void DesignInit(void);
   void DesignFileReadHeader(ifstream&);
   void DesignProcessProperty(ifstream&, string &, 
 			     string &);
@@ -124,7 +129,7 @@ class Design {
   map<string, Net*> DesignNets;
   vector<PhysRow*> DesignPhysRows;
   
-  Design() { NumNets = 0; NumCells = 0; }
+  Design();
   Design(string, string);
   void DesignSetPath();
   void DesignReadCells();
@@ -138,6 +143,9 @@ class Design {
   void DesignReadDesign(string, string);
   string DesignGetName(void);
   string DesignGetPath() { }
+
+  int DesignGetSingleRowHeight();
+  map<unsigned int, unsigned int> DesignGetRowHeights();
   void DesignClusterCells(vector<Cell*>& CellSet);
   void DesignCollapseCluster(Cell& MasterCell);
 };

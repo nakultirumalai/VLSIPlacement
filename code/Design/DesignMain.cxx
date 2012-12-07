@@ -34,6 +34,19 @@ Design::DesignGetName(void)
   return (this->Name);
 }
 
+map<unsigned int, unsigned int> 
+Design::DesignGetRowHeights()
+{
+  unsigned int height;
+  map<unsigned int, unsigned int> retVal;
+  
+  MAP_FOR_ALL_KEYS(RowHeights, unsigned int, unsigned int, height) {
+    retVal[height] = 1;
+  } END_FOR;
+  
+  return retVal;
+}
+
 void
 Design::DesignAddOneCellToDesignDB(Cell *newCell)
 {
@@ -52,7 +65,21 @@ Design::DesignAddOneNetToDesignDB(Net *newNet)
 void
 Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
 {
+  unsigned int RowHeight;
+  
+  RowHeight = (*row).PhysRowGetHeight();
+
   DesignPhysRows.push_back(row);
+
+  if (RowHeights.find(RowHeight) != RowHeights.end()) {
+    RowHeights[RowHeight] = 1;
+    if (singleRowHeight == -1) {
+      singleRowHeight = RowHeight;
+    } else {
+      singleRowHeight = -1;
+    }
+  }
+
   this->NumPhysRows++;
 }
 
@@ -74,9 +101,44 @@ Design::DesignCloseFile(void)
   }
 }
 
+int 
+Design::DesignGetSingleRowHeight(void)
+{
+  return singleRowHeight;
+}
+
+void
+Design::DesignInit()
+{
+  /* Initialize private variables */
+  NumCells = 0;
+  NumNets = 0;
+  NumPhysRows = 0;
+
+  singleRowHeight = -1;
+
+  Name = "";
+  DesignPath = "";
+  DesignCellFileName = "";
+  DesignNetFileName = "";
+  DesignNetWtsFileName = "";
+  DesignSclFileName = "";
+  DesignPlFileName = "";
+  RowBasedPlacement = false;
+  
+  /* Initialize public variables */
+  /* empty for now as there are only maps and vectors */
+}
+
+Design::Design() 
+{
+  DesignInit();
+}
 
 Design::Design(string DesignPath, string DesignName)
 {
+  DesignInit();
+
   DesignReadDesign(DesignPath, DesignName);
 }
 

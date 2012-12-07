@@ -6,6 +6,7 @@
 # include <utility>
 # include <commonIter.h>
 # include <assert.h>
+# include <math.h>
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1
@@ -27,3 +28,5 @@ void common_error(string);
 void common_message(string);
 
 string getStrFromInt(int);
+
+double dround(double);

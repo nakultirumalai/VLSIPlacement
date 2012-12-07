@@ -55,6 +55,12 @@ PhysRow::PhysRowSetNumSubRows(unsigned int numSubRows)
 }
 
 void
+PhysRow::PhysRowSetNumSites(unsigned int numSites) 
+{
+  this->numSites = numSites;
+}
+
+void
 PhysRow::PhysRowIncrementSubRows(void)
 {
   this->numSubRows++;
@@ -242,4 +248,46 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
   PhysRowSetNumSites(DEFAULT_NUM_SITES);
   PhysRowSetNumSubRows(DEFAULT_NUM_SUBROWS);
   PhysRowSetSubRows(subRows);
+}
+
+rowOrientation 
+PhysRowGetRowTypeFromStr(string rowType)
+{
+  rowOrientation retVal;
+
+  if (rowType == "Horizontal") {
+    retVal = HORIZONTAL;
+  } else if (rowType == "Vertical") {
+    retVal = VERTICAL;
+  }
+  
+  return (retVal);
+}	    
+
+siteOrientation 
+PhysRowGetSiteOrientationFromStr(string siteOrient)
+{
+  siteOrientation retVal;
+  
+  if (siteOrient == "N" || siteOrient == "1") retVal = N;
+  else if (siteOrient == "E") retVal = E;
+  else if (siteOrient == "S") retVal = S;
+  else if (siteOrient == "W") retVal = W;
+  else if (siteOrient == "FN") retVal = FN;
+  else if (siteOrient == "FE") retVal = FE;
+  else if (siteOrient == "FS") retVal = FS;
+  else if (siteOrient == "FW") retVal = FW;
+  
+  return (retVal);
+}
+
+siteSymmetry 
+PhysRowGetSiteSymmetryFromStr(string symmetry)
+{
+  siteSymmetry retVal;
+  
+  if (symmetry == "1" || "Y") retVal = YES_SYMMETRY;
+  else retVal = NO_SYMMETRY;
+  
+  return retVal;
 }

@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
   if (argc > 1 && argc < MAX_ARGS) {
     i = 1;
     performAnalysis = false;
-    while (i <= argc) {
+    while (i < argc) {
       if (argv[i][0] == '-') {
 	/* Switch to options */
 	switchName = argv[i] + 1;
@@ -40,10 +40,12 @@ int main(int argc, char *argv[])
 	  designName = argv[i]; 
 	}
       }
+      i++;
     }
-    Design myDesign;
+
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
-    myDesign.DesignReadDesign(designPath, designName);
+
+    Design myDesign(designPath, designName);
     cout << "Netlist read successfully" << endl;
 
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;

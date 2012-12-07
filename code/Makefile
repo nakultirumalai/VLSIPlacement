@@ -19,7 +19,7 @@ CC=g++
 
 TARGETS = all debug
 
-SRCDIRS:= Pin Cell Net Design HyperGraph common Stat
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData
 
 OBJFILES:= $(OBJDIR)/*.o
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
