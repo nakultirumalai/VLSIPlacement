@@ -71,14 +71,14 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
 
   DesignPhysRows.push_back(row);
 
-  if (RowHeights.find(RowHeight) != RowHeights.end()) {
+  if (RowHeights.find(RowHeight) == RowHeights.end()) {
     RowHeights[RowHeight] = 1;
     if (singleRowHeight == -1) {
       singleRowHeight = RowHeight;
     } else {
       singleRowHeight = -1;
     }
-  }
+  } 
 
   this->NumPhysRows++;
 }

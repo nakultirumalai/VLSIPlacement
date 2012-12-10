@@ -80,7 +80,7 @@ Design::DesignFileReadOneNode(ifstream& file)
 
     istringstream stream(line, istringstream::in);
 
-    stream >> NodeName; stream >> height; stream >> width;
+    stream >> NodeName; stream >> width; stream >> height;
     if (!stream.eof()) stream >> terminalString;
 
     if (terminalString == NODE_TERMINAL_KEYWORD) {
@@ -383,7 +383,6 @@ Design::DesignReadRows()
 void 
 Design::DesignReadCellPlacement()
 {
-
 }
 
 

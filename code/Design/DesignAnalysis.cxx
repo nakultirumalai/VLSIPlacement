@@ -48,21 +48,21 @@ vector<map<unsigned int, vector<map<unsigned int, unsigned int > > > > cellStats
  STANDARD CELL DETAILS
 *****************************************************/
 /* Capture widths of standard cells in this map */
-map<unsigned int, unsigned long>widthStdRanges;
+map<unsigned int, unsigned int>widthStdRanges;
 /* Capture areas of standard cells in this map */
-map<unsigned int, unsigned long>areaStdRanges;
+map<unsigned int, unsigned int>areaStdRanges;
 /* Capture heights of standard cells in this map */
-map<unsigned int, unsigned long>heightStdRanges;
+map<unsigned int, unsigned int>heightStdRanges;
 
 /*****************************************************
  MACRO CELL DETAILS
 *****************************************************/
 /* Capture widths of macro cells in this map */
-map<unsigned int, unsigned long>widthMacroRanges;
+map<unsigned int, unsigned int>widthMacroRanges;
 /* Capture areas of macro cells in this map */
-map<unsigned int, unsigned long>areaMacroRanges;
+map<unsigned int, unsigned int>areaMacroRanges;
 /* Capture heights of macro cells in this map */
-map<unsigned int, unsigned long>heightMacroRanges;
+map<unsigned int, unsigned int>heightMacroRanges;
 /* Capture the aspect ratios of the macro cells 
    which are of the same height */
 map<unsigned int, map<double, unsigned int > > aspectRatioMacroRanges; 
@@ -98,7 +98,6 @@ typedef struct NetStats {
 /* For each net: */
 /* Number of pins on the net indexed by net name?*/
 map<string, NetStats> netAnalysis;
-
 
 void 
 updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) 
@@ -148,16 +147,21 @@ DesignCollectStats(Design& myDesign)
   Cell* CellPtr;
   string Name;
   unsigned int numOutPins;
-  unsigned int width, height, area;
+  unsigned int width, height, area, rowHeight;
   unsigned int max_area, max_width, max_height;
   bool stdCell;
   map<unsigned int, unsigned int>rowHeights;
 
   /* Get the row heights from design */
   rowHeights = myDesign.DesignGetRowHeights();
-  
+  rowHeight = myDesign.DesignGetSingleRowHeight();
+
   /* Collect stats for number of outputs standard cells */
   DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
+    if ((*CellPtr).CellGetTerminal() == true) {
+      continue;
+    }
+    
     stdCell = false;
     numOutPins = (*CellPtr).CellGetNumPins(PIN_DIR_OUTPUT);
     updateCellOutputs(CellPtr, numOutPins);
@@ -168,10 +172,12 @@ DesignCollectStats(Design& myDesign)
     if (width > max_width) max_width = width;
     if (height > max_height) max_height = height;
 
-    if (myDesign.DesignGetSingleRowHeight() == -1) {
+    if (rowHeight == -1) {
       if (rowHeights.find(height) != rowHeights.end()) {
 	stdCell = true;
       }
+    } else if (height == rowHeight) {
+      stdCell = true;
     }
     
     if (stdCell == false) {
@@ -229,7 +235,8 @@ void DesignWriteStats(Design& myDesign)
   unsigned int numOutPins;
   unsigned int width, height, area;
   unsigned int max_area, max_width, max_height;
-  
+  unsigned int count;
+
   /* Write the gnuplot script file to generate the pdf */
   DesignName = myDesign.DesignGetName();
   DesignDir = DesignName + "_Analysis";
@@ -254,7 +261,8 @@ void DesignWriteStats(Design& myDesign)
       if (mapSelect.size() > 0) {
 	ofstream outputFile;
 	string outputFileName;
-	outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + "Outputs" +  + ".txt";
+	outputFileName = DesignDir + "/" + "DesignCell" + 
+	  getStrFromInt(i) + "Outputs" +  + ".txt";
 	outputFile.open(outputFileName.data(), ifstream::out);
 	outputFile << "#COUNT" << SPACES << "INPUTS" << endl;
 	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, unsigned long, numInputs, count) {
@@ -315,18 +323,21 @@ void DesignWriteStats(Design& myDesign)
   {
     ofstream outputFile;
     /* Width of standard cells */
-    outputFile.open("DesignStdCellWidthAnalysis.txt");
+    string outputFileName;
+    outputFileName = DesignDir + "/" + "DesignStandardCell" + "WidthAnalysis" + ".txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
     unsigned int count;
     outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
-    MAP_FOR_ALL_ELEMS(widthStdRanges, unsigned int, unsigned long, width, count) {
+    MAP_FOR_ALL_ELEMS(widthStdRanges, unsigned int, unsigned int, width, count) {
       outputFile << count << SPACES << width << endl;
     } END_FOR;
     outputFile.close();
 
     /* Width of macro cells */
-    outputFile.open("DesignMacroCellWidthAnalysis.txt");
+    outputFileName = DesignDir + "/" + "DesignMacroCell" + "WidthAnalysis" + ".txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
     outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
-    MAP_FOR_ALL_ELEMS(widthMacroRanges, unsigned int, unsigned long, width, count) {
+    MAP_FOR_ALL_ELEMS(widthMacroRanges, unsigned int, unsigned int, width, count) {
       outputFile << count << SPACES << width << endl;
     } END_FOR;
     outputFile.close();
@@ -337,19 +348,21 @@ void DesignWriteStats(Design& myDesign)
   /**********************************************************/
   {
     ofstream outputFile;
+    string outputFileName;
     /* Height of standard cells */
-    outputFile.open("DesignStdCellHeightAnalysis.txt");
-    unsigned int count;
+    outputFileName = DesignDir + "/" + "DesignStandardCell" + "HeightAnalysis" + ".txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
     outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
-    MAP_FOR_ALL_ELEMS(heightStdRanges, unsigned int, unsigned long, height, count) {
+    MAP_FOR_ALL_ELEMS(heightStdRanges, unsigned int, unsigned int, height, count) {
       outputFile << count << SPACES << height << endl;
     } END_FOR;
     outputFile.close();
 
     /* Height of macro cells */
-    outputFile.open("DesignMacroCellHeightAnalysis.txt");
+    outputFileName = DesignDir + "/" + "DesignMacroCell" + "HeightAnalysis" + ".txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
     outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
-    MAP_FOR_ALL_ELEMS(heightMacroRanges, unsigned int, unsigned long, height, count) {
+    MAP_FOR_ALL_ELEMS(heightMacroRanges, unsigned int, unsigned int, height, count) {
       outputFile << count << SPACES << height << endl;
     } END_FOR;
     outputFile.close();
@@ -360,8 +373,21 @@ void DesignWriteStats(Design& myDesign)
   /**********************************************************/
   {
     ofstream outputFile;
-    outputFile.open("DesignCellAreaAnalysis.txt");
-    outputFile << "Blah" << endl;
+    string outputFileName;
+    outputFileName = DesignDir + "/" + "DesignStandardCell" + "AreaAnalysis" + ".txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
+    outputFile << "#COUNT" << SPACES << "AREA" << endl;	  
+    MAP_FOR_ALL_ELEMS(areaStdRanges, unsigned int, unsigned int, area, count) {
+      outputFile << count << SPACES << area << endl;
+    } END_FOR;
+    outputFile.close();
+
+    outputFileName = DesignDir + "/" + "DesignMacroCell" + "AreaAnalysis" + ".txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
+    outputFile << "#COUNT" << SPACES << "AREA" << endl;	  
+    MAP_FOR_ALL_ELEMS(areaMacroRanges, unsigned int, unsigned int, area, count) {
+      outputFile << count << SPACES << area << endl;
+    } END_FOR;
     outputFile.close();
   }
 }
