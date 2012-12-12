@@ -26,12 +26,37 @@ BEEN READ TO A HYPERGRAPH
 # define NODE_ADJACENT_NODE_TABLE_EXT ".cellAdj.out"
 
 /***********************************************************
+ Macro for printing out tables into files. Data is always 
+***********************************************************/
+# define _WRITE_TABLE(opFileName, Col1Title, Col2Title,			\
+		      mapToUse, keyType, dataType)			\
+  {									\
+  keyType key;								\
+  dataType count, totalCount;						\
+  vector<double> statData;						\
+  ofstream opFile;							\
+  opFile.open(opFileName.data(), ifstream::out);			\
+  opFile << Col1Title << SPACES << Col2Title << endl;			\
+  totalCount = 0;							\
+  MAP_FOR_ALL_ELEMS(mapToUse, keyType, dataType, key, count) {		\
+    opFile << count << SPACES << key << endl;				\
+    totalCount+=count;							\
+  } END_FOR;								\
+  opFile << "#TOTAL" << SPACES << totalCount << endl;			\
+  statData = DesignGetStatData<keyType>(mapToUse);                      \
+  opFile << "#MEAN" << SPACES << statData[0] << endl; 			\
+  opFile << "#VARIANCE" << SPACES << statData[1] << endl;		\
+  opFile << "#STD DEVIATION" << SPACES << statData[2] << endl;		\
+  opFile.close();							\
+  }									
+
+/***********************************************************
  Global variables to store the classify cells based on 
  inputs
 ***********************************************************/
 /* Vector of maps. Each index of the vector represents the 
    number of outputs in each cell */
-vector<map<unsigned int, unsigned long > > cellNumOutputs(MAX_OUTPUTS);
+vector<map<unsigned int, unsigned int > > cellNumOutputs(MAX_OUTPUTS);
 
 /* Vector of (maps of (vector of maps). Each index of the vector represents 
    the number of outputs in each cell. The data of the map
@@ -66,6 +91,8 @@ map<unsigned int, unsigned int>heightMacroRanges;
 /* Capture the aspect ratios of the macro cells 
    which are of the same height */
 map<unsigned int, map<double, unsigned int > > aspectRatioMacroRanges; 
+/* Capture the aspect ratios regardless of height */
+map<double, unsigned int> aspectRatioAllMacroRanges; 
 
 /* Other variables for benchmark details */
 unsigned int numCells;
@@ -103,7 +130,7 @@ void
 updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) 
 {
   unsigned int numInPins;
-  map<unsigned int, unsigned long>& mapSelect1 = cellNumOutputs[numOutputs];
+  map<unsigned int, unsigned int>& mapSelect1 = cellNumOutputs[numOutputs];
   map<unsigned int, vector<map<unsigned int, unsigned int > > >& mapSelect2 = cellStats[numOutputs];
   
   numInPins = (*CellPtr).CellGetNumPins(PIN_DIR_INPUT);
@@ -158,10 +185,6 @@ DesignCollectStats(Design& myDesign)
 
   /* Collect stats for number of outputs standard cells */
   DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
-    if ((*CellPtr).CellGetTerminal() == true) {
-      continue;
-    }
-    
     stdCell = false;
     numOutPins = (*CellPtr).CellGetNumPins(PIN_DIR_OUTPUT);
     updateCellOutputs(CellPtr, numOutPins);
@@ -196,12 +219,19 @@ DesignCollectStats(Design& myDesign)
       } else {
 	heightMacroRanges[height] = 1;
       }
+
+      double aspectRatio = ((double)width)/height;
+      aspectRatio = dround(aspectRatio);
+      if (aspectRatioAllMacroRanges.find(aspectRatio) != 
+	  aspectRatioAllMacroRanges.end()) {
+	aspectRatioAllMacroRanges[aspectRatio]++;
+      } else {
+	aspectRatioAllMacroRanges[aspectRatio] = 1;
+      }
       if (aspectRatioMacroRanges.find(height) == aspectRatioMacroRanges.end()) {
 	aspectRatioMacroRanges[height] = map<double, unsigned int> ();
       }
       map<double, unsigned int> &subMapSelect = aspectRatioMacroRanges[height];
-      double aspectRatio = ((double)width)/height;
-      aspectRatio = dround(aspectRatio);
       if (subMapSelect.find(aspectRatio) != subMapSelect.end()) {
 	subMapSelect[aspectRatio]++;
       } else {
@@ -225,6 +255,68 @@ DesignCollectStats(Design& myDesign)
       }
     }
   } DESIGN_END_FOR;
+  
+  
+}
+
+/* 
+Get the statistical analysis of a data set.
+This function gets the mean, standard deviation 
+and anything else that is required. Returned as a
+vector of doubles. Table is something that has 
+a pair of values: a parameter and a count of the 
+parameter.
+
+Return order:
+Mean
+Variance
+Standard deviation
+*/
+template <typename dataType> 
+vector<double> 
+DesignGetStatData(map<dataType, unsigned int> table) 
+{
+  vector<double> rtv;
+  unsigned int count, totalCount;
+
+  dataType param;
+  double param_mean;
+  double variance;
+  double stdDev;
+  double diff;
+  
+  variance = 0;
+  param_mean = 0;
+  stdDev = 0;
+  totalCount = 0;
+  diff = 0;
+
+  for(typename map<dataType,unsigned int>::iterator iter = table.begin(); 
+      iter != table.end(); ++iter) {		
+    param = (dataType)iter->first;			
+    count = (unsigned int)iter->second;
+    param_mean += (param * count);
+    totalCount += count;
+  } 
+  param_mean /= totalCount;
+
+  for(typename map<dataType,unsigned int>::iterator iter = table.begin(); 
+      iter != table.end(); ++iter) {		
+    param = (dataType)iter->first;			
+    count = (unsigned int)iter->second;
+    diff = param_mean - param;
+    variance += (diff * diff) * count;
+  };
+
+  variance /= totalCount;
+  
+  stdDev = sqrt(variance);
+  
+  rtv.push_back(param_mean);
+  rtv.push_back(variance);
+  rtv.push_back(stdDev);
+
+  return (rtv);
 }
 
 void DesignWriteStats(Design& myDesign)
@@ -236,6 +328,8 @@ void DesignWriteStats(Design& myDesign)
   unsigned int width, height, area;
   unsigned int max_area, max_width, max_height;
   unsigned int count;
+  ofstream outputFile;
+  string outputFileName;
 
   /* Write the gnuplot script file to generate the pdf */
   DesignName = myDesign.DesignGetName();
@@ -250,25 +344,24 @@ void DesignWriteStats(Design& myDesign)
   }
 
   /* Write a gnuplot file header */
+  /* Write out main benchmark analysis file */
+  {
+    outputFileName = DesignDir + "/" + DesignName + "Analysis.txt";
+  }
+    
   /***********************************/
   /* Write output to top level table */
   /***********************************/
   {
-    unsigned long count;
+    unsigned int count;
     unsigned int numInputs;
     for (int i = 0; i < cellNumOutputs.size(); i++) {
-      map<unsigned int, unsigned long>& mapSelect = cellNumOutputs[i];
+      map<unsigned int, unsigned int>& mapSelect = cellNumOutputs[i];
       if (mapSelect.size() > 0) {
-	ofstream outputFile;
-	string outputFileName;
 	outputFileName = DesignDir + "/" + "DesignCell" + 
 	  getStrFromInt(i) + "Outputs" +  + ".txt";
-	outputFile.open(outputFileName.data(), ifstream::out);
-	outputFile << "#COUNT" << SPACES << "INPUTS" << endl;
-	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, unsigned long, numInputs, count) {
-	  outputFile << count << SPACES << numInputs << endl;
-	} END_FOR;
-	outputFile.close();
+	_WRITE_TABLE(outputFileName, "#COUNT", "INPUTS", mapSelect, 
+		     unsigned int, unsigned int);
       }
     }
   }
@@ -278,7 +371,7 @@ void DesignWriteStats(Design& myDesign)
   /* out the height and width distribution.                 */
   /**********************************************************/
   {
-    unsigned long count;
+    unsigned int count;
     unsigned int numInputs;
     for (int i = 0; i < cellNumOutputs.size(); i++) {
       map<unsigned int, vector<map<unsigned int, unsigned int > > >& mapSelect = cellStats[i];
@@ -289,29 +382,18 @@ void DesignWriteStats(Design& myDesign)
 	MAP_FOR_ALL_ELEMS(mapSelect, unsigned int, 
 			  vector<map<unsigned int MCOMMA unsigned int > >, 
 			  numInputs, myVector) {
-	  ofstream outputFile;
-	  string outputFileName;
 	  unsigned int width, height;
-
 	  map<unsigned int, unsigned int>& subMapSelect1 = myVector[PROP_HEIGHT];
 	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
 	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Heights" + ".txt";
-	  outputFile.open(outputFileName.data(), ifstream::out);
-	  outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
-	  MAP_FOR_ALL_ELEMS(subMapSelect1, unsigned int, unsigned int, height, count) {
-	    outputFile << count << SPACES << height << endl;
-	  } END_FOR;
-	  outputFile.close();
+	  _WRITE_TABLE(outputFileName, "#COUNT", "INPUTS", subMapSelect1, 
+		     unsigned int, unsigned int);
 
 	  map<unsigned int, unsigned int>& subMapSelect2 = myVector[PROP_WIDTH];
 	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
 	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Widths" + ".txt";
-	  outputFile.open(outputFileName.data(), ifstream::out);
-	  outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
-	  MAP_FOR_ALL_ELEMS(subMapSelect2, unsigned int, unsigned int, width, count) {
-	    outputFile << count << SPACES << width << endl;
-	  } END_FOR;
-	  outputFile.close();
+	  _WRITE_TABLE(outputFileName, "#COUNT", "INPUTS", subMapSelect2, 
+		     unsigned int, unsigned int);
 	} END_FOR;
       }
     }
@@ -321,74 +403,60 @@ void DesignWriteStats(Design& myDesign)
   /* Write cell width analysis                              */ 
   /**********************************************************/
   {
-    ofstream outputFile;
     /* Width of standard cells */
-    string outputFileName;
     outputFileName = DesignDir + "/" + "DesignStandardCell" + "WidthAnalysis" + ".txt";
-    outputFile.open(outputFileName.data(), ifstream::out);
-    unsigned int count;
-    outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
-    MAP_FOR_ALL_ELEMS(widthStdRanges, unsigned int, unsigned int, width, count) {
-      outputFile << count << SPACES << width << endl;
-    } END_FOR;
-    outputFile.close();
+    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", widthStdRanges, unsigned int, 
+		 unsigned int);
 
     /* Width of macro cells */
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "WidthAnalysis" + ".txt";
-    outputFile.open(outputFileName.data(), ifstream::out);
-    outputFile << "#COUNT" << SPACES << "WIDTH" << endl;	  
-    MAP_FOR_ALL_ELEMS(widthMacroRanges, unsigned int, unsigned int, width, count) {
-      outputFile << count << SPACES << width << endl;
-    } END_FOR;
-    outputFile.close();
+    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", widthMacroRanges, unsigned int, 
+		 unsigned int);
   }
 
   /**********************************************************/
   /* Write cell height analysis                             */ 
   /**********************************************************/
   {
-    ofstream outputFile;
-    string outputFileName;
     /* Height of standard cells */
     outputFileName = DesignDir + "/" + "DesignStandardCell" + "HeightAnalysis" + ".txt";
-    outputFile.open(outputFileName.data(), ifstream::out);
-    outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
-    MAP_FOR_ALL_ELEMS(heightStdRanges, unsigned int, unsigned int, height, count) {
-      outputFile << count << SPACES << height << endl;
-    } END_FOR;
-    outputFile.close();
+    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", heightStdRanges, unsigned int, 
+		 unsigned int);
 
     /* Height of macro cells */
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "HeightAnalysis" + ".txt";
-    outputFile.open(outputFileName.data(), ifstream::out);
-    outputFile << "#COUNT" << SPACES << "HEIGHT" << endl;	  
-    MAP_FOR_ALL_ELEMS(heightMacroRanges, unsigned int, unsigned int, height, count) {
-      outputFile << count << SPACES << height << endl;
-    } END_FOR;
-    outputFile.close();
+    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", heightMacroRanges, unsigned int, 
+		 unsigned int);
   }
 
   /**********************************************************/
   /* Write cell area analysis                               */ 
   /**********************************************************/
   {
-    ofstream outputFile;
-    string outputFileName;
+    /* Area of standard cells */
     outputFileName = DesignDir + "/" + "DesignStandardCell" + "AreaAnalysis" + ".txt";
-    outputFile.open(outputFileName.data(), ifstream::out);
-    outputFile << "#COUNT" << SPACES << "AREA" << endl;	  
-    MAP_FOR_ALL_ELEMS(areaStdRanges, unsigned int, unsigned int, area, count) {
-      outputFile << count << SPACES << area << endl;
-    } END_FOR;
-    outputFile.close();
-
+    _WRITE_TABLE(outputFileName, "#COUNT", "AREA", areaStdRanges, unsigned int, 
+		 unsigned int);
+    /* Area of macro cells */
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "AreaAnalysis" + ".txt";
-    outputFile.open(outputFileName.data(), ifstream::out);
-    outputFile << "#COUNT" << SPACES << "AREA" << endl;	  
-    MAP_FOR_ALL_ELEMS(areaMacroRanges, unsigned int, unsigned int, area, count) {
-      outputFile << count << SPACES << area << endl;
-    } END_FOR;
-    outputFile.close();
+    _WRITE_TABLE(outputFileName, "#COUNT", "AREA", areaMacroRanges, unsigned int, 
+		 unsigned int);
+  }
+
+  /**********************************************************/
+  /* Write aspect ratio analysis                            */ 
+  /**********************************************************/
+  {
+    /* 
+       For aspect ratios of macros, a height-wise ordering is required. 
+       This is because there is no point in comparing two macros who have
+       the same aspect ratio of the. However for now we will only 
+       be doing a direct recording and outputting.
+    */
+    /* Aspect ration of macro cells */
+    outputFileName = DesignDir + "/" + "DesignMacroCell" + "AspectRatioAnalysis" + ".txt";
+    _WRITE_TABLE(outputFileName, "#COUNT", "ASPECT_RATIO", aspectRatioAllMacroRanges, 
+		 double, unsigned int);
   }
 }
 

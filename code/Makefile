@@ -13,7 +13,12 @@ export CFLAGS
 
 LFLAGS= 
 
-OFILE=the_exec
+ifeq ($(MAKECMDGOALS), debug)
+	OFILE=the_exec-g
+else
+	OFILE=the_exec
+endif
+
 
 CC=g++
 
@@ -33,6 +38,6 @@ COMPILE_ALL: $(SRCDIRS)
 	done	
 
 GEN_EXEC: main.cxx
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx -o the_exec -I $(INCLUDE_DIR) 
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx -o $(OFILE) -I $(INCLUDE_DIR) 
 
 debug: COMPILE_ALL GEN_EXEC
