@@ -93,6 +93,10 @@ foreach my $key1 (sort { $a <=> $b}  keys %firstHash) {
 
 # For each of the sorted files,
 # read the table and write it out to PDF
+my $pdfFname = $benchmarkName . "NumInputOutputData" . ".pdf";
+my $pdf  = PDF::API2->new(-file => $pdfFname);
+$pdf->mediabox(595,842);
+
 foreach $fname (@sortedFileNames) {
     $fullName = $analysisDir . "/" . $fname;
     open my $info, $fullName or die "Could not open $fullName: $!";
@@ -129,43 +133,62 @@ foreach $fname (@sortedFileNames) {
 	    die "Garbage found in analysis files. Redo analysis for $benchmarkName";
 	}
     }
-    my $pdfFname;
-    if ($fname =~ /([a-z | A-Z | 0-9]+).txt/) {
-	$pdfFname = $1 . ".pdf";
-    } else {
-	die "Unable to generate PDF file";
-    }
     my $data = \@col1Values;
-    my $pdf  = PDF::API2->new(-file => $pdfFname);
-    my $pdftable = new PDF::Table;
-
-    $pdf->mediabox(595,842);
     my $page = $pdf->page;
-    my $fnt = $pdf->corefont('Arial',-encoding => 'latin1'); 
     my $txt = $page->text;
+
+    my $fnt = $pdf->corefont('Arial',-encoding => 'latin1'); 
     $txt->textstart;
     $txt->font($fnt, 20);
     $txt->textend;
-    $pdftable->table(
-	# required params
-	$pdf,
-	$page,
-	$data,
-	x => 50,
-	w => 495,
-	start_y => 750,
-	next_y  => 700,
-	start_h => 300,
-	next_h  => 500,
+    close $info;
+}
+$pdf->saveas("$pdfFname");
+$pdf->end();
+
+# Process files that are inputs and outputs 
+
+# Add a table to the existing PDF 
+sub addTableToPDF {
+    $pdf = $_[0];
+    $page = $_[1]
+    $titleRow = $_[1];
+    $valueRows = $_[2];
+
+    my $pdfTable = new PDF::Table;
+
+    # table Variables
+    my $xOfUpperLeftCorner;
+    my $tableWidth;
+    my $y
+    ($end_page, $pages_spanned, $table_bot_y) = $pdftable->table($pdf, $page, $data,
+		     x => $xOfUpperLeftCorner, 
+		     w => $tableWidth,
+		     start_y => $yPosFirstPage, next_y => $yPosNewPage,
+		     start_h => $heightFirstPage, next_h=> $heightNewPage,
+		     # OPTIONAL PARAMS
+		     max_word_length=>$maxWordLength, # add a space after $MaxWordLength symbols  
+		     padding=>$cellPadding, padding_top =>$cellTopPadding, 
+		     padding_right=>$cellRightPadding, padding_left=>$cellLeftPadding,
+		     padding_bottom=>$cellBottomPadding,
+		     border=>$borderSize, border_color=>$borderColor,
+		     horizontal_borders=>$horizontalBorders, # defaults to 1
+		     vertical_borders=>$verticalBorders, # defaults to 1
+		     font=>$pdf->corefont("$tableFont", -encoding => "utf8"),
+		     font_size=>$tableFontSize, font_color_odd=>$tableOddFontColor, font_color_even=>$tableEvenFontColor,
+		     background_color_odd=>$tableBackgroundColorOdd, background_color_even=>$tableBackgroundColorEven,
+		     new_page_func => $codeRef,
+		     header_props=> $hdrProps,
+		     column_props=> $colProps,
+		     cell_props=> $rowProps);
+		     
 	# some optional params
 	padding => 5,
 	padding_right => 10,
 	background_color_odd  => "gray",
 	background_color_even => "lightblue", #cell background color for even rows
 	);
-    $pdf->saveas("$pdfFname");
-    $pdf->end();
-    close $info;
+
+    my $pdftable = new PDF::Table;    
 }
-# Process files that are inputs and outputs 
 
