@@ -3,16 +3,36 @@
 # Packages to use
 use PDF::API2;
 use PDF::Table;
+use PDF::TextBlock;
+
 #use strict; 
 #use warnings FATAL => 'all';
-@INC{"Table.pm"};
+
+# Global variables for table properties
+my $pageHeight = 800;
+my $pageWidth = 550;
+my $spaceBetweenObjs = 20;
+my $topMargin = 20;
+my $botMargin = 20;
+my $numObjsFirstPage=0;
+my $totalNumPages=1;
+
+# PDF file variables
+# For each of the sorted files,
+# read the table and write it out to PDF
+#my $pdfFname = $benchmarkName . "NumInputOutputData" . ".pdf";
+my $pdfFname = "out.pdf";
+my $pdf  = PDF::API2->new(-file => $pdfFname);
+$pdf->mediabox('Letter');
+my $page = $pdf->page;
+my $tableYStart = $pageHeight;
+my $numPages;
 
 sub addTableToPDF {
     $pdf = $_[0];
     $page = $_[1];
     $beginYPos = $_[2];
     $data = $_[3];
-
 
     my $pdfTable = new PDF::Table;
 
@@ -26,7 +46,7 @@ sub addTableToPDF {
 	font => $pdf->corefont($headerFontName, -encoding => "utf8"),
 	font_size => 11,
 	bg_color => 'darkgray',
-	repeat => 1,
+	repeat => 0,
     };
 
     # Table spanning function
@@ -35,7 +55,7 @@ sub addTableToPDF {
     # back to the module.
     # The returned page must be a page object created with the 
     # the PDF::API2 page method();
-    my $codeRef = $pdf->page;
+    # my $codeRef = $pdf->page;
 
     # Properties of columns
     # Reference to array of hashes
@@ -63,40 +83,56 @@ sub addTableToPDF {
     # between header row cell formating, header formating will win.
     # It is an array reference with arrays of hash references
     my $cellProps = [ [ {},],];
-    # Example:
-    #  [
-    #   [
-    #    {
-    # Row1 cell1
-    #     background_color => '#FFFFFF',
-    #     font_color       => 'black',
-    #    },
-    #    {
-    # Row1 cell2
-    #    },
-    #   ],
-    #   [,
-    #   {},
-    #   ],
-    # ];
     
-    my $end_page;
-    my $pages_spanned;
-    my $table_bot_y;
+    # If the next table Y start is less than 
+    # botMargin + minCellHeight add another page
+    my $bottomSpaceForTwoRows = 40;
+    my $leverage = $botMargin + $spaceBetweenObjs + $bottomSpaceForTwoRows;
+    if ($beginYPos <= $leverage) {
+	$page = $pdf->page;
+	$totalNumPages++;
+	$numObjsFirstPage=0;
+	$beginYPos = $pageHeight;
+    }
+    my $imgYPos = $beginYPos;
+    my $imgPage = $page;
 
     # table Variables
-    my $xOfUpperLeftCorner = 20;
-    my $tableWidth = 500;
-    my $yPosFirstPage = $beginYPos; # Initial Y position on the first page
-    my $yPosNewPage = 800; # Y position on every successive page
-    my $heightFirstPage = 500; # Height of the table;
-    my $heightNewPage = 500; # Height of the table in every new page;
+    my $xOfUpperLeftCorner = 50;
+    my $tableWidth = 200;
+    my $yPosFirstPage;# Initial Y position on the first page
+    if ($numObjsFirstPage == 0) {
+	# While drawing the first table
+	$yPosFirstPage = $beginYPos - $topMargin;
+    } else {
+	# While drawing other tables in the new page
+	$yPosFirstPage = $beginYPos - $spaceBetweenObjs;
+    }
+    # Question of num objects for a new page does not arise
+    # as the new page itself is being created by the table
+    # subroutine.
+    my $yPosNewPage = $pageHeight - $topMargin;
+
+    my $heightFirstPage; # Height of the table in the first page;
+    if ($numObjsFirstPage == 0) {
+	# While drawing the first table
+	$heightFirstPage = $beginYPos - $topMargin -$botMargin;
+    } else {
+	# While drawing other tables in the new page
+	$heightFirstPage = $beginYPos - $spaceBetweenObjs - $botMargin;
+    }
+
+    # Question of num objects for a new page does not arise
+    # as the new page itself is being created by the table
+    # subroutine.
+    $heightNewPage = $pageHeight - $topMargin - $botMargin; 
+
     my $maxWordLength = 20; # Maximum number of symbols after which a space should be inserted
-    my $cellPadding = 2; # Padding on all sides of a cell;
-    my $cellTopPadding = 2; # Top padding of all cells. Setting this over-rides the original cell padding value
-    my $cellLeftPadding = 2; # Top padding of all cells. Setting this over-rides the original cell padding value
-    my $cellRightPadding = 2; #Top padding of all cells. Setting this over-rides the original cell padding value
-    my $cellBottomPadding = 2; # Top padding of all cells. Setting this over-rides the original cell padding value
+    my $cellPadding = 5; # Padding on all sides of a cell;
+    my $cellTopPadding = 5; # Top padding of all cells. Setting this over-rides the original cell padding value
+    my $cellLeftPadding = 5; # Top padding of all cells. Setting this over-rides the original cell padding value
+    my $cellRightPadding = 5; #Top padding of all cells. Setting this over-rides the original cell padding value
+    my $cellBottomPadding = 5; # Top padding of all cells. Setting this over-rides the original cell padding value
     my $borderSize = 1; # default is 1, use 0 for no borders
     my $borderColor = 'black'; # Indicates what color the table border should be;
                                # Select various colors from 'red', 'black', 'yellow', 'gray', 
@@ -110,8 +146,8 @@ sub addTableToPDF {
     my $tableFontSize = 11; # Font size of the table
     my $tableOddFontColor = 'black'; # Odd row font color
     my $tableEvenFontColor = 'black'; # Even row font color
-    my $tableOddBackgroundColor = 'lightblue'; # Odd row background color
-    my $tableEvenBackgroundColor= 'lightgray'; # Even row background color
+    my $tableOddBackgroundColor = 'lightred'; # Odd row background color
+    my $tableEvenBackgroundColor= 'lightblue'; # Even row background color
     my $font = $pdf->corefont($tableFontName, -encoding => "utf8");
     my $colProps = [ 
 	{
@@ -121,78 +157,88 @@ sub addTableToPDF {
 	];
 	
     my $pdftable = new PDF::Table;
-    ($end_page, $pages_spanned, $table_bot_y) = $pdftable->table($pdf, $page, $data,
+    my ($end_page, $pages_spanned, $table_bot_y) = $pdftable->table($pdf, $page, $data,
 		     x => $xOfUpperLeftCorner, 
 		     w => $tableWidth,
 		     start_y => $yPosFirstPage, next_y => $yPosNewPage,
 		     start_h => $heightFirstPage, next_h=> $heightNewPage,
 		     # OPTIONAL PARAMS
-		     max_word_length=>$maxWordLength, # add a space after $MaxWordLength symbols  
-		     padding=>$cellPadding, padding_top =>$cellTopPadding, 
-		     padding_right=>$cellRightPadding, padding_left=>$cellLeftPadding,
-		     padding_bottom=>$cellBottomPadding,
-		     border=>$borderSize, border_color=>$borderColor,
-		     horizontal_borders=>$horizontalBorders, # defaults to 1
-		     vertical_borders=>$verticalBorders, # defaults to 1
 		     font=>$font,
+ 		     padding=>$cellPadding,
 		     font_size=>$tableFontSize, font_color_odd=>$tableOddFontColor, font_color_even=>$tableEvenFontColor,
 		     background_color_odd=>$tableOddBackgroundColor, background_color_even=>$tableEvenBackgroundColor,
-#		     new_page_func => $codeRef,
 		     header_props=> $hdrProps,
 		     column_props=> $colProps,
-#		     cell_props=> $cellProps,
 	);
-    return ($end_page, $pages_spanned, $table_bot_y);
+    # Add optional params for the table if required:
+    # max_word_length=>$maxWordLength, # add a space after $MaxWordLength symbols  
+    # padding=>$cellPadding, padding_top =>$cellTopPadding, 
+    # padding_right=>$cellRightPadding, padding_left=>$cellLeftPadding,
+    # padding_bottom=>$cellBottomPadding,
+    # border=>$borderSize, border_color=>$borderColor,
+    # horizontal_borders=>$horizontalBorders, # defaults to 1
+    # vertical_borders=>$verticalBorders, # defaults to 1
+    # cell_props=> $cellProps,    
+    # new_page_func => $codeRef,
+    $numObjsFirstPage = 1;
+
+    return ($end_page, $pages_spanned, $table_bot_y, $imgPage, $imgYPos);
 }
 
 # Add text block to existing PDF
 sub addTxtBlockToPDF {
     $pdf = $_[0];
     $page = $_[1];
-    $data = $_[2];
+    $beginYPos = $_[2];
+    $data = $_[3];
+
+    my $bottomSpaceForTwoRows = 40;
+    my $leverage = $botMargin + $spaceBetweenObjs + $bottomSpaceForTwoRows;
+    if ($beginYPos <= $leverage) {
+	$page = $pdf->page;
+	$totalNumPages++;
+	$numObjsFirstPage=0;
+	$beginYPos = $pageHeight;
+    } else {
+	$beginYPos = $beginYPos - $spaceBetweenObjs;
+    }    
+    my $blockFontName = "Arial-bold";
+    my $font = {
+        b => PDF::TextBlock::Font->new({
+	    pdf  => $pdf,
+	    font => $pdf->corefont($blockFontName, -encoding => 'latin1'),
+	    fillcolor => '#ff0000', 
+				       }),
+    };
+    my $fontSize = 11;
+    my $tb  = PDF::TextBlock->new({
+	pdf  => $pdf,
+	page => $page,
+	y => $beginYPos,
+	fonts => $font,
+        fontsize => $fontSize,
+    });
+
+    $tb->text($data);
     
-    my $xOfUpperLeftCorner = 20; # Specify the coordinate from 0 of the 
-                                 # left edge of the block
-    my $yPosFirstLine = 20; # Specify the y position of the first line
-    my $blockWidth = 100; # Width of the text block
-    my $blockHeight = 500; # Height of the text block
-    my $blockFontName = "Helvetica"; # Name of the font to be used in the block
-    my $blockFontSize = 11; # Font size of the block 
-    my $blockAlignment = "left"; # "left|right|center|justify|fulljustify"
-    my $blockHangingIndent = 0; #
+    my ($endw, $ypos, $overflow) = $tb->apply;    
 
-    my $blockParSpace = 5; # Optional vertical space before the first paragraph;
-    my $blockFirstLineIndent; # Optional indent of the first line
-    my $blockFirstParagraphIndent; # Optional indent of the first paragraph
-    my $blockIndent = 0; # Optional indent of text to every non first line
-
-    my $txt = $pdf->text;
-    my $pdftable = new PDF::Table;
-
-    my ($width_of_last_line, $ypos_of_last_line, $left_over_text);
-    ($width_of_last_line, $ypos_of_last_line, $left_over_text) = $pdftable->text_block(
-	$txt,
-	$data,
-	#X,Y - coordinates of upper left corner
-	x        => $xOfUpperLeftCorner,	
-	y        => $yPosFirstLine,
-        w        => $blockWidth,
-        h        => $blockHeight,
-
-        #OPTIONAL PARAMS
-	font     => $pdf->corefont($blockFontName, -encoding => "utf8"),
-	lead     => $blockFontSize,
-	align    => $blockAlignment,
-	hang     => $blockHangingIndent,
-	# Only one of the subsequent 3params can be given. 
-	# They override each other.-parspace is the weightest
-	parspace => $blockParSpace,
-        #flindent => $optional_indent_of_first_line,
-	#fpindent => $optional_indent_of_first_paragraph,
-	indent   => $blockIndent,
-	);
+    return ($page, $endw, $ypos, $overflow);
 }
 
+# sub routine to add an image to 
+# a PDF file
+sub addImgToPDF {
+    $pdf = $_[0];
+    $page = $_[1];
+    $xPos = $_[2];
+    $yPos = $_[3];
+    $imgFileName = $_[4];
+
+    my $image=$pdf->image_png($imgFileName);
+    my $gfx=$page->gfx;
+    $gfx->image($image, $xPos, ($yPos - $topMargin), ($pageWidth - $xPos), 200);
+}
 
 # Check if the number of arguments provided as 
 # input are correct;
@@ -238,7 +284,6 @@ print "Proceeding with analysis.\n";
 # Filter files which are analysis of number of outputs 
 # and inputs
 @inputOutputAnalysisFiles = grep /[0-9]+Outputs[0-9]+Inputs/, @files;
-print "Count".$#inputOutputAnalysisFiles."\n";
 
 # Strip directory name from each file
 @strippedFileNames=@inputOutputAnalysisFiles;
@@ -281,56 +326,28 @@ foreach my $key1 (sort { $a <=> $b}  keys %firstHash) {
     }
 }
 
-# For each of the sorted files,
-# read the table and write it out to PDF
-my $pdfFname = $benchmarkName . "NumInputOutputData" . ".pdf";
-my $pdf  = PDF::API2->new(-file => $pdfFname);
-$pdf->mediabox(595,842);
-my $page = $pdf->page;
 
-my $pagedata = [
-    ["COUNT", "DATA", "COL3", "COL4", "COL5"],
-    ["1", "2", "3", "4", "5"],
-    ["3", "4", "5", "6", "7"],
-    ];
-
-my $numPages;
-my $boty = 800;
 my $tableGap = 10;
-($page, $numPages, $boty) = addTableToPDF($pdf, $page, $boty, $pagedata);
-$boty = $boty - $tableGap;
-$pagedata = [
-    ["COUNT", "MYCOL", "COL", "COL", "COL"],
-    ["1", "2", "3", "4", "5"],
-    ["3", "4", "5", "6", "7"],
-    ];
+my $count = 0;
 
-($page, $numPages, $boty) = addTableToPDF($pdf, $page, $boty, $pagedata);
-$boty = $boty - $tableGap;
-$pagedata = [
-    ["COUNT", "MYCOL", "COL", "COL", "COL"],
-    ["1", "2", "3", "4", "5"],
-    ["3", "4", "5", "6", "7"],
-    ];
+print "Reading ".scalar(@sortedFileNames)." files for PDF creation\n";
 
-($page, $numPages, $boty) = addTableToPDF($pdf, $page, $boty, $pagedata);
-
-#addTableToPDF($pdf, $page, $pagedata);
-#addTableToPDF($pdf, $page, $pagedata);
-
-$pdf->saveas("$pdfFname");
-$pdf->end();
-
-exit;
-foreach $fname (@sortedFileNames) {
-    $fullName = $analysisDir . "/" . $fname;
+foreach my $fname (@sortedFileNames) {
+    my $fullName = $analysisDir . "/" . $fname;
     open my $info, $fullName or die "Could not open $fullName: $!";
-    $titleRead = 0;
     my ($col1Title, $col2Title, $title);
     my @col1Values;
     my ($total, $mean, $variance, $stdDev);
+    my $numDataAdded = 0;
+    my $graph = 0;
+    my $titleRead = 0;
+
     while (my $line = <$info>) {
-	if ($titleRead == 0) {
+	if ($line =~ /^#TITLE[ \t]+(.*)/) { 
+	    $title = $1;	    
+	} elsif ($line =~ /^#GRAPH.*/) {
+	    $graph = 1;
+	} elsif ($titleRead == 0) {
 	    if ($line =~ /^#(.*)[ \t]+(.*)/) {
 		$col1Title = $1;
 		$col2Title = $2;
@@ -346,6 +363,7 @@ foreach $fname (@sortedFileNames) {
 	    push(@col2Values, $1);
 	    push(@col2Values, $2);
 	    push(@col1Values, \@col2Values);
+	    $numDataAdded++;
 	} elsif ($line =~ /^#TOTAL[ \t]+(\d+)/) {
 	    $total = $1;
 	} elsif ($line =~ /^#STD DEVIATION[ \t]+(\d+)/) {
@@ -358,15 +376,58 @@ foreach $fname (@sortedFileNames) {
 	    die "Garbage found in analysis files. Redo analysis for $benchmarkName";
 	}
     }
-    my $data = \@col1Values;
-    my $txt = $page->text;
-
-    my $fnt = $pdf->corefont('Arial',-encoding => 'latin1'); 
-    $txt->textstart;
-    $txt->font($fnt, 20);
-    $txt->textend;
     close $info;
+    my $data;
+    my ($endw, $overflow);
+    my ($xPos, $yPos);
+    my $imgYPos;
+    my $imgPage;
+
+    if (defined $title) {
+	# Add the title text for the particular file
+	($page, $endw, $tableYStart, $overflow, $img) = addTxtBlockToPDF($pdf, $page, $tableYStart, $title);    
+    }
+    
+    $data = \@col1Values;
+    # Add the table which has count vs param for the particular file
+    ($page, $numPages, $tableYStart, $imgPage, $imgYPos) = addTableToPDF($pdf, $page, $tableYStart, $data, $imgPage, $imgYPos);
+
+    if ($numDataAdded > 1) {
+	# Add the statistical data 
+	$data = "TOTAL COUNT = " . $total . "\n";
+	$data = $data . "STD DEVIATION = " . $stdDev . "\n";
+	$data = $data . "MEAN = " . $mean . "\n";
+	$data = $data . "VARIANCE = " . $variance;
+	($page, $endw, $tableYStart, $overflow) = addTxtBlockToPDF($pdf, $page, $tableYStart, $data);    
+	
+	# Generate the image using gnuplot and 
+	@args = ("cp", $fullName, "./plot.dat");
+	(system(@args) == 0) or die "copying source data file failed";
+	@args = ("./plotscript.gpl");
+	(system(@args) == 0) or die "system @args failed: $?";
+	@args = ("cp", "./figure.png", $fullName . ".png");
+	(system(@args) == 0) or die "copying result png file failed";
+	
+	# Add image to the PDF file
+	my $imgFileName = "./figure.png";
+	my $xPos = 270;
+	my $yPos = $imgYPos;
+	addImgToPDF($pdf, $imgPage, $xPos, $yPos, $imgFileName);
+    }
+
+    if ($numPages > 2) {
+	# If the page span was more than 1, it means 
+	# additional pages were added. If n pages is the page
+	# span, then n - 1 additional pages were added to add the
+	# tabular data.
+	$totalNumPages += $numPages - 1;
+    }
+    $count++;
+#    if ($count == 1) {
+#	last;
+#    }
 }
 
+print "Total of $count tables generated\n";
 $pdf->saveas("$pdfFname");
 $pdf->end();
