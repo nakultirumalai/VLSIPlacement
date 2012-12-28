@@ -59,7 +59,7 @@ class Pin {
   int PinGetId(void);
   int PinGetXOffset(void);
   int PinGetYOffset(void);
-  char PinGetDirection(void);
+  char PinGetDirection(void) const;
   string PinGetName(void) const;
   Cell& PinGetParentCell(void);
   Net& PinGetNet(void);

@@ -55,9 +55,9 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   } END_FOR;
 
   this->Name = DesignName;
+  DesignReadRows();
   DesignReadCells();
   DesignReadNets();
-  DesignReadRows();
   DesignReadCellPlacement();
   
   DesignFile.close();
@@ -368,7 +368,7 @@ Design::DesignFileReadRows(ifstream& file)
 void
 Design::DesignReadRows()
 {
-  int NumRows;
+  int numRows;
   string Msg;
 
   DesignOpenFile(DesignSclFileName);
@@ -380,9 +380,60 @@ Design::DesignReadRows()
   cout << Msg << endl;
 }
 
+void
+Design::DesignFileReadOneFixedCell(ifstream &file)
+{
+  string line;
+  string cellName, orient, fixed;
+  unsigned int xPos, yPos;
+  
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    istringstream stream(line, istringstream::in);
+    stream >> cellName;
+    stream >> xPos;
+    stream >> yPos;
+    stream >> orient;
+    stream >> orient;
+    stream >> fixed;
+
+    Cell *thisCell;
+    
+  }
+}
+
+void
+Design::DesignFileReadFixedCells(ifstream& file)
+{
+  string Property, Value;
+  unsigned int numRows;
+  int idx, netCount;
+
+  for (idx = 0; idx < NUM_FIXED_CELL_PROPERTIES; idx++) {
+    do {
+      DesignProcessProperty(file, Property, Value);
+    } while (Property == "" && !file.eof());
+    if (Property == NUM_ROWS_PROPERTY) {
+      numRows = atoi(Value.data());
+    }
+  }
+  for (idx = 0; idx < numRows; idx++) {
+    DesignFileReadOneCellPos(file);
+  }
+}
+
 void 
 Design::DesignReadCellPlacement()
 {
+  int numFixed;
+  string Msg;
+  
+  DesignOpenFile(DesignPlFileName);
+  DesignFileReadHeader(DesignFile);
+  DesignFileReadFixedCells(DesignFile);
+  
+  Msg += "Loaded " + getStrFromInt(NumFixedCells) + " cells positions";
 }
-
-

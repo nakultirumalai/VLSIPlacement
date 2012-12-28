@@ -24,6 +24,7 @@ class Cell {
   char orientation;
   bool terminalCell;
   bool isCluster;
+  bool isMacro;
   vector<Pin*> Pins;
 
  public:
@@ -47,11 +48,12 @@ class Cell {
   void CellSetWidth(int);
   void CellSetOrientation(int);
   void CellSetName(const string &);
-  void CellSetTerminal(const bool& terminalCell);
   void CellSetNumPins(int);
   void CellSetNumInPins(int);
   void CellSetNumOutPins(int);
-  void CellSetIsCluster(const bool& isCluster);
+  void CellSetIsTerminal(const bool&);
+  void CellSetIsCluster(const bool&);
+  void CellSetIsMacro(const bool &);
   void CellAddPin(Pin *);
   
   /* Get functions */
@@ -63,8 +65,9 @@ class Cell {
   int CellGetNumPins(void);
   int CellGetOrientation(void);
   unsigned int CellGetArea(void);
-  bool CellGetTerminal(void);
-  bool CellGetIsCluster(void);
+  bool CellIsTerminal(void);
+  bool CellIsCluster(void);
+  bool CellIsMacro(void);
   string CellGetName(void);
   vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);

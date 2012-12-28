@@ -7,6 +7,7 @@
 # include <commonIter.h>
 # include <assert.h>
 # include <math.h>
+# include <limits.h>
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1

@@ -46,3 +46,25 @@ Design::DesignFileReadHeader(ifstream& file)
   }
 }
 
+bool
+DesignCellIsStdCell(Design &myDesign, Cell &thisCell)
+{
+  map<unsigned int, unsigned int>rowHeights;
+  int rowHeight, cellHeight;
+  bool stdCell;
+
+  rowHeights = myDesign.DesignGetRowHeights();
+  rowHeight = myDesign.DesignGetSingleRowHeight();
+  cellHeight = thisCell.CellGetHeight();
+  stdCell = false;
+
+  if (rowHeight == -1) {
+    if (rowHeights.find(cellHeight) != rowHeights.end()) {
+      stdCell = true;
+    }
+  } else if (cellHeight == rowHeight) {
+    stdCell = true;
+  }
+
+  return (stdCell);
+}

@@ -35,6 +35,7 @@
 # define NUM_NODE_PROPERTIES 2
 # define NUM_NET_PROPERTIES 2
 # define NUM_ROW_PROPERTIES 1
+# define NUM_FIXED_CELL_PROPERTIES 0
 
 /*******************************************************************************
   Type of placement defined in the AUX file
@@ -91,6 +92,7 @@ class Design {
   unsigned int NumCells;
   unsigned int NumNets;
   unsigned int NumPhysRows;
+  unsigned int NumFixedCells;
 
   unsigned int singleRowHeight;
 
@@ -153,4 +155,5 @@ class Design {
 extern void DesignCreateGraph(Design&, HyperGraph&);
 extern void DesignCollectStats(Design& myDesign);
 extern void DesignWriteStats(Design& myDesign);
+extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
 #endif

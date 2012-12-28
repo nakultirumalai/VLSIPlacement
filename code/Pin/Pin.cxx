@@ -64,7 +64,7 @@ Pin::PinGetYOffset(void)
 }
 
 char
-Pin::PinGetDirection(void)
+Pin::PinGetDirection(void) const
 {
   return (dir);
 }

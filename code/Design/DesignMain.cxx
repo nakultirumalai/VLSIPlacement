@@ -50,6 +50,9 @@ Design::DesignGetRowHeights()
 void
 Design::DesignAddOneCellToDesignDB(Cell *newCell)
 {
+  if (!DesignCellIsStdCell((*this),*newCell)) {
+    (*newCell).CellSetIsMacro(true);
+  }
   DesignCells[(*newCell).CellGetName()] = newCell;
   this->NumCells++;
 }
@@ -141,5 +144,4 @@ Design::Design(string DesignPath, string DesignName)
 
   DesignReadDesign(DesignPath, DesignName);
 }
-
 

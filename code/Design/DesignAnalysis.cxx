@@ -28,7 +28,7 @@ BEEN READ TO A HYPERGRAPH
 /***********************************************************
  Macro for printing out tables into files. Data is always 
 ***********************************************************/
-# define _WRITE_TABLE(opFileName, Col1Title, Col2Title,			\
+# define _WRITE_TABLE(opFileName, dataTitle, Col1Title, Col2Title,	\
 		      mapToUse, keyType, dataType)			\
   {									\
   keyType key;								\
@@ -36,6 +36,7 @@ BEEN READ TO A HYPERGRAPH
   vector<double> statData;						\
   ofstream opFile;							\
   opFile.open(opFileName.data(), ifstream::out);			\
+  opFile << dataTitle << endl;						\
   opFile << Col1Title << SPACES << Col2Title << endl;			\
   totalCount = 0;							\
   MAP_FOR_ALL_ELEMS(mapToUse, keyType, dataType, key, count) {		\
@@ -45,8 +46,10 @@ BEEN READ TO A HYPERGRAPH
   opFile << "#TOTAL" << SPACES << totalCount << endl;			\
   statData = DesignGetStatData<keyType>(mapToUse);                      \
   opFile << "#MEAN" << SPACES << statData[0] << endl; 			\
-  opFile << "#VARIANCE" << SPACES << statData[1] << endl;		\
-  opFile << "#STD DEVIATION" << SPACES << statData[2] << endl;		\
+  opFile << "#MAX" << SPACES << statData[1] << endl; 			\
+  opFile << "#MIN" << SPACES << statData[2] << endl; 			\
+  opFile << "#VARIANCE" << SPACES << statData[3] << endl;		\
+  opFile << "#STD DEVIATION" << SPACES << statData[4] << endl;		\
   opFile.close();							\
   }									
 
@@ -107,24 +110,69 @@ unsigned int numNets;
  NET DETAILS
 *****************************************************/
 /* Structure for storing net details using a single map */
-typedef struct NetStats {
+typedef struct NetStatsStruct {
   /* Total pin count on each net */
   unsigned int pinCount;
   /* Total number of drivers on the net */
   unsigned int driverCount;
-  /* Total number of sinks on the net */
-  unsigned int sinkCount;
+  /* Total number of load on the net */
+  unsigned int loadCount;
   /* Total number of end points which are std cells */
   unsigned int stdCellEps;
   /* Total number of end points which are macro cells */
   unsigned int macroCellEps;
-  /* Pointer to the actual net */
+  /* Total number of end points which are on terminal cells */
+  unsigned int terminalCellEps;
+  /* Pointer to the actual net */  
   Net *NetPtr;
-} NetStats;
+} NetStatsStruct;
+
+typedef struct NetStatsStruct * NetStat;
+typedef struct NetStatsStruct NetStatsStruct;
 
 /* For each net: */
 /* Number of pins on the net indexed by net name?*/
-map<string, NetStats> netAnalysis;
+vector<NetStat> netStats;
+
+NetStat
+createNetStats()
+{
+  NetStat thisNetStat = new NetStatsStruct();  
+  thisNetStat->pinCount = 0;
+  thisNetStat->driverCount = 0;
+  thisNetStat->loadCount = 0;
+  thisNetStat->stdCellEps = 0;
+  thisNetStat->macroCellEps = 0;
+  thisNetStat->terminalCellEps = 0;
+  return (thisNetStat);
+}
+
+void
+updateNetStats(Net *NetPtr, NetStat thisNetStat)
+{
+  Net &thisNet = (*NetPtr);
+  Pin *PinPtr;
+
+  _ASSERT("Net status pointer is NULL", (thisNetStat == NIL(NetStat)));
+  _ASSERT("Net pointer is NULL", (NetPtr == NIL(Net *)));
+  
+  thisNetStat->pinCount = thisNet.NetGetPinCount();
+  thisNetStat->driverCount = thisNet.NetGetDriverCount();
+  thisNetStat->loadCount = thisNet.NetGetLoadCount();
+
+  NET_FOR_ALL_PINS(thisNet, PinPtr) {
+    Cell &cellOfPin = (*PinPtr).PinGetParentCell();
+        if (cellOfPin.CellIsTerminal()) {
+          thisNetStat->terminalCellEps++;
+    }
+    if (cellOfPin.CellIsMacro()) {
+      thisNetStat->macroCellEps++;
+    } else {
+      thisNetStat->stdCellEps++;
+    }
+  } NET_END_FOR;
+  thisNetStat->NetPtr = NetPtr;
+}
 
 void 
 updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) 
@@ -172,17 +220,25 @@ void
 DesignCollectStats(Design& myDesign)
 {
   Cell* CellPtr;
+  Net* NetPtr;
   string Name;
   unsigned int numOutPins;
-  unsigned int width, height, area, rowHeight;
+  unsigned int width, height, area;
   unsigned int max_area, max_width, max_height;
   bool stdCell;
-  map<unsigned int, unsigned int>rowHeights;
 
-  /* Get the row heights from design */
-  rowHeights = myDesign.DesignGetRowHeights();
-  rowHeight = myDesign.DesignGetSingleRowHeight();
+  /*******************************************************
+   COLLECT NET INFORMATION
+  *******************************************************/
+  DESIGN_FOR_ALL_NETS(myDesign, Name, NetPtr) {
+    NetStat thisNetStat = createNetStats();
+    updateNetStats(NetPtr, thisNetStat);
+    netStats.push_back(thisNetStat);
+  } DESIGN_END_FOR;
 
+  /*******************************************************
+   COLLECT CELL INFORMATION
+  *******************************************************/
   /* Collect stats for number of outputs standard cells */
   DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
     stdCell = false;
@@ -195,14 +251,7 @@ DesignCollectStats(Design& myDesign)
     if (width > max_width) max_width = width;
     if (height > max_height) max_height = height;
 
-    if (rowHeight == -1) {
-      if (rowHeights.find(height) != rowHeights.end()) {
-	stdCell = true;
-      }
-    } else if (height == rowHeight) {
-      stdCell = true;
-    }
-    
+    stdCell = DesignCellIsStdCell(myDesign, *CellPtr);
     if (stdCell == false) {
       if (widthMacroRanges.find(width) != widthMacroRanges.end()) {
 	widthMacroRanges[width]++;
@@ -255,8 +304,6 @@ DesignCollectStats(Design& myDesign)
       }
     }
   } DESIGN_END_FOR;
-  
-  
 }
 
 /* 
@@ -278,9 +325,9 @@ DesignGetStatData(map<dataType, unsigned int> table)
 {
   vector<double> rtv;
   unsigned int count, totalCount;
-
   dataType param;
   double param_mean;
+  double max, min;
   double variance;
   double stdDev;
   double diff;
@@ -290,6 +337,8 @@ DesignGetStatData(map<dataType, unsigned int> table)
   stdDev = 0;
   totalCount = 0;
   diff = 0;
+  max = 0;
+  min = INT_MAX;
 
   for(typename map<dataType,unsigned int>::iterator iter = table.begin(); 
       iter != table.end(); ++iter) {		
@@ -297,7 +346,14 @@ DesignGetStatData(map<dataType, unsigned int> table)
     count = (unsigned int)iter->second;
     param_mean += (param * count);
     totalCount += count;
-  } 
+    if (max < param) {
+      max = (double)param;
+    } 
+    if (min > param) {
+      min = (double)param;
+    }
+  }
+
   param_mean /= totalCount;
 
   for(typename map<dataType,unsigned int>::iterator iter = table.begin(); 
@@ -313,6 +369,8 @@ DesignGetStatData(map<dataType, unsigned int> table)
   stdDev = sqrt(variance);
   
   rtv.push_back(param_mean);
+  rtv.push_back(max);
+  rtv.push_back(min);
   rtv.push_back(variance);
   rtv.push_back(stdDev);
 
@@ -348,6 +406,28 @@ void DesignWriteStats(Design& myDesign)
   {
     outputFileName = DesignDir + "/" + DesignName + "Analysis.txt";
   }
+  /***********************************/
+  /* Write net statistics            */
+  /***********************************/
+  {
+    NetStat thisNetStat;
+    outputFileName = DesignDir + "/" + "DesignNetStats.txt";
+    outputFile.open(outputFileName.data(), ifstream::out);
+    outputFile << "#TITLE Net statistics for the design" << endl;
+    outputFile << "#NETNAME"  << SPACES << "PINCOUNT" << SPACES << "DRIVERCOUNT" << SPACES;
+    outputFile << "LOADCOUNT" << SPACES << "STDCELLEPS" << SPACES << "MACROCELLEPS" << SPACES;
+    outputFile << "TERMINALCELLEPS" << endl;
+    VECTOR_FOR_ALL_ELEMS(netStats, NetStat, thisNetStat) {
+      outputFile << (*(thisNetStat->NetPtr)).NetGetName() << SPACES;
+      outputFile << thisNetStat->pinCount << SPACES;
+      outputFile << thisNetStat->driverCount << SPACES;
+      outputFile << thisNetStat->loadCount << SPACES;
+      outputFile << thisNetStat->stdCellEps << SPACES;
+      outputFile << thisNetStat->macroCellEps << SPACES;
+      outputFile << thisNetStat->terminalCellEps;
+      outputFile << endl;
+    } END_FOR;
+  }
     
   /***********************************/
   /* Write output to top level table */
@@ -360,8 +440,11 @@ void DesignWriteStats(Design& myDesign)
       if (mapSelect.size() > 0) {
 	outputFileName = DesignDir + "/" + "DesignCell" + 
 	  getStrFromInt(i) + "Outputs" +  + ".txt";
-	_WRITE_TABLE(outputFileName, "#COUNT", "INPUTS", mapSelect, 
-		     unsigned int, unsigned int);
+	string mainTitle = "";
+	mainTitle = mainTitle + "#TITLE " + "Table for cells with ";
+	mainTitle = mainTitle + getStrFromInt(i) + " outputs";
+	_WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "INPUTS", 
+		     mapSelect, unsigned int, unsigned int);
       }
     }
   }
@@ -386,14 +469,21 @@ void DesignWriteStats(Design& myDesign)
 	  map<unsigned int, unsigned int>& subMapSelect1 = myVector[PROP_HEIGHT];
 	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
 	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Heights" + ".txt";
-	  _WRITE_TABLE(outputFileName, "#COUNT", "INPUTS", subMapSelect1, 
-		     unsigned int, unsigned int);
+	  string mainTitle = "";
+	  mainTitle = mainTitle + "#TITLE " + "Table for height distribution of cells with " + getStrFromInt(i);
+	  mainTitle = " Outputs and " + getStrFromInt(numInputs) + "Inputs";
+	  _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "HEIGHTS", subMapSelect1, 
+		       unsigned int, unsigned int);
 
 	  map<unsigned int, unsigned int>& subMapSelect2 = myVector[PROP_WIDTH];
 	  outputFileName = DesignDir + "/" + "DesignCell" + getStrFromInt(i) + 
 	    "Outputs" + getStrFromInt(numInputs) + "Inputs" + "Widths" + ".txt";
-	  _WRITE_TABLE(outputFileName, "#COUNT", "INPUTS", subMapSelect2, 
-		     unsigned int, unsigned int);
+
+	  mainTitle = "";
+	  mainTitle = mainTitle + "#TITLE " + "Table for width distribution of cells with " + getStrFromInt(i);
+	  mainTitle = " Outputs and " + getStrFromInt(numInputs) + "Inputs";
+	  _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "WIDTHS", subMapSelect2, 
+		       unsigned int, unsigned int);
 	} END_FOR;
       }
     }
@@ -403,14 +493,18 @@ void DesignWriteStats(Design& myDesign)
   /* Write cell width analysis                              */ 
   /**********************************************************/
   {
+    string mainTitle = "";
     /* Width of standard cells */
     outputFileName = DesignDir + "/" + "DesignStandardCell" + "WidthAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", widthStdRanges, unsigned int, 
+    mainTitle = mainTitle + "#TITLE " + "Table for width distribution of STD cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "WIDTH", widthStdRanges, unsigned int, 
 		 unsigned int);
 
     /* Width of macro cells */
+    mainTitle = "";
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "WidthAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", widthMacroRanges, unsigned int, 
+    mainTitle = mainTitle + "#TITLE " + "Table for width distribution of MACRO cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "WIDTH", widthMacroRanges, unsigned int, 
 		 unsigned int);
   }
 
@@ -418,14 +512,18 @@ void DesignWriteStats(Design& myDesign)
   /* Write cell height analysis                             */ 
   /**********************************************************/
   {
+    string mainTitle = "";
     /* Height of standard cells */
     outputFileName = DesignDir + "/" + "DesignStandardCell" + "HeightAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", heightStdRanges, unsigned int, 
+    mainTitle = mainTitle + "#TITLE " + "Table for height distribution of STD cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "HEIGHT", heightStdRanges, unsigned int, 
 		 unsigned int);
 
     /* Height of macro cells */
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "HeightAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "WIDTH", heightMacroRanges, unsigned int, 
+    mainTitle = "";
+    mainTitle = mainTitle + "#TITLE " + "Table for height distribution of MACRO cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "HEIGHT", heightMacroRanges, unsigned int, 
 		 unsigned int);
   }
 
@@ -433,13 +531,18 @@ void DesignWriteStats(Design& myDesign)
   /* Write cell area analysis                               */ 
   /**********************************************************/
   {
+    string mainTitle = "";
     /* Area of standard cells */
     outputFileName = DesignDir + "/" + "DesignStandardCell" + "AreaAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "AREA", areaStdRanges, unsigned int, 
+    mainTitle = mainTitle + "#TITLE " + "Table for area distribution of STD cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "AREA", areaStdRanges, unsigned int, 
 		 unsigned int);
+
     /* Area of macro cells */
+    mainTitle = "";
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "AreaAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "AREA", areaMacroRanges, unsigned int, 
+    mainTitle = mainTitle + "#TITLE " + "Table for area distribution of MACRO cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "AREA", areaMacroRanges, unsigned int, 
 		 unsigned int);
   }
 
@@ -447,15 +550,17 @@ void DesignWriteStats(Design& myDesign)
   /* Write aspect ratio analysis                            */ 
   /**********************************************************/
   {
+    string mainTitle = "";
     /* 
        For aspect ratios of macros, a height-wise ordering is required. 
        This is because there is no point in comparing two macros who have
        the same aspect ratio of the. However for now we will only 
        be doing a direct recording and outputting.
     */
-    /* Aspect ration of macro cells */
+    /* Aspect ratio of macro cells */
     outputFileName = DesignDir + "/" + "DesignMacroCell" + "AspectRatioAnalysis" + ".txt";
-    _WRITE_TABLE(outputFileName, "#COUNT", "ASPECT_RATIO", aspectRatioAllMacroRanges, 
+    mainTitle = mainTitle + "#TITLE " + "Table for aspect ratio distribution of MACRO cells";
+    _WRITE_TABLE(outputFileName, mainTitle, "#COUNT", "ASPECT_RATIO", aspectRatioAllMacroRanges, 
 		 double, unsigned int);
   }
 }

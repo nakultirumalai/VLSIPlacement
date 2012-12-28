@@ -4,6 +4,7 @@
 /* Macros for iteration over pins and cells of the net */
 
 # define NET_FOR_ALL_CELLS(Net, CellPtr) \
+  {						\
   map<string, Pin*> NetPins = Net.NetGetPins();	\
   map<string, Pin*>::iterator mapIter; \
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
@@ -11,12 +12,13 @@
     CellPtr = &ParentCell;
 
 # define NET_FOR_ALL_PINS(Net, PinPtr) \
+  {						\
   map<string, Pin*> NetPins = Net.NetGetPins();	\
   map<string, Pin*>::iterator mapIter; \
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
-    Pin = (Pin *)(mapIter->second);
+    PinPtr = mapIter->second;
 
-# define NET_END_FOR }
+# define NET_END_FOR }}
   
 # endif
 

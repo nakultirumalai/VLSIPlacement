@@ -44,7 +44,7 @@ Cell::CellSetName(const string& cellName)
 }
 
 void
-Cell::CellSetTerminal(const bool& terminalCell)
+Cell::CellSetIsTerminal(const bool& terminalCell)
 {
   this->terminalCell = terminalCell;
 }
@@ -71,6 +71,12 @@ void
 Cell::CellSetIsCluster(const bool& isCluster)
 {
   this->isCluster = isCluster;
+}
+
+void
+Cell::CellSetIsMacro(const bool & isMacro) 
+{
+  this->isMacro = isMacro;
 }
 
 void
@@ -178,15 +184,21 @@ Cell::CellGetArea(void)
 }
 
 bool 
-Cell::CellGetTerminal(void)
+Cell::CellIsTerminal(void)
 {
   return (terminalCell);
 }
 
 bool
-Cell::CellGetIsCluster(void)
+Cell::CellIsCluster(void)
 {
   return (isCluster);
+}
+
+bool
+Cell::CellIsMacro(void)
+{
+  return (isMacro);
 }
 
 string
@@ -227,8 +239,9 @@ Cell::Cell(int Height, int Width)
   CellSetWidth(Width);
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
-  CellSetTerminal(false);
+  CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -241,8 +254,9 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetName(Name);
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
-  CellSetTerminal(false);
+  CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -256,7 +270,9 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetName(Name);
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
-  CellSetTerminal(terminalCell);
+  CellSetIsTerminal(terminalCell);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -268,7 +284,9 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetWidth(Width);
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
-  CellSetTerminal(false);
+  CellSetIsTerminal(false);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -281,7 +299,9 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetName(Name);
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
-  CellSetTerminal(false);
+  CellSetIsTerminal(false);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -295,7 +315,9 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetName(Name);
   CellSetNumPins(0);
   CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
-  CellSetTerminal(terminalCell);
+  CellSetIsTerminal(terminalCell);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -307,7 +329,9 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation)
   CellSetWidth(Width);
   CellSetNumPins(0);
   CellSetOrientation(Orientation);
-  CellSetTerminal(false);
+  CellSetIsTerminal(false);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -320,7 +344,9 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string N
   CellSetName(Name);
   CellSetNumPins(0);
   CellSetOrientation(Orientation);
-  CellSetTerminal(false);
+  CellSetIsTerminal(false);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -333,7 +359,9 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string N
   CellSetName(Name);
   CellSetNumPins(0);
   CellSetOrientation(Orientation);
-  CellSetTerminal(terminalCell);
+  CellSetIsTerminal(terminalCell);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
