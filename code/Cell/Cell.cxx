@@ -32,9 +32,9 @@ Cell::CellSetWidth(int Width)
 }
 
 void
-Cell::CellSetOrientation(int Orientation)
+Cell::CellSetOrientation(objOrient orient)
 {
-  orientation = Orientation;
+  this->orient = orient;
 }
 
 void
@@ -77,6 +77,12 @@ void
 Cell::CellSetIsMacro(const bool & isMacro) 
 {
   this->isMacro = isMacro;
+}
+
+void
+Cell::CellSetIsFixed(const bool & isFixed) 
+{
+  this->isFixed = isFixed;
 }
 
 void
@@ -171,10 +177,10 @@ Cell::CellGetNumPins(void)
   return (CellGetNumPins(PIN_DIR_ALL));
 }
 
-int 
+objOrient 
 Cell::CellGetOrientation(void)
 {
-  return (orientation);
+  return (orient);
 }
 
 unsigned int
@@ -199,6 +205,12 @@ bool
 Cell::CellIsMacro(void)
 {
   return (isMacro);
+}
+
+bool
+Cell::CellIsFixed(void)
+{
+  return (isFixed);
 }
 
 string
@@ -238,10 +250,11 @@ Cell::Cell(int Height, int Width)
   CellSetHeight(Height);
   CellSetWidth(Width);
   CellSetNumPins(0);
-  CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
+  CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -253,10 +266,11 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetWidth(Width);
   CellSetName(Name);
   CellSetNumPins(0);
-  CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
+  CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -269,10 +283,11 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetWidth(Width);
   CellSetName(Name);
   CellSetNumPins(0);
-  CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
+  CellSetOrientation(N);
   CellSetIsTerminal(terminalCell);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -283,10 +298,11 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetHeight(Height);
   CellSetWidth(Width);
   CellSetNumPins(0);
-  CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
+  CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -298,10 +314,11 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetWidth(Width);
   CellSetName(Name);
   CellSetNumPins(0);
-  CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
+  CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
@@ -314,15 +331,16 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetWidth(Width);
   CellSetName(Name);
   CellSetNumPins(0);
-  CellSetOrientation(CELL_ORIENTATION_ZERO_DEG);
+  CellSetOrientation(N);
   CellSetIsTerminal(terminalCell);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
 
-Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation)
+Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
 {
   CellSetPos(Xpos, Ypos);
   CellSetHeight(Height);
@@ -332,11 +350,12 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation)
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
 
-Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string Name)
+Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name)
 {
   CellSetPos(Xpos, Ypos);
   CellSetHeight(Height);
@@ -347,11 +366,12 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string N
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
 
-Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string Name, bool terminalCell)
+Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name, bool terminalCell)
 {
   CellSetPos(Xpos, Ypos);
   CellSetHeight(Height);
@@ -362,6 +382,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, char Orientation, string N
   CellSetIsTerminal(terminalCell);
   CellSetIsCluster(false);
   CellSetIsMacro(false);
+  CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
 }
+

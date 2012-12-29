@@ -1,3 +1,5 @@
+# ifndef COMMON_H
+# define COMMON_H
 # include <iostream>
 # include <fstream>
 # include <sstream>
@@ -25,9 +27,18 @@
 
 using namespace std;
 
+/*******************************************************************************
+  Type definitions common for all objects
+*******************************************************************************/
+typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;
+
 void common_error(string);
 void common_message(string);
 
 string getStrFromInt(int);
 
 double dround(double);
+
+objOrient getOrientationFromStr(string);
+
+#endif

@@ -31,7 +31,7 @@ PhysRow::PhysRowSetSiteSpacing(unsigned int siteSpacing)
 }
 
 void
-PhysRow::PhysRowSetSiteOrientation(siteOrientation orient)
+PhysRow::PhysRowSetSiteOrientation(objOrient orient)
 {
   this->siteOrient = orient;
 }
@@ -72,7 +72,7 @@ PhysRow::PhysRowGetCoordinate(void)
   return coordinate;
 }
 
-siteOrientation
+objOrient
 PhysRow::PhysRowGetSiteOrientation(void)
 {
   return (siteOrient);
@@ -205,7 +205,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
 
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
 		 unsigned int siteWidth, unsigned int siteSpacing, 
-		 siteOrientation siteOrient, siteSymmetry symmetry)
+		 objOrient siteOrient, siteSymmetry symmetry)
 {
   PhysRowSetType(orient);
   PhysRowSetCoordinate(coordinate);
@@ -263,23 +263,6 @@ PhysRowGetRowTypeFromStr(string rowType)
   
   return (retVal);
 }	    
-
-siteOrientation 
-PhysRowGetSiteOrientationFromStr(string siteOrient)
-{
-  siteOrientation retVal;
-  
-  if (siteOrient == "N" || siteOrient == "1") retVal = N;
-  else if (siteOrient == "E") retVal = E;
-  else if (siteOrient == "S") retVal = S;
-  else if (siteOrient == "W") retVal = W;
-  else if (siteOrient == "FN") retVal = FN;
-  else if (siteOrient == "FE") retVal = FE;
-  else if (siteOrient == "FS") retVal = FS;
-  else if (siteOrient == "FW") retVal = FW;
-  
-  return (retVal);
-}
 
 siteSymmetry 
 PhysRowGetSiteSymmetryFromStr(string symmetry)

@@ -117,6 +117,7 @@ Design::DesignInit()
   NumCells = 0;
   NumNets = 0;
   NumPhysRows = 0;
+  NumFixedCells = 0;
 
   singleRowHeight = -1;
 

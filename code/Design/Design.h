@@ -84,6 +84,11 @@
 # define ZERO '0'
 # define NINE '9'
 
+/*******************************************************************************
+  Type definitions for the design class
+*******************************************************************************/
+
+
 class Design {
  private:
   map<string, Cell*> DesignClusters;
@@ -122,6 +127,9 @@ class Design {
   void DesignFileReadOneRow(ifstream &);
   void DesignFileReadNets(ifstream &);
   void DesignFileReadRows(ifstream &);
+  void DesignFileReadOneFixedCell(ifstream &file);
+  void DesignFileReadFixedCells(ifstream& file);
+
   void DesignOpenFile(string);
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);

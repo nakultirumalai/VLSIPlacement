@@ -29,6 +29,23 @@ getStrFromInt(int thisInt)
   return oss.str();
 }
 
+objOrient
+getOrientationFromStr(string orient)
+{
+  objOrient retVal;
+
+  if (orient == "N" || orient == "1") retVal = N;
+  else if (orient == "E") retVal = E;
+  else if (orient == "S") retVal = S;
+  else if (orient == "W") retVal = W;
+  else if (orient == "FN") retVal = FN;
+  else if (orient == "FE") retVal = FE;
+  else if (orient == "FS") retVal = FS;
+  else if (orient == "FW") retVal = FW;
+
+  return (retVal);
+}
+
 /* Rounds a double/float to a single decimal point */
 double dround(double thisDouble)
 {

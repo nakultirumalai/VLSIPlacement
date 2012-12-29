@@ -39,14 +39,15 @@ typedef enum {VERTICAL,HORIZONTAL} rowOrientation;
    the default orientation is "vertically
    and face up" - N (North). Rotate by 90deg 
    clockwise to get E, S and W, flip to get 
-   FN, FE, FS and FW. (think of a dial) */
-typedef enum {N=1, E, S, W, FN, FE, FS, FW} siteOrientation;
+   FN, FE, FS and FW. (think of a dial) 
+*/
+
 typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;
 
 class PhysRow {
  private:
   int coordinate;
-  siteOrientation siteOrient;
+  objOrient siteOrient;
   siteSymmetry siteSym;
   rowOrientation rowType;
   unsigned int height;
@@ -64,7 +65,7 @@ class PhysRow {
   PhysRow(rowOrientation, unsigned int);
   PhysRow(rowOrientation, int, unsigned int);
   PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int);
-  PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int, siteOrientation, 
+  PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int, objOrient, 
 	  siteSymmetry);
   PhysRow(rowOrientation, int, unsigned int, unsigned int, unsigned int, unsigned int, 
 	  map<unsigned int, unsigned int>);
@@ -75,7 +76,7 @@ class PhysRow {
 
   /* Get functions */
   int PhysRowGetCoordinate(void);
-  siteOrientation PhysRowGetSiteOrientation(void);
+  objOrient PhysRowGetSiteOrientation(void);
   siteSymmetry PhysRowGetSiteSymmetry(void);
   rowOrientation PhysRowGetType(void);
   unsigned int PhysRowGetHeight(void);
@@ -88,7 +89,7 @@ class PhysRow {
   /* Set functions */
   void PhysRowSetCoordinate(int);
   void PhysRowSetType(rowOrientation);
-  void PhysRowSetSiteOrientation(siteOrientation);
+  void PhysRowSetSiteOrientation(objOrient);
   void PhysRowSetSiteSymmetry(siteSymmetry);
   void PhysRowSetHeight(unsigned int);
   void PhysRowSetSiteWidth(unsigned int);
@@ -103,8 +104,6 @@ class PhysRow {
 };
 
 extern rowOrientation PhysRowGetRowTypeFromStr(string);
-extern siteOrientation PhysRowGetSiteOrientationFromStr(string);
 extern siteSymmetry PhysRowGetSiteSymmetryFromStr(string);
-
 # endif
 

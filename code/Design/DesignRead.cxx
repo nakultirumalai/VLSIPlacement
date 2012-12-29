@@ -262,7 +262,7 @@ Design::DesignFileReadOneRow(ifstream &file)
   int rowCoordinate, subRowOrigin;
   unsigned int height, siteWidth, siteSpacing, numSites;
   rowOrientation rowType;
-  siteOrientation siteOrient;
+  objOrient siteOrient;
   siteSymmetry symmetry;
   vector<int> subRowOrigins;
   vector<unsigned int> numSitesForSubRows;
@@ -305,7 +305,7 @@ Design::DesignFileReadOneRow(ifstream &file)
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowProperty;
-      siteOrient = PhysRowGetSiteOrientationFromStr(rowProperty);
+      siteOrient = getOrientationFromStr(rowProperty);
     } else if (rowProperty == ROW_SITE_SYMMETRY) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
@@ -386,6 +386,7 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
   string line;
   string cellName, orient, fixed;
   unsigned int xPos, yPos;
+  bool cellFixed;
   
   while (!file.eof()) {
     getline(file, line);
@@ -398,10 +399,34 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
     stream >> yPos;
     stream >> orient;
     stream >> orient;
-    stream >> fixed;
+
+    cellFixed = false;
+    if (stream >> fixed) {
+      if (fixed == "/FIXED") {
+	cellFixed = true;
+      }
+    }
 
     Cell *thisCell;
-    
+    objOrient orientation;
+
+    thisCell = DesignGetNode(cellName);
+    if (thisCell == NIL(Cell *)) {
+      _ASSERT_TRUE("Cell not found in design database!");
+    }
+    (*thisCell).CellSetXpos(xPos);
+    (*thisCell).CellSetYpos(yPos);
+
+    orientation = N;
+    if (orient != "") {
+      orientation = 
+	getOrientationFromStr(orient);
+    }
+    (*thisCell).CellSetOrientation(orientation);
+    (*thisCell).CellSetIsFixed(cellFixed);
+    if (cellFixed) {
+      NumFixedCells++;
+    }
   }
 }
 
@@ -421,7 +446,7 @@ Design::DesignFileReadFixedCells(ifstream& file)
     }
   }
   for (idx = 0; idx < numRows; idx++) {
-    DesignFileReadOneCellPos(file);
+    DesignFileReadOneFixedCell(file);
   }
 }
 
