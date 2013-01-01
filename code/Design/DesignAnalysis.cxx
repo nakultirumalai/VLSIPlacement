@@ -216,6 +216,27 @@ updateCellOutputs(Cell *CellPtr, unsigned int numOutputs)
   mapSelect1[numInPins] = mapSelect1[numInPins] + 1;
 }
 
+/********************************************************************
+  Comparison function used by the sorting algorithm to sort a 
+  vector of objects of type netStats. Modifying the comparison 
+  function results in different sorted orders.
+********************************************************************/
+bool
+netDataSortCmpFunc(vector<NetStat>& thisVector, unsigned int idx1, 
+		   unsigned int idx2) 
+{
+  NetStat& stat1 = thisVector[idx1];
+  NetStat& stat2 = thisVector[idx2];
+  bool result;
+  
+  result = false;
+  if (stat1->loadCount < stat2->loadCount) {
+    result = true;
+  }
+  
+  return (result);
+}
+
 void
 DesignCollectStats(Design& myDesign)
 {
@@ -235,6 +256,9 @@ DesignCollectStats(Design& myDesign)
     updateNetStats(NetPtr, thisNetStat);
     netStats.push_back(thisNetStat);
   } DESIGN_END_FOR;
+
+  MergeSortVector<NetStat>(netStats, 0, (netStats.size() - 1),
+			   (cmp_func1)netDataSortCmpFunc);
 
   /*******************************************************
    COLLECT CELL INFORMATION

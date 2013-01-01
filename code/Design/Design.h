@@ -5,6 +5,7 @@
 # include <Pin.h>
 # include <HyperGraph.h>
 # include <PhysRow.h>
+# include <Sort.h>
 
 # ifndef DESIGN_H
 # define DESIGN_H
