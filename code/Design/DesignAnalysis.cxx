@@ -105,6 +105,7 @@ unsigned int numMacroCells;
 unsigned int numFixedMacros;
 unsigned int numTerminalCells;
 unsigned int numNets;
+unsigned int numPhysRows;
 
 /*****************************************************
  NET DETAILS
@@ -221,20 +222,12 @@ updateCellOutputs(Cell *CellPtr, unsigned int numOutputs)
   vector of objects of type netStats. Modifying the comparison 
   function results in different sorted orders.
 ********************************************************************/
-bool
-netDataSortCmpFunc(vector<NetStat>& thisVector, unsigned int idx1, 
-		   unsigned int idx2) 
-{
-  NetStat& stat1 = thisVector[idx1];
-  NetStat& stat2 = thisVector[idx2];
-  bool result;
-  
-  result = false;
-  if (stat1->loadCount < stat2->loadCount) {
+bool sortCmpFunc (NetStat obj1, NetStat obj2) {
+  bool result = false;
+  if (obj1->loadCount > obj2->loadCount) {
     result = true;
   }
-  
-  return (result);
+  return result;
 }
 
 void
@@ -248,6 +241,20 @@ DesignCollectStats(Design& myDesign)
   unsigned int max_area, max_width, max_height;
   bool stdCell;
 
+
+  /*******************************************************
+   COLLECT TOP LEVEL INFORMATION
+  *******************************************************/
+  numCells = myDesign.DesignGetNumCells();
+  numFixedCells = myDesign.DesignGetNumFixedCells();
+  numNets = myDesign.DesignGetNumNets();
+  numPhysRows = myDesign.DesignGetNumPhysRows();
+
+  numStdCells = 0;
+  numMacroCells = 0;
+  numFixedMacros = 0;
+  numTerminalCells = 0;
+
   /*******************************************************
    COLLECT NET INFORMATION
   *******************************************************/
@@ -256,9 +263,7 @@ DesignCollectStats(Design& myDesign)
     updateNetStats(NetPtr, thisNetStat);
     netStats.push_back(thisNetStat);
   } DESIGN_END_FOR;
-
-  MergeSortVector<NetStat>(netStats, 0, (netStats.size() - 1),
-			   (cmp_func1)netDataSortCmpFunc);
+  sort(netStats.begin(),netStats.end(), sortCmpFunc);
 
   /*******************************************************
    COLLECT CELL INFORMATION
@@ -275,8 +280,16 @@ DesignCollectStats(Design& myDesign)
     if (width > max_width) max_width = width;
     if (height > max_height) max_height = height;
 
+    if ((*CellPtr).CellIsTerminal()) {
+      numTerminalCells++;
+    }
+
     stdCell = DesignCellIsStdCell(myDesign, *CellPtr);
     if (stdCell == false) {
+      numMacroCells++;
+      if ((*CellPtr).CellIsFixed()) {
+	numFixedMacros++;
+      }
       if (widthMacroRanges.find(width) != widthMacroRanges.end()) {
 	widthMacroRanges[width]++;
       } else {
@@ -311,6 +324,7 @@ DesignCollectStats(Design& myDesign)
 	subMapSelect[aspectRatio] = 1;
       }
     } else {
+      numStdCells++;
       if (widthStdRanges.find(width) != widthStdRanges.end()) {
 	widthStdRanges[width]++;
       } else {
@@ -401,6 +415,7 @@ DesignGetStatData(map<dataType, unsigned int> table)
   return (rtv);
 }
 
+
 void DesignWriteStats(Design& myDesign)
 {
   string DesignName, DesignDir;
@@ -424,12 +439,28 @@ void DesignWriteStats(Design& myDesign)
   } else if (result == -1) {
     cout << "Analysis directory could not be created as there are no permissions or it may already exist." << endl;
   }
-
+  /***********************************/
+  /* Write top level statistics      */
+  /***********************************/
+  {
+    outputFileName = DesignDir + "/" + DesignName + "Top.out";
+    outputFile.open(outputFileName.data(), ifstream::out);
+    outputFile << "Design Name                : " << DesignName << endl;
+    outputFile << "Number of nets             : " << numNets << endl;
+    outputFile << "Number of cells            : " << numCells << endl;
+    outputFile << "Number of standard cells   : " << numStdCells << endl;
+    outputFile << "Number of macro cells      : " << numMacroCells << endl;
+    outputFile << "Number of fixed macro cells: " << numFixedMacros << endl;
+    outputFile << "Number of terminal cells   : " << numTerminalCells << endl << endl;
+    outputFile << "Number of physical rows    : " << numPhysRows << endl;
+  }
+  
   /* Write a gnuplot file header */
   /* Write out main benchmark analysis file */
   {
     outputFileName = DesignDir + "/" + DesignName + "Analysis.txt";
   }
+
   /***********************************/
   /* Write net statistics            */
   /***********************************/

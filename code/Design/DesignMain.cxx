@@ -110,6 +110,46 @@ Design::DesignGetSingleRowHeight(void)
   return singleRowHeight;
 }
 
+unsigned int
+Design::DesignGetNumCells(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumCells;
+  
+  return (rtv);
+}
+
+unsigned int
+Design::DesignGetNumNets(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumNets;
+  
+  return (rtv);
+}
+
+unsigned int
+Design::DesignGetNumFixedCells(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumFixedCells;
+  
+  return (rtv);
+}
+
+unsigned int
+Design::DesignGetNumPhysRows(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumPhysRows;
+  
+  return (rtv);
+}
+
 void
 Design::DesignInit()
 {

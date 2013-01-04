@@ -12,9 +12,8 @@ bool default_cmp_func(vector<Type> &thisVector, unsigned int idx1, unsigned int 
   }
 }
 
-template<class Type, class funcPtrType> void
-DoMerge(vector<Type> &thisVector, int Left, int Mid, int Right,
-	funcPtrType this_func) 
+template<class Type, class funcPtr> void
+DoMerge(vector<Type> &thisVector, int Left, int Mid, int Right,	funcPtrType this_func) 
 {
   vector<Type> tempVector;
   int numElements = (Right - Left + 1);
@@ -54,38 +53,13 @@ DoMerge(vector<Type> &thisVector, int Left, int Mid, int Right,
   }
 }
 
-template<class Type> void 
-MergeSortVector(vector<Type> &thisVector, int Left, int Right, 
-		cmp_func1 this_func)
+template<class Type, class cmp_func> void 
+MergeSortVector(Type Left, Type Right, cmp_func this_func)
 {
   if (Left < Right) { 
     int Mid = ((Left + Right) / 2);
-    MergeSortVector<Type>(thisVector, Left, Mid);
-    MergeSortVector<Type>(thisVector, Mid + 1, Right);
-    DoMerge<Type, cmp_func1>(thisVector, Left, Mid, Right);
-  }
-}
-
-template<class Type> void 
-MergeSortVector(vector<Type> &thisVector, int Left, int Right, 
-		cmp_func2 this_func)
-{
-  if (Left < Right) { 
-    int Mid = ((Left + Right) / 2);
-    MergeSortVector<Type>(thisVector, Left, Mid);
-    MergeSortVector<Type>(thisVector, Mid + 1, Right);
-    DoMerge<Type, cmp_func2>(thisVector, Left, Mid, Right);
-  }
-}
-
-template<class Type> void 
-MergeSortVector(vector<Type> &thisVector, int Left, int Right, 
-		cmp_func3 this_func)
-{
-  if (Left < Right) { 
-    int Mid = ((Left + Right) / 2);
-    MergeSortVector<Type>(thisVector, Left, Mid);
-    MergeSortVector<Type>(thisVector, Mid + 1, Right);
-    DoMerge<Type, cmp_func3>(thisVector, Left, Mid, Right);
+    MergeSortVector<Type, cmp_func>(thisVector, Left, Mid, this_func);
+    MergeSortVector<Type, cmp_func>(thisVector, Mid + 1, Right, this_func);
+    DoMerge<Type, cmp_func>(thisVector, Left, Mid, Right);
   }
 }

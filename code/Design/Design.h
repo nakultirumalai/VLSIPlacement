@@ -156,6 +156,11 @@ class Design {
   string DesignGetPath() { }
 
   int DesignGetSingleRowHeight();
+  unsigned int DesignGetNumCells(void);
+  unsigned int DesignGetNumNets(void);
+  unsigned int DesignGetNumFixedCells(void);
+  unsigned int DesignGetNumPhysRows(void);
+
   map<unsigned int, unsigned int> DesignGetRowHeights();
   void DesignClusterCells(vector<Cell*>& CellSet);
   void DesignCollapseCluster(Cell& MasterCell);
