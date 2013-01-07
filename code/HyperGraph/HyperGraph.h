@@ -49,6 +49,10 @@ class HyperGraph {
   /* Internal function for inserting the Edge* type into 
      the hypergraph */
   unsigned int AddEdgeInt(void *, unsigned int);
+  /* Get all the node indices that are connected to the specified
+     node index */
+  vector<unsigned int> getConnectedIndices(unsigned int);
+
   /* Yet to be defined */
   unsigned int getNodeConnectivity(unsigned int);
   /* Given an edge index, return the weight of the edge */
@@ -111,6 +115,9 @@ class HyperGraph {
   bool nodeIsTop(unsigned int);
   bool nodeIsClusterParent(unsigned int);
   bool nodeIsClusterChild(unsigned int);
+
+  /* Public routines for help */
+  vector<void *> HyperGraphGetConnectedCells(void*);
 
   HyperGraph();
   ~HyperGraph();

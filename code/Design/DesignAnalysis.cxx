@@ -11,7 +11,6 @@ BEEN READ TO A HYPERGRAPH
 
 # define MAX_OUTPUTS 1000
 # define SPACES "   "
-# define MCOMMA ,
 /**************/
 
 /***********************************************************

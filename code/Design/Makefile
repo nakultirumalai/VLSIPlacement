@@ -3,7 +3,7 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-SRCFILES:=  DesignMain DesignUtils DesignRead DesignGraph DesignAnalysis
+SRCFILES:=  DesignMain DesignUtils DesignRead DesignGraph DesignAnalysis DesignCluster
 
 HFILES:= Design.h Cell.h
 HFILES:= $(addprefix $(INCLUDE_DIR)/, $(HFILES))

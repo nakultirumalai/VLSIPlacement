@@ -1,10 +1,10 @@
 # include <HyperGraph.h>
-# include <Cell.h>
 # include <Stat.h>
 
-unsigned int
-HyperGraph::AddNodeInt(void)
+unsigned int 
+HyperGraph::AddNodeInt()
 {
+
   unsigned int nodeIdx;
 
   Node *newNode = new Node();
@@ -17,6 +17,7 @@ HyperGraph::AddNodeInt(void)
   Nodes2Edges.push_back(vector<unsigned int> ());
   nodeConnectivity.push_back(0);
   nodeSetIsTop(nodeIdx);
+
   setDirty();
 
   return (nodeIdx);
@@ -25,10 +26,24 @@ HyperGraph::AddNodeInt(void)
 unsigned int 
 HyperGraph::AddNodeInt(void *object)
 {
+
   unsigned int nodeIdx;
 
-  nodeIdx = AddNodeInt();
+  Node *newNode = new Node();
+  nodeIdx = numNodes++;
+  (*newNode).NodeSetIdx(nodeIdx);
+  /* Create link in the map */
+  idx2Node[nodeIdx] = newNode;
+  /* Create an entry in the connectivity table 
+     for this object */
+  Nodes2Edges.push_back(vector<unsigned int> ());
+  nodeConnectivity.push_back(0);
+  nodeSetIsTop(nodeIdx);
+
+  (*newNode).NodeSetData(object);
   obj2idx[object] = nodeIdx;
+
+  setDirty();
 
   return (nodeIdx);
 }
@@ -102,6 +117,7 @@ HyperGraph::clusterNodes(vector<unsigned int>& nodeSet)
   if (result == true) {
     /* Begin clustering here */
     newNodeIdx = AddNodeInt();
+
     VECTOR_FOR_ALL_ELEMS(nodeSet, unsigned int, nodeIdx) {
       VECTOR_FOR_ALL_ELEMS((Nodes2Edges[nodeIdx]), unsigned int, edgeIdx) {
 	/* Remove nodeIdx from the map corresponding to edgeIdx */
@@ -412,5 +428,59 @@ HyperGraph::testClustering(void)
   } END_FOR;
   HyperGraphUnclusterNodes(listOfNodes);
   listOfNodes.clear();
+}
+
+vector<unsigned int> 
+HyperGraph::getConnectedIndices(unsigned int nodeIdx)
+{
+  vector<unsigned int> returnNodes;
+  vector<unsigned int> Edges;
+  map<unsigned int, unsigned int> EdgeNodeList;
+  unsigned int connectedEdgeIdx;
+  unsigned int connectedNodeIdx;
+  
+  /* Find the vector of edges that nodeIdx has connections to */
+  Edges = (this->Nodes2Edges)[nodeIdx];
+  /* Iterate over all the edges */
+  VECTOR_FOR_ALL_ELEMS(Edges, unsigned int, connectedEdgeIdx) {
+    /* Get the list of nodes that are connected to edge index 
+       connectedEdgeIdx */
+    EdgeNodeList = (this->Edges2Nodes)[connectedEdgeIdx];
+    /* Iterate over all keys of the EdgeNodeList map 
+       as this would give the list of nodes that are 
+       connected to the edge connectedEdgeIdx */
+    MAP_FOR_ALL_KEYS(EdgeNodeList, unsigned int, unsigned int, connectedNodeIdx) {
+      if (!nodeIsTop(connectedNodeIdx)) {
+	continue;
+      }
+      if (connectedNodeIdx == nodeIdx) {
+	continue;
+      }
+      returnNodes.push_back(connectedNodeIdx);
+    } END_FOR;
+  } END_FOR;
+  
+  return (returnNodes);
+}
+
+vector<void *> 
+HyperGraph::HyperGraphGetConnectedCells(void* cellPtr)
+{
+  unsigned int subjectIdx;
+  unsigned int resultIdx;
+  vector<unsigned int> connectedNodeIndices;
+  vector<void *> rtvCells;
+  Node *resultNode;
+  
+  subjectIdx = obj2idx[cellPtr];
+  connectedNodeIndices = getConnectedIndices(subjectIdx);
+  VECTOR_FOR_ALL_ELEMS(connectedNodeIndices, unsigned int, resultIdx) {
+    _ASSERT("Subject node index matches with the subject node index", 
+	    (resultIdx == subjectIdx));
+    resultNode = idx2Node[resultIdx];
+    rtvCells.push_back((*resultNode).NodeGetData());
+  } END_FOR;
+
+  return (rtvCells);
 }
 

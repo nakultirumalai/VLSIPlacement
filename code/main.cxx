@@ -2,6 +2,7 @@
 # include <Design.h>
 # include <HyperGraph.h>
 # include <Stat.h>
+
 # define MAX_ARGS 5
 
 HyperGraph& convertDesignToGraph(Design& thisDesign)
@@ -46,6 +47,11 @@ int main(int argc, char *argv[])
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     Design myDesign(designPath, designName);
+
+    HyperGraph &myGraph = convertDesignToGraph(myDesign);
+
+    myDesign.DesignClusterCells(myGraph);
+
     cout << "Netlist read successfully" << endl;
 
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
@@ -53,7 +59,7 @@ int main(int argc, char *argv[])
       DesignCollectStats(myDesign);
       DesignWriteStats(myDesign);
     }
-    //    HyperGraph &myGraph = convertDesignToGraph(myDesign);
+
     //myGraph.testClustering();
     //    cout << endl << "Graph construction complete" << endl;
 

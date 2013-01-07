@@ -30,12 +30,10 @@
   for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
     CellName = mapIter->first; \
     CellPtr = mapIter->second; \
-    if ((*CellPtr).CellGetHeight() > STD_CELL_HEIGHT) \
-      continue;				 \
-    if ((*CellPtr).CellGetTerminal())	 \
+    if (!DesignCellIsStdCell(Design, (*CellPtr))) \
+      continue;                                   \
+    if ((*CellPtr).CellIsCluster())		  \
       continue;
-
-
 
 # define DESIGN_END_FOR }}
   

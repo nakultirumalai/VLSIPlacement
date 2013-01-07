@@ -134,7 +134,8 @@ class Design {
   void DesignOpenFile(string);
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);
-
+  Cell *DesignClusterSpecifiedCells(vector<void *> listOfCells, 
+				    double aspectRatio);
  public:
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
@@ -162,7 +163,7 @@ class Design {
   unsigned int DesignGetNumPhysRows(void);
 
   map<unsigned int, unsigned int> DesignGetRowHeights();
-  void DesignClusterCells(vector<Cell*>& CellSet);
+  void DesignClusterCells(HyperGraph&);
   void DesignCollapseCluster(Cell& MasterCell);
 };
 
