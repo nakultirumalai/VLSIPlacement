@@ -23,8 +23,8 @@ void DesignWriteNodes(Design &myDesign)
   opFile.open(fileName.data(), ifstream::out);
   opFile << "UCLA nodes 1.0" << endl; 
   _WRITE_HEADER(opFile);
-  opFile << "NumNodes :              " << myDesign.DesignGetNumCells();
-  opFile << "NumTerminals :           " << myDesign.DesignGetNumTerminalCells();
+  opFile << "NumNodes :              " << myDesign.DesignGetNumCells() << endl;
+  opFile << "NumTerminals :           " << myDesign.DesignGetNumTerminalCells() << endl;
 
   DESIGN_FOR_ALL_CELLS(myDesign, cellName, cellPtr) {
     opFile << "        " << cellName << " " << (*cellPtr).CellGetWidth();
