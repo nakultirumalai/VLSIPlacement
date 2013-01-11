@@ -376,6 +376,7 @@ foreach my $fname (@sortedFileNames) {
 	    die "Garbage found in analysis files. Redo analysis for $benchmarkName";
 	}
     }
+
     close $info;
     my $data;
     my ($endw, $overflow);

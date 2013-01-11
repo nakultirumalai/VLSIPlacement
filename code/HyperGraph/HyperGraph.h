@@ -43,7 +43,6 @@ class HyperGraph {
   /* Private functions begin */
   /* Internal function for inserting the Node* type into 
      the hypergraph */
-  unsigned int AddNodeInt();
   unsigned int AddNodeInt(void *);
 
   /* Internal function for inserting the Edge* type into 
@@ -66,7 +65,7 @@ class HyperGraph {
   unsigned int getNewEdgeIdx(void);
 
   /* Internal function to cluster a set of nodes */
-  bool clusterNodes(vector<unsigned int> &);
+  bool clusterNodes(vector<unsigned int> &, void *);
   /* Internal function to uncluster */
   bool unclusterNode(unsigned int);
 
@@ -100,7 +99,8 @@ class HyperGraph {
   void HyperGraphAddEdge(vector<void *>&, void *, unsigned int);
 
   /* Cluster routines */
-  bool HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet);
+  bool HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet, 
+			      void*);
   bool HyperGraphUnclusterNodes(vector<unsigned int> nodeSet);
 
   /* Get routines */
@@ -118,6 +118,7 @@ class HyperGraph {
 
   /* Public routines for help */
   vector<void *> HyperGraphGetConnectedCells(void*);
+  bool HyperGraphClusterCells(vector<void *>, void*);
 
   HyperGraph();
   ~HyperGraph();

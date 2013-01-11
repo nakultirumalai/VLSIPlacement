@@ -7,6 +7,7 @@ Net::Net()
   NetSetPinCount(0);
   NetSetDriverCount(0);
   NetSetLoadCount(0);
+  NetSetIsUnderCluster(false);
 }
 
 Net::Net(int id)
@@ -16,6 +17,7 @@ Net::Net(int id)
   NetSetPinCount(0);
   NetSetDriverCount(0);
   NetSetLoadCount(0);
+  NetSetIsUnderCluster(false);
 }
 
 Net::Net(int id, const string& Name)
@@ -26,6 +28,7 @@ Net::Net(int id, const string& Name)
   NetSetPinCount(0);
   NetSetDriverCount(0);
   NetSetLoadCount(0);
+  NetSetIsUnderCluster(false);
 }
 
 void 
@@ -62,6 +65,12 @@ void
 Net::NetSetLoadCount(unsigned int loadCount)
 {
   this->loadCount = loadCount;
+}
+
+void
+Net::NetSetIsUnderCluster(const bool & isUnderCluster)
+{
+  this->isUnderCluster = isUnderCluster;
 }
 
 void
@@ -112,6 +121,12 @@ unsigned int
 Net::NetGetLoadCount(void)
 {
   return this->loadCount;
+}
+
+bool
+Net::NetIsUnderCluster(void)
+{
+  return (this->isUnderCluster);
 }
 
 map<string, Pin*>& Net::NetGetPins(void)

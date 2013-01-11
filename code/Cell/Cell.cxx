@@ -74,6 +74,12 @@ Cell::CellSetIsCluster(const bool& isCluster)
 }
 
 void
+Cell::CellSetIsClusterChild(const bool& isClusterChild)
+{
+  this->isClusterChild = isClusterChild;
+}
+
+void
 Cell::CellSetIsMacro(const bool & isMacro) 
 {
   this->isMacro = isMacro;
@@ -83,6 +89,12 @@ void
 Cell::CellSetIsFixed(const bool & isFixed) 
 {
   this->isFixed = isFixed;
+}
+
+void
+Cell::CellAddChildCell(Cell &thisCell)
+{
+  childCells.push_back(&thisCell);
 }
 
 void
@@ -202,6 +214,12 @@ Cell::CellIsCluster(void)
 }
 
 bool
+Cell::CellIsClusterChild(void)
+{
+  return (isClusterChild);
+}
+
+bool
 Cell::CellIsMacro(void)
 {
   return (isMacro);
@@ -242,6 +260,27 @@ Cell::CellGetPins(void)
   vector <Pin *> Pins = this->Pins;
   
   return (Pins);
+}
+
+vector<Cell *>
+Cell::CellGetChildCells(void)
+{
+  return (this->childCells);
+}
+
+Cell::Cell()
+{
+  CellSetPos(0, 0);
+  CellSetHeight(0);
+  CellSetWidth(0);
+  CellSetNumPins(0);
+  CellSetOrientation(N);
+  CellSetIsTerminal(false);
+  CellSetIsCluster(false);
+  CellSetIsMacro(false);
+  CellSetIsFixed(false);
+  CellSetNumInPins(0);
+  CellSetNumOutPins(0);
 }
 
 Cell::Cell(int Height, int Width) 

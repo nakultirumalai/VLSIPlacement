@@ -50,8 +50,10 @@ int main(int argc, char *argv[])
 
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
 
-    myDesign.DesignClusterCells(myGraph);
+    DesignWriteNodes(myDesign);
 
+    myDesign.DesignClusterCells(myGraph);
+    
     cout << "Netlist read successfully" << endl;
 
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;

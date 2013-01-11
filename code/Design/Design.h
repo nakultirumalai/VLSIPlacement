@@ -1,3 +1,6 @@
+# ifndef DESIGN_H
+# define DESIGN_H
+
 # include <stdlib.h>
 # include <common.h>
 # include <Cell.h>
@@ -6,9 +9,7 @@
 # include <HyperGraph.h>
 # include <PhysRow.h>
 # include <Sort.h>
-
-# ifndef DESIGN_H
-# define DESIGN_H
+# include <DesignIter.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -95,10 +96,13 @@ class Design {
   map<string, Cell*> DesignClusters;
   map<unsigned int, unsigned int>RowHeights;
 
+  HyperGraph *DesignGraphPtr;
+
   unsigned int NumCells;
   unsigned int NumNets;
   unsigned int NumPhysRows;
   unsigned int NumFixedCells;
+  unsigned int NumTerminalCells;
 
   unsigned int singleRowHeight;
 
@@ -156,10 +160,14 @@ class Design {
   string DesignGetName(void);
   string DesignGetPath() { }
 
+  void DesignSetGraph(HyperGraph& thisGraph);
+  HyperGraph& DesignGetGraph(void);
+
   int DesignGetSingleRowHeight();
   unsigned int DesignGetNumCells(void);
   unsigned int DesignGetNumNets(void);
   unsigned int DesignGetNumFixedCells(void);
+  unsigned int DesignGetNumTerminalCells(void);
   unsigned int DesignGetNumPhysRows(void);
 
   map<unsigned int, unsigned int> DesignGetRowHeights();
@@ -171,4 +179,6 @@ extern void DesignCreateGraph(Design&, HyperGraph&);
 extern void DesignCollectStats(Design& myDesign);
 extern void DesignWriteStats(Design& myDesign);
 extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
+extern void DesignWriteNodes(Design &myDesign);
+
 #endif

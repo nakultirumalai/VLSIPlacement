@@ -141,12 +141,34 @@ Design::DesignGetNumFixedCells(void)
 }
 
 unsigned int
+Design::DesignGetNumTerminalCells(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumTerminalCells;
+}
+
+unsigned int
 Design::DesignGetNumPhysRows(void)
 {
   unsigned int rtv;
   
   rtv = this->NumPhysRows;
   
+  return (rtv);
+}
+
+void
+Design::DesignSetGraph(HyperGraph& thisGraph) 
+{
+  this->DesignGraphPtr = &thisGraph;
+}
+
+HyperGraph&
+Design::DesignGetGraph(void)
+{
+  HyperGraph& rtv = (*(this->DesignGraphPtr));
+
   return (rtv);
 }
 
@@ -158,6 +180,7 @@ Design::DesignInit()
   NumNets = 0;
   NumPhysRows = 0;
   NumFixedCells = 0;
+  NumTerminalCells = 0;
 
   singleRowHeight = -1;
 
@@ -170,6 +193,7 @@ Design::DesignInit()
   DesignPlFileName = "";
   RowBasedPlacement = false;
   
+  DesignGraphPtr = NIL(HyperGraph *);
   /* Initialize public variables */
   /* empty for now as there are only maps and vectors */
 }

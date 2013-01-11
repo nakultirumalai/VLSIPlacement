@@ -49,6 +49,7 @@ getWidthAndHeight(vector<void*>listOfCells, double aspectRatio,
   totalHeight = 0;
   totalWidth = 0;
   totalArea = 0;
+
   VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
     Cell &thisCell = (*cellPtr);
     if (minHeight <= thisCell.CellGetHeight()) {
@@ -61,7 +62,7 @@ getWidthAndHeight(vector<void*>listOfCells, double aspectRatio,
     totalHeight += thisCell.CellGetHeight();
     totalWidth += thisCell.CellGetWidth();
   } END_FOR;
-  
+
   if (aspectRatio != 0) {
     resultWidth = (unsigned int)ceil(sqrt(totalArea * aspectRatio));
     if (resultWidth < minWidth) {
@@ -81,30 +82,72 @@ Cell*
 Design::DesignClusterSpecifiedCells(vector<void *> listOfCells, double aspectRatio)
 {
   Cell *cellPtr;
+  Net *netPtr;
+  Pin *pinPtr;
   string clusterName;
   unsigned int resultWidth, resultHeight;
   unsigned int collectiveHeight, collectiveWidth;
   unsigned int maxHeight, maxWidth;
   unsigned int count;
+  map<Cell*, bool> cellHash;
+  map<Net*, bool> netHash;
   
   collectiveHeight = 0;
   collectiveWidth = 0;
   maxHeight = 0;
   maxWidth = 0;
 
+  clusterName = "**Cluster**" + getStrFromInt(clusterNumber++);
+  cellPtr = new Cell();
+  (*cellPtr).CellSetName(clusterName);
+  (*cellPtr).CellSetIsCluster(true);
+  (*this).DesignAddOneCellToDesignDB(cellPtr);
+
   VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
     Cell &thisCell = (*cellPtr);
-    thisCell.CellSetIsCluster(true);
+    thisCell.CellSetIsClusterChild(true);
     collectiveHeight += thisCell.CellGetHeight();
     collectiveWidth += thisCell.CellGetWidth();
+    (*cellPtr).CellAddChildCell(thisCell);
+    cellHash[cellPtr] = true;
   } END_FOR;
   
   getWidthAndHeight(listOfCells, aspectRatio, resultHeight,
 		    resultWidth);
-  clusterName = "**Cluster**" + getStrFromInt(clusterNumber++);
-  //cout << "Cluster cell formed: " << clusterName << " " << listOfCells.size() << " Height: " << resultHeight << " Width: " << resultWidth << endl;
-  cellPtr = new Cell(resultHeight, resultWidth, clusterName);
-  (*this).DesignAddOneCellToDesignDB(cellPtr);
+
+  (*cellPtr).CellSetHeight(resultHeight);
+  (*cellPtr).CellSetWidth(resultWidth);
+
+  /* Get the graph corresponding to the design and commit the cluster 
+     to the graph to effect connectivity changes */
+  HyperGraph& myGraph = DesignGetGraph();
+  myGraph.HyperGraphClusterCells(listOfCells, (void *)cellPtr);
+
+  /* Hide nets that are under the cluster */
+  /* What the hell is the complexity of this? 
+     Measure it! We need to make this more efficient */
+  VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
+    Cell &cellObj = (*cellPtr);
+    CELL_FOR_ALL_NETS(cellObj, PIN_DIR_ALL, netPtr) {
+      if (netHash.find(netPtr) != netHash.end()) {
+	continue;
+      } else {
+	netHash[netPtr] = true;
+      }
+      bool markNet = true;
+      Net &netObj = (*netPtr);
+      NET_FOR_ALL_PINS(netObj, pinPtr) {
+	Cell& parentCell = (*pinPtr).PinGetParentCell();
+	if (parentCell.CellIsClusterChild()) {
+	  markNet = false;
+	  break;
+	}
+      } NET_END_FOR;
+      if (markNet == true) {
+	(*netPtr).NetSetIsUnderCluster(true);
+      }
+    } CELL_END_FOR;
+  } END_FOR;
 
   return (cellPtr);
 }

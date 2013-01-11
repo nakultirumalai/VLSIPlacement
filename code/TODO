@@ -1,7 +1,8 @@
 List of pending tasks:
-1) Reading fixed position of cells. Done
-2) Collecting net details and sorting. Done
-3) Writing out top level benchmark information.
-4) Put together top level flow
-5) Write filtered iterators
-6) Study quadratic analytical solvers and download packages for analytical solving
+- Reading fixed position of cells. Done
+- Collecting net details and sorting. Done
+-
+- Writing out top level benchmark information. 
+- Put together top level flow
+- Write filtered iterators
+- Study quadratic analytical solvers and download packages for analytical solving

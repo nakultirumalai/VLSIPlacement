@@ -19,13 +19,16 @@ class Cell {
   objOrient orient;
   bool terminalCell;
   bool isCluster;
+  bool isClusterChild;
   bool isMacro;
   bool isFixed;
   vector<Pin*> Pins;
+  vector<Cell*> childCells;
 
  public:
   string name;
   /* Constructor & Destructor */
+  Cell();
   Cell(int, int);
   Cell(int, int, string);
   Cell(int, int, string, bool);  
@@ -35,6 +38,7 @@ class Cell {
   Cell(int, int, int, int, objOrient);
   Cell(int, int, int, int, objOrient, string);
   Cell(int, int, int, int, objOrient, string, bool);
+  ~Cell();
 
   /* Set functions */
   void CellSetXpos(int);
@@ -49,10 +53,12 @@ class Cell {
   void CellSetNumOutPins(int);
   void CellSetIsTerminal(const bool&);
   void CellSetIsCluster(const bool&);
+  void CellSetIsClusterChild(const bool&);
   void CellSetIsMacro(const bool &);
   void CellSetIsFixed(const bool &);
+  void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
-  
+
   /* Get functions */
   int CellGetXpos(void);
   int CellGetYpos(void);
@@ -64,11 +70,13 @@ class Cell {
   unsigned int CellGetArea(void);
   bool CellIsTerminal(void);
   bool CellIsCluster(void);
+  bool CellIsClusterChild(void);
   bool CellIsMacro(void);
   bool CellIsFixed(void);
   string CellGetName(void);
   vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);
+  vector<Cell*> CellGetChildCells(void);
 
   /* Other functions */
   void CellMoveRight(int);

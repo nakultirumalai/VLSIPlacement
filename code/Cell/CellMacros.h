@@ -12,6 +12,19 @@
       continue;						\
     }							
 
+# define CELL_FOR_ALL_NETS(CellObj, Dir, NetPtr) {	\
+  vector<Pin*> CellPins = CellObj.CellGetPins();	\
+  Pin* PinPtr;						\
+  Net* NetPtr;						\
+  map<Net*, bool> netHash;				\
+  for (int n=0; n<CellPins.size(); n++) {		\
+    PinPtr = CellPins[n];				\
+    if (Dir != PIN_DIR_ALL &&				\
+	Dir != (*PinPtr).PinGetDirection()) {		\
+      continue;						\
+    }							\
+    NetPtr = &((*PinPtr).PinGetNet());			
+
 # define CELL_END_FOR }}
 
 # endif

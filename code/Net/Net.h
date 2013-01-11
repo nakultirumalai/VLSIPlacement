@@ -14,6 +14,7 @@ class Net {
   unsigned int pinCount;
   unsigned int driverCount;
   unsigned int loadCount;
+  bool isUnderCluster;
 
  public:
   map<string, Pin*> Pins;
@@ -28,6 +29,7 @@ class Net {
   void NetSetPinCount(unsigned int);
   void NetSetDriverCount(unsigned int);
   void NetSetLoadCount(unsigned int);
+  void NetSetIsUnderCluster(const bool&);
   void NetAddPin(const Pin&);
 
   int NetGetId(void);
@@ -36,6 +38,7 @@ class Net {
   unsigned int NetGetLoadCount(void);
   unsigned int NetGetWeight(void);
   string NetGetName(void);
+  bool NetIsUnderCluster(void);
   
   map<string, Pin*>& NetGetPins(void);
   ~Net();

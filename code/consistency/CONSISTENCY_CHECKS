@@ -1,0 +1,4 @@
+Cell consistency:
+   If cell is a cluster, it must have child cells
+   A cell cannot have child cells if it is not a cluster
+

@@ -32,7 +32,7 @@
     CellPtr = mapIter->second; \
     if (!DesignCellIsStdCell(Design, (*CellPtr))) \
       continue;                                   \
-    if ((*CellPtr).CellIsCluster())		  \
+    if ((*CellPtr).CellIsClusterChild())	  \
       continue;
 
 # define DESIGN_END_FOR }}
