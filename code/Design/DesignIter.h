@@ -15,6 +15,17 @@
     CellName = mapIter->first; \
     CellPtr = mapIter->second;
 
+# define DESIGN_FOR_ALL_CELLS_ON_TOP(Design, CellName, CellPtr) \
+  { \
+  map<string, Cell*> DesignCells = Design.DesignGetCells(); \
+  map<string, Cell*>::iterator mapIter; \
+  for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
+    CellName = mapIter->first; \
+    CellPtr = mapIter->second; \
+    if ((*CellPtr).CellIsClusterChild()) \
+      continue; 
+    
+
 # define DESIGN_FOR_ALL_NETS(Design, NetName, NetPtr) \
   { \
   map<string, Net*> DesignNets = Design.DesignGetNets(); \

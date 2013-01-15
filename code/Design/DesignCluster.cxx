@@ -82,6 +82,7 @@ Cell*
 Design::DesignClusterSpecifiedCells(vector<void *> listOfCells, double aspectRatio)
 {
   Cell *cellPtr;
+  Cell *newCell;
   Net *netPtr;
   Pin *pinPtr;
   string clusterName;
@@ -91,42 +92,51 @@ Design::DesignClusterSpecifiedCells(vector<void *> listOfCells, double aspectRat
   unsigned int count;
   map<Cell*, bool> cellHash;
   map<Net*, bool> netHash;
+  vector<void *> uniqueList;
   
   collectiveHeight = 0;
   collectiveWidth = 0;
   maxHeight = 0;
   maxWidth = 0;
 
-  clusterName = "**Cluster**" + getStrFromInt(clusterNumber++);
-  cellPtr = new Cell();
-  (*cellPtr).CellSetName(clusterName);
-  (*cellPtr).CellSetIsCluster(true);
-  (*this).DesignAddOneCellToDesignDB(cellPtr);
+  clusterName = CLUSTER_NAME_PREFIX + getStrFromInt(clusterNumber++) + "*";
+  newCell = new Cell();
+  (*newCell).CellSetName(clusterName);
+  (*newCell).CellSetIsCluster(true);
+  (*this).DesignAddOneCellToDesignDB(newCell);
 
   VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
+    if (cellHash.find(cellPtr) == cellHash.end()) {
+      cellHash[cellPtr] = true;
+    } else {
+      continue;
+    }
+    if ((*cellPtr).CellIsCluster()) {
+      _ASSERT_TRUE("Cluster found in list of cells to be clustered");
+    }
     Cell &thisCell = (*cellPtr);
     thisCell.CellSetIsClusterChild(true);
     collectiveHeight += thisCell.CellGetHeight();
     collectiveWidth += thisCell.CellGetWidth();
-    (*cellPtr).CellAddChildCell(thisCell);
-    cellHash[cellPtr] = true;
+    (*newCell).CellAddChildCell(thisCell);
+    uniqueList.push_back((void*)cellPtr);
   } END_FOR;
   
-  getWidthAndHeight(listOfCells, aspectRatio, resultHeight,
+  getWidthAndHeight(uniqueList, aspectRatio, resultHeight,
 		    resultWidth);
 
-  (*cellPtr).CellSetHeight(resultHeight);
-  (*cellPtr).CellSetWidth(resultWidth);
+  (*newCell).CellSetHeight(resultHeight);
+  (*newCell).CellSetWidth(resultWidth);
 
   /* Get the graph corresponding to the design and commit the cluster 
      to the graph to effect connectivity changes */
   HyperGraph& myGraph = DesignGetGraph();
-  myGraph.HyperGraphClusterCells(listOfCells, (void *)cellPtr);
+  myGraph.HyperGraphClusterCells(uniqueList, (void *)newCell);
 
   /* Hide nets that are under the cluster */
   /* What the hell is the complexity of this? 
      Measure it! We need to make this more efficient */
-  VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
+  VECTOR_FOR_ALL_ELEMS(uniqueList, Cell*, cellPtr) {
     Cell &cellObj = (*cellPtr);
     CELL_FOR_ALL_NETS(cellObj, PIN_DIR_ALL, netPtr) {
       if (netHash.find(netPtr) != netHash.end()) {
@@ -149,7 +159,30 @@ Design::DesignClusterSpecifiedCells(vector<void *> listOfCells, double aspectRat
     } CELL_END_FOR;
   } END_FOR;
 
-  return (cellPtr);
+  return (newCell);
+}
+
+vector<void*>
+DesignGetConnectedCells(HyperGraph &myGraph, Cell *cellPtr) 
+{
+  vector<void*> connectedCells;
+  vector<void*> returnCells;
+  map<Cell*, bool> addedCells;
+  Cell *connectedCellPtr;
+  
+  connectedCells = myGraph.HyperGraphGetConnectedCells((void *)cellPtr);
+  VECTOR_FOR_ALL_ELEMS(connectedCells, Cell*, connectedCellPtr) {
+    Cell &thisCell = *connectedCellPtr;
+    if (thisCell.CellIsCluster()) {
+      continue;
+    }
+    if (addedCells.find(connectedCellPtr) != addedCells.end()) {
+      continue;
+    }
+    returnCells.push_back((void *)connectedCellPtr);
+  } END_FOR;
+
+  return (returnCells);
 }
 
 /*******************************************************************************
@@ -166,11 +199,12 @@ Design::DesignClusterCells(HyperGraph& myGraph)
   Design& myDesign = (*this);
   unsigned int numClustered;
 
+  cout << "Begin clustering" << endl;
   /* Top level iteration */
   numClustered = 0;
   DESIGN_FOR_ALL_STD_CELLS(myDesign, cellName, cellPtr) {
     numClustered++;
-    connectedCells = myGraph.HyperGraphGetConnectedCells((void *)cellPtr);
+    connectedCells = DesignGetConnectedCells(myGraph, cellPtr);
     //cout << "CELL Name " << (*cellPtr).CellGetName() << " " << connectedCells.size() << endl;
     connectedCells.push_back((void *)cellPtr);
     (*this).DesignClusterSpecifiedCells(connectedCells, (double)1.0);

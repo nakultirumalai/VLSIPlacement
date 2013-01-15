@@ -10,6 +10,7 @@ HyperGraph& convertDesignToGraph(Design& thisDesign)
   HyperGraph *myGraph = new HyperGraph();
   
   DesignCreateGraph(thisDesign, (*myGraph));
+  thisDesign.DesignSetGraph(*myGraph);
 
   return (*myGraph);
 }
@@ -50,9 +51,17 @@ int main(int argc, char *argv[])
 
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
 
-    DesignWriteNodes(myDesign);
 
-    //myDesign.DesignClusterCells(myGraph);
+    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
+
+    DesignWriteNodes(myDesign, "");
+    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
+
+    myDesign.DesignClusterCells(myGraph);
+    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
+
+    DesignWriteNodes(myDesign, "cluster.out");
+    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
     
     cout << "Netlist read successfully" << endl;
 

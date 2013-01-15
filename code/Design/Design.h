@@ -87,6 +87,11 @@
 # define NINE '9'
 
 /*******************************************************************************
+  Cluster name prefix for numbering
+*******************************************************************************/
+# define CLUSTER_NAME_PREFIX "*clust*"
+
+/*******************************************************************************
   Type definitions for the design class
 *******************************************************************************/
 
@@ -99,7 +104,9 @@ class Design {
   HyperGraph *DesignGraphPtr;
 
   unsigned int NumCells;
+  unsigned int NumTopCells;
   unsigned int NumNets;
+  unsigned int NumTopNets;
   unsigned int NumPhysRows;
   unsigned int NumFixedCells;
   unsigned int NumTerminalCells;
@@ -165,7 +172,9 @@ class Design {
 
   int DesignGetSingleRowHeight();
   unsigned int DesignGetNumCells(void);
+  unsigned int DesignGetNumTopCells(void);
   unsigned int DesignGetNumNets(void);
+  unsigned int DesignGetNumTopNets(void);
   unsigned int DesignGetNumFixedCells(void);
   unsigned int DesignGetNumTerminalCells(void);
   unsigned int DesignGetNumPhysRows(void);
@@ -179,6 +188,6 @@ extern void DesignCreateGraph(Design&, HyperGraph&);
 extern void DesignCollectStats(Design& myDesign);
 extern void DesignWriteStats(Design& myDesign);
 extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
-extern void DesignWriteNodes(Design &myDesign);
+extern void DesignWriteNodes(Design &myDesign, string fname);
 
 #endif

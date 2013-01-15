@@ -204,13 +204,13 @@ Cell::CellGetArea(void)
 bool 
 Cell::CellIsTerminal(void)
 {
-  return (terminalCell);
+  return (this->terminalCell);
 }
 
 bool
 Cell::CellIsCluster(void)
 {
-  return (isCluster);
+  return (this->isCluster);
 }
 
 bool

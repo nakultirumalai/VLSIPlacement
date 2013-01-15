@@ -121,6 +121,16 @@ Design::DesignGetNumCells(void)
 }
 
 unsigned int
+Design::DesignGetNumTopCells(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumTopCells;
+  
+  return (rtv);
+}
+
+unsigned int
 Design::DesignGetNumNets(void)
 {
   unsigned int rtv;

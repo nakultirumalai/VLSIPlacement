@@ -33,11 +33,13 @@ class HyperGraph {
   /* Array whose indices are nodes and elements are a metric which 
      represents the total connectivity of the node in the graph */
   vector<unsigned int> nodeConnectivity;
+
+  map<unsigned int, mapOfVectors> ClusterInfo;
+
   /* Graph update variable: Everytime a node or an edge is added, 
      this variable indicates if the graph is dirty or not. If the
      graph is dirty, perform some action to update the connectivity
      information */
-  map<unsigned int, mapOfVectors> ClusterInfo;
   bool dirtyGraph;
 
   /* Private functions begin */

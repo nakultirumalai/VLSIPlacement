@@ -1,5 +1,8 @@
 # include <HyperGraph.h>
 # include <Stat.h>
+# include <time.h>
+# include <Cell.h>
+# include <stdlib.h>
 
 unsigned int 
 HyperGraph::AddNodeInt(void *object)
@@ -78,13 +81,17 @@ HyperGraph::getNewEdgeIdx(void)
 bool
 HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object)
 {
-  map<unsigned int, vector<unsigned int > > affectedEdgeList;
+  map<unsigned int, bool> visitedEdges;
   vector<unsigned int>& nodeSetCopy = nodeSet;
   vector<unsigned int> newNodeEdgeList;
   unsigned int nodeIdx, edgeIdx, newNodeIdx;
   bool result;
+  bool debug = false;
+  static int count;
 
   result = true;
+  if (debug) 
+    cout << "COUNT: " << count++ << " Size of node set is " << nodeSet.size() << endl;
   VECTOR_FOR_ALL_ELEMS(nodeSet, unsigned int, nodeIdx) {
     if (!nodeIsTop(nodeIdx)) {
       result = false;
@@ -95,23 +102,34 @@ HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object)
   if (result == true) {
     /* Begin clustering here */
     newNodeIdx = AddNodeInt(object);
-
+    clock_t start, finish;
+    start = clock();
+    unsigned int iter = 0;
+    unsigned int added = 0;
     VECTOR_FOR_ALL_ELEMS(nodeSet, unsigned int, nodeIdx) {
+      /* For each node in the node set, go over the edges of 
+	 each node */
+      if (debug) 
+	cout << "   Node index: " << nodeIdx << " Iterating over its edges. Edge count: " << (Nodes2Edges[nodeIdx]).size() << endl;
       VECTOR_FOR_ALL_ELEMS((Nodes2Edges[nodeIdx]), unsigned int, edgeIdx) {
+	iter++;
+	if (visitedEdges.find(edgeIdx) == visitedEdges.end()) {
+	  added++;
+	  visitedEdges[edgeIdx] = 1;
+	  newNodeEdgeList.push_back(edgeIdx);
+	  (Edges2Nodes[edgeIdx])[newNodeIdx] = 1;
+	}
 	/* Remove nodeIdx from the map corresponding to edgeIdx */
 	(Edges2Nodes[edgeIdx]).erase(nodeIdx);
-	(Edges2Nodes[edgeIdx])[newNodeIdx] = 1;
-	if (affectedEdgeList.find(edgeIdx) == affectedEdgeList.end()) {
-	  /* If key exists */
-	  (affectedEdgeList[edgeIdx]) = vector<unsigned int> ();
-	  newNodeEdgeList.push_back(edgeIdx);
-	}
-	(affectedEdgeList[edgeIdx]).push_back(nodeIdx);
       } END_FOR;
       nodeClearIsTop(nodeIdx);
     } END_FOR;
 
-    ClusterInfo[newNodeIdx] = affectedEdgeList;
+    finish = clock();
+    cout << "    SIZE: " << nodeSet.size() << " TIME: " << (finish - start) << " CPU cycles." << endl;
+
+    //   cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;    
+    //ClusterInfo[newNodeIdx] = affectedEdgeList;
     Nodes2Edges[newNodeIdx] = newNodeEdgeList;
     nodeSetIsTop(newNodeIdx);
     nodeClearIsClusterParent(newNodeIdx);
@@ -487,4 +505,3 @@ HyperGraph::HyperGraphGetConnectedCells(void* cellPtr)
 
   return (rtvCells);
 }
-

@@ -9,7 +9,7 @@ void DesignWriteNets(Design &myDesign)
 {
 }
 
-void DesignWriteNodes(Design &myDesign) 
+void DesignWriteNodes(Design &myDesign, string fname) 
 {
   string cellName, designName, fileName;
   Cell *cellPtr;
@@ -17,16 +17,20 @@ void DesignWriteNodes(Design &myDesign)
 
   cout << "Writing nodes file.." << endl;
 
-  designName = myDesign.DesignGetName();
-  fileName = designName + ".nodes";
-
+  if (fname == "") {
+    designName = myDesign.DesignGetName();
+    fileName = designName + ".nodes";
+  } else {
+    fileName = fname;
+  }
+  
   opFile.open(fileName.data(), ifstream::out);
   opFile << "UCLA nodes 1.0" << endl; 
   _WRITE_HEADER(opFile);
   opFile << "NumNodes :              " << myDesign.DesignGetNumCells() << endl;
   opFile << "NumTerminals :           " << myDesign.DesignGetNumTerminalCells() << endl;
 
-  DESIGN_FOR_ALL_CELLS(myDesign, cellName, cellPtr) {
+  DESIGN_FOR_ALL_CELLS_ON_TOP(myDesign, cellName, cellPtr) {
     opFile << "        " << cellName << " " << (*cellPtr).CellGetWidth();
     opFile << "      " << (*cellPtr).CellGetHeight(); 
     if ((*cellPtr).CellIsTerminal()) {
@@ -45,6 +49,6 @@ void DesignWritePlacement(Design &myDesign)
 void DesignWriteBookShelfOutput(Design& myDesign)
 {
   DesignWriteNets(myDesign);
-  DesignWriteNodes(myDesign);
+  DesignWriteNodes(myDesign, "");
   DesignWritePlacement(myDesign);
 }
