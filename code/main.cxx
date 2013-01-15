@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     myDesign.DesignClusterCells(myGraph);
+
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     DesignWriteNodes(myDesign, "cluster.out");
