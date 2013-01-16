@@ -34,6 +34,17 @@
     NetName = (string)mapIter->first; \
     NetPtr = (Net *)mapIter->second;
 
+/* Cell pointers for which the filterFunc returns a TRUE value are filtered */
+# define DESIGN_FOR_ALL_STD_CELLS_FILT(Design, CellName, CellPtr, filterFunc)	\
+  { \
+  map<string, Cell*> DesignCells = Design.DesignGetCells(); \
+  map<string, Cell*>::iterator mapIter; \
+  for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
+    CellName = mapIter->first; \
+    CellPtr = mapIter->second; \
+    if (filterFunc(CellPtr))   \
+      continue;
+
 # define DESIGN_FOR_ALL_STD_CELLS(Design, CellName, CellPtr) \
   { \
   map<string, Cell*> DesignCells = Design.DesignGetCells(); \

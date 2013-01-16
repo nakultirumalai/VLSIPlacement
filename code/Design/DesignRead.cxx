@@ -123,13 +123,14 @@ Design::DesignReadCells()
   int NumCells;
   string Msg;
 
+  _STEP_BEGIN("Read cells");
   DesignOpenFile(DesignCellFileName);
   DesignFileReadHeader(DesignFile);
   DesignFileReadNodes(DesignFile);
 
   Msg += "Loaded " + getStrFromInt(DesignCells.size()) + " cells";
-
   cout << Msg << endl;
+  _STEP_END("Read cells");
 }
 
 
@@ -245,6 +246,7 @@ Design::DesignReadNets()
   int NumCells;
   string Msg;
 
+  _STEP_BEGIN("Read Nets");
   DesignOpenFile(DesignNetFileName);
   DesignFileReadHeader(DesignFile);
   DesignFileReadNets(DesignFile);
@@ -252,6 +254,7 @@ Design::DesignReadNets()
   Msg += "Loaded " + getStrFromInt(DesignNets.size()) + " nets";
 
   cout << Msg << endl;
+  _STEP_END("Read Nets");
 }
 
 void
@@ -371,6 +374,7 @@ Design::DesignReadRows()
   int numRows;
   string Msg;
 
+  _STEP_BEGIN("Read physical rows");
   DesignOpenFile(DesignSclFileName);
   DesignFileReadHeader(DesignFile);
   DesignFileReadRows(DesignFile);
@@ -378,6 +382,7 @@ Design::DesignReadRows()
   Msg += "Loaded " + getStrFromInt(DesignPhysRows.size()) + " rows";
 
   cout << Msg << endl;
+  _STEP_END("Read physical rows");
 }
 
 void
@@ -456,9 +461,11 @@ Design::DesignReadCellPlacement()
   int numFixed;
   string Msg;
   
+  _STEP_BEGIN("Read fixed cells");
   DesignOpenFile(DesignPlFileName);
   DesignFileReadHeader(DesignFile);
   DesignFileReadFixedCells(DesignFile);
   
   Msg += "Loaded " + getStrFromInt(NumFixedCells) + " cells positions";
+  _STEP_END("Read fixed cells");
 }

@@ -9,6 +9,7 @@
 # include <HyperGraph.h>
 # include <PhysRow.h>
 # include <Sort.h>
+# include <Flags.h>
 # include <DesignIter.h>
 
 /*******************************************************************************
@@ -94,7 +95,13 @@
 /*******************************************************************************
   Type definitions for the design class
 *******************************************************************************/
-
+typedef enum {
+  DEFAULT_CLUSTER, 
+  FC_CLUSTER,
+  NET_CLUSTER,
+  ESC_CLUSTER,
+  TOTAL_CLUSTERING_TECHNIQUES,
+} clusteringType;
 
 class Design {
  private:
@@ -145,8 +152,9 @@ class Design {
   void DesignOpenFile(string);
   void DesignCloseFile(void);
   Cell *DesignGetNode(string);
-  Cell *DesignClusterSpecifiedCells(vector<void *> listOfCells, 
-				    double aspectRatio);
+  vector<Cell*> DesignClusterSpecifiedCells(vector<vector<void * > >, double);
+  void DesignHideNets(std::vector<void*>);
+
  public:
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
@@ -180,8 +188,14 @@ class Design {
   unsigned int DesignGetNumPhysRows(void);
 
   map<unsigned int, unsigned int> DesignGetRowHeights();
-  void DesignClusterCells(HyperGraph&);
+  void DesignClusterCells(HyperGraph&, clusteringType);
   void DesignCollapseCluster(Cell& MasterCell);
+
+  /* Clustering functions */
+  bool DesignDoDefaultCluster(HyperGraph&);
+  bool DesignDoFCCluster(HyperGraph&);
+  bool DesignDoNetCluster(HyperGraph&);
+  bool DesignDoESCCluster(HyperGraph&);
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);

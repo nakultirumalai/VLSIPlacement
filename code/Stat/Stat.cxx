@@ -2,6 +2,8 @@
 # include <stdio.h>
 # include <string.h>
 # include <common.h>
+# include <sys/resource.h>
+# include <sys/times.h>
 
 int parseLine(char* line){
   int i = strlen(line);
@@ -11,7 +13,7 @@ int parseLine(char* line){
   return i;
 }
 
-double getMemUsage(){ //Note: this value is in KB!
+double getMemUsage() { //Note: this value is in KB!
   FILE* file = fopen("/proc/self/status", "r");
   int result = -1;
   char line[128];
@@ -26,3 +28,10 @@ double getMemUsage(){ //Note: this value is in KB!
   return (result/((double)1024.00));
 }
 
+double getCPUTime() {
+  struct rusage rusage;
+
+  if (getrusage( RUSAGE_SELF, &rusage ) != -1)
+    return (double)rusage.ru_utime.tv_sec +
+      (double)rusage.ru_utime.tv_usec / 1000000.0;
+}

@@ -496,6 +496,7 @@ HyperGraph::HyperGraphGetConnectedCells(void* cellPtr)
   
   subjectIdx = obj2idx[cellPtr];
   connectedNodeIndices = getConnectedIndices(subjectIdx);
+  vectorRemoveDuplicates(connectedNodeIndices);
   VECTOR_FOR_ALL_ELEMS(connectedNodeIndices, unsigned int, resultIdx) {
     _ASSERT("Subject node index matches with the subject node index", 
 	    (resultIdx == subjectIdx));

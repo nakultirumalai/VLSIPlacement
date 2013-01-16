@@ -1,5 +1,7 @@
 MAKE=make
 #CODE_ROOT=/root/thesis/Ideas/PlacementImprovement/code
+MAKEFLAGS += -j1
+
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 
@@ -24,7 +26,7 @@ CC=g++
 
 TARGETS = all debug
 
-SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags
 
 OBJFILES:= $(OBJDIR)/*.o
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
@@ -33,7 +35,7 @@ all: COMPILE_ALL GEN_EXEC
 
 COMPILE_ALL: $(SRCDIRS)
 	echo $(OBJDIR)
-	for dir in $(SRCDIRS); do \
+	@+for dir in $(SRCDIRS); do \
 		make -C $$dir; \
 	done	
 

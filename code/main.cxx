@@ -5,6 +5,8 @@
 
 # define MAX_ARGS 5
 
+unsigned int stepDepth;
+
 HyperGraph& convertDesignToGraph(Design& thisDesign)
 {
   HyperGraph *myGraph = new HyperGraph();
@@ -57,7 +59,9 @@ int main(int argc, char *argv[])
     DesignWriteNodes(myDesign, "");
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
-    myDesign.DesignClusterCells(myGraph);
+    myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
+    /* Second param is clustering type. Can take on the following values:
+       FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
 
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 

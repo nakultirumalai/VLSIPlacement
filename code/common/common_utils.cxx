@@ -80,3 +80,9 @@ double dround(double thisDouble)
   
   return (thisDouble);
 }
+
+void vectorRemoveDuplicates(vector<unsigned int>& vec)
+{
+  sort(vec.begin(), vec.end());
+  vec.erase(unique(vec.begin(), vec.end()), vec.end());
+}
