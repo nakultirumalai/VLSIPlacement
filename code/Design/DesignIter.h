@@ -42,6 +42,8 @@
   for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
     CellName = mapIter->first; \
     CellPtr = mapIter->second; \
+    if ((*CellPtr).CellIsMacro()) \
+      continue;			  \
     if (filterFunc(CellPtr))   \
       continue;
 

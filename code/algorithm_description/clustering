@@ -1,0 +1,50 @@
+STEPS involved in doing clustering given a list of 'n' cells:
+
+STEP                                                   COMPLEXITY
+Step 1: Create a new cell object. Mark it as           O(1)
+        a cluster. Flag it as a clustered cell
+	so that it wouldn't be included in the 
+	iterations. Also generate the cluster name
+
+Step 2: Add the created cell to the design database    O(1)
+
+Step 3: Iterate over the list of all cells to be       O(n)   
+        clustered and create a unique list of cells
+        to be constructed. Capture the total 
+        height and total width of the cells. 
+        Add each cell as the child cell of the 
+	cluster
+
+Step 4: Get the resulting height and width of the      O(?)
+        cluster cell to be formed 
+
+Step 5: Perform clustering in the hypergraph           O(n) + O(np log k)
+
+     	STEPS to perform clustering in the hypergraph:                COMPLEXITY
+	Step 1: Iterate over all the cells in                  	      O(n)
+	        the cell list and get the 
+		corresponding indices of each cell 
+		in the hypergraph
+
+		(HyperGraph::clusterNodes)
+ 	Step 2: Iterate over all the node indices                     O(n)
+	     	and check if any of the indices are not 
+		top level indices
+		
+	Step 3: Complex step broken down into simple ones             O(np log k)
+	     	Iterate over all the node indices and                 O(n)
+	        for each node iterate over all the edge indices.      O(p)
+		Perform hash lookup of visited edge index.            O(log k)   
+		Create a new entry in the list of new edges. 	      O(log k)
+		Remove the old node index from the edge indices       O(log k)
+		for the node.
+		
+	Step 4: Add the new edge list as the edge list for the        O(log n)
+	     	clustered node.
+		
+Step 6: Hide the nets that connect to only cells       O(?)
+        within the cluster 
+
+Step 7: Push the cluster cell into the return vector   O(1)
+
+Step 8: Return the return vector 

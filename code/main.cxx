@@ -2,6 +2,7 @@
 # include <Design.h>
 # include <HyperGraph.h>
 # include <Stat.h>
+# include <Flags.h>
 
 # define MAX_ARGS 5
 
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
     Design myDesign(designPath, designName);
 
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
-
+    FlagsInit();
 
     cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 

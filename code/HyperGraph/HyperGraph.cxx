@@ -79,7 +79,8 @@ HyperGraph::getNewEdgeIdx(void)
 }
 
 bool
-HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object)
+HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object,
+			 vector<void *>& affectedNets)
 {
   map<unsigned int, bool> visitedEdges;
   vector<unsigned int>& nodeSetCopy = nodeSet;
@@ -121,12 +122,16 @@ HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object)
 	}
 	/* Remove nodeIdx from the map corresponding to edgeIdx */
 	(Edges2Nodes[edgeIdx]).erase(nodeIdx);
+	if ((Edges2Nodes[edgeIdx]).size() == 1) {
+	  Edge &thisEdge = (*idx2Edge[edgeIdx]);
+	  affectedNets.push_back(thisEdge.EdgeGetObject());
+	}
       } END_FOR;
       nodeClearIsTop(nodeIdx);
     } END_FOR;
 
     finish = clock();
-    cout << "    SIZE: " << nodeSet.size() << " TIME: " << (finish - start) << " CPU cycles." << endl;
+    //cout << "    SIZE: " << nodeSet.size() << " TIME: " << (finish - start) << " CPU cycles." << endl;
 
     //   cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;    
     //ClusterInfo[newNodeIdx] = affectedEdgeList;
@@ -296,24 +301,6 @@ HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject,
   } END_FOR;
 }
 
-bool
-HyperGraph::HyperGraphClusterNodes(vector<vector<unsigned int > > nodesSet,
-				   void *object)
-{
-  vector<unsigned int> clusterSet;
-  bool success;
-  
-  success = true;
-  VECTOR_FOR_ALL_ELEMS(nodesSet, vector<unsigned int>, clusterSet) {
-    success &= clusterNodes(clusterSet, object);
-    if (success == false) {
-      break;
-    }
-  } END_FOR;
-  
-  return success;
-}
-
 bool 
 HyperGraph::HyperGraphUnclusterNodes(vector<unsigned int> clusteredNodeSet) 
 {
@@ -461,28 +448,28 @@ HyperGraph::getConnectedIndices(unsigned int nodeIdx)
   return (returnNodes);
 }
 
-bool
-HyperGraph::HyperGraphClusterCells(vector<void *> listOfCells, 
-				   void* clusteredCell)
+unsigned int
+HyperGraph::HyperGraphGetCellIndex(void *cellPtr)
 {
-  vector<vector<unsigned int > > cellIndices;
   unsigned int subjectIdx;
-  void *cellPtr;
-  bool rtv;
 
-  rtv = true;
-  /* Push an empty member */
-  cellIndices.push_back(vector<unsigned int> ());
+  _ASSERT("Unable to find cell in design database", (cellPtr == NIL(void*)));
 
-  VECTOR_FOR_ALL_ELEMS(listOfCells, void*, cellPtr) {
-    subjectIdx = obj2idx[cellPtr];
-    _ASSERT("Unable to find cell in design database", (cellPtr == NIL(void*)));
-    (cellIndices[0]).push_back(subjectIdx);
-  } END_FOR;
+  subjectIdx = obj2idx[cellPtr];
+  
+  return (subjectIdx);
+}
 
-  HyperGraphClusterNodes(cellIndices, clusteredCell);
+bool
+HyperGraph::HyperGraphClusterNodes(vector<unsigned int> nodesList,
+				   void *object, 
+				   vector<void*>& affectedNets)
+{
+  bool success;
+  
+  success &= clusterNodes(nodesList, object, affectedNets);
 
-  return (rtv);
+  return success;
 }
 
 vector<void *> 

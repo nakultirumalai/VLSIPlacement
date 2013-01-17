@@ -8,7 +8,7 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 ifeq ($(MAKECMDGOALS), debug)
 	CFLAGS= -g 
 else
-	CFLAGS= -O3
+	CFLAGS= -O3 -pg
 endif
 
 export CFLAGS

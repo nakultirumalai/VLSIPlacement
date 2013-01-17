@@ -7,7 +7,9 @@ vector<map<void *, bool> > FlagsDef;
 
 void FlagsInit()
 {
-  FlagsDef.reserve(TOTAL_NUM_FLAGS);
+  for (int i=0; i < TOTAL_NUM_FLAGS; i++) {
+    FlagsDef.push_back(map<void *, bool>());
+  }
 }
 
 bool FlagsDefGetFlag(flagType fType, void *obj)

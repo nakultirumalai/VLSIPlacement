@@ -17,34 +17,42 @@ Design::DesignCollapseCluster(Cell& MasterCell)
    cluster
 *********************************************************************/
 void
-Design::DesignHideNets(vector<void *> listOfCells)
+Design::DesignHideNets(vector<void *> affectedNets, vector<void *> listOfCells)
 {
   Cell* cellPtr;
   Pin *pinPtr;
+  Net *netPtr;
   map<Net*, bool> netHash;
   
-  VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
-    Cell &cellObj = (*cellPtr);
-    CELL_FOR_ALL_NETS(cellObj, PIN_DIR_ALL, netPtr) {
-      if (netHash.find(netPtr) != netHash.end()) {
-	continue;
-      } else {
-	netHash[netPtr] = true;
-      }
-      bool markNet = true;
-      Net &netObj = (*netPtr);
-      NET_FOR_ALL_PINS(netObj, pinPtr) {
-	Cell& parentCell = (*pinPtr).PinGetParentCell();
-	if (parentCell.CellIsClusterChild()) {
-	  markNet = false;
-	  break;
-	}
-      } NET_END_FOR;
-      if (markNet == true) {
-	(*netPtr).NetSetIsUnderCluster(true);
-      }
-    } CELL_END_FOR;
+  VECTOR_FOR_ALL_ELEMS(affectedNets, Net*, netPtr) {
+    (*netPtr).NetSetIsUnderCluster(true);
   } END_FOR;
+  
+  if (0) {
+    // Obsolete code. Can be used for consistency check 
+    VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
+      Cell &cellObj = (*cellPtr);
+      CELL_FOR_ALL_NETS(cellObj, PIN_DIR_ALL, netPtr) {
+	if (netHash.find(netPtr) != netHash.end()) {
+	  continue;
+	} else {
+	  netHash[netPtr] = true;
+	}
+	bool markNet = true;
+	Net &netObj = (*netPtr);
+	NET_FOR_ALL_PINS(netObj, pinPtr) {
+	  Cell& parentCell = (*pinPtr).PinGetParentCell();
+	  if (parentCell.CellIsClusterChild()) {
+	    markNet = false;
+	    break;
+	  }
+	} NET_END_FOR;
+	if (markNet == true) {
+	  (*netPtr).NetSetIsUnderCluster(true);
+	}
+      } CELL_END_FOR;
+    } END_FOR;
+  }
 }
 
 /*********************************************************************
@@ -74,32 +82,11 @@ Design::DesignHideNets(vector<void *> listOfCells)
 *********************************************************************/
 void
 getWidthAndHeight(vector<void*>listOfCells, double aspectRatio,
+		  unsigned int totalHeight, unsigned int totalWidth,
+		  unsigned int totalArea, unsigned int minHeight,
+		  unsigned int minWidth,
 		  unsigned int& resultHeight, unsigned int& resultWidth)
 {
-  Cell* cellPtr;
-  unsigned int minWidth, minHeight;
-  unsigned int totalWidth, totalHeight;
-  unsigned int totalArea;
-  
-  minWidth = 0;
-  minHeight = 0;
-  totalHeight = 0;
-  totalWidth = 0;
-  totalArea = 0;
-
-  VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
-    Cell &thisCell = (*cellPtr);
-    if (minHeight <= thisCell.CellGetHeight()) {
-      minHeight = thisCell.CellGetHeight();
-    }
-    if (minWidth <= thisCell.CellGetWidth()) {
-      minWidth = thisCell.CellGetWidth();
-    }
-    totalArea += thisCell.CellGetArea();
-    totalHeight += thisCell.CellGetHeight();
-    totalWidth += thisCell.CellGetWidth();
-  } END_FOR;
-
   if (aspectRatio != 0) {
     resultWidth = (unsigned int)ceil(sqrt(totalArea * aspectRatio));
     if (resultWidth < minWidth) {
@@ -131,21 +118,37 @@ Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells, double 
   unsigned int maxHeight, maxWidth, count;
   map<Cell*, bool> cellHash;
   vector<void *> uniqueList;
+  vector<unsigned int> cellIndices;
   vector<void *> cellList;
   vector<Cell *> returnList;
+  vector<void *> affectedNets;
   HyperGraph &myGraph = DesignGetGraph();
+  unsigned int stopCount;
+  unsigned int minHeight, minWidth;
+  unsigned int totalHeight, totalWidth, totalArea;
   
+  stopCount = 0;
   VECTOR_FOR_ALL_ELEMS(listOfCells, vector<void *>, cellList) {
-    _STEP_BEGIN("Clustering each cell set");
+    if (stopCount == 100000) {
+          break;
+    }
+    //    _STEP_BEGIN("Clustering each cell set");
+    //cout << "ITERATION: " << stopCount << " Choosing set of cells of size " << cellList.size() << " for clustering" << endl;
     collectiveHeight = 0; collectiveWidth = 0;
     maxHeight = 0; maxWidth = 0;
     clusterName = CLUSTER_NAME_PREFIX + getStrFromInt(clusterNumber++);
 
+    /* create the cluster cell */
     newCell = new Cell();
     (*newCell).CellSetName(clusterName);
     (*newCell).CellSetIsCluster(true);
+    CellSetIsClustered(newCell);
     (*this).DesignAddOneCellToDesignDB(newCell);
-
+    minHeight = 0;
+    minWidth = 0;
+    totalArea = 0;
+    totalHeight = 0;
+    totalWidth = 0;
     VECTOR_FOR_ALL_ELEMS(cellList, Cell*, cellPtr) {
       if (cellHash.find(cellPtr) == cellHash.end()) {
 	cellHash[cellPtr] = true;
@@ -153,29 +156,49 @@ Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells, double 
 	continue;
       }
       Cell &thisCell = (*cellPtr);
+
+      int cellHeight = thisCell.CellGetHeight();
+      int cellWidth = thisCell.CellGetWidth();
+      int cellArea = thisCell.CellGetArea();
+
+      if (minHeight <= cellHeight) {
+	minHeight = cellHeight;
+      }
+      if (minWidth <= cellWidth) {
+	minWidth = cellWidth;
+      }
+      totalArea += cellArea;
+      totalHeight += cellHeight;
+      totalWidth += cellWidth;
+      collectiveHeight += cellHeight;
+      collectiveWidth += cellWidth;
+
       thisCell.CellSetIsClusterChild(true);
-      collectiveHeight += thisCell.CellGetHeight();
-      collectiveWidth += thisCell.CellGetWidth();
       (*newCell).CellAddChildCell(thisCell);
       uniqueList.push_back((void*)cellPtr);
+      cellIndices.push_back(myGraph.HyperGraphGetCellIndex(cellPtr));
     } END_FOR;
   
-    getWidthAndHeight(uniqueList, aspectRatio, resultHeight, resultWidth);
+    getWidthAndHeight(uniqueList, aspectRatio, totalHeight,
+		      totalWidth, totalArea, minHeight, minWidth,
+		      resultHeight, resultWidth);
 
     (*newCell).CellSetHeight(resultHeight);
     (*newCell).CellSetWidth(resultWidth);
     /* Get the graph corresponding to the design and commit the cluster 
        to the graph to effect connectivity changes */
-    myGraph.HyperGraphClusterCells(uniqueList, (void *)newCell);
+    myGraph.HyperGraphClusterNodes(cellIndices, (void *)newCell,
+				   affectedNets);
 
     /* Hide nets that are under the cluster */
     /* What the hell is the complexity of this? 
        Measure it! We need to make this more efficient */
-    DesignHideNets(uniqueList);
+    DesignHideNets(affectedNets, uniqueList);
     returnList.push_back(newCell);
-    _STEP_END("Clustering each cell set");
+    //_STEP_END("Clustering each cell set");
+    stopCount++;
   } END_FOR;
-
+  cout << "Clustered " << stopCount << " clusters successfully";
   return (returnList);
 }
 
@@ -215,24 +238,26 @@ bool
 Design::DesignDoDefaultCluster(HyperGraph &myGraph) 
 {
   Design& myDesign = (*this);
-  Cell *cellPtr;
+  Cell *cellPtr, *thisCellPtr;
   vector<vector<void * > >cellsToCluster;
-  vector<void *> connectedCells;
   string cellName;
   unsigned int numClustered;
   bool rtv;
 
-  _STEP_BEGIN("Begin clustering");
+  _STEP_BEGIN("Begin default clustering");
 
   rtv = true;
   DESIGN_FOR_ALL_STD_CELLS_FILT(myDesign, cellName, cellPtr, CellIsClustered) {
-    connectedCells = DesignGetConnectedCells(myGraph, cellPtr);
+    vector<void *> connectedCells = DesignGetConnectedCells(myGraph, cellPtr);
     connectedCells.push_back(cellPtr);
+    VECTOR_FOR_ALL_ELEMS(connectedCells, Cell*, thisCellPtr) {
+      CellSetIsClustered(thisCellPtr);
+    } END_FOR;
     cellsToCluster.push_back(connectedCells);
   } DESIGN_END_FOR;
   DesignClusterSpecifiedCells(cellsToCluster, (double)1.0);
 
-  _STEP_END("End clustering");
+  _STEP_END("End default clustering");
 
   return rtv;
 }

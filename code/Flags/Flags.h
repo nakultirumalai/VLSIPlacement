@@ -5,7 +5,7 @@
 # include <Net.h>
 
 typedef enum {
-  CELL_IS_CLUSTERED_FLAG = 1,
+  CELL_IS_CLUSTERED_FLAG = 0,
   NET_IS_HIDDEN_FLAG,
   TOTAL_NUM_FLAGS
 } flagType;

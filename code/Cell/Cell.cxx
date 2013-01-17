@@ -80,6 +80,12 @@ Cell::CellSetIsClusterChild(const bool& isClusterChild)
 }
 
 void
+Cell::CellSetIsClustered(const bool& isClustered)
+{
+  this->isClustered = isClustered;
+}
+
+void
 Cell::CellSetIsMacro(const bool & isMacro) 
 {
   this->isMacro = isMacro;
@@ -217,6 +223,12 @@ bool
 Cell::CellIsClusterChild(void)
 {
   return (isClusterChild);
+}
+
+bool
+Cell::CellIsClustered(void)
+{
+  return (isClustered);
 }
 
 bool

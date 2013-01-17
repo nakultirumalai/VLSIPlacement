@@ -18,6 +18,7 @@ class Cell {
   int numOutPins;
   objOrient orient;
   bool terminalCell;
+  bool isClustered;
   bool isCluster;
   bool isClusterChild;
   bool isMacro;
@@ -54,6 +55,7 @@ class Cell {
   void CellSetIsTerminal(const bool&);
   void CellSetIsCluster(const bool&);
   void CellSetIsClusterChild(const bool&);
+  void CellSetIsClustered(const bool&);
   void CellSetIsMacro(const bool &);
   void CellSetIsFixed(const bool &);
   void CellAddChildCell(Cell &thisCell);
@@ -71,6 +73,7 @@ class Cell {
   bool CellIsTerminal(void);
   bool CellIsCluster(void);
   bool CellIsClusterChild(void);
+  bool CellIsClustered(void);
   bool CellIsMacro(void);
   bool CellIsFixed(void);
   string CellGetName(void);

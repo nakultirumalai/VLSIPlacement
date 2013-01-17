@@ -9,16 +9,18 @@ bool CellIsClustered(Cell *cellPtr)
 
   void *obj = (void *)cellPtr;
   
-  rtv = FlagsDefGetFlag(CELL_IS_CLUSTERED_FLAG, obj);
-  
+  //  rtv = FlagsDefGetFlag(CELL_IS_CLUSTERED_FLAG, obj);
+  rtv = (*cellPtr).CellIsClustered();
+
   return (rtv);
 }
 
 void CellSetIsClustered(Cell *cellPtr)
 {
-  void *obj = (void *)cellPtr;
+  // void *obj = (void *)cellPtr;
   
-  FlagsDefSetFlag(CELL_IS_CLUSTERED_FLAG, obj);
+  //FlagsDefSetFlag(CELL_IS_CLUSTERED_FLAG, obj);
+  (*cellPtr).CellSetIsClustered(true);
 }
 
 void CellClearIsClustered(Cell *cellPtr)
