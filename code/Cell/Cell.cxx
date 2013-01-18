@@ -98,6 +98,12 @@ Cell::CellSetIsFixed(const bool & isFixed)
 }
 
 void
+Cell::CellSetClusterLevel(unsigned int clusterLevel)
+{
+  this->clusterLevel = clusterLevel;
+}
+
+void
 Cell::CellAddChildCell(Cell &thisCell)
 {
   childCells.push_back(&thisCell);
@@ -193,6 +199,12 @@ int
 Cell::CellGetNumPins(void)
 {
   return (CellGetNumPins(PIN_DIR_ALL));
+}
+
+unsigned int
+Cell::CellGetClusterLevel(void)
+{
+  return (this->clusterLevel);
 }
 
 objOrient 
@@ -293,6 +305,7 @@ Cell::Cell()
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width) 
@@ -308,6 +321,7 @@ Cell::Cell(int Height, int Width)
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, string Name)
@@ -324,6 +338,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 
@@ -341,6 +356,7 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos)
@@ -356,6 +372,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
@@ -372,6 +389,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name, 
@@ -389,6 +407,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
@@ -404,6 +423,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name)
@@ -420,6 +440,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name, bool terminalCell)
@@ -436,5 +457,6 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsFixed(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
+  CellSetClusterLevel(0);
 }
 

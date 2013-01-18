@@ -9,6 +9,7 @@ using namespace std;
 
 class Cell {
  private:
+  unsigned long flags;
   int x;
   int y;
   int height;
@@ -16,6 +17,7 @@ class Cell {
   int numPins;
   int numInPins;
   int numOutPins;
+  unsigned int clusterLevel;
   objOrient orient;
   bool terminalCell;
   bool isClustered;
@@ -58,6 +60,7 @@ class Cell {
   void CellSetIsClustered(const bool&);
   void CellSetIsMacro(const bool &);
   void CellSetIsFixed(const bool &);
+  void CellSetClusterLevel(unsigned int);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
 
@@ -68,6 +71,7 @@ class Cell {
   int CellGetWidth(void);
   int CellGetNumPins(int);
   int CellGetNumPins(void);
+  unsigned int CellGetClusterLevel(void);
   objOrient CellGetOrientation(void);
   unsigned int CellGetArea(void);
   bool CellIsTerminal(void);
@@ -80,6 +84,7 @@ class Cell {
   vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);
   vector<Cell*> CellGetChildCells(void);
+
 
   /* Other functions */
   void CellMoveRight(int);

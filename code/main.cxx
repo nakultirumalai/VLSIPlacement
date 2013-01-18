@@ -6,8 +6,6 @@
 
 # define MAX_ARGS 5
 
-unsigned int stepDepth;
-
 HyperGraph& convertDesignToGraph(Design& thisDesign)
 {
   HyperGraph *myGraph = new HyperGraph();
@@ -48,31 +46,19 @@ int main(int argc, char *argv[])
       i++;
     }
 
-    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
-
     Design myDesign(designPath, designName);
 
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
     FlagsInit();
 
-    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
-
     DesignWriteNodes(myDesign, "");
-    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
     /* Second param is clustering type. Can take on the following values:
        FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
 
-    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
-
     DesignWriteNodes(myDesign, "cluster.out");
-    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
     
-    cout << "Netlist read successfully" << endl;
-
-    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
-
     if (performAnalysis == true) {
       DesignCollectStats(myDesign);
       DesignWriteStats(myDesign);

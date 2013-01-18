@@ -13,6 +13,7 @@
 # include <time.h>
 # include <Stat.h>
 # include <algorithm>
+# include <stdlib.h>
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1
@@ -22,15 +23,19 @@
 # define _ASSERT(txt, expr) \
   if (expr)  {		    \
     cout << txt << endl;    \
-    assert(1);		    \
+    exit(0);		    \
   }
 # define _ASSERT_TRUE(txt)  \
     cout << txt << endl;    \
-    assert(1);		    
+    exit(0);		    
 
 using namespace std;
 
+/* Import variable definitions to all modules */
 extern unsigned int stepDepth;
+extern bool debug;
+extern bool performNetHidingConsistency;
+
 # define _STEP_BEGIN(stepName)  {			       \
     for (int i=0; i < stepDepth; i++) cout << " ";		       \
     cout << "BEGIN STEP: " << stepName				       \
@@ -46,6 +51,9 @@ extern unsigned int stepDepth;
 	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT		\
 	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; \
   }
+
+# define _DEBUG_MSG(msg) \
+  if (debug) cout << msg << endl;
 
 # define MCOMMA ,
 

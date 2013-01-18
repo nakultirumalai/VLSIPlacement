@@ -40,6 +40,9 @@ COMPILE_ALL: $(SRCDIRS)
 	done	
 
 GEN_EXEC: main.cxx
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx -o $(OFILE) -I $(INCLUDE_DIR) 
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) 
 
 debug: COMPILE_ALL GEN_EXEC
+
+tag: 	tags
+	ctags . -R $(CODE_ROOT)

@@ -90,7 +90,7 @@
 /*******************************************************************************
   Cluster name prefix for numbering
 *******************************************************************************/
-# define CLUSTER_NAME_PREFIX "*clust*"
+# define CLUSTER_NAME_PREFIX "oClust"
 
 /*******************************************************************************
   Type definitions for the design class
