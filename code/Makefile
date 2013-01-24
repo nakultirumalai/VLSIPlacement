@@ -44,5 +44,10 @@ GEN_EXEC: main.cxx
 
 debug: COMPILE_ALL GEN_EXEC
 
-tag: 	tags
+tag: 	
 	ctags . -R $(CODE_ROOT)
+	sed 's/\/home\/nakul\/thesis\/VLSIPlacement\/code/\$$CODE_ROOT/g' tags > _tags
+	sed 's/\/home\/tirumanl\/thesis\/VLSIPlacement\/code/\$$CODE_ROOT/g' _tags > __tags
+	mv __tags tags
+	rm -rf _tags
+

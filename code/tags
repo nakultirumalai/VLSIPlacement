@@ -33,8 +33,8 @@ CFLAGS_LOCAL	$CODE_ROOT/Stat/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c$/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/common/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c$/;"	m
 CLUSTER_NAME_PREFIX	$CODE_ROOT/Design/Design.h	93;"	d
 CLUSTER_NAME_PREFIX	$CODE_ROOT/include/Design.h	93;"	d
-COMMON_DEBUG	$CODE_ROOT/common/common.h	18;"	d
-COMMON_DEBUG	$CODE_ROOT/include/common.h	18;"	d
+COMMON_DEBUG	$CODE_ROOT/common/common.h	19;"	d
+COMMON_DEBUG	$CODE_ROOT/include/common.h	19;"	d
 COMMON_H	$CODE_ROOT/common/common.h	2;"	d
 COMMON_H	$CODE_ROOT/include/common.h	2;"	d
 COMMON_ITER_H	$CODE_ROOT/common/commonIter.h	2;"	d
@@ -57,8 +57,10 @@ CellAddChildCell	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellAddChildCell(Cell &thisCel
 CellAddPin	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellAddPin(Pin *pinPtr)$/;"	f	class:Cell
 CellClearAllIsClustered	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllIsClustered(void)$/;"	f
 CellClearIsClustered	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearIsClustered(Cell *cellPtr)$/;"	f
+CellDecrementClusterLevel	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellDecrementClusterLevel(void)$/;"	f	class:Cell
 CellGetArea	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetArea(void)$/;"	f	class:Cell
 CellGetChildCells	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetChildCells(void)$/;"	f	class:Cell
+CellGetClusterLevel	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetClusterLevel(void)$/;"	f	class:Cell
 CellGetHeight	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetHeight(void)$/;"	f	class:Cell
 CellGetName	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetName(void)$/;"	f	class:Cell
 CellGetNumPins	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetNumPins(int pinDir)$/;"	f	class:Cell
@@ -69,6 +71,7 @@ CellGetPins	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetPins(void)$/;"	f	class:Cell
 CellGetWidth	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetWidth(void)$/;"	f	class:Cell
 CellGetXpos	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetXpos(void)$/;"	f	class:Cell
 CellGetYpos	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellGetYpos(void)$/;"	f	class:Cell
+CellIncrementClusterLevel	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellIncrementClusterLevel(void)$/;"	f	class:Cell
 CellIsCluster	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellIsCluster(void)$/;"	f	class:Cell
 CellIsClusterChild	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellIsClusterChild(void)$/;"	f	class:Cell
 CellIsClustered	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellIsClustered(void)$/;"	f	class:Cell
@@ -81,6 +84,7 @@ CellMoveDown	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellMoveDown(int offset)$/;"	f	cla
 CellMoveLeft	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellMoveLeft(int offset)$/;"	f	class:Cell
 CellMoveRight	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellMoveRight(int offset)$/;"	f	class:Cell
 CellMoveUp	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellMoveUp(int offset)$/;"	f	class:Cell
+CellSetClusterLevel	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellSetClusterLevel(unsigned int clusterLevel)$/;"	f	class:Cell
 CellSetHeight	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellSetHeight(int Height) $/;"	f	class:Cell
 CellSetIsCluster	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellSetIsCluster(const bool& isCluster)$/;"	f	class:Cell
 CellSetIsClusterChild	$CODE_ROOT/Cell/Cell.cxx	/^Cell::CellSetIsClusterChild(const bool& isClusterChild)$/;"	f	class:Cell
@@ -167,7 +171,7 @@ DesignCells	$CODE_ROOT/Design/Design.h	/^  map<string, Cell*> DesignCells;$/;"	m
 DesignCells	$CODE_ROOT/include/Design.h	/^  map<string, Cell*> DesignCells;$/;"	m	class:Design
 DesignCloseFile	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCloseFile(void)$/;"	f	class:Design
 DesignClusterCells	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterCells(HyperGraph& myGraph, clusteringType clustType) $/;"	f	class:Design
-DesignClusterSpecifiedCells	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells, double aspectRatio)$/;"	f	class:Design
+DesignClusterSpecifiedCells	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells, $/;"	f	class:Design
 DesignClusters	$CODE_ROOT/Design/Design.h	/^  map<string, Cell*> DesignClusters;$/;"	m	class:Design
 DesignClusters	$CODE_ROOT/include/Design.h	/^  map<string, Cell*> DesignClusters;$/;"	m	class:Design
 DesignCollapseCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignCollapseCluster(Cell& MasterCell)$/;"	f	class:Design
@@ -346,8 +350,8 @@ MAP_FOR_ALL_KEYS	$CODE_ROOT/common/commonIter.h	25;"	d
 MAP_FOR_ALL_KEYS	$CODE_ROOT/include/commonIter.h	25;"	d
 MAX_ARGS	$CODE_ROOT/main.cxx	7;"	d	file:
 MAX_OUTPUTS	$CODE_ROOT/Design/DesignAnalysis.cxx	12;"	d	file:
-MCOMMA	$CODE_ROOT/common/common.h	50;"	d
-MCOMMA	$CODE_ROOT/include/common.h	50;"	d
+MCOMMA	$CODE_ROOT/common/common.h	58;"	d
+MCOMMA	$CODE_ROOT/include/common.h	58;"	d
 MEM_USAGE_UNIT	$CODE_ROOT/Stat/Stat.h	4;"	d
 MEM_USAGE_UNIT	$CODE_ROOT/include/Stat.h	4;"	d
 MergeSortVector	$CODE_ROOT/Sort/Sort.cxx	/^MergeSortVector(Type Left, Type Right, cmp_func this_func)$/;"	f
@@ -369,8 +373,8 @@ NET_IS_HIDDEN_FLAG	$CODE_ROOT/Flags/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:_
 NET_IS_HIDDEN_FLAG	$CODE_ROOT/include/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:__anon2
 NET_ITER_H	$CODE_ROOT/Net/NetIter.h	2;"	d
 NET_ITER_H	$CODE_ROOT/include/NetIter.h	2;"	d
-NIL	$CODE_ROOT/common/common.h	17;"	d
-NIL	$CODE_ROOT/include/common.h	17;"	d
+NIL	$CODE_ROOT/common/common.h	18;"	d
+NIL	$CODE_ROOT/include/common.h	18;"	d
 NINE	$CODE_ROOT/Design/Design.h	88;"	d
 NINE	$CODE_ROOT/include/Design.h	88;"	d
 NODE_ADJACENT_NODE_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	25;"	d	file:
@@ -675,18 +679,20 @@ YES_SYMMETRY	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SY
 YES_SYMMETRY	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon6
 ZERO	$CODE_ROOT/Design/Design.h	87;"	d
 ZERO	$CODE_ROOT/include/Design.h	87;"	d
-_ASSERT	$CODE_ROOT/common/common.h	22;"	d
-_ASSERT	$CODE_ROOT/include/common.h	22;"	d
-_ASSERT_TRUE	$CODE_ROOT/common/common.h	27;"	d
-_ASSERT_TRUE	$CODE_ROOT/include/common.h	27;"	d
-_STEP_BEGIN	$CODE_ROOT/common/common.h	34;"	d
-_STEP_BEGIN	$CODE_ROOT/include/common.h	34;"	d
-_STEP_END	$CODE_ROOT/common/common.h	42;"	d
-_STEP_END	$CODE_ROOT/include/common.h	42;"	d
+_ASSERT	$CODE_ROOT/common/common.h	23;"	d
+_ASSERT	$CODE_ROOT/include/common.h	23;"	d
+_ASSERT_TRUE	$CODE_ROOT/common/common.h	28;"	d
+_ASSERT_TRUE	$CODE_ROOT/include/common.h	28;"	d
+_DEBUG_MSG	$CODE_ROOT/common/common.h	55;"	d
+_DEBUG_MSG	$CODE_ROOT/include/common.h	55;"	d
+_STEP_BEGIN	$CODE_ROOT/common/common.h	39;"	d
+_STEP_BEGIN	$CODE_ROOT/include/common.h	39;"	d
+_STEP_END	$CODE_ROOT/common/common.h	47;"	d
+_STEP_END	$CODE_ROOT/include/common.h	47;"	d
 _WRITE_HEADER	$CODE_ROOT/Design/DesignWrite.cxx	3;"	d	file:
 _WRITE_TABLE	$CODE_ROOT/Design/DesignAnalysis.cxx	30;"	d	file:
-_setNULL	$CODE_ROOT/common/common.h	19;"	d
-_setNULL	$CODE_ROOT/include/common.h	19;"	d
+_setNULL	$CODE_ROOT/common/common.h	20;"	d
+_setNULL	$CODE_ROOT/include/common.h	20;"	d
 add_escapes	$CODE_ROOT/gprof2html.py	/^def add_escapes(input):$/;"	f
 annIdx1	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned int annIdx1;$/;"	m	class:Node
 annIdx1	$CODE_ROOT/include/Node.h	/^  unsigned int annIdx1;$/;"	m	class:Node
@@ -701,6 +707,8 @@ aspectRatioMacroRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, 
 childCells	$CODE_ROOT/Cell/Cell.h	/^  vector<Cell*> childCells;$/;"	m	class:Cell
 childCells	$CODE_ROOT/include/Cell.h	/^  vector<Cell*> childCells;$/;"	m	class:Cell
 clearDirty	$CODE_ROOT/HyperGraph/HyperGraph.cxx	/^HyperGraph::clearDirty(void)$/;"	f	class:HyperGraph
+clusterLevel	$CODE_ROOT/Cell/Cell.h	/^  unsigned int clusterLevel;$/;"	m	class:Cell
+clusterLevel	$CODE_ROOT/include/Cell.h	/^  unsigned int clusterLevel;$/;"	m	class:Cell
 clusterNodes	$CODE_ROOT/HyperGraph/HyperGraph.cxx	/^HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object,$/;"	f	class:HyperGraph
 clusterNumber	$CODE_ROOT/Design/DesignCluster.cxx	/^static unsigned int clusterNumber;$/;"	v	file:
 clusteringType	$CODE_ROOT/Design/Design.h	/^} clusteringType;$/;"	t	typeref:enum:__anon7
@@ -713,6 +721,7 @@ coordinate	$CODE_ROOT/include/PhysRow.h	/^  int coordinate;$/;"	m	class:PhysRow
 createNetStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^createNetStats()$/;"	f
 data	$CODE_ROOT/HyperGraph/Node.h	/^  void *data;$/;"	m	class:Node
 data	$CODE_ROOT/include/Node.h	/^  void *data;$/;"	m	class:Node
+debug	$CODE_ROOT/variables.cxx	/^bool debug=false;$/;"	v
 default_cmp_func	$CODE_ROOT/Sort/Sort.cxx	/^bool default_cmp_func(vector<Type> &thisVector, unsigned int idx1, unsigned int idx2)$/;"	f
 dir	$CODE_ROOT/Pin/Pin.h	/^  char dir; $/;"	m	class:Pin
 dir	$CODE_ROOT/include/Pin.h	/^  char dir; $/;"	m	class:Pin
@@ -730,7 +739,9 @@ edgeType	$CODE_ROOT/include/Node.h	/^typedef enum edgeType {$/;"	g
 edgeType	$CODE_ROOT/include/Node.h	/^} edgeType;$/;"	t	typeref:enum:edgeType
 flagType	$CODE_ROOT/Flags/Flags.h	/^} flagType;$/;"	t	typeref:enum:__anon1
 flagType	$CODE_ROOT/include/Flags.h	/^} flagType;$/;"	t	typeref:enum:__anon2
+flags	$CODE_ROOT/Cell/Cell.h	/^  unsigned long flags;$/;"	m	class:Cell
 flags	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned char flags;$/;"	m	class:Node
+flags	$CODE_ROOT/include/Cell.h	/^  unsigned long flags;$/;"	m	class:Cell
 flags	$CODE_ROOT/include/Node.h	/^  unsigned char flags;$/;"	m	class:Node
 getCPUTime	$CODE_ROOT/Stat/Stat.cxx	/^double getCPUTime() {$/;"	f
 getConnectedIndices	$CODE_ROOT/HyperGraph/HyperGraph.cxx	/^HyperGraph::getConnectedIndices(unsigned int nodeIdx)$/;"	f	class:HyperGraph
@@ -835,6 +846,7 @@ orient	$CODE_ROOT/include/Cell.h	/^  objOrient orient;$/;"	m	class:Cell
 outEdges	$CODE_ROOT/HyperGraph/Node.h	/^  vector<unsigned int>outEdges;$/;"	m	class:Node
 outEdges	$CODE_ROOT/include/Node.h	/^  vector<unsigned int>outEdges;$/;"	m	class:Node
 parseLine	$CODE_ROOT/Stat/Stat.cxx	/^int parseLine(char* line){$/;"	f
+performNetHidingConsistency	$CODE_ROOT/variables.cxx	/^bool performNetHidingConsistency=false;$/;"	v
 pinCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int pinCount;$/;"	m	struct:NetStatsStruct	file:
 pinCount	$CODE_ROOT/Net/Net.h	/^  unsigned int pinCount;$/;"	m	class:Net
 pinCount	$CODE_ROOT/include/Net.h	/^  unsigned int pinCount;$/;"	m	class:Net
@@ -857,7 +869,7 @@ siteWidth	$CODE_ROOT/PhysData/PhysRow.h	/^  unsigned int siteWidth;$/;"	m	class:
 siteWidth	$CODE_ROOT/include/PhysRow.h	/^  unsigned int siteWidth;$/;"	m	class:PhysRow
 sortCmpFunc	$CODE_ROOT/Design/DesignAnalysis.cxx	/^bool sortCmpFunc (NetStat obj1, NetStat obj2) {$/;"	f
 stdCellEps	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int stdCellEps;$/;"	m	struct:NetStatsStruct	file:
-stepDepth	$CODE_ROOT/main.cxx	/^unsigned int stepDepth;$/;"	v
+stepDepth	$CODE_ROOT/variables.cxx	/^unsigned int stepDepth;$/;"	v
 subRows	$CODE_ROOT/PhysData/PhysRow.h	/^  map<unsigned int,unsigned int> subRows;$/;"	m	class:PhysRow
 subRows	$CODE_ROOT/include/PhysRow.h	/^  map<unsigned int,unsigned int> subRows;$/;"	m	class:PhysRow
 terminalCell	$CODE_ROOT/Cell/Cell.h	/^  bool terminalCell;$/;"	m	class:Cell
