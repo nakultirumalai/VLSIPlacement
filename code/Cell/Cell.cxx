@@ -127,6 +127,21 @@ Cell::CellAddPin(Pin *pinPtr)
 }
 
 void
+Cell::CellIncrementClusterLevel(void)
+{
+  clusterLevel++;
+}
+
+void
+Cell::CellDecrementClusterLevel(void)
+{
+  if (clusterLevel == 0) {
+    _ASSERT_TRUE("Cluster level of cell already at 0.");
+  }
+  clusterLevel--;
+}
+
+void
 Cell::CellMoveRight(int offset)
 {
   x += offset;

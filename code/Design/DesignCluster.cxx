@@ -159,7 +159,7 @@ Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells,
     newCell = new Cell();
     (*newCell).CellSetName(clusterName);
     (*newCell).CellSetIsCluster(true);
-    (*newCell).CellUpgradeClusterLevel();
+    (*newCell).CellIncrementClusterLevel();
     /* Flag the cell as clustered */
     CellSetIsClustered(newCell);
 

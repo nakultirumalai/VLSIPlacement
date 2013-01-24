@@ -63,6 +63,8 @@ class Cell {
   void CellSetClusterLevel(unsigned int);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
+  void CellIncrementClusterLevel(void);
+  void CellDecrementClusterLevel(void);
 
   /* Get functions */
   int CellGetXpos(void);
@@ -84,7 +86,6 @@ class Cell {
   vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);
   vector<Cell*> CellGetChildCells(void);
-
 
   /* Other functions */
   void CellMoveRight(int);
