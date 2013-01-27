@@ -1,14 +1,14 @@
 List of pending tasks:
 - Reading fixed position of cells. Done
 - Collecting net details and sorting. Done
+- Terminal propagation.
 - Writing out top level benchmark information. 
-  a) Writing nodes:
-  b) Writing nets
+  a) Writing nodes. Done.
+  b) Writing nets. 
   c) Writing location of already placed cells
 - Clustering:
-  a) Multi-level clustering should be considered
-  b) Cells of different levels should be able to be clustered together
-  c) 
+  a) Multi-level clustering should be considered. Done
+  b) Cells of different levels should be able to be clustered together. Done
 - Put together top level flow
 - Write filtered iterators
 - Study quadratic analytical solvers and download packages for analytical solving

@@ -9,3 +9,5 @@ BOOLEAN GLOBAL VARIABLES
 ********************************************************************/
 bool debug=false;
 bool performNetHidingConsistency=false;
+bool performAnalysis=false;
+unsigned int traceDepth=0;

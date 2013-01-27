@@ -32,7 +32,7 @@ void CellClearIsClustered(Cell *cellPtr)
 
 void CellClearAllIsClustered(void)
 {
-  FlagsDefClearFlagAllObjs(CELL_IS_CLUSTERED_FLAG);
+  FlagsDefClearAllObjs(CELL_IS_CLUSTERED_FLAG);
 }
 
 bool NetIsHidden(Net *netPtr)
@@ -62,5 +62,34 @@ void NetClearIsHidden(Net *netPtr)
 
 void NetClearAllIsHidden(Net *netPtr)
 {
-  FlagsDefClearFlagAllObjs(NET_IS_HIDDEN_FLAG);
+  FlagsDefClearAllObjs(NET_IS_HIDDEN_FLAG);
 }
+
+void PinSetOriginalPin(Pin *thisPin, Pin *originalPin)
+{
+  void *obj = (void *)thisPin;
+  void *ptr = (void *)originalPin;
+
+  FlagsDefSetPtr(PIN_ORIGINAL_PIN_FLAG, obj, ptr);
+}
+
+void* PinGetOriginalPin(Pin *thisPin)
+{
+  void *obj = (void *)thisPin;
+  void *ptr = FlagsDefGetPtr(PIN_ORIGINAL_PIN_FLAG, obj);
+  
+  return (ptr);
+}
+
+void PinClearOriginalPin(Pin *thisPin)
+{
+  void *obj = (void *)thisPin;
+  
+  FlagsDefClearPtr(PIN_ORIGINAL_PIN_FLAG, obj);
+}
+
+void PinClearAllOriginalPin(void)
+{
+  FlagsDefClearAllObjs(PIN_ORIGINAL_PIN_FLAG);
+}
+

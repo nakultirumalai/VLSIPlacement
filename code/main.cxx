@@ -4,7 +4,7 @@
 # include <Stat.h>
 # include <Flags.h>
 
-# define MAX_ARGS 5
+# define MAX_ARGS 7
 
 HyperGraph& convertDesignToGraph(Design& thisDesign)
 {
@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
 {
   string designName, designPath;
   string switchName;
-  bool performAnalysis;
   int i;
 
   designName = "";
@@ -28,13 +27,21 @@ int main(int argc, char *argv[])
 
   if (argc > 1 && argc < MAX_ARGS) {
     i = 1;
-    performAnalysis = false;
     while (i < argc) {
       if (argv[i][0] == '-') {
 	/* Switch to options */
 	switchName = argv[i] + 1;
 	if (switchName == "analyse") {
 	  performAnalysis = true;
+	} else if (switchName == "trace_depth") {
+	  string traceDepthStr = argv[i+1];
+	  if (!strIsNumber(traceDepthStr)) {
+	    _ERROR("Trace depth specified is not a number. Assuming 1");
+	    traceDepth = 1;
+	  } else {
+	    traceDepth = atoi(traceDepthStr.data());
+	    i++;
+	  }
 	}
       } else {
 	if (designPath == "") {
@@ -51,13 +58,13 @@ int main(int argc, char *argv[])
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
     FlagsInit();
 
-    DesignWriteNodes(myDesign, "");
+    //DesignWriteNodes(myDesign, "");
 
     myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
     /* Second param is clustering type. Can take on the following values:
        FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
 
-    DesignWriteNodes(myDesign, "cluster.out");
+    //DesignWriteNodes(myDesign, "cluster.out");
     
     if (performAnalysis == true) {
       DesignCollectStats(myDesign);

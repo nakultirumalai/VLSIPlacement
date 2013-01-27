@@ -154,6 +154,7 @@ class Design {
   Cell *DesignGetNode(string);
   vector<Cell*> DesignClusterSpecifiedCells(vector<vector<void * > >, double);
   void DesignHideNets(std::vector<void*>, std::vector<void *>);
+  void DesignPropagateTerminals(Cell *, Cell *);
 
  public:
   map<string, Cell*> DesignCells;

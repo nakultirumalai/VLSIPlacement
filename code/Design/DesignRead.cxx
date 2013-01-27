@@ -162,7 +162,7 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     if (pinDir == PIN_DIR_INPUT_STRING) dir = PIN_DIR_INPUT;
     else if (pinDir == PIN_DIR_OUTPUT_STRING) dir = PIN_DIR_OUTPUT;
 
-    PinName = nodeName + "_" + NetName + "_" + getStrFromInt(pinNum);
+    PinName = nodeName + "_" + getStrFromInt(pinNum);
     Pin *newPin = new Pin(0, (int)xoffset, (int)yoffset, dir, *node, PinName);
 
     Msg = "Created Pin " + PinName + " on cell " + nodeName;
@@ -215,8 +215,8 @@ Design::DesignFileReadOneNet(ifstream &file)
     DesignAddOneNetToDesignDB(newNet);
     break;
   }
-}
 
+}
 
 void
 Design::DesignFileReadNets(ifstream& file)

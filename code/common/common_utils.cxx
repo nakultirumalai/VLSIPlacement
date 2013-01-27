@@ -86,3 +86,11 @@ void vectorRemoveDuplicates(vector<unsigned int>& vec)
   sort(vec.begin(), vec.end());
   vec.erase(unique(vec.begin(), vec.end()), vec.end());
 }
+
+bool strIsNumber(const string& s)
+{
+  string::const_iterator it = s.begin();
+  while (it != s.end() && isdigit(*it)) ++it;
+  
+  return !s.empty() && it == s.end();
+}

@@ -35,25 +35,37 @@ using namespace std;
 extern unsigned int stepDepth;
 extern bool debug;
 extern bool performNetHidingConsistency;
+extern unsigned int traceDepth;
+extern bool performAnalysis;
 
-# define _STEP_BEGIN(stepName)  {			       \
-    for (int i=0; i < stepDepth; i++) cout << " ";		       \
-    cout << "BEGIN STEP: " << stepName				       \
-	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT	       \
-	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; \
+# define _STEP_BEGIN(stepName)  {					\
     stepDepth++;							\
+    if (traceDepth >= stepDepth) {					\
+      for (int i=0; i < (stepDepth - 1); i++) cout << " ";		\
+      cout << "BEGIN STEP: " << stepName				\
+	   <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT		\
+	   <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; \
+    }									\
   }
 
-# define _STEP_END(stepName)  {				\
+
+# define _STEP_END(stepName)  {						\
+    if (traceDepth >= stepDepth) {					\
+      for (int i=0; i < (stepDepth - 1); i++) cout << " ";		\
+      cout << "END STEP: " << stepName					\
+	   <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT		\
+	   <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; \
+    }									\
     stepDepth--;							\
-    for (int i=0; i < stepDepth; i++) cout << " ";			\
-    cout << "END STEP: " << stepName					\
-	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT		\
-	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; \
   }
+  
 
 # define _DEBUG_MSG(msg) \
   if (debug) cout << msg << endl;
+
+# define _ERROR(msg) \
+  cout << "Error:";  \
+  cout << msg << endl;
 
 # define MCOMMA ,
 
@@ -71,5 +83,6 @@ double dround(double);
 
 objOrient getOrientationFromStr(string);
 void vectorRemoveDuplicates(vector<unsigned int>& vec);
+bool strIsNumber(const string& s);
 
 #endif

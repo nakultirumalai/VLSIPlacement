@@ -12,6 +12,54 @@ Design::DesignCollapseCluster(Cell& MasterCell)
 
 }
 
+void 
+netHidingConsistencyCheck(vector<void *>affectedNets, 
+			  vector<void *>listOfCells) 
+{
+  Cell* cellPtr;
+  Pin *pinPtr;
+  Net *netPtr;
+  map<Net*, bool> netHash;
+  
+  VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
+    Cell &cellObj = (*cellPtr);
+    CELL_FOR_ALL_NETS(cellObj, PIN_DIR_ALL, netPtr) {
+      if (netHash.find(netPtr) != netHash.end()) {
+	continue;
+      } else {
+	netHash[netPtr] = true;
+      }
+      bool markNet = true;
+      Net &netObj = (*netPtr);
+      NET_FOR_ALL_PINS(netObj, pinPtr) {
+	Cell& parentCell = (*pinPtr).PinGetParentCell();
+	if (parentCell.CellIsClusterChild()) {
+	  markNet = false;
+	  break;
+	}
+      } NET_END_FOR;
+      if (markNet == true) {
+	(*netPtr).NetSetIsUnderCluster(true);
+      } else {
+	netHash.erase(netPtr);
+      }
+    } CELL_END_FOR;
+  } END_FOR;
+
+  bool success = true;
+  VECTOR_FOR_ALL_ELEMS(affectedNets, Net*, netPtr) {
+    if (netHash.find(netPtr) != netHash.end()) {
+      continue;
+    }
+    success = false;
+    break;
+  } END_FOR;
+  if (success == false) {
+    _ASSERT_TRUE("Consistency check for hiding nets failed");
+  }
+}
+
+
 /*********************************************************************
    Hide the nets that connect to only those cells which are inside a 
    cluster
@@ -19,10 +67,7 @@ Design::DesignCollapseCluster(Cell& MasterCell)
 void
 Design::DesignHideNets(vector<void *> affectedNets, vector<void *> listOfCells)
 {
-  Cell* cellPtr;
-  Pin *pinPtr;
   Net *netPtr;
-  map<Net*, bool> netHash;
   
   VECTOR_FOR_ALL_ELEMS(affectedNets, Net*, netPtr) {
     (*netPtr).NetSetIsUnderCluster(true);
@@ -30,42 +75,28 @@ Design::DesignHideNets(vector<void *> affectedNets, vector<void *> listOfCells)
 
   /* Perform a consistency check when enabled */
   if (performNetHidingConsistency) {
-    VECTOR_FOR_ALL_ELEMS(listOfCells, Cell*, cellPtr) {
-      Cell &cellObj = (*cellPtr);
-      CELL_FOR_ALL_NETS(cellObj, PIN_DIR_ALL, netPtr) {
-	if (netHash.find(netPtr) != netHash.end()) {
-	  continue;
-	} else {
-	  netHash[netPtr] = true;
-	}
-	bool markNet = true;
-	Net &netObj = (*netPtr);
-	NET_FOR_ALL_PINS(netObj, pinPtr) {
-	  Cell& parentCell = (*pinPtr).PinGetParentCell();
-	  if (parentCell.CellIsClusterChild()) {
-	    markNet = false;
-	    break;
-	  }
-	} NET_END_FOR;
-	if (markNet == true) {
-	  (*netPtr).NetSetIsUnderCluster(true);
-	} else {
-	  netHash.erase(netPtr);
-	}
-      } CELL_END_FOR;
-    } END_FOR;
-    bool success = true;
-    VECTOR_FOR_ALL_ELEMS(affectedNets, Net*, netPtr) {
-      if (netHash.find(netPtr) != netHash.end()) {
-	continue;
-      }
-      success = false;
-      break;
-    } END_FOR;
-    if (success == false) {
-      _ASSERT_TRUE("Consistency check for hiding nets failed");
-    }
+    netHidingConsistencyCheck(affectedNets, listOfCells);
   }
+}
+
+/*********************************************************************
+   Hide the nets that connect to only those cells which are inside a 
+   cluster
+*********************************************************************/
+void
+Design::DesignPropagateTerminals(Cell* fromCell, Cell* toCell)
+{
+  Pin *PinPtr;
+  char dir;
+
+  CELL_FOR_ALL_PINS((*fromCell), dir, PinPtr) {
+    Pin *pinPtr = new Pin((*PinPtr).PinGetId(), (*toCell), 
+			  (*PinPtr).PinGetName());
+    PinSetOriginalPin(PinPtr, pinPtr);
+    (*pinPtr).PinSetDirection(dir);
+    Net& connectedNet = (*PinPtr).Disconnect();
+    (*pinPtr).Connect(connectedNet);
+  } CELL_END_FOR;
 }
 
 /*********************************************************************
@@ -147,10 +178,11 @@ Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells,
   unsigned int cellIndex;
   unsigned int numClusters;
   
+  numClusters=0;
   VECTOR_FOR_ALL_ELEMS(listOfCells, vector<void *>, cellList) {
     _STEP_BEGIN("Clustering cell set");
     collectiveHeight=0; collectiveWidth=0;
-    maxHeight=0; maxWidth=0; numClusters=0;
+    maxHeight=0; maxWidth=0; 
 
     /* Build the name of the cluster cell */
     clusterName = CLUSTER_NAME_PREFIX + getStrFromInt(clusterNumber++);
@@ -195,6 +227,10 @@ Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells,
 
       cellIndex = myGraph.HyperGraphGetCellIndex(cellPtr);
       cellIndices.push_back(cellIndex);
+
+      /* Propagate pin connections to the newly clustered cell */
+      DesignPropagateTerminals(newCell, cellPtr);
+
       cellHash[cellPtr] = true;
     } END_FOR;
   
@@ -215,16 +251,15 @@ Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells,
 
     /* Hide nets that are under the cluster */
     DesignHideNets(affectedNets, cellList);
-    
-    /* Nets connected to old cells need to be connected to the 
-       cluster cell now. Commit this change to the design */
-    
+
     /* Add the clustered cell to the return list */
     returnList.push_back(newCell);
+
     _STEP_END("Clustering each cell set");
     numClusters++;
   } END_FOR;
-  cout << "Clustered " << stopCount << " clusters successfully";
+  cout << "Clustered " << numClusters << " clusters successfully" << endl;
+
   return (returnList);
 }
 
