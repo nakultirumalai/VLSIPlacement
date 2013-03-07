@@ -1,0 +1,876 @@
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U10510/Y U13110/Y U1710/Y U2561/Y U1391/Y U1761/Y U2631/Y RxDataOut_reg[6]1/D  0.00
+
+CurrState_SIETx_reg[2]/CLK CurrState_SIETx_reg[2]/Q U484/Y U323/Y U442/Y U9011/Y U347/Y U5121/Y U407/Y U9211/Y U9411/Y U403/Y U455/Y U10111/Y U5621/Y U423/Y U4721/Y U473/Y SIEPortData_reg[7]/D  0.00
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U147/Y U85/Y U248/Y U249/Y U251/Y RXSameBitCount_reg[3]/D  0.00
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U424/Y U429/Y U9111/Y U2272/Y U5821/Y U583/Y TxByteOut_reg[1]/D  0.00
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U424/Y U429/Y U9111/Y U2272/Y U584/Y U585/Y TxByteOut_reg[2]/D  0.00
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U424/Y U429/Y U9111/Y U2272/Y U590/Y U5911/Y TxByteOut_reg[4]/D  0.00
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U424/Y U429/Y U9111/Y U2272/Y U593/Y U594/Y TxByteOut_reg[5]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11610/Y U302/Y RxByte_reg[0]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11610/Y U300/Y RxByte_reg[2]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11810/Y U299/Y RxByte_reg[3]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11810/Y U3011/Y RxByte_reg[1]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11610/Y U298/Y RxByte_reg[4]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11610/Y U296/Y RxByte_reg[6]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11810/Y U297/Y RxByte_reg[5]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11810/Y U295/Y RxByte_reg[7]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11810/Y U304/Y RxCtrl_reg[0]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1821/Y U541/Y U2401/Y U2411/Y U531/Y U1671/Y U551/Y U11610/Y U294/Y RxCtrl_reg[1]/D  0.00
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U2173/Y U1615/Y U1633/Y U1643/Y U2193/Y U2203/Y U2215/Y U2233/Y TXOneCount_reg[3]/D  0.00
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1177/Y U1191/Y  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U6410/Y U631/Y U1801/Y U1781/Y U2601/Y RxDataOut_reg[3]1/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U6410/Y U631/Y U1801/Y U1781/Y U2611/Y RxDataOut_reg[4]1/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U6410/Y U631/Y U1801/Y U1781/Y U2621/Y RxDataOut_reg[5]1/D  0.00
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U1583/Y U2283/Y TxByte_reg[1]/D  0.00
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U1583/Y U2303/Y TxByte_reg[3]/D  0.00
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U1583/Y U2323/Y TxByte_reg[5]/D  0.00
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U928/Y U766/Y U1336/Y TxUpdateCRC5/data_reg[1]/D  0.00
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U928/Y U766/Y U1337/Y TxUpdateCRC5/data_reg[3]/D  0.00
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U928/Y U766/Y U1338/Y TxUpdateCRC5/data_reg[4]/D  0.00
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U928/Y U766/Y U1339/Y TxUpdateCRC5/data_reg[5]/D  0.00
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U928/Y U766/Y U1340/Y TxUpdateCRC5/data_reg[6]/D  0.00
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U423/Y U6412/Y SIEPortCtrl_reg[0]/D  0.00
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U423/Y U6441/Y SIEPortCtrl_reg[3]/D  0.00
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U423/Y U6471/Y SIEPortCtrl_reg[6]/D  0.00
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U423/Y U6501/Y SIEPortData_reg[1]/D  0.00
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U423/Y U6531/Y SIEPortData_reg[4]/D  0.00
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U10510/Y U13110/Y U1710/Y U2561/Y U1391/Y U1761/Y U9710/Y RxCtrlOut_reg[1]1/D  0.00
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U9212/Y U2273/Y TxByte_reg[0]/D  0.01
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U9212/Y U2293/Y TxByte_reg[2]/D  0.01
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U9212/Y U2315/Y TxByte_reg[4]/D  0.01
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U9212/Y U2333/Y TxByte_reg[6]/D  0.01
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1611/Y U1601/Y U1731/Y U2441/Y CRCData_reg[2]/D  0.01
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1611/Y U1601/Y U1731/Y U2481/Y CRCData_reg[6]/D  0.01
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1611/Y U1601/Y U1731/Y U2421/Y CRCData_reg[0]/D  0.01
+
+input_external_delay rst U867/Y U833/Y U9112/Y U11812/Y U13212/Y U12712/Y U5710/Y U3310/Y U3410/Y U9312/Y U2103/Y U2115/Y TxByteCtrl_reg[0]/D  0.01
+
+input_external_delay rst U867/Y U833/Y U9112/Y U11812/Y U13212/Y U12712/Y U5710/Y U3310/Y U3410/Y U9312/Y U2103/Y U2553/Y TxByteFullSpeedRate_reg/D  0.01
+
+input_external_delay rst U867/Y U833/Y U9112/Y U11812/Y U13212/Y U12712/Y U5710/Y U3310/Y U3410/Y U9312/Y U2103/Y U2133/Y USBWireFullSpeedRate_reg1/D  0.01
+
+input_external_delay rst U867/Y U833/Y U9112/Y U11812/Y U13212/Y U12712/Y U5710/Y U3310/Y U3410/Y U9312/Y U2103/Y U2123/Y TxByteCtrl_reg[1]/D  0.01
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U761/Y U968/Y U1232/Y RxUpdateCRC16/data_reg[4]/D  0.01
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U761/Y U968/Y U1233/Y RxUpdateCRC16/data_reg[5]/D  0.01
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U761/Y U968/Y U1234/Y RxUpdateCRC16/data_reg[6]/D  0.01
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U795/Y U1268/Y U834/Y U669/Y u_SIEReceiver/RXWaitCount_reg[6]/D  0.01
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1177/Y U1178/Y u_writeUSBWireData/buffer1_reg[0]/D  0.01
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1177/Y U1189/Y u_writeUSBWireData/buffer1_reg[1]/D  0.01
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1177/Y U1184/Y u_writeUSBWireData/buffer1_reg[2]/D  0.01
+
+input_external_delay rst U741/Y U673/Y U823/Y U926/Y U1160/Y U804/Y U1335/Y TxUpdateCRC5/data_reg[0]/D  0.01
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U751/Y U749/Y U946/Y U1266/Y u_SIEReceiver/RXWaitCount_reg[4]/D  0.01
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U761/Y U968/Y U1235/Y RxUpdateCRC16/data_reg[7]/D  0.01
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1603/Y U1593/Y U1583/Y U2343/Y TxByte_reg[7]/D  0.01
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U795/Y U1268/Y U834/Y U668/Y u_SIEReceiver/RXWaitCount_reg[5]/D  0.01
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U76/Y U24/Y RxCtrlOut_reg[0]/D  0.01
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U913/Y U1007/Y U1070/Y U1008/Y U1071/Y RxUpdateCRC5/i_reg[3]/D  0.02
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U950/Y U1022/Y U921/Y U1257/Y U1258/Y u_SIEReceiver/connectState_reg[1]/D  0.02
+
+input_external_delay rst U741/Y U673/Y U823/Y U926/Y U1160/Y U804/Y U1343/Y TxUpdateCRC5/loopEnd_reg[0]/D  0.02
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U77/Y U38/Y RxDataOut_reg[1]/D  0.02
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U950/Y U1022/Y U718/Y U719/Y U720/Y u_SIEReceiver/connectState_reg[0]/D  0.02
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U77/Y U161/Y RxCtrlOut_reg[1]/D  0.02
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U928/Y U766/Y U1342/Y TxUpdateCRC5/data_reg[7]/D  0.02
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U76/Y U205/Y RxDataOut_reg[0]/D  0.02
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U76/Y U206/Y RxDataOut_reg[2]/D  0.02
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U76/Y U208/Y RxDataOut_reg[4]/D  0.02
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U76/Y U210/Y RxDataOut_reg[6]/D  0.02
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2282/Y U6491/Y SIEPortData_reg[0]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2282/Y U6521/Y SIEPortData_reg[3]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2282/Y U6451/Y SIEPortCtrl_reg[4]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2282/Y U6541/Y SIEPortData_reg[5]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2282/Y U6551/Y SIEPortData_reg[6]/D  0.03
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U147/Y U85/Y U248/Y U55/Y U252/Y RXSameBitCount_reg[2]/D  0.03
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U77/Y U207/Y RxDataOut_reg[3]/D  0.03
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U77/Y U209/Y RxDataOut_reg[5]/D  0.03
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U204/Y U170/Y U77/Y U211/Y RxDataOut_reg[7]/D  0.03
+
+u_SIEReceiver/RxBits_reg[1]/CLK u_SIEReceiver/RxBits_reg[1]/QN U1074/Y U736/Y U859/Y U1260/Y U882/Y U648/Y U661/Y U1269/Y U721/Y U722/Y u_SIEReceiver/RXWaitCount_reg[7]/D  0.03
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U2173/Y U1615/Y U1633/Y U1643/Y U2193/Y U2203/Y U7412/Y U2243/Y TXOneCount_reg[2]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2262/Y U6421/Y SIEPortCtrl_reg[1]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2262/Y U6431/Y SIEPortCtrl_reg[2]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2262/Y U6512/Y SIEPortData_reg[2]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2262/Y U6481/Y SIEPortCtrl_reg[7]/D  0.03
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U4121/Y U2262/Y U6461/Y SIEPortCtrl_reg[5]/D  0.03
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1961/Y U9910/Y U277/Y U278/Y RXDataByteCnt_reg[5]/D  0.03
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1961/Y U9910/Y U272/Y U273/Y RXDataByteCnt_reg[3]/D  0.03
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U424/Y U429/Y U9111/Y U2272/Y U579/Y TxByteOutCtrl_reg[1]/D  0.03
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U2181/Y U2231/Y U2591/Y RxDataOut_reg[2]1/D  0.03
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U938/Y U744/Y U1017/Y U1018/Y U1270/Y U1272/Y u_SIEReceiver/RxBits_reg[0]/D  0.03
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U938/Y U744/Y U1017/Y U1018/Y U1270/Y U1271/Y u_SIEReceiver/RxBits_reg[1]/D  0.03
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U2672/Y U573/Y U575/Y USBWireCtrl_reg/D  0.03
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U12911/Y U13011/Y U555/Y U557/Y U558/Y U559/Y i_reg[2]/D  0.03
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U2672/Y U573/Y U10011/Y USBWireData_reg[1]/D  0.03
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U939/Y U797/Y U1246/Y RxUpdateCRC5/data_reg[1]/D  0.03
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U939/Y U797/Y U1248/Y RxUpdateCRC5/data_reg[3]/D  0.03
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U939/Y U797/Y U1249/Y RxUpdateCRC5/data_reg[4]/D  0.03
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U939/Y U797/Y U1251/Y RxUpdateCRC5/data_reg[6]/D  0.03
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U751/Y U749/Y U946/Y U1264/Y u_SIEReceiver/RXWaitCount_reg[3]/D  0.04
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U1592/Y U336/Y U2222/Y U2062/Y U457/Y CRCData_reg[1]1/D  0.04
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U1592/Y U336/Y U2222/Y U2062/Y U436/Y CRCData_reg[3]1/D  0.04
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1961/Y U9910/Y U1511/Y U2681/Y RXDataByteCnt_reg[1]/D  0.04
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U715/Y U716/Y U750/Y U794/Y U1245/Y RxUpdateCRC5/data_reg[0]/D  0.04
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U715/Y U716/Y U750/Y U793/Y U1247/Y RxUpdateCRC5/data_reg[2]/D  0.04
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U715/Y U716/Y U750/Y U793/Y U1254/Y RxUpdateCRC5/loopEnd_reg[2]/D  0.04
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U468/Y U3021/Y U475/Y U3012/Y U416/Y U588/Y TxByteOut_reg[3]/D  0.04
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U468/Y U3021/Y U475/Y U3012/Y U4131/Y U596/Y TxByteOut_reg[7]/D  0.04
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1611/Y U1601/Y U11910/Y U11710/Y U1771/Y CRCData_reg[7]/D  0.04
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U468/Y U3021/Y U475/Y U3012/Y U13211/Y U13510/Y TxByteOut_reg[6]/D  0.04
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U6410/Y U631/Y U1801/Y U7100/Y U2571/Y RxDataOut_reg[0]1/D  0.04
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U6410/Y U631/Y U1801/Y U7100/Y U2581/Y RxDataOut_reg[1]1/D  0.04
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U913/Y U1007/Y U1070/Y U1072/Y RxUpdateCRC5/i_reg[2]/D  0.04
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U2672/Y U573/Y U577/Y USBWireData_reg[0]/D  0.04
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U2382/Y U3311/Y U619/Y resumeCnt_reg[10]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U50/Y U49/Y U240/Y RXByte_reg[1]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U48/Y U145/Y U243/Y RXByte_reg[4]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U50/Y U49/Y U242/Y RXByte_reg[3]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U48/Y U145/Y U246/Y RXByte_reg[7]/D  0.04
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U2382/Y U628/Y U6311/Y resumeCnt_reg[15]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U50/Y U148/Y U241/Y RXByte_reg[2]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U48/Y U146/Y U244/Y RXByte_reg[5]/D  0.04
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1172/Y U1179/Y U1180/Y u_writeUSBWireData/buffer0_reg[0]/D  0.04
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1172/Y U1179/Y U1190/Y u_writeUSBWireData/buffer0_reg[1]/D  0.04
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1172/Y U1179/Y U1185/Y u_writeUSBWireData/buffer0_reg[2]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U50/Y U148/Y U239/Y RXByte_reg[0]/D  0.04
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U13/Y U48/Y U146/Y U245/Y RXByte_reg[6]/D  0.04
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/Q U1712/Y U378/Y U3821/Y U454/Y U2472/Y U597/Y U598/Y U4221/Y U2662/Y U2652/Y U387/Y U435/Y U604/Y resumeCnt_reg[4]/D  0.04
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U6211/Y U624/Y resumeCnt_reg[12]/D  0.04
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U6111/Y U614/Y resumeCnt_reg[8]/D  0.04
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1172/Y U1173/Y U1175/Y u_writeUSBWireData/buffer2_reg[0]/D  0.04
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1172/Y U1173/Y U1188/Y u_writeUSBWireData/buffer2_reg[1]/D  0.04
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1172/Y U1173/Y U1183/Y u_writeUSBWireData/buffer2_reg[2]/D  0.04
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1961/Y U9910/Y U1471/Y U270/Y RXDataByteCnt_reg[2]/D  0.05
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U2181/Y U2231/Y U2241/Y RxOverflow_reg/D  0.05
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U715/Y U716/Y U750/Y U794/Y U1250/Y RxUpdateCRC5/data_reg[5]/D  0.05
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U715/Y U716/Y U750/Y U794/Y U1253/Y RxUpdateCRC5/loopEnd_reg[0]/D  0.05
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/Q U1712/Y U378/Y U3821/Y U454/Y U2472/Y U597/Y U598/Y U4221/Y U2662/Y U2652/Y U387/Y U358/Y U600/Y resumeCnt_reg[1]/D  0.05
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U913/Y U796/Y U1237/Y RxUpdateCRC5/ready_reg/D  0.05
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U2382/Y U3311/Y U617/Y resumeCnt_reg[9]/D  0.05
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U2382/Y U628/Y U629/Y resumeCnt_reg[14]/D  0.05
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U395/Y U609/Y resumeCnt_reg[6]/D  0.05
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U395/Y U607/Y resumeCnt_reg[5]/D  0.06
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U12911/Y U13011/Y U555/Y U557/Y U560/Y i_reg[1]/D  0.06
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U803/Y U973/Y U900/Y RxUpdateCRC5/i_reg[0]/D  0.06
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U974/Y U812/Y U1151/Y U806/Y U1152/Y U1157/Y TxUpdateCRC5/i_reg[3]/D  0.06
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U941/Y U1199/Y U1348/Y U1349/Y  0.06
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U6111/Y U6121/Y resumeCnt_reg[7]/D  0.06
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U6211/Y U6221/Y resumeCnt_reg[11]/D  0.06
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U941/Y U1199/Y U712/Y U713/Y  0.06
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/Q U1712/Y U378/Y U3821/Y U454/Y U2472/Y U597/Y U598/Y U4221/Y U2662/Y U2652/Y U387/Y U1492/Y U1502/Y resumeCnt_reg[2]/D  0.06
+
+input_external_delay rst U867/Y U866/Y U7/Y U143/Y U68/Y U54/Y U156/Y U88/Y U141/Y U186/Y U57/Y U31/Y U32/Y RXBitCount_reg[2]/D  0.06
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1611/Y U1601/Y U11910/Y U2461/Y CRCData_reg[4]/D  0.06
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U311/Y U10010/Y U2431/Y CRCData_reg[1]/D  0.06
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U311/Y U10010/Y U2451/Y CRCData_reg[3]/D  0.06
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U311/Y U10010/Y U2471/Y CRCData_reg[5]/D  0.06
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U950/Y U1022/Y U1024/Y u_SIEReceiver/CurrState_rcvr_reg[3]/D  0.06
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1791/Y U1531/Y U284/Y U287/Y U288/Y RXDataByteCnt_reg[9]/D  0.06
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1119/Y U1136/Y u_readUSBWireData/buffer1_reg[0]/D  0.06
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1119/Y U1135/Y u_readUSBWireData/buffer1_reg[1]/D  0.06
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1119/Y U1122/Y u_readUSBWireData/buffer1_reg[2]/D  0.06
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U795/Y U1261/Y U698/Y U699/Y u_SIEReceiver/RXWaitCount_reg[2]/D  0.07
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U751/Y U749/Y U896/Y U1262/Y u_SIEReceiver/RXWaitCount_reg[1]/D  0.07
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U974/Y U812/Y U1151/Y U806/Y U1152/Y U1158/Y TxUpdateCRC5/i_reg[2]/D  0.07
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1119/Y U908/Y  0.07
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U941/Y U1199/Y U1347/Y u_writeUSBWireData/decBufferCnt_reg/D  0.07
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U941/Y U1199/Y U1350/Y  0.07
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U311/Y U10010/Y U2541/Y RxCtrlOut_reg[0]1/D  0.07
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1463/Y U1823/Y U1443/Y U4010/Y U4210/Y CurrState_prcTxB_reg[2]/D  0.07
+
+input_external_delay fullSpeedPolarity U791/Y U790/Y U735/Y U71/Y U196/Y U193/Y U202/Y U203/Y U20/Y resumeDetected_reg/D  0.08
+
+input_external_delay rst U867/Y U866/Y U7/Y U143/Y U68/Y U54/Y U156/Y U88/Y U141/Y U186/Y U86/Y U264/Y RXBitCount_reg[1]/D  0.08
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U941/Y U1199/Y U898/Y  0.08
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U147/Y U85/Y U253/Y U254/Y RXSameBitCount_reg[1]/D  0.08
+
+input_external_delay rst U867/Y U866/Y U7/Y U143/Y U68/Y U54/Y U156/Y U88/Y U141/Y U186/Y U86/Y U265/Y RXBitCount_reg[0]/D  0.08
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U52/Y U225/Y U144/Y U166/Y U181/Y U180/Y U174/Y U177/Y U30/Y resumeWaitCnt_reg[4]/D  0.08
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6513/Y U12212/Y U1533/Y U1915/Y U7612/Y U2463/Y U2473/Y U2483/Y U2493/Y U2503/Y i_reg[3]/D  0.08
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1791/Y U1531/Y U284/Y U286/Y RXDataByteCnt_reg[8]/D  0.09
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U52/Y U225/Y U144/Y U166/Y U181/Y U180/Y U174/Y U173/Y U26/Y resumeWaitCnt_reg[2]/D  0.09
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U52/Y U225/Y U144/Y U166/Y U181/Y U180/Y U174/Y U173/Y U165/Y resumeWaitCnt_reg[1]/D  0.09
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U52/Y U225/Y U144/Y U166/Y U181/Y U180/Y U174/Y U177/Y U229/Y resumeWaitCnt_reg[3]/D  0.09
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U468/Y U3021/Y U475/Y U425/Y U2991/Y U446/Y U5811/Y TxByteOut_reg[0]/D  0.09
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U330/Y U6021/Y resumeCnt_reg[3]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U787/Y U951/Y U901/Y U1094/Y U1098/Y  0.09
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U5810/Y U1773/Y U1503/Y U1783/Y U1463/Y U1823/Y U1443/Y U4710/Y U4810/Y CurrState_prcTxB_reg[3]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U801/Y U1219/Y RxUpdateCRC16/CRCResult_reg[9]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U801/Y U1222/Y RxUpdateCRC16/CRCResult_reg[12]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U802/Y U1238/Y RxUpdateCRC5/CRCResult_reg[0]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U801/Y U1239/Y RxUpdateCRC5/CRCResult_reg[1]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U801/Y U1243/Y RxUpdateCRC5/CRCResult_reg[3]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U802/Y U1244/Y RxUpdateCRC5/CRCResult_reg[4]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U802/Y U1220/Y RxUpdateCRC16/CRCResult_reg[10]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U802/Y U1221/Y RxUpdateCRC16/CRCResult_reg[11]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U802/Y U1225/Y RxUpdateCRC16/CRCResult_reg[13]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U809/Y U801/Y U1227/Y RxUpdateCRC16/CRCResult_reg[15]/D  0.09
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U11102/Y U1815/Y U1833/Y U8512/Y U2433/Y U6413/Y CurrState_prcTxB_reg[1]/D  0.09
+
+input_external_delay rst U867/Y U866/Y U7/Y U143/Y U68/Y U54/Y U156/Y U88/Y U141/Y U186/Y U79/Y U238/Y RXBitCount_reg[3]/D  0.09
+
+input_external_delay fullSpeedPolarity U791/Y U790/Y U735/Y U71/Y U196/Y U193/Y U202/Y U203/Y U105/Y RXBitStMachCurrState_reg[0]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U803/Y U1211/Y RxUpdateCRC16/CRCResult_reg[1]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U803/Y U1212/Y RxUpdateCRC16/CRCResult_reg[2]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U803/Y U1242/Y RxUpdateCRC5/CRCResult_reg[2]/D  0.09
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U803/Y U1213/Y RxUpdateCRC16/CRCResult_reg[3]/D  0.09
+
+input_external_delay fullSpeedPolarity U791/Y U790/Y U735/Y U71/Y U196/Y U193/Y U202/Y U203/Y U164/Y RXBitStMachCurrState_reg[1]/D  0.09
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U938/Y U744/Y U1017/Y U1018/Y U1019/Y U1020/Y u_SIEReceiver/CurrState_rcvr_reg[1]/D  0.10
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U1592/Y U336/Y U2222/Y U8211/Y CRCData_reg[5]1/D  0.10
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U2173/Y U1615/Y U1633/Y U1643/Y U2193/Y U7512/Y U2253/Y TXOneCount_reg[1]/D  0.10
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U656/Y U1259/Y U945/Y U751/Y U749/Y U895/Y u_SIEReceiver/RXWaitCount_reg[0]/D  0.10
+
+RxUpdateCRC5/doUpdateCRC_reg/CLK RxUpdateCRC5/doUpdateCRC_reg/Q U913/Y U1007/Y U899/Y RxUpdateCRC5/i_reg[1]/D  0.10
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U12612/Y U11112/Y U1573/Y U1483/Y U4310/Y U4410/Y USBWireData_reg[0]1/D  0.10
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U11102/Y U1815/Y U1833/Y U8512/Y U5310/Y U5410/Y CurrState_prcTxB_reg[4]/D  0.10
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U2831/Y U494/Y U478/Y U2392/Y U495/Y U8811/Y U337/Y U2412/Y U4111/Y U8011/Y U2232/Y CurrState_SIETx_reg[4]/D  0.10
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U664/Y U1171/Y u_writeUSBWireData/buffer3_reg[0]/D  0.11
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U664/Y U1187/Y u_writeUSBWireData/buffer3_reg[1]/D  0.11
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U664/Y U1182/Y u_writeUSBWireData/buffer3_reg[2]/D  0.11
+
+u_readUSBWireData/timeOutCnt_reg[3]/CLK u_readUSBWireData/timeOutCnt_reg[3]/Q U1031/Y U891/Y U1032/Y U884/Y U1033/Y U878/Y U1034/Y U875/Y U1035/Y U874/Y U1036/Y U873/Y U1037/Y U872/Y U1038/Y U871/Y U1039/Y U870/Y U1040/Y U869/Y U1041/Y U868/Y U1042/Y U746/Y U1043/Y u_readUSBWireData/timeOutCnt_reg[15]/D  0.11
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U12911/Y U13011/Y U555/Y U359/Y i_reg[0]/D  0.11
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6513/Y U12212/Y U1533/Y U1915/Y U7612/Y U2463/Y U2473/Y U2483/Y U2515/Y i_reg[2]1/D  0.11
+
+input_external_delay rst U867/Y U833/Y U743/Y U970/Y U808/Y U910/Y U665/Y U726/Y u_writeUSBWireData/TxBitsOut_reg[0]/D  0.11
+
+input_external_delay rst U867/Y U833/Y U743/Y U970/Y U808/Y U910/Y U665/Y U693/Y u_writeUSBWireData/TxBitsOut_reg[1]/D  0.11
+
+input_external_delay rst U867/Y U833/Y U743/Y U970/Y U808/Y U910/Y U665/Y U689/Y u_writeUSBWireData/TxCtrlOut_reg/D  0.11
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U2831/Y U494/Y U478/Y U2392/Y U495/Y U8811/Y U337/Y U2412/Y U2162/Y U1402/Y U1413/Y U1422/Y CurrState_SIETx_reg[0]/D  0.12
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U12612/Y U11112/Y U1573/Y U1483/Y U1553/Y U2053/Y USBWireCtrl_reg1/D  0.12
+
+CurrState_SIETx_reg[2]/CLK CurrState_SIETx_reg[2]/Q U484/Y U323/Y U442/Y U9011/Y U347/Y U5121/Y U407/Y U9211/Y U9411/Y U403/Y U455/Y U10111/Y U2013/Y U2322/Y U2672/Y U363/Y U633/Y U637/Y TxByteOutFullSpeedRate_reg/D  0.12
+
+u_writeUSBWireData/USBWireRdy_reg/CLK u_writeUSBWireData/USBWireRdy_reg/Q U355/Y U479/Y U3051/Y U2352/Y U6601/Y resumeCnt_reg[0]/D  0.12
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U800/Y U1318/Y TxUpdateCRC16/data_reg[0]/D  0.12
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U800/Y U1319/Y TxUpdateCRC16/data_reg[1]/D  0.12
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U800/Y U1320/Y TxUpdateCRC16/data_reg[2]/D  0.12
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U800/Y U1321/Y TxUpdateCRC16/data_reg[3]/D  0.12
+
+input_external_delay rst U867/Y U935/Y U787/Y U951/Y U897/Y U976/Y U894/Y U1277/Y  0.13
+
+input_external_delay rst U867/Y U935/Y U787/Y U951/Y U925/Y U1292/Y u_readUSBWireData/rxActiveCnt_reg[4]/D  0.13
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/Q U1712/Y U378/Y U3821/Y U454/Y U2472/Y U597/Y U598/Y U4221/Y U2662/Y U2652/Y U360/Y U626/Y resumeCnt_reg[13]/D  0.13
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U974/Y U812/Y U1151/Y U806/Y U1327/Y TxUpdateCRC5/ready_reg/D  0.13
+
+input_external_delay rst U741/Y U673/Y U857/Y U819/Y U1009/Y U757/Y U836/Y U1323/Y TxUpdateCRC16/data_reg[5]/D  0.13
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U2831/Y U494/Y U478/Y U2392/Y U495/Y U8811/Y U337/Y U2412/Y U2162/Y U11011/Y U512/Y CurrState_SIETx_reg[1]/D  0.13
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U754/Y U1322/Y TxUpdateCRC16/data_reg[4]/D  0.13
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U754/Y U1324/Y TxUpdateCRC16/data_reg[6]/D  0.13
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/QN U1360/Y U6210/Y U7012/Y U1814/Y U13412/Y U1653/Y U1663/Y U11102/Y U1815/Y U1833/Y U1473/Y U12512/Y U3013/Y CurrState_prcTxB_reg[0]/D  0.13
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U756/Y U754/Y U1325/Y TxUpdateCRC16/data_reg[7]/D  0.13
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U12612/Y U11112/Y U1573/Y U1483/Y U2073/Y USBWireData_reg[1]1/D  0.13
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U52/Y U225/Y U144/Y U166/Y U181/Y U180/Y U174/Y U56/Y U269/Y resumeWaitCnt_reg[0]/D  0.13
+
+u_readUSBWireData/timeOutCnt_reg[3]/CLK u_readUSBWireData/timeOutCnt_reg[3]/Q U1031/Y U891/Y U1032/Y U884/Y U1033/Y U878/Y U1034/Y U875/Y U1035/Y U874/Y U1036/Y U873/Y U1037/Y U872/Y U1038/Y U871/Y U1039/Y U870/Y U1040/Y U869/Y U1041/Y U868/Y U1042/Y U642/Y u_readUSBWireData/timeOutCnt_reg[14]/D  0.13
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U2613/Y U2931/Y U389/Y U509/Y U405/Y U344/Y U1702/Y U1692/Y U469/Y U4811/Y U578/Y U424/Y U429/Y U452/Y U2292/Y U357/Y TxByteOutCtrl_reg[0]/D  0.14
+
+input_external_delay rst U867/Y U935/Y U787/Y U951/Y U925/Y U1293/Y u_readUSBWireData/rxActiveCnt_reg[3]/D  0.14
+
+CurrState_SIETx_reg[2]/CLK CurrState_SIETx_reg[2]/Q U484/Y U323/Y U442/Y U9011/Y U347/Y U5121/Y U407/Y U9211/Y U9411/Y U403/Y U455/Y U1412/Y U4411/Y U1613/Y U1513/Y U1522/Y U1582/Y CurrState_SIETx_reg[3]/D  0.14
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U974/Y U812/Y U1151/Y U806/Y U1341/Y TxUpdateCRC5/i_reg[0]/D  0.14
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U2672/Y U5711/Y U5721/Y USBWireWEn_reg/D  0.14
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1791/Y U1531/Y U283/Y RXDataByteCnt_reg[7]/D  0.15
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1147/Y U1300/Y U883/Y TxUpdateCRC16/ready_reg/D  0.15
+
+input_external_delay rst U741/Y U328/Y U408/Y U2951/Y U420/Y U320/Y U3131/Y U6511/Y U6411/Y U8311/Y CRCData_reg[2]1/D  0.15
+
+input_external_delay rst U741/Y U328/Y U408/Y U2951/Y U420/Y U320/Y U3131/Y U6511/Y U6411/Y U8411/Y CRCData_reg[4]1/D  0.15
+
+CurrState_prcTxB_reg[0]/CLK CurrState_prcTxB_reg[0]/Q U12312/Y U2414/Y U12112/Y U1363/Y U11412/Y U1903/Y U8612/Y U11212/Y U2163/Y U4910/Y TXLineState_reg[1]/D  0.15
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U62/Y U260/Y U80/Y U266/Y U163/Y U78/Y U162/Y CurrState_prRxBit_reg[2]/D  0.15
+
+CurrState_prcTxB_reg[0]/CLK CurrState_prcTxB_reg[0]/Q U12312/Y U2414/Y U12112/Y U1363/Y U11412/Y U1903/Y U8612/Y U11212/Y U2163/Y U5510/Y TXLineState_reg[0]/D  0.16
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U918/Y U805/Y U1062/Y U1063/Y RxUpdateCRC16/i_reg[2]/D  0.16
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U1592/Y U336/Y U8611/Y CRCData_reg[7]1/D  0.16
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/Q U738/Y U966/Y U1228/Y RxUpdateCRC16/data_reg[0]/D  0.16
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/Q U738/Y U966/Y U1229/Y RxUpdateCRC16/data_reg[1]/D  0.16
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/Q U738/Y U966/Y U1230/Y RxUpdateCRC16/data_reg[2]/D  0.16
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/Q U738/Y U966/Y U1231/Y RxUpdateCRC16/data_reg[3]/D  0.16
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U46/Y U51/Y U147/Y U255/Y RXSameBitCount_reg[0]/D  0.16
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U12911/Y U13011/Y U3621/Y U5521/Y USBWireReq_reg/D  0.16
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U465/Y U567/Y U568/Y CRC5_8Bit_reg1/D  0.17
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/QN U11310/Y U11010/Y U2071/Y U601/Y U581/Y U12310/Y U561/Y U8310/Y U12010/Y U2661/Y RXDataByteCnt_reg[0]/D  0.17
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U2251/Y U7110/Y NAKRxed_reg/D  0.17
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1116/Y U1138/Y u_readUSBWireData/buffer0_reg[0]/D  0.17
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1116/Y U1137/Y u_readUSBWireData/buffer0_reg[1]/D  0.17
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y U1116/Y U1118/Y u_readUSBWireData/buffer0_reg[2]/D  0.17
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U465/Y U1452/Y U1462/Y CRC5En_reg1/D  0.17
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6513/Y U12212/Y U1533/Y U1915/Y U7612/Y U2463/Y U2473/Y U2533/Y i_reg[1]1/D  0.17
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U9100/Y U7010/Y CRCError_reg/D  0.17
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1147/Y U962/Y TxUpdateCRC16/doUpdateCRC_reg/D  0.18
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U401/Y U1810/Y ACKRxed_reg/D  0.18
+
+input_external_delay rst U741/Y U673/Y U823/Y U926/Y U1160/Y U835/Y U1344/Y TxUpdateCRC5/loopEnd_reg[2]/D  0.18
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1791/Y U1741/Y U280/Y RXDataByteCnt_reg[6]/D  0.18
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U610/Y U1791/Y U1751/Y U275/Y RXDataByteCnt_reg[4]/D  0.18
+
+CurrState_SIETx_reg[2]/CLK CurrState_SIETx_reg[2]/Q U484/Y U323/Y U442/Y U9011/Y U347/Y U5121/Y U407/Y U9211/Y U9411/Y U403/Y U455/Y U1412/Y U4411/Y U1613/Y U6581/Y CurrState_SIETx_reg[5]/D  0.18
+
+CurrState_SIETx_reg[2]/CLK CurrState_SIETx_reg[2]/Q U484/Y U323/Y U442/Y U9011/Y U347/Y U5121/Y U407/Y U9211/Y U9411/Y U403/Y U455/Y U1412/Y U4411/Y U1613/Y U12511/Y CurrState_SIETx_reg[2]/D  0.18
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U591/Y U2171/Y bitStuffError_reg1/D  0.18
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U913/Y U1073/Y RxUpdateCRC5/doUpdateCRC_reg/D  0.18
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U12710/Y U12510/Y U3101/Y U312/Y U313/Y RXByteStMachCurrState_reg[1]/D  0.19
+
+RxByte_reg[2]/CLK RxByte_reg[2]/Q U2051/Y U7910/Y U7810/Y U1641/Y U1561/Y U2151/Y U10100/Y U2261/Y stallRxed_reg/D  0.19
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U2173/Y U1615/Y U1633/Y U1643/Y U2263/Y TXOneCount_reg[0]/D  0.19
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U950/Y U917/Y u_readUSBWireData/RxDataInTick_reg/D  0.19
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U950/Y U916/Y  0.19
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U950/Y U915/Y u_writeUSBWireData/i_reg[4]/D  0.19
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1491/Y U2381/Y CRC5_8Bit_reg/D  0.20
+
+input_external_delay rst U867/Y U935/Y U787/Y U951/Y U1299/Y u_readUSBWireData/RxBitsInReg_reg[0]/D  0.20
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1491/Y U2391/Y CRC5En_reg/D  0.20
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U753/Y U1216/Y RxUpdateCRC16/CRCResult_reg[6]/D  0.20
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U753/Y U1214/Y RxUpdateCRC16/CRCResult_reg[4]/D  0.20
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U753/Y U1218/Y RxUpdateCRC16/CRCResult_reg[8]/D  0.20
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U844/Y U753/Y U1226/Y RxUpdateCRC16/CRCResult_reg[14]/D  0.20
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U1651/Y U1401/Y U2651/Y RxDataOut_reg[7]1/D  0.21
+
+input_external_delay rst U867/Y U833/Y U785/Y U1168/Y U759/Y U1194/Y U877/Y u_writeUSBWireData/incBufferCnt_reg/D  0.21
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6513/Y U12212/Y U1533/Y U1915/Y U7612/Y U2463/Y U2543/Y i_reg[0]1/D  0.22
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U12710/Y U12510/Y U3101/Y U511/Y RXByteStMachCurrState_reg[0]/D  0.22
+
+CurrState_prcTxB_reg[0]/CLK CurrState_prcTxB_reg[0]/Q U12312/Y U2414/Y U12112/Y U1363/Y U11412/Y U1903/Y U8612/Y U11212/Y U1943/Y USBWireReq_reg1/D  0.22
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U702/Y U705/Y  0.22
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U62/Y U260/Y U80/Y U263/Y U109/Y CurrState_prRxBit_reg[3]/D  0.22
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U960/Y TxUpdateCRC16/i_reg[0]/D  0.22
+
+u_SIEReceiver/CurrState_rcvr_reg[0]/CLK u_SIEReceiver/CurrState_rcvr_reg[0]/Q U830/Y U1010/Y U853/Y U938/Y U744/Y U1017/Y U907/Y U1021/Y u_SIEReceiver/CurrState_rcvr_reg[2]/D  0.22
+
+input_external_delay rst U741/Y U673/Y U823/Y U885/Y U845/Y U1143/Y U1145/Y TxUpdateCRC16/i_reg[2]/D  0.22
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U947/Y u_readUSBWireData/RxWireActive_reg/D  0.22
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U311/Y U291/Y U1841/Y RXByteStMachCurrState_reg[2]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1301/Y TxUpdateCRC16/CRCResult_reg[1]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1304/Y TxUpdateCRC16/CRCResult_reg[4]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1307/Y TxUpdateCRC16/CRCResult_reg[7]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1310/Y TxUpdateCRC16/CRCResult_reg[10]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1312/Y TxUpdateCRC16/CRCResult_reg[12]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1315/Y TxUpdateCRC16/CRCResult_reg[13]/D  0.23
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U828/Y U1317/Y TxUpdateCRC16/CRCResult_reg[15]/D  0.23
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U846/Y U1130/Y u_readUSBWireData/RxWireActiveReg_reg/D  0.23
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U677/Y u_readUSBWireData/RxBitsOut_reg[0]/D  0.24
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U1111/Y u_readUSBWireData/RxBitsOut_reg[1]/D  0.24
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U62/Y U260/Y U80/Y U261/Y RxBits_reg[0]/D  0.24
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U62/Y U260/Y U80/Y U262/Y RxBits_reg[1]/D  0.24
+
+u_USBTxWireArbiter/muxSIENotPTXB_reg/Q U1166/Y U1167/Y U820/Y U1192/Y  0.24
+
+input_external_delay rst U867/Y U935/Y U832/Y U786/Y U936/Y U1295/Y u_readUSBWireData/rxActiveCnt_reg[1]/D  0.24
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U1281/Y  0.24
+
+input_external_delay rst U867/Y U935/Y U832/Y U786/Y U1083/Y U1088/Y  0.24
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U684/Y U685/Y  0.24
+
+input_external_delay rst U741/Y U673/Y U823/Y U885/Y U845/Y U1143/Y U1146/Y TxUpdateCRC16/i_reg[1]/D  0.24
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U1279/Y u_readUSBWireData/SIERxWEn_reg/D  0.24
+
+input_external_delay rst U867/Y U935/Y U937/Y U854/Y U1280/Y u_readUSBWireData/decBufferCnt_reg/D  0.24
+
+input_external_delay rst U867/Y U833/Y U785/Y U1168/Y U759/Y U1356/Y u_writeUSBWireData/USBWireRdy_reg/D  0.24
+
+CurrState_prcTxB_reg[0]/CLK CurrState_prcTxB_reg[0]/Q U12312/Y U2414/Y U12112/Y U1363/Y U11412/Y U1903/Y U8612/Y U11212/Y U2083/Y processTxByteRdy_reg/D  0.24
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/Q U1891/Y U2210/Y U1610/Y U2361/Y U12710/Y U12510/Y U293/Y CRC16En_reg/D  0.25
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U856/Y U1114/Y U1115/Y u_readUSBWireData/buffer2_reg[2]/D  0.25
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U856/Y U1114/Y U1133/Y u_readUSBWireData/buffer2_reg[1]/D  0.25
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U856/Y U1114/Y U1134/Y u_readUSBWireData/buffer2_reg[0]/D  0.25
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U2322/Y U3001/Y processTxByteWEn_reg/D  0.25
+
+input_external_delay rst U867/Y U935/Y U832/Y U786/Y U708/Y U709/Y u_readUSBWireData/rxActiveCnt_reg[2]/D  0.25
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U846/Y  0.25
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/QN U95/Y U93/Y U126/Y U187/Y U121/Y U6/Y U45/Y CurrState_prRxBit_reg[1]/D  0.26
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U761/Y U1217/Y RxUpdateCRC16/CRCResult_reg[7]/D  0.26
+
+input_external_delay rst U867/Y U935/Y U959/Y U818/Y U761/Y U1215/Y RxUpdateCRC16/CRCResult_reg[5]/D  0.26
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U918/Y U799/Y U1061/Y U1064/Y RxUpdateCRC16/i_reg[1]/D  0.27
+
+CurrState_prcTxB_reg[1]/CLK CurrState_prcTxB_reg[1]/Q U6310/Y U1453/Y U5910/Y U7212/Y U7112/Y U2023/Y U12612/Y U11112/Y U1573/Y U2093/Y USBWireWEn_reg1/D  0.27
+
+input_external_delay rst U867/Y U935/Y U832/Y U786/Y U1204/Y u_USBTxWireArbiter/prcTxByteGnt_reg/D  0.27
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U974/Y U812/Y U1151/Y U1153/Y U1159/Y TxUpdateCRC5/i_reg[1]/D  0.27
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U909/Y U1289/Y u_readUSBWireData/rxActiveCnt_reg[5]/D  0.27
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/QN U95/Y U93/Y U126/Y U187/Y U121/Y U33/Y U37/Y CurrState_prRxBit_reg[0]/D  0.27
+
+input_external_delay rst U867/Y U935/Y U832/Y U786/Y U1013/Y u_SIEReceiver/CurrState_rcvr_reg[0]/D  0.28
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1711/Y U1661/Y U8710/Y U1931/Y U1941/Y U2021/Y U305/Y U1910/Y U308/Y U1481/Y U309/Y CurrState_prRxByte_reg[1]/D  0.29
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U1592/Y U13111/Y CRCData_reg[0]1/D  0.29
+
+input_external_delay rst U741/Y U328/Y U408/Y U326/Y U2572/Y U1602/Y U3041/Y U434/Y U433/Y U640/Y USBWireFullSpeedRate_reg/D  0.29
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U963/Y u_writeUSBWireData/bufferCnt_reg[1]/D  0.29
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U1592/Y U8511/Y CRCData_reg[6]1/D  0.29
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U975/Y u_readUSBWireData/oldRxBitsIn_reg[1]/D  0.30
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U890/Y U1297/Y u_readUSBWireData/RxBitsInReg_reg[1]/D  0.30
+
+input_external_delay fullSpeedPolarity U791/Y U790/Y U735/Y U153/Y U9/Y U217/Y U222/Y U106/Y processRxBitRdy_reg/D  0.30
+
+input_external_delay rst U867/Y U833/Y U785/Y U1168/Y U1345/Y  0.30
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U10410/Y U1501/Y CurrState_prRxByte_reg[2]/D  0.30
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U151/Y U107/Y U257/Y oldRXBits_reg[1]/D  0.30
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U151/Y U108/Y U256/Y oldRXBits_reg[0]/D  0.30
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U10410/Y U431/Y CurrState_prRxByte_reg[3]/D  0.31
+
+u_readUSBWireData/timeOutCnt_reg[3]/CLK u_readUSBWireData/timeOutCnt_reg[3]/Q U1031/Y U891/Y U1032/Y U884/Y U1033/Y U878/Y U1034/Y U875/Y U1035/Y U874/Y U1036/Y U873/Y U1037/Y U872/Y U1038/Y U871/Y U1039/Y U870/Y U1040/Y U869/Y U1041/Y U645/Y u_readUSBWireData/timeOutCnt_reg[13]/D  0.31
+
+CurrState_prRxBit_reg[0]/CLK CurrState_prRxBit_reg[0]/Q U84/Y U73/Y U11/Y U116/Y U131/Y U232/Y U47/Y U233/Y U234/Y bitStuffError_reg/D  0.31
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/Q U863/Y U1058/Y U1059/SO U1060/Y RxUpdateCRC16/CRCResult_reg[0]/D  0.32
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U13010/Y U2321/Y U2341/Y U1681/Y U2501/Y U471/Y U481/Y U2511/Y rstCRC_reg/D  0.32
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U1123/Y U1124/Y u_readUSBWireData/buffer3_reg[2]/D  0.32
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U1123/Y U1131/Y u_readUSBWireData/buffer3_reg[1]/D  0.33
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U1123/Y U1132/Y u_readUSBWireData/buffer3_reg[0]/D  0.33
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U944/Y U1025/Y  0.33
+
+input_external_delay rst U867/Y U833/Y U785/Y U1053/Y u_readUSBWireData/incBufferCnt_reg/D  0.33
+
+input_external_delay rst U867/Y U935/Y U959/Y U774/Y U760/Y U715/Y U716/Y U1252/Y RxUpdateCRC5/data_reg[7]/D  0.35
+
+TxUpdateCRC5/doUpdateCRC_reg/CLK TxUpdateCRC5/doUpdateCRC_reg/Q U974/Y U812/Y U1151/Y U1161/Y TxUpdateCRC5/doUpdateCRC_reg/D  0.36
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U944/Y U647/Y  0.36
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U944/Y U1207/Y  0.36
+
+input_external_delay rst U867/Y U935/Y U787/Y U768/Y U944/Y U732/Y u_writeUSBWireData/i_reg[2]/D  0.36
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U855/Y U1201/Y u_USBTxWireArbiter/SIETxGnt_reg/D  0.37
+
+input_external_delay rst U867/Y U935/Y U784/Y U652/Y U855/Y U1105/Y u_readUSBWireData/bufferCnt_reg[1]/D  0.37
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U1411/Y U2301/Y dataSequence_reg/D  0.37
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U1831/Y U1711/Y U1661/Y U8710/Y U1931/Y U1941/Y U2021/Y U441/Y U451/Y CurrState_prRxByte_reg[0]/D  0.37
+
+input_external_delay rst U741/Y U673/Y U823/Y U926/Y U1160/Y U953/Y TxUpdateCRC5/data_reg[2]/D  0.39
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U1056/Y U954/Y U955/Y u_writeUSBWireData/lowSpeedTick_reg/D  0.39
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/Q U863/Y U964/Y RxUpdateCRC16/i_reg[0]/D  0.39
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U611/Y U7210/Y U10610/Y U13010/Y U2321/Y U2341/Y U1681/Y U2501/Y U2521/Y U1461/Y RxDataOutWEn_reg/D  0.40
+
+RxUpdateCRC16/doUpdateCRC_reg/CLK RxUpdateCRC16/doUpdateCRC_reg/QN U864/Y U879/Y RxUpdateCRC16/ready_reg/D  0.41
+
+u_readUSBWireData/timeOutCnt_reg[3]/CLK u_readUSBWireData/timeOutCnt_reg[3]/Q U1031/Y U891/Y U1032/Y U884/Y U1033/Y U878/Y U1034/Y U875/Y U1035/Y U874/Y U1036/Y U873/Y U1037/Y U872/Y U1038/Y U871/Y U1039/Y U870/Y U1040/Y U646/Y u_readUSBWireData/timeOutCnt_reg[12]/D  0.43
+
+input_external_delay rst U867/Y U833/Y U785/Y U1298/Y u_readUSBWireData/oldRxBitsIn_reg[0]/D  0.43
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U1056/Y U954/Y u_writeUSBWireData/fullSpeedTick_reg/D  0.43
+
+input_external_delay rst U867/Y U935/Y U832/Y U825/Y U1352/Y  0.45
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U1311/Y TxUpdateCRC16/CRCResult_reg[11]/D  0.45
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U1329/Y TxUpdateCRC5/CRCResult_reg[1]/D  0.45
+
+input_external_delay rst U741/Y U673/Y U823/Y U851/Y U1306/Y TxUpdateCRC16/CRCResult_reg[6]/D  0.45
+
+CurrState_prRxBit_reg[3]/CLK CurrState_prRxBit_reg[3]/QN U200/Y U102/Y U132/Y U137/Y U136/Y U133/Y U135/Y U134/Y processRxByteWEn_reg/D  0.47
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U474/Y U426/Y SIEPortTxRdy_reg/D  0.47
+
+CurrState_prRxByte_reg[1]/CLK CurrState_prRxByte_reg[1]/QN U11310/Y U11010/Y U2071/Y U601/Y U581/Y U12310/Y U1701/Y U2491/Y U6710/Y U371/Y U381/Y processRxByteRdy_reg/D  0.48
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U817/Y U992/Y U994/Y u_readUSBWireData/timeOutCnt_reg[6]/D  0.49
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U817/Y U986/Y U988/Y u_readUSBWireData/timeOutCnt_reg[8]/D  0.49
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U817/Y U980/Y U982/Y u_readUSBWireData/timeOutCnt_reg[10]/D  0.49
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U1056/Y u_writeUSBWireData/i_reg[0]/D  0.49
+
+CurrState_SIETx_reg[4]/CLK CurrState_SIETx_reg[4]/QN U522/Y U393/Y U350/Y U392/Y U386/Y U2791/Y U525/Y U526/Y U2712/Y U456/Y U455/Y U10111/Y U2013/Y U11511/Y U11811/Y rstCRC_reg1/D  0.50
+
+input_external_delay rst U741/Y U328/Y U327/Y U2961/Y U2881/Y U2871/Y U1632/Y U554/Y U1832/Y U1822/Y U1813/Y U5621/Y U564/Y U565/Y CRC16En_reg1/D  0.51
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U644/Y u_writeUSBWireData/i_reg[3]/D  0.52
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U1057/Y u_writeUSBWireData/i_reg[1]/D  0.53
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U1209/Y u_writeUSBWireData/bufferCnt_reg[2]/D  0.53
+
+input_external_delay rst U867/Y U935/Y U784/Y U848/Y U730/Y  0.53
+
+u_readUSBWireData/timeOutCnt_reg[3]/CLK u_readUSBWireData/timeOutCnt_reg[3]/Q U1031/Y U891/Y U1032/Y U884/Y U1033/Y U878/Y U1034/Y U875/Y U1035/Y U874/Y U1036/Y U873/Y U1037/Y U872/Y U1038/Y U871/Y U1039/Y U650/Y u_readUSBWireData/timeOutCnt_reg[11]/D  0.55
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U826/Y U1302/Y TxUpdateCRC16/CRCResult_reg[2]/D  0.55
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U826/Y U1305/Y TxUpdateCRC16/CRCResult_reg[5]/D  0.55
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U826/Y U1308/Y TxUpdateCRC16/CRCResult_reg[8]/D  0.55
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U826/Y U1309/Y TxUpdateCRC16/CRCResult_reg[9]/D  0.55
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/QN U826/Y U1316/Y TxUpdateCRC16/CRCResult_reg[14]/D  0.55
+
+input_external_delay rst U867/Y U935/Y U959/Y U969/Y U843/Y U838/Y U752/Y U1066/Y RxUpdateCRC16/doUpdateCRC_reg/D  0.55
+
+input_external_delay rst U741/Y U673/Y U857/Y U852/Y U1328/Y TxUpdateCRC5/CRCResult_reg[0]/D  0.58
+
+input_external_delay rst U741/Y U673/Y U857/Y U852/Y U1332/Y TxUpdateCRC5/CRCResult_reg[2]/D  0.58
+
+input_external_delay rst U741/Y U673/Y U857/Y U821/Y U1333/Y TxUpdateCRC5/CRCResult_reg[3]/D  0.58
+
+input_external_delay rst U741/Y U673/Y U857/Y U821/Y U1334/Y TxUpdateCRC5/CRCResult_reg[4]/D  0.58
+
+input_external_delay rst U741/Y U673/Y U857/Y U821/Y U1303/Y TxUpdateCRC16/CRCResult_reg[3]/D  0.58
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U770/Y U1001/Y U1003/Y u_readUSBWireData/timeOutCnt_reg[3]/D  0.65
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U770/Y U1004/Y U1006/Y u_readUSBWireData/timeOutCnt_reg[2]/D  0.65
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U770/Y U998/Y U1000/Y u_readUSBWireData/timeOutCnt_reg[4]/D  0.65
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U770/Y U995/Y U997/Y u_readUSBWireData/timeOutCnt_reg[5]/D  0.65
+
+input_external_delay rst U867/Y U833/Y U743/Y U970/Y U808/Y U910/Y U671/Y u_writeUSBWireData/TxDataOutTick_reg/D  0.65
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U769/Y U989/Y U991/Y u_readUSBWireData/timeOutCnt_reg[7]/D  0.66
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U769/Y U983/Y U985/Y u_readUSBWireData/timeOutCnt_reg[9]/D  0.66
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U770/Y U1026/Y u_readUSBWireData/timeOutCnt_reg[0]/D  0.67
+
+input_external_delay rst U867/Y U833/Y U743/Y U930/Y U769/Y U1029/Y u_readUSBWireData/timeOutCnt_reg[1]/D  0.69
+
+input_external_delay rst U867/Y U935/Y U832/Y U1285/Y U1286/Y U1287/Y u_readUSBWireData/rxActiveCnt_reg[7]/D  0.69
+
+input_external_delay rst U867/Y U833/Y U743/Y U931/Y U1107/Y  0.69
+
+input_external_delay rst U867/Y U935/Y U832/Y U1285/Y U1288/Y u_readUSBWireData/rxActiveCnt_reg[6]/D  0.71
+
+u_readUSBWireData/RxBitsInReg_reg[0]/Q U740/Y U739/Y U662/Y U765/Y U643/Y u_readUSBWireData/sampleCnt_reg[2]/D  0.78
+
+u_readUSBWireData/RxBitsInReg_reg[0]/Q U740/Y U739/Y U662/Y U734/Y U1050/Y u_readUSBWireData/sampleCnt_reg[4]/D  0.78
+
+u_readUSBWireData/RxBitsInReg_reg[0]/Q U740/Y U739/Y U662/Y U734/Y U1048/Y u_readUSBWireData/sampleCnt_reg[3]/D  0.78
+
+input_external_delay rst U867/Y U935/Y U832/Y U1296/Y u_readUSBWireData/rxActiveCnt_reg[0]/D  0.78
+
+u_readUSBWireData/RxBitsInReg_reg[0]/Q U740/Y U739/Y U662/Y U765/Y U1045/Y u_readUSBWireData/sampleCnt_reg[1]/D  0.79
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U742/Y U701/Y u_readUSBWireData/bufferCnt_reg[0]/D  0.79
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U742/Y U672/Y u_USBTxWireArbiter/muxSIENotPTXB_reg/D  0.79
+
+u_readUSBWireData/RxBitsInReg_reg[0]/Q U740/Y U739/Y U662/Y U765/Y U1044/Y u_readUSBWireData/sampleCnt_reg[0]/D  0.79
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U742/Y U728/Y u_writeUSBWireData/bufferCnt_reg[0]/D  0.79
+
+input_external_delay rst U867/Y U866/Y U943/Y U775/Y U742/Y U1103/Y u_readUSBWireData/bufferCnt_reg[2]/D  0.79
+
+TxUpdateCRC16/doUpdateCRC_reg/CLK TxUpdateCRC16/doUpdateCRC_reg/Q U733/Y U1140/Y U1141/SO U1142/Y TxUpdateCRC16/CRCResult_reg[0]/D  0.80
+
+ 1.92
+
+ 1.92
+
+input_external_delay USBWireDataIn[0]  1.97
+
+input_external_delay USBWireDataIn[1]  1.97
+

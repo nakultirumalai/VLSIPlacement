@@ -23,8 +23,9 @@ open(mod_bkshlfFile_2, ">$mod_filename_2") || die ("Can't open file for writing"
 my $count = 0;
 my @libCellArray;
 my %cellIsFFTest;
+
 while(my $row = <bkshlfFile>) {
-    if ($row =~ m/^(#|\n|NumNodes|NumTerminals)/) {
+    if ($row =~ /^(#(.*)|\n|NumNodes|NumTerminals|UCLA)/) {
 	print mod_bkshlfFile_1 "$row";
 	print mod_bkshlfFile_2 "$row";
     } else {
@@ -41,6 +42,7 @@ while(my $row = <bkshlfFile>) {
 	$count++;
     }
 }
+
 print "Read $count nodes from bookshelf file\n";
 close(bkshlfFile);
 
@@ -53,21 +55,16 @@ $count=0;
 while(my $line = <inFile>)
 {
     chomp($line);
-
     if ($line =~ m/\s*MACRO\s*(.*)/) {
 	if ($cellDefBegin == 1) {
 	    die ("Error in LEF file!");
 	}
 	$cellName = $1;
 	$cellDefBegin=1;
-#	print "$cellName\n";
 	$count++;
     } 
     if (($cellDefBegin == 1) and ($cellName ne "")) {
 	if ($line =~ m/\s*SIZE\s*([0-9]+\.[0-9]+)\s*BY\s*([0-9]+\.[0-9]+).*/) {
-	    # insert height by width array into the cell dimension
-	    # info map
-#	    print "$1 x $2\n";
 	    $cellDimensionInfo{$cellName} = [ $1, $2 ];
 	}
     }
@@ -87,12 +84,14 @@ if (scalar(@libCellArray) != 0) {
 	$cellName = $cellLibNameArr[0];
 	my $cellDataRef = $cellDimensionInfo{$cellLibNameArr[1]};
 	my @cellData = ( @$cellDataRef );
-	
-	print mod_bkshlfFile_1 "\t$cellName\t$cellData[0]\t$cellData[1]\n";
+	# Convert um to nm
+	my $cellWidth = $cellData[0] * 1000;
+	my $cellHeight = $cellData[1] * 1000;
+	print mod_bkshlfFile_1 "\t$cellName\t$cellWidth\t$cellHeight\n";
 	if (exists $cellIsFFTest{$cellName}) {
-	    print mod_bkshlfFile_2 "\t$cellName\t$cellData[0]\t$cellData[1]\tFF\n";
+	    print mod_bkshlfFile_2 "\t$cellName\t$cellWidth\t$cellHeight\tFF\n";
 	} else {
-	    print mod_bkshlfFile_2 "\t$cellName\t$cellData[0]\t$cellData[1]\tnFF\n";
+	    print mod_bkshlfFile_2 "\t$cellName\t$cellWidth\t$cellHeight\tnFF\n";
 	}
     }
 }

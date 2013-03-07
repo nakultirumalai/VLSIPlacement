@@ -94,3 +94,32 @@ bool strIsNumber(const string& s)
   
   return !s.empty() && it == s.end();
 }
+
+string strToLower(const string& s) 
+{
+  string retVal = s;
+  int length = retVal.length();
+  
+  for (int i = 0;i < length;i++) {
+    if (isupper(retVal[i])) {
+      retVal[i] = tolower(retVal[i]);
+    }
+  }
+
+  return retVal;
+}
+
+string strToLower(const char *s) 
+{
+  string retVal = s;
+  int length = retVal.length();
+  
+  for (int i = 0;i < length;i++) {
+    if (isupper(retVal[i])) {
+      retVal[i] = tolower(retVal[i]);
+    }
+  }
+
+  return retVal;
+}
+

@@ -278,57 +278,57 @@ Design::DesignFileReadOneRow(ifstream &file)
     }
     istringstream stream(line, istringstream::in);
     stream >> rowProperty;
-    if (rowProperty == ROW_BEGIN_KEYWORD) {
+    if (strToLower(rowProperty) == strToLower(ROW_BEGIN_KEYWORD)) {
       if (rowBegin == true) {_ASSERT_TRUE("Benchmark error");break;}
       rowBegin = true;
       stream >> rowProperty;
       rowType = PhysRowGetRowTypeFromStr(rowProperty);
-    } else if (rowProperty == ROW_COORDINATE) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_COORDINATE)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowCoordinate;
-    } else if (rowProperty == ROW_HEIGHT) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_HEIGHT)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> height;
-    } else if (rowProperty == ROW_SITE_WIDTH) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_SITE_WIDTH)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> siteWidth;
-    } else if (rowProperty == ROW_SITE_SPACING) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_SITE_SPACING)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> siteSpacing;
-    } else if (rowProperty == ROW_SITE_ORIENTATION) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_SITE_ORIENTATION)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowProperty;
       siteOrient = getOrientationFromStr(rowProperty);
-    } else if (rowProperty == ROW_SITE_SYMMETRY) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_SITE_SYMMETRY)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> rowProperty;
       symmetry = PhysRowGetSiteSymmetryFromStr(rowProperty);
-    } else if (rowProperty == SUBROW_ORIGIN) {
+    } else if (strToLower(rowProperty) == strToLower(SUBROW_ORIGIN)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> subRowOrigin;
       stream >> rowProperty;
-      if (rowProperty == SUBROW_NUM_SITES) {
+      if (strToLower(rowProperty) == strToLower(SUBROW_NUM_SITES)) {
 	stream >> garbage;
 	if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
 	stream >> numSites;
       } else {_ASSERT_TRUE("Benchmark error: Cannot find NumSites for a subRow");break;}
       subRowOrigins.push_back(subRowOrigin);
       numSitesForSubRows.push_back(numSites);
-    } else if (rowProperty == ROW_END_KEYWORD) {
+    } else if (strToLower(rowProperty) == strToLower(ROW_END_KEYWORD)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       rowBegin = false;
       break;

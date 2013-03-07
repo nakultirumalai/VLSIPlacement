@@ -1,43 +1,143 @@
 #!/usr/bin/perl
 use strict;
-#use warnings;
+use warnings;
 use Liberty::Parser;
 use liberty;
-my $lib_name = shift(@ARGV);
-my $cell_name = shift(@ARGV);
-my $input_slew = shift(@ARGV);
-my $output_load = shift(@ARGV);
-get_riseandfall_delay($lib_name,$cell_name,$input_slew,$output_load);
+my $nodes_file =shift(@ARGV);
+my $out_file = shift(@ARGV);
+my $delay_type = "N/A";
+
+if(scalar @ARGV ==2)
+{
+    $delay_type = shift(@ARGV);
+}
+
+my $input_slew = 1.024;
+my $output_load = 8.0;
+
+if($delay_type eq "-c")
+{
+    $input_slew = shift(@ARGV);
+    $output_load = shift(@ARGV);
+}
+
+open(nodesFile, $nodes_file) || die ("Cannot open file $nodes_file");
+my @lib_cell_names = ();
+my $lib_name ="";
+my $lib_path = "";
+my %uniqCells = ();
+my $cell_name;
+
+while(my $row_nodes = <nodesFile>) 
+{
+    next if($row_nodes =~ m/^(#|\n|NumNodes|NumTerminals|UCLA)/);
+    chomp($row_nodes);
+    $row_nodes =~ s/^\s*//;
+    my ($name, $full_lib_name, $type) = split('\s+', $row_nodes);
+    my @splitlib_names = split('/',$full_lib_name);
+    $lib_name = $splitlib_names[0].".lib";
+    $lib_path = $ENV{"LIB_DIR"}."/".$lib_name;
+
+    $cell_name = $splitlib_names[1];
+    next if(exists $uniqCells{$cell_name});
+    $uniqCells{$cell_name}=$type;
+}
+
+my $count = scalar(keys %uniqCells);
+print "$count Unique cells found in the $nodes_file from $lib_name library\n";
+close(nodesFile);
+get_riseandfall_delay($lib_path,\%uniqCells,$input_slew,$output_load,$out_file);
 
 sub get_riseandfall_delay{
-
     my $parser = new Liberty::Parser;
-    my $file = shift;
-    my $cell = shift;
+    my $lib_name = shift;
+    my $uniqCellsRef = shift;
     my $tran = shift;
     my $load = shift;
-    my $arc;
-
-    my $g = $parser->read_file("$file");
-
-    my $cell_group = $parser->locate_cell($g, $cell);
-    my @pin_groups = $parser->get_groups_by_type($cell_group, "pin");
-    foreach(@pin_groups)
+    my $out_file = shift;
+    my $arc_group1;
+    my $arc_group2;
+    
+    open(outFile, ">$out_file") || die("Cannot open file: $out_file\n");
+    print outFile "Cell\tOutput_pin\tInput_pin\tRise\tFall\n";
+    my $g = $parser->read_file("$lib_name");
+    my $cells;
+    foreach $cells(keys %{$uniqCellsRef}) 
     {
-	my $pin_direction= $parser->get_simple_attr_value($_, "direction");
-    	next if($pin_direction eq "input");
-	my @timing_groups = $parser->get_groups_by_type($_,"timing");
-	foreach(@timing_groups)
+    	my $cell_group = $parser->locate_cell($g, $cells);
+    	my @pin_groups = $parser->get_groups_by_type($cell_group, "pin");
+	my $cell_type = $uniqCellsRef->{$cells};
+	foreach(@pin_groups) 
 	{
-	    my $related_pin = $parser->get_simple_attr_value($_, "related_pin");
-	    
-    $arc = $parser->locate_cell_arc($cell_group, "cell_rise");
-    my $delay_cell_rise = get_arc_delay($arc, $tran, $load);
-    $arc = $parser->locate_cell_arc($cell_group, "cell_fall");
-    my $delay_cell_fall = get_arc_delay($arc, $tran, $load);
-
-    print "($cell, $tran, $load) rise: $delay_cell_rise, fall: $delay_cell_fall\n";
-
+	    my $pin_direction= $parser->get_simple_attr_value($_, "direction");
+    	    next if($pin_direction eq "input");
+	    my $pin_name = $parser->get_group_name($_);
+	    if($cell_type eq "FF") 
+	    {
+	        my @timing_groups = $parser->get_groups_by_type($_,"timing");
+		if(@timing_groups)
+		{
+	            my %relatedPins=();
+	            foreach(@timing_groups)
+	            {
+	                my $related_pin = $parser->get_simple_attr_value($_, "related_pin");
+	                next if(exists $relatedPins{$related_pin});
+	    	        $relatedPins{$related_pin} = "1";
+	    	        #print "$cell\t$pin_name\t$related_pin\n";
+	    	        $arc_group1 = $parser->locate_group_by_type($_, "cell_rise");
+            	        my $delay_cell_rise = get_arc_delay($arc_group1, $tran, $load);
+            	        $arc_group2 = $parser->locate_group_by_type($_, "cell_fall");
+            	        my $delay_cell_fall = get_arc_delay($arc_group2, $tran, $load);
+             	        print outFile "$cells\t$pin_name\t$related_pin\t$delay_cell_rise\t$delay_cell_fall\n";
+		     }
+	    	}
+		else{
+		    print outFile "$cells\tN/A\tN/A\t0\t0\n";
+		}
+	    } 
+	    elsif($cell_type eq "nFF")
+	    {
+		my @timing_groups = $parser->get_groups_by_type($_,"timing");
+                if(@timing_groups)
+		{
+		    my %relatedPins=();
+                
+		    foreach(@timing_groups)
+                    {
+		    	my $timing_type = $parser->get_simple_attr_value($_, "timing_type");
+		    	if (defined $timing_type)
+		    	{
+			    next unless($timing_type eq "combinational");
+			    my $related_pin = $parser->get_simple_attr_value($_, "related_pin");
+                            next if(exists $relatedPins{$related_pin});
+                    	    $relatedPins{$related_pin} = "1";
+			    $arc_group1 = $parser->locate_group_by_type($_, "cell_rise");
+	    		    my $delay_cell_rise = get_arc_delay($arc_group1, $tran, $load);
+	    		    $arc_group2 = $parser->locate_group_by_type($_, "cell_fall");
+    	    		    my $delay_cell_fall = get_arc_delay($arc_group2, $tran, $load);
+            		    print outFile "$cells\t$pin_name\t$related_pin\t$delay_cell_rise\t$delay_cell_fall\n";
+		        }
+		        else
+		        {
+			    my $related_pin = $parser->get_simple_attr_value($_, "related_pin");
+                            next if(exists $relatedPins{$related_pin});
+                            $relatedPins{$related_pin} = "1";
+                            $arc_group1 = $parser->locate_group_by_type($_, "cell_rise");
+                            my $delay_cell_rise = get_arc_delay($arc_group1, $tran, $load);
+                            $arc_group2 = $parser->locate_group_by_type($_, "cell_fall");
+                            my $delay_cell_fall = get_arc_delay($arc_group2, $tran, $load);
+                            print outFile "$cells\t$pin_name\t$related_pin\t$delay_cell_rise\t$delay_cell_fall\n";
+		    	}
+		    }
+		}
+		else
+		{
+                    print outFile "$cells\tN/A\tN/A\t0\t0\n";
+		}
+	    }
+	}
+	
+    }     
     sub get_arc_delay {
     	my $arc = shift;
       	my $tran = shift;

@@ -84,5 +84,7 @@ double dround(double);
 objOrient getOrientationFromStr(string);
 void vectorRemoveDuplicates(vector<unsigned int>& vec);
 bool strIsNumber(const string& s);
+string strToLower(const char *s);
+string strToLower(const string& s);
 
 #endif

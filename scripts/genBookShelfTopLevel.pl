@@ -31,6 +31,8 @@ $ENV{"DESIGN_NAME"} = $designName;
 # STEP 1:
 # Change directory to $benchmarkGenRoot/work
 system("cd $benchmarkGenRoot");
+print "Deleting the old benchmark bookshelf files\n";
+system("rm -rf $benchmarkGenRoot/results/$designName/bookshelf/*");
 
 # STEP 2:
 # Run design compiler in the work directory
@@ -51,6 +53,8 @@ system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/${desi
 # STEP 5:
 # Extract delays of all cells in the design by using the .lib
 # file and examining the corresponding rise and fall times
+system("export LIB_DIR=$libraryPath");
+system("$scriptRoot/getCellDelays.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.orig $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.delays");
 
 # STEP 6:
 # Generate pseudonames for the cells which are simply an 
@@ -72,6 +76,14 @@ system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/${desi
 
 # STEP 10:
 # Create an empty net weights file
+open(wtsFile, ">$benchmarkGenRoot/results/$designName/bookshelf/${designName}.wts") || die ("Cannot open file $nodes_file");
+print wtsFile "UCLA 1.0\n";
+print wtsFile "# Created        :\n";
+print wtsFile "# User           :\n";
+close(wtsFile);
 
 # STEP 11:
 # Create an aux file 
+open(auxFile, ">$benchmarkGenRoot/results/$designName/bookshelf/${designName}.aux") || die ("Cannot open file $nodes_file");
+print auxFile "RowBasedPlacement: ${designName}.nodes ${designName}.nets ${designName}.wts\n";
+close(auxFile);
