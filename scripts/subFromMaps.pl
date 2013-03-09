@@ -11,6 +11,11 @@ use warnings;
 
 my $targetFile = shift(@ARGV);
 my $mapFile = shift(@ARGV);
+my $isPaths ="false";
+my $targetFile_2 = $targetFile;
+if($targetFile_2 =~ m/paths$/){
+    $isPaths="true";
+}
 
 system("mv ${targetFile} ${targetFile}.copy") == 0 || die ("Cannot execute copy command");
 
@@ -31,12 +36,31 @@ open (targetFileHndl, ">$targetFile") || die ("C");
 while (my $line = <targetFileCopy>) {
     my @cellNames = split(/\s+/, $line);
     
-    foreach my $cellName (@cellNames) {
-	if (exists $cell2Pseudo{$cellName}) {
-#	    print "BEFORE: \t$line";
-	    $line =~ s/$cellName/${cell2Pseudo{$cellName}}/g;
-#	    print "AFTER:\t$line";
+    if($isPaths eq "true")
+    {
+        foreach my $cellName (@cellNames) {
+	    #my $cellNameBak = $cellName;
+	    my ($cellNameCpy,$lastCell)  = ($cellName =~ /(.*)\/(.?)/); 
+	   
+	    if ((defined($cellNameCpy)) and (exists $cell2Pseudo{$cellNameCpy})) {
+	        #    print "BEFORE: \t$line\n";
+	    
+	        $line =~ s/\Q$cellNameCpy\E/${cell2Pseudo{$cellNameCpy}}/g;
+	        #    print "AFTER:\t$line\n";
+	    }
 	}
+    }
+    else
+    {
+	foreach my $cellName (@cellNames) {
+            #my $cellNameBak = $cellName;
+            if (exists $cell2Pseudo{$cellName}) {
+                #    print "BEFORE: \t$line\n";
+            
+                $line =~ s/\Q$cellName\E/${cell2Pseudo{$cellName}}/g;
+                #    print "AFTER:\t$line\n";
+            }
+        }
     }
     print targetFileHndl $line;
 }
