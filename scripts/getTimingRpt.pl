@@ -21,6 +21,8 @@ foreach $line (<timingRptFile>) {
     if ($line =~ /[-]+/) {
 	next;
     }
+
+    print 
     if ($startPath == 1) {
 	# start matching to any of the below 
 	if ($line =~ /[ \t]*input external delay[ \t]+([0-9]+\.[0-9]+)[ \t]+([0-9]+\.[0-9]+)[ ]+([fr]*).*$/) {
@@ -56,8 +58,9 @@ foreach $line (<timingRptFile>) {
 	}
 	push @pathsArray, [ @pathToBeAdded ];
     }
-    
 }
+
+print scalar(@pathsArray);
 
 foreach $pathArrayRef ( @pathsArray ) {
  #   print "$pathArrayRef";

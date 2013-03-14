@@ -47,3 +47,4 @@ while (my $line = <targetFileCopy>) {
 close (targetFileHndl);
 close (targetFileCopy);
 
+system("rm -rf ${targetFile}.copy") == 0 || die ("Cannot remove target file copy");

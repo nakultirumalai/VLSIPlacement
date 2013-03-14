@@ -31,6 +31,7 @@ my $cell_name;
 while(my $row_nodes = <nodesFile>) 
 {
     next if($row_nodes =~ m/^(#|\n|NumNodes|NumTerminals|UCLA)/);
+    next if($row_nodes =~ m/\s*.*\s*PAD\s*$/);
     chomp($row_nodes);
     $row_nodes =~ s/^\s*//;
     my ($name, $full_lib_name, $type) = split('\s+', $row_nodes);
