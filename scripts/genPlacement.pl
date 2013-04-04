@@ -34,7 +34,6 @@ my $designName = $ARGV[0];
 $ENV{"DESIGN_NAME"} = $designName;
 
 my $stepCount = 1;
-my $plFile = "";
 
 
 ####################################################################################
@@ -50,24 +49,38 @@ close(doneFile);
 
 ####################################################################################
 ####################################################################################
-# STEP 2: Run one of the placers to generate a placement:
+# STEP 2: Run all of the below placers to generate a placement:
 #         Dragon 
 #         mPL6
 #         NTUPlace
-#         FlowPlace
-#         Capo
+#         FlowPlace ? 
+#         Capo ?
 ####################################################################################
 ####################################################################################
+my @outPLFiles;
+my $allPlacers = 0;
 print "STEP $stepCount: Running placer \"$plName\" to generate output placement\n"; $stepCount++;
-if ($plName eq "Dragon") {
-    (system("$scriptRoot/run_placer.sh Dragon $benchmarkGenRoot/results/$designName/bookshelf $designName.aux") == 0) ||
+if ($plName eq "All") { $allPlacers = 1; }
+
+if (($plName eq "Dragon") || $allPlacers) {
+    (system("$scriptRoot/run_placer.sh Dragon $benchmarkGenRoot/results/$designName/bookshelf $designName.aux | tee Dragon_place_log") == 0) ||
 	die ("Cannot run placer \"$plName\"\n");
-    $plFile = "${designName}_Dragon.pl";
-} elsif ($plName eq "mPL6") {
-    (system("$plPath/mPL6 -d $benchmarkGenRoot/results/$designName/bookshelf/$designName.aux") == 0) ||
+    push ( @outPLFiles,"${designName}_Dragon.pl");
+} 
+if (($plName eq "mPL6") || $allPlacers) {
+    (system("$scriptRoot/run_placer.sh mPL6 $benchmarkGenRoot/results/$designName/bookshelf $designName.aux | tee mPL6_place_log") == 0) ||
 	die ("Cannot run placer \"$plName\"\n");
-} else {
-    print "Done\n";
+    push ( @outPLFiles, "${designName}-mPL.pl" );
+}
+if (($plName eq "NTUPlace") || $allPlacers) {
+    (system("$scriptRoot/run_placer.sh NTUPlace $benchmarkGenRoot/results/$designName/bookshelf $designName.aux | tee NTUPlace_log") == 0) ||
+	die ("Cannot run placer \"$plName\"\n");
+    push ( @outPLFiles,  "${designName}.ntup.pl" );
+}
+if (($plName eq "ICC") || $allPlacers) {
+    (system("$iccPath/icc_shell -f $scriptRoot/icc_place.tcl | tee icc_place_log") == 0) ||
+	die ("Cannot run placer \"$plName\"\n");
+    push ( @outPLFiles,  "ICC.pl" );
 }
 
 
@@ -77,8 +90,8 @@ if ($plName eq "Dragon") {
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Removing sections COMPONENTS & NETS from the DEF file\n"; $stepCount++;
-(system("mv $benchmarkGenRoot/results/$designName/bookshelf/$designName.def $benchmarkGenRoot/results/$designName/bookshelf/$designName.def.copy") == 0) ||
-    die ("Cannot make copy of the DEF file\n");
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/$designName.def $benchmarkGenRoot/results/$designName/bookshelf/$designName.def.orig") == 0) || die ("Cannot make copy of the DEF file\n");
+(system("mv $benchmarkGenRoot/results/$designName/bookshelf/$designName.def $benchmarkGenRoot/results/$designName/bookshelf/$designName.def.copy") == 0) || die ("Cannot make copy of the DEF file\n");
 open(DEFFileCopy, "$benchmarkGenRoot/results/$designName/bookshelf/$designName.def.copy") ||
     die ("Cannot open copied DEF file\n");
 open(DEFFile, ">$benchmarkGenRoot/results/$designName/bookshelf/$designName.def") ||
@@ -101,7 +114,17 @@ close(DEFFile);
 close(DEFFileCopy);
 (system("rm -rf $benchmarkGenRoot/results/$designName/bookshelf/$designName.def.copy") == 0) || die ("Cannot remove copied DEF file");
 
-
+####################################################################################
+####################################################################################
+# THE FOLLOWING STEPS HAPPEN FOR THE OUTPUTS OF ALL PLACERS 
+####################################################################################
+####################################################################################
+print "Performing routing for "; print scalar(@outPLFiles); print " files \n";
+foreach my $plFile ( @outPLFiles ) {
+print "Performing extraction and timing analysis for $plFile\n";
+if ($plFile ne "ICC.pl") {
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/$plFile $benchmarkGenRoot/results/$designName/bookshelf/$plFile.orig") == 0) ||
+    die ("Cannot make copy of $plFile ");
 ####################################################################################
 ####################################################################################
 # STEP 4: Execute script to replace the pseudo names in the .pl output of the 
@@ -118,16 +141,17 @@ print "STEP $stepCount: Replace pseudo names in the PL file with original names\
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Generating placed DEF \n"; $stepCount++;
-(system("$scriptRoot/convertPlToDef.pl $benchmarkGenRoot/results/$designName/bookshelf/$designName.def $benchmarkGenRoot/results/$designName/bookshelf/$plFile $benchmarkGenRoot/results/$designName/bookshelf/${designName}.placed.def") == 0) || die ("Cannot generate DEF for placed netlist");
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/$designName.def $benchmarkGenRoot/results/$designName/bookshelf/$plFile.def"));
+(system("$scriptRoot/convertPlToDef.pl $benchmarkGenRoot/results/$designName/bookshelf/$plFile.def $benchmarkGenRoot/results/$designName/bookshelf/$plFile $benchmarkGenRoot/results/$designName/bookshelf/$plFile.placed.def") == 0) || die ("Cannot generate DEF for placed netlist");
 
-
+}
 ####################################################################################
 ####################################################################################
 # STEP 6: Run ICC to generate a routed netlist
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Run IC compiler to generate the routed netlist and extract parasitics\n"; $stepCount++;
-(system("$iccPath/icc_shell -f $benchmarkGenRoot/scripts/genRouting.tcl | tee  icc_route_log") == 0) ||
+(system("$scriptRoot/run_routing.sh $designName $plFile.placed.def $plFile") == 0) ||
     die ("STEP ($stepCount - 1) failed\n");
 
 
@@ -137,7 +161,7 @@ print "STEP $stepCount: Run IC compiler to generate the routed netlist and extra
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Running prime time to generate timing report using parasitics\n"; $stepCount++;
-(system("$ptPath/pt_shell -f $benchmarkGenRoot/scripts/ptAnalysis.tcl | tee pt_log") == 0) || die ("Cannot perform post route timing analysis");
+(system("$scriptRoot/run_sta.sh $designName $plFile") == 0) || die ("Cannot perform post route timing analysis");
 
 
 ####################################################################################
@@ -145,6 +169,14 @@ print "STEP $stepCount: Running prime time to generate timing report using paras
 # STEP 8: Generate the paths file for the benchmark from the post routed timing 
 #         report 
 ####################################################################################
-####################################################################################
-(system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/${designName}_post_route_timing.rpt > $benchmarkGenRoot/results/$designName/bookshelf/${designName}.route.timing_paths") == 0) || 
+###################################################################################
+(system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/${designName}_timing.rpt $benchmarkGenRoot/results/$designName/bookshelf/${designName}.syn.timing_paths") == 0) || 
     die ("Cannot generate the routed timing paths file");
+
+(system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/bookshelf/${plFile}_pre_route_timing.rpt $benchmarkGenRoot/results/$designName/bookshelf/${plFile}.preroute.timing_paths") == 0) || 
+    die ("Cannot generate the pre-routed timing paths file");
+
+(system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/bookshelf/${plFile}_post_route_timing.rpt $benchmarkGenRoot/results/$designName/bookshelf/${plFile}.postroute.timing_paths") == 0) || 
+    die ("Cannot generate the routed timing paths file");
+}
+

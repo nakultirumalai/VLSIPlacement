@@ -59,6 +59,18 @@
     if ((*CellPtr).CellIsClusterChild())	  \
       continue;
 
+# define DESIGN_FOR_ALL_SEQ_CELLS(Design, CellName, CellPtr)	\
+  { \
+  map<string, Cell*> DesignCells = Design.DesignGetCells(); \
+  map<string, Cell*>::iterator mapIter; \
+  for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
+    CellName = mapIter->first; \
+    CellPtr = mapIter->second; \
+    if ((*CellPtr).CellIsMacro()) \
+      continue;			  \
+    if (!((*CellPtr).CellIsSequential()))	\
+      continue;
+
 # define DESIGN_END_FOR }}
   
 # endif

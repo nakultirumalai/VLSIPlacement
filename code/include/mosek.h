@@ -1,0 +1,1 @@
+/home/tirumanl/Downloads/mosek/6/tools/platform/linux64x86/h/mosek.h

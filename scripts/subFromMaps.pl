@@ -21,7 +21,7 @@ my %cell2Pseudo=();
 while(my $row = <inmapFile>)
 {
     chomp($row);
-    next if($row =~ m/^Pseudo_name/);
+    next if($row =~ m/^#/);
     my ($pseudo, $cellName, $libCellName, $type) = split('\s+',$row);
     $cell2Pseudo{$cellName}= $pseudo;
 }
@@ -40,10 +40,10 @@ while (my $line = <targetFileCopy>) {
 	    my ($cellNameCpy,$lastCell)  = ($cellName =~ /(.*)\/(.?)/); 
 	   
 	    if ((defined($cellNameCpy)) and (exists $cell2Pseudo{$cellNameCpy})) {
-	        #    print "BEFORE: \t$line\n";
+#	            print "BEFORE: \t$line\n";
 	    
 	        $line =~ s/\Q$cellNameCpy\E/${cell2Pseudo{$cellNameCpy}}/g;
-	        #    print "AFTER:\t$line\n";
+#	            print "AFTER:\t$line\n";
 	    }
 	}
     } else {
@@ -51,10 +51,10 @@ while (my $line = <targetFileCopy>) {
 	    foreach my $cellName (@cellNames) {
 		#my $cellNameBak = $cellName;
 		if (exists $cell2Pseudo{$cellName}) {
-		    #    print "BEFORE: \t$line\n";
+#		        print "BEFORE: \t$line\n";
 		    
 		    $line =~ s/\Q$cellName\E/${cell2Pseudo{$cellName}}/g;
-		    #    print "AFTER:\t$line\n";
+#		        print "AFTER:\t$line\n";
 		}
 	    }
 	}

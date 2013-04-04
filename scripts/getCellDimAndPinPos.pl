@@ -151,15 +151,17 @@ if (scalar(@libCellArray) != 0) {
 	    $cellHeight = $PAD_HEIGHT;
 	}
 	if ($isPad eq "false") {
-	    print mod_bkshlfFile_1 "\t$cellName\t$cellWidth\t$cellHeight\n";
+	    print mod_bkshlfFile_1 "  $cellName  \t$cellWidth\t$cellHeight\n";
 	    if (exists $cellIsFFTest{$cellName}) {
-		print mod_bkshlfFile_2 "\t$cellName\t$cellWidth\t$cellHeight\tFF\n";
+		print mod_bkshlfFile_2 "  $cellName\t$cellWidth\t$cellHeight\tFF\n";
 	    } else {
-		print mod_bkshlfFile_2 "\t$cellName\t$cellWidth\t$cellHeight\tnFF\n";
+		print mod_bkshlfFile_2 "  $cellName\t$cellWidth\t$cellHeight\tnFF\n";
 	    }
 	} else {
-	    print mod_bkshlfFile_1 "\t$cellName\t$cellWidth\t$cellHeight\tterminal\n";
-	    print mod_bkshlfFile_2 "\t$cellName\t$cellWidth\t$cellHeight\tnFF\tterminal\n";
+#	    print mod_bkshlfFile_1 "\t$cellName\t$cellWidth\t$cellHeight\tterminal\n";
+#	    print mod_bkshlfFile_2 "\t$cellName\t$cellWidth\t$cellHeight\tnFF\tterminal\n";
+	    print mod_bkshlfFile_1 "  $cellName\t$cellWidth\t$cellHeight\tterminal \n";
+	    print mod_bkshlfFile_2 "  $cellName\t$cellWidth\t$cellHeight\tterminal\tnFF\n";
 	}
     }
 }
@@ -210,8 +212,8 @@ while(my $line = <netOrigFile>) {
 	    my $pinx, $piny;
 #	    print "RECOGNIZED: Cell: $cellName Lib details: $libDetails\n";
 	    if ($libDetails eq "PAD") {
-		$pinx = 0;
-		$piny = 0;
+		$pinx = 28;
+		$piny = 28;
 	    } else {
 		my ($libName, $libCellName, $libPinName) = split('/', $libDetails);
 #		print "\tRECOGNIZED: libname: $libName Lib cell name: $libCellName Pin name: $libPinName \n";
@@ -229,11 +231,13 @@ while(my $line = <netOrigFile>) {
 		# Round the pin position to 3 decimal places and convert to microns
 		$pinx = sprintf "%.3f", $pinx;
 		$pinx = $pinx * 1000;
+		$pinx = sprintf "%.3f", $pinx;
 		$piny = sprintf "%.3f", $piny;
 		$piny = $piny * 1000;
+		$piny = sprintf "%.3f", $piny;
 #		print "\tPIN POSITION of pin $libPinName $pinx $piny \n";
 	    }
-	    print netFile "\t$cellName $pinDir $colon $pinx $piny\n";
+	    print netFile "\t$cellName  $pinDir  $colon  $pinx  $piny \n";
 	} 
     }
 }

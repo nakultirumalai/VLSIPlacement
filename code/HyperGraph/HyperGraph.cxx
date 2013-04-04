@@ -1,4 +1,5 @@
 # include <HyperGraph.h>
+# include <HyperGraphIter.h>
 # include <Stat.h>
 # include <time.h>
 # include <Cell.h>
@@ -10,23 +11,39 @@ HyperGraph::AddNodeInt(void *object)
 
   unsigned int nodeIdx;
 
-  Node *newNode = new Node();
-  nodeIdx = numNodes++;
-  (*newNode).NodeSetIdx(nodeIdx);
-  /* Create link in the map */
-  idx2Node[nodeIdx] = newNode;
-  /* Create an entry in the connectivity table 
-     for this object */
-  Nodes2Edges.push_back(vector<unsigned int> ());
-  nodeConnectivity.push_back(0);
-  nodeSetIsTop(nodeIdx);
+  if (nodeExists(object)) {
+    nodeIdx = HyperGraphGetCellIndex(object);
+  } else {
+    Node *newNode = new Node();
+    nodeIdx = numNodes++;
+    (*newNode).NodeSetIdx(nodeIdx);
+    /* Create link in the map */
+    idx2Node[nodeIdx] = newNode;
+    /* Create an entry in the connectivity table 
+       for this object */
+    Nodes2Edges.push_back(vector<unsigned int> ());
+    nodeConnectivity.push_back(0);
+    nodeSetIsTop(nodeIdx);
 
-  (*newNode).NodeSetData(object);
-  obj2idx[object] = nodeIdx;
+    (*newNode).NodeSetData(object);
+    obj2idx[object] = nodeIdx;
 
-  setDirty();
-
+    setDirty();
+  }
   return (nodeIdx);
+}
+
+bool
+HyperGraph::nodeExists(void *object)
+{
+  bool rtv;
+  
+  rtv = false;
+  if (obj2idx.find(object) != obj2idx.end()) {
+    rtv = true;
+  }
+  
+  return (rtv);
 }
 
 unsigned int 
@@ -53,7 +70,7 @@ HyperGraph::getNodeConnectivity(unsigned int nodeIdx)
 }
 
 unsigned int 
-HyperGraph::getEdgeWeight(unsigned int edgeIdx)
+HyperGraph::GetEdgeWeight(unsigned int edgeIdx)
 {
   Edge *thisEdge;
   unsigned int edgeWeight;
@@ -66,6 +83,12 @@ HyperGraph::getEdgeWeight(unsigned int edgeIdx)
   return edgeWeight;
 }
 
+map<unsigned int, unsigned int>&
+HyperGraph::getEdgeConnectivity(unsigned int edgeIdx)
+{
+  return ((*this).Edges2Nodes[edgeIdx]);
+}
+
 unsigned int
 HyperGraph::getNewNodeIdx(void)
 {
@@ -75,7 +98,7 @@ HyperGraph::getNewNodeIdx(void)
 unsigned int
 HyperGraph::getNewEdgeIdx(void)
 {
-  return (HyperGraphGetNumEdges());
+  return (GetNumEdges());
 }
 
 bool
@@ -272,6 +295,12 @@ HyperGraph::HyperGraphAddNode(void *object)
   AddNodeInt(object);
 }
 
+bool
+HyperGraph::HyperGraphNodeExists(void *object)
+{
+  return nodeExists(object);
+}
+
 void 
 HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject, 
 			      unsigned int weight)
@@ -323,7 +352,7 @@ HyperGraph::HyperGraphGetNumNodes(void)
 }
 
 unsigned int 
-HyperGraph::HyperGraphGetNumEdges(void)
+HyperGraph::GetNumEdges(void)
 {
   return (numEdges);
 }
@@ -492,4 +521,268 @@ HyperGraph::HyperGraphGetConnectedCells(void* cellPtr)
   } END_FOR;
 
   return (rtvCells);
+}
+
+unsigned int 
+HyperGraph::GetNumEdgesOfNode(void *object) 
+{
+  unsigned int nodeIdx;
+  unsigned int numEdges;
+  
+  nodeIdx = obj2idx[object];
+  numEdges = (Nodes2Edges[nodeIdx]).size();
+ 
+  return (numEdges);
+}
+
+unsigned int 
+HyperGraph::GetNumPairsOfNode(void *object, unsigned int& weightedSum) 
+{
+  unsigned int nodeIdx1, nodeIdx2;
+  unsigned int numPairs;
+  unsigned int edgeIdx;
+  
+  nodeIdx1 = obj2idx[object];
+  numPairs = 0;
+
+  vector<unsigned int>& edgeList = Nodes2Edges[nodeIdx1];
+  weightedSum = 0;
+  VECTOR_FOR_ALL_ELEMS(edgeList, unsigned int, edgeIdx) {
+    map<unsigned int, unsigned int>& nodeMap = Edges2Nodes[edgeIdx];
+    unsigned int thisEdgeWeight = GetEdgeWeight(edgeIdx);
+    unsigned int thisEdgeNumPairs = 0;
+    MAP_FOR_ALL_KEYS(nodeMap, unsigned int, unsigned int, nodeIdx2) {
+      if (nodeIdx1 == nodeIdx2) {
+	continue;
+      }
+      thisEdgeNumPairs++;
+      numPairs++;
+    } END_FOR;
+    weightedSum += thisEdgeWeight * thisEdgeNumPairs;
+  } END_FOR;
+  
+  return (numPairs);
+}
+
+vector<unsigned int>
+HyperGraph::GetEdgesOfNode(void *object)
+{
+  unsigned int nodeIdx;
+  vector<unsigned int> rtv;
+
+  nodeIdx = obj2idx[object];
+  rtv = Nodes2Edges[nodeIdx];
+  
+  return (rtv);
+}
+
+vector<unsigned int>
+HyperGraph::GetEdgesOfNodes(void *object1, void *object2)
+{
+  unsigned int nodeIdx1, nodeIdx2;
+  unsigned int edgeIdx;
+  vector<unsigned int> Edges;
+  vector<unsigned int> rtv;
+
+  nodeIdx1 = obj2idx[object1];
+  nodeIdx2 = obj2idx[object2];
+  Edges = Nodes2Edges[nodeIdx1];
+
+  VECTOR_FOR_ALL_ELEMS(Edges, unsigned int, edgeIdx) {
+    map<unsigned int, unsigned int>& edges2NodesMap = Edges2Nodes[edgeIdx];
+    if (edges2NodesMap.find(nodeIdx2) != edges2NodesMap.end()) {
+      rtv.push_back(edgeIdx);
+    }
+  } END_FOR;
+
+  return (rtv);
+}
+
+unsigned int 
+HyperGraph::GetNumPairsOfNode(void *object) 
+{
+  unsigned int nodeIdx1, nodeIdx2;
+  unsigned int numPairs;
+  unsigned int edgeIdx;
+  
+  nodeIdx1 = obj2idx[object];
+  numPairs = 0;
+  vector<unsigned int>& edgeList = Nodes2Edges[nodeIdx1];
+
+  VECTOR_FOR_ALL_ELEMS(edgeList, unsigned int, edgeIdx) {
+    map<unsigned int, unsigned int>& nodeMap = Edges2Nodes[edgeIdx];
+    MAP_FOR_ALL_KEYS(nodeMap, unsigned int, unsigned int, nodeIdx2) {
+      if (nodeIdx1 == nodeIdx2) {
+	continue;
+      }
+      numPairs++;
+    } END_FOR;
+  } END_FOR;
+ 
+  return (numPairs);
+}
+
+unsigned int 
+HyperGraph::GetNumEdgesOfNodes(void *object1, void *object2, unsigned int& weightedSum) 
+{
+  unsigned int nodeIdx1, nodeIdx2;
+  unsigned int numEdges, edgeIdx;
+  
+  nodeIdx1 = obj2idx[object1];
+  nodeIdx2 = obj2idx[object2];
+
+  vector<unsigned int>& edgeList = Nodes2Edges[nodeIdx1];
+  
+  numEdges = 0;
+  weightedSum = 0;
+  VECTOR_FOR_ALL_ELEMS(edgeList, unsigned int, edgeIdx) {
+    unsigned int thisEdgeWeight = GetEdgeWeight(edgeIdx);
+    unsigned int thisEdgeNumPairs = 0;
+    if ((Edges2Nodes[edgeIdx]).find(nodeIdx2) != (Edges2Nodes[edgeIdx]).end()) {
+      numEdges++;
+      weightedSum += thisEdgeWeight; 
+    }
+  } END_FOR;
+
+  return (numEdges);
+}
+
+
+unsigned int 
+HyperGraph::GetNumEdgesOfNodes(void *object1, void *object2) 
+{
+  unsigned int nodeIdx1, nodeIdx2;
+  unsigned int numEdges, edgeIdx;
+  
+  nodeIdx1 = obj2idx[object1];
+  nodeIdx2 = obj2idx[object2];
+
+  vector<unsigned int>& edgeList = Nodes2Edges[nodeIdx1];
+  
+  numEdges = 0;
+  VECTOR_FOR_ALL_ELEMS(edgeList, unsigned int, edgeIdx) {
+    if ((Edges2Nodes[edgeIdx]).find(nodeIdx2) != (Edges2Nodes[edgeIdx]).end()) {
+      numEdges++;
+    }
+  } END_FOR;
+
+  return (numEdges);
+}
+
+/* 
+   Returns the total weight of all edges connecting nodes 
+   corresponding to cellPtr1 and cellPtr2. If there 
+   is no connection, the returned value is -1
+
+   if cellPtr1 has k edges and each edge on an average 
+   has p nodes, complexity of this function would be
+   (klogk)*(logp) = O(a) (some constant a as k and p 
+   have upper limits)
+*/
+long int 
+HyperGraph::HyperGraphNodesAreAdjacent(void* cellPtr1, void* cellPtr2) 
+{
+  unsigned int nodeIdx1, nodeIdx2, edgeIdx;
+  vector<unsigned int> connectedEdges;
+  long int returnEdgeIdx = -1;
+  
+  nodeIdx1 = obj2idx[cellPtr1]; /* O(logn) */
+  nodeIdx2 = obj2idx[cellPtr2]; /* O(logn) */
+  
+  connectedEdges = Nodes2Edges[nodeIdx1];
+  
+  VECTOR_FOR_ALL_ELEMS(connectedEdges, unsigned int, edgeIdx) {
+    if ((Edges2Nodes[edgeIdx]).find(nodeIdx2) != (Edges2Nodes[edgeIdx]).end()) {
+      returnEdgeIdx = edgeIdx;
+      break;
+    }
+  } END_FOR;
+  
+  return (returnEdgeIdx);
+}
+
+
+/* 
+   FOR a cell C1, returns ΣFor all nets (Σ (W(n)*(Number of pins of cells other than C1 on each net)))
+*/
+double
+HyperGraph::HyperGraphGetWeightedSumOfEdges(void* cellPtr, bool pinOffset, int xposypos)
+{
+  double weightedSum;
+  double offsetDiffSum;
+  unsigned int weight;
+  unsigned int edgeIdx;
+  unsigned int nodeIdx;
+  unsigned int connectedNodeIdx;
+
+  weightedSum = 0.0;
+  offsetDiffSum = 0.0;
+  nodeIdx = HyperGraphGetCellIndex(cellPtr);
+  HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT((*this), cellPtr, edgeIdx, weight) {
+    unsigned int numConnected;
+    map<unsigned int, unsigned int>& nodesOfEdge = getEdgeConnectivity(edgeIdx);
+    numConnected = 0;
+    Cell& cellP = *(Cell*)(cellPtr);
+    MAP_FOR_ALL_KEYS(nodesOfEdge, unsigned int, unsigned int, connectedNodeIdx) {
+      if (connectedNodeIdx == nodeIdx) {
+	continue;
+      }
+      numConnected++;
+      if (pinOffset == true) {
+	Node& thisNode = *(*this).idx2Node[nodeIdx];
+	Cell& cellQ = *(Cell *)thisNode.NodeGetData();
+	if (cellP.CellIsPort()) {
+	  if (xposypos == 0) {
+	    offsetDiffSum -= cellP.CellGetXpos();
+	  } else {
+	    offsetDiffSum -= cellP.CellGetYpos();
+	  }
+	} 
+	if (cellQ.CellIsPort()) {
+	  if (xposypos == 0) {
+	    offsetDiffSum -= cellQ.CellGetXpos();
+	  } else {
+	    offsetDiffSum -= cellQ.CellGetYpos();
+	  }
+	}
+      }
+    } END_FOR;
+    if (pinOffset == false) {
+      weightedSum += weight * numConnected;
+    } else {
+      weightedSum += weight * numConnected * offsetDiffSum;
+    }
+  } HYPERGRAPH_END_FOR;
+
+  return (weightedSum);
+}
+
+double
+HyperGraph::HyperGraphGetWeightedSumOfEdges(void* cellPtr1, void *cellPtr2)
+{
+  double weightedSum;
+  unsigned int weight;
+  unsigned int edgeIdx;
+  unsigned int nodeIdx1, nodeIdx2;
+  unsigned int connectedNodeIdx;
+
+  weightedSum = 0.0;
+  nodeIdx1 = HyperGraphGetCellIndex(cellPtr1);
+  nodeIdx2 = HyperGraphGetCellIndex(cellPtr2);
+
+  HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT((*this), cellPtr1, edgeIdx, weight) {
+    unsigned int numConnected;
+    map<unsigned int, unsigned int>& nodesOfEdge = getEdgeConnectivity(edgeIdx);
+    if (nodesOfEdge.find(nodeIdx2) == nodesOfEdge.end()) {
+      continue;
+    }
+    weightedSum += weight;
+  } HYPERGRAPH_END_FOR;
+
+  return (weightedSum);
+}
+
+HyperGraph::~HyperGraph() 
+{
+
 }

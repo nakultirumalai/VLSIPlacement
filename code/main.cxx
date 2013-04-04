@@ -60,7 +60,8 @@ int main(int argc, char *argv[])
 
     //DesignWriteNodes(myDesign, "");
 
-    myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
+    //myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
+    myDesign.DesignSolveForSeqCells();
     /* Second param is clustering type. Can take on the following values:
        FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
 
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
     
     //    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
   }
-
+  
   return 0;
 }
 

@@ -123,3 +123,24 @@ string strToLower(const char *s)
   return retVal;
 }
 
+bool fileExists(string& fullFileName) 
+{
+  ifstream ifile(fullFileName.data());
+  bool retVal;
+  
+  retVal = false;
+  if (ifile) {
+    retVal = true;
+    ifile.close();
+  }
+  
+  return (retVal);
+} 
+
+bool fileExists(string& fileName, string& filePath) 
+{
+  string fullFileName = fileName + filePath;
+  bool retVal = fileExists(fullFileName);
+  
+  return (retVal);
+} 

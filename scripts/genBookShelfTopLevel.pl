@@ -47,8 +47,8 @@ print "STEP $stepCount: Deleting the old benchmark bookshelf files\n"; $stepCoun
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Run DC to generate files\n"; $stepCount++;
-(system("$synPath/dc_shell -f $benchmarkGenRoot/scripts/genericRTLCompile_dc.tcl > dc_log") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");
+#(system("$synPath/dc_shell -f $scriptRoot/genericRTLCompile_dc.tcl > dc_syn_log") == 0) ||     die ("Synthesis using Design Compiler failed\n");
+(system("$synPath/dc_shell -f $scriptRoot/readCompiledRTLDC.tcl > dc_syn_log") == 0) || die ("Synthesis using Design Compiler failed\n");
 
 
 ####################################################################################
@@ -70,8 +70,8 @@ print "STEP $stepCount: Make copies of the original files. These are golden\n"; 
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Run IC compiler to generate the DEF file and the terminal positions for top level ports\n"; $stepCount++;
-(system("$iccPath/icc_shell -f $benchmarkGenRoot/scripts/generateFloorplanICC.tcl > icc_log") == 0) || 
-    die ("STEP ($stepCount - 1) failed\n");
+(system("$iccPath/icc_shell -f $scriptRoot/generateFloorplanICC.tcl > icc_floor_log") == 0) ||    die ("Floorplan generation using IC compiler failed\n");
+#(system("cp $benchmarkGenRoot/results/$designName/${designName}.def $benchmarkGenRoot/results/$designName/bookshelf/${designName}.def") == 0) || 
 
 
 ####################################################################################
@@ -83,7 +83,7 @@ print "STEP $stepCount: Run IC compiler to generate the DEF file and the termina
 ####################################################################################
 print "STEP $stepCount: Get the cell dimensions and relative pin positions from LEF\n"; $stepCount++;
 (system("$scriptRoot/getCellDimAndPinPos.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $LEFfile") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");
+    die ("Obtaining cell dimensions and relative pin positions from LEF failed \n");
 
 
 ####################################################################################
@@ -93,8 +93,7 @@ print "STEP $stepCount: Get the cell dimensions and relative pin positions from 
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Write terminal pin positions into the PL file\n"; $stepCount++;
-(system("$scriptRoot/getTermPositions.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.term.pl") == 0) ||
-.    die ("STEP ($stepCount - 1) failed\n");
+(system("$scriptRoot/getTermPositions.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.term.pl") == 0) || die ("STEP ($stepCount - 1) failed\n");
 
 
 ####################################################################################
@@ -104,8 +103,8 @@ print "STEP $stepCount: Write terminal pin positions into the PL file\n"; $stepC
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Generate the .timing_paths file from timing report\n"; $stepCount++;
-(system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/${designName}_timing.rpt > $benchmarkGenRoot/results/$designName/bookshelf/${designName}.timing_paths") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");
+(system("$scriptRoot/getTimingRpt.pl $benchmarkGenRoot/results/$designName/${designName}_timing.rpt $benchmarkGenRoot/results/$designName/bookshelf/${designName}.timing_paths") == 0) ||
+    die ("Generation of the timing report failed\n");
 
 
 ####################################################################################
@@ -116,7 +115,7 @@ print "STEP $stepCount: Generate the .timing_paths file from timing report\n"; $
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Generate the delays from liberty\n"; $stepCount++;
-(system("$scriptRoot/getCellDelays.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.orig $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.delays") == 0) || print("STEP FAILED!\n");
+(system("$scriptRoot/getCellDelays.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.orig $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.delays") == 0) || print("STEP FAILED!: Will be obsoleted soon.\n");
 
 
 ####################################################################################
@@ -129,7 +128,7 @@ print "STEP $stepCount: Generate the delays from liberty\n"; $stepCount++;
 ####################################################################################
 print "STEP $stepCount: Generate the pseudo names for cells\n"; $stepCount++;
 (system("$scriptRoot/map2Pseudo.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.orig $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) || 
-    die ("STEP ($stepCount - 1) failed\n");
+    die ("Generate pseudo names for cells failed\n");
 
 
 ####################################################################################
@@ -142,7 +141,7 @@ print "STEP $stepCount: Generate the pseudo names for cells\n"; $stepCount++;
 ####################################################################################
 print "STEP $stepCount: Generate the pseudo names for nets\n"; $stepCount++;
 (system("$scriptRoot/mapNets2Pseudo.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.map") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");    
+    die ("Generate pseudo names for nets failed\n");    
 
 
 ####################################################################################
@@ -151,25 +150,25 @@ print "STEP $stepCount: Generate the pseudo names for nets\n"; $stepCount++;
 #         the .nets file, .pl file and the .timing_paths file
 ####################################################################################
 ####################################################################################
+# MAKE COPIES OF ALL FILES WHICH HAVE ORIGINAL NAMES 
 print "STEP $stepCount: Substitute CELL pseudo names in the nodes file\n"; $stepCount++;
-(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.orig.names") == 0) || die ("Cannot make copy of nodes file");
+(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) || die ("Replace pseudo names in .nodes file\n");
 
 print "STEP $stepCount: Substitute CELL pseudo names in the nets file\n"; $stepCount++;
-(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");    
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.orig.names") == 0) || die ("Cannot make copy of nets file");
+(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) ||  die ("Replace pseudo names in .nets file failed\n");
 
 print "STEP $stepCount: Substitute CELL pseudo names in the timing paths file\n"; $stepCount++;
-(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.timing_paths $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");    
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/${designName}.timing_paths $benchmarkGenRoot/results/$designName/bookshelf/${designName}.timing_paths.orig.names") == 0) || die ("Cannot make copy of timing_paths file");
+(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.timing_paths $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) || die ("Replace pseudo names in .timing_paths file failed\n");
 
 print "STEP $stepCount: Substitute CELL pseudo names in the pl file\n"; $stepCount++;
-(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");
+(system("cp $benchmarkGenRoot/results/$designName/bookshelf/${designName}.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.pl.orig.names") == 0) || die ("Cannot make copy of the pl file");
+(system("$scriptRoot/subFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes.map") == 0) || die ("STEP ($stepCount - 1) failed\n");
 
 print "STEP $stepCount: Substitute NET pseudo names in the nets file\n"; $stepCount++;
-(system("$scriptRoot/subNetsFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.map") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");    
+(system("$scriptRoot/subNetsFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.map") == 0) || die ("Replace pseudo net names in .nets file failed\n");    
 
 
 ####################################################################################
@@ -179,10 +178,10 @@ print "STEP $stepCount: Substitute NET pseudo names in the nets file\n"; $stepCo
 ####################################################################################
 my $minWidth = 152; # min-Width of cells in the LEF file
 my $height = 1672; # Height of the rows = height of standard cells
-my $orientation = "Y";
+my $symmetry = "Y X";
 
 print "STEP $stepCount: Generate the SCL file for bookshelf format\n"; $stepCount++;
-(system("$scriptRoot/getSclFromDef.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.def $minWidth $height $orientation") == 0) ||
+(system("$scriptRoot/getSclFromDef.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.def $minWidth $height $symmetry") == 0) ||
     die ("STEP ($stepCount - 1) failed\n");
 
 
@@ -192,7 +191,7 @@ print "STEP $stepCount: Generate the SCL file for bookshelf format\n"; $stepCoun
 ####################################################################################
 ####################################################################################
 open(wtsFile, ">$benchmarkGenRoot/results/$designName/bookshelf/${designName}.wts") || die ("Cannot write to ${designName}.wts");
-print wtsFile "UCLA 1.0\n";
+print wtsFile "UCLA wts 1.0\n";
 print wtsFile "# Created        :\n";
 print wtsFile "# User           :\n";
 close(wtsFile);
@@ -204,7 +203,7 @@ close(wtsFile);
 ####################################################################################
 ####################################################################################
 open(auxFile, ">$benchmarkGenRoot/results/$designName/bookshelf/${designName}.aux") || die ("Cannot write to ${designName}.aux");
-print auxFile "RowBasedPlacement : ${designName}.nodes ${designName}.nets ${designName}.pl ${designName}.wts ${designName}.scl\n";
+print auxFile "RowBasedPlacement : ${designName}.nodes ${designName}.nets ${designName}.wts ${designName}.pl ${designName}.scl\n";
 close(auxFile);
 
 

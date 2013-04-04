@@ -23,13 +23,16 @@ class HyperGraph {
   map<void *, unsigned int> obj2idx;
   /* Map from index to edges. space complexity O(n2)*/
   map<unsigned int, Edge *> idx2Edge;
+
   /* Array whose indices are Edges and values are 
      other arrays whose elements are indices of nodes
      that are connected to the edges */
   vector<map<unsigned int, unsigned int > > Edges2Nodes;
+
   /* Array whose indices are Nodes and value is another
      array whose elements are connected edge indices */
   vector<vector<unsigned int> > Nodes2Edges;
+
   /* Array whose indices are nodes and elements are a metric which 
      represents the total connectivity of the node in the graph */
   vector<unsigned int> nodeConnectivity;
@@ -47,6 +50,9 @@ class HyperGraph {
      the hypergraph */
   unsigned int AddNodeInt(void *);
 
+  /* Check if an object has already been added as a node 
+     into the HyperGraph */
+  bool nodeExists(void *);
   /* Internal function for inserting the Edge* type into 
      the hypergraph */
   unsigned int AddEdgeInt(void *, unsigned int);
@@ -56,8 +62,10 @@ class HyperGraph {
 
   /* Yet to be defined */
   unsigned int getNodeConnectivity(unsigned int);
-  /* Given an edge index, return the weight of the edge */
-  unsigned int getEdgeWeight(unsigned int);
+
+  /* Given an edge index, return a map which has its keys 
+     as the indices of the nodes connected to that edge */
+  map<unsigned int, unsigned int>& getEdgeConnectivity(unsigned int);
 
   /* Gets the index at which a new node can be inserted into 
      the graph */
@@ -100,6 +108,9 @@ class HyperGraph {
   /* Insertion routines */
   void HyperGraphAddNode(void *);
   void HyperGraphAddEdge(vector<void *>&, void *, unsigned int);
+  
+  /* Routines for checking */
+  bool HyperGraphNodeExists(void *);
 
   /* Cluster routines */
   bool HyperGraphClusterNodes(vector<unsigned int>, void*,
@@ -108,7 +119,7 @@ class HyperGraph {
 
   /* Get routines */
   unsigned int HyperGraphGetNumNodes(void);
-  unsigned int HyperGraphGetNumEdges(void);
+  unsigned int GetNumEdges(void);
 
   /* Support for iterators */
   vector<unsigned int>& HyperGraphGetNodes(void);
@@ -120,8 +131,25 @@ class HyperGraph {
   bool nodeIsClusterChild(unsigned int);
 
   /* Public routines for help */
+  vector<unsigned int> GetEdgesOfNode(void *);
+  vector<unsigned int> GetEdgesOfNodes(void *, void *);
+
+  /* Given an edge index, return the weight of the edge */
+  unsigned int GetEdgeWeight(unsigned int);
+
+  /* Get the number of edges in the graph */
+  unsigned int GetNumPairsOfNode(void *);
+  unsigned int GetNumPairsOfNode(void *, unsigned int &);
+  unsigned int GetNumEdgesOfNode(void *);
+  unsigned int GetNumEdgesOfNodes(void *, void *);
+  unsigned int GetNumEdgesOfNodes(void *, void *, unsigned int&);
+
+  double HyperGraphGetWeightedSumOfEdges(void*, bool, int);
+  double HyperGraphGetWeightedSumOfEdges(void*, void*);
+
   unsigned int HyperGraphGetCellIndex(void *);
   vector<void *> HyperGraphGetConnectedCells(void*);
+  long int HyperGraphNodesAreAdjacent(void*, void*);
 
   HyperGraph();
   ~HyperGraph();

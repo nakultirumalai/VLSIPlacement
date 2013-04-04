@@ -25,11 +25,17 @@ class Cell {
   bool isClusterChild;
   bool isMacro;
   bool isFixed;
+  bool isSequential;
+  bool isPort;
   vector<Pin*> Pins;
   vector<Cell*> childCells;
 
- public:
   string name;
+  string origName;
+  string libCellName;
+  string libName;
+
+ public:
   /* Constructor & Destructor */
   Cell();
   Cell(int, int);
@@ -51,6 +57,9 @@ class Cell {
   void CellSetWidth(int);
   void CellSetOrientation(objOrient);
   void CellSetName(const string &);
+  void CellSetOrigName(const string &);
+  void CellSetLibCellName(const string &);
+  void CellSetLibName(const string &);
   void CellSetNumPins(int);
   void CellSetNumInPins(int);
   void CellSetNumOutPins(int);
@@ -61,6 +70,8 @@ class Cell {
   void CellSetIsMacro(const bool &);
   void CellSetIsFixed(const bool &);
   void CellSetClusterLevel(unsigned int);
+  void CellSetIsSequential(const bool &);
+  void CellSetIsPort(const bool &);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
   void CellIncrementClusterLevel(void);
@@ -82,7 +93,12 @@ class Cell {
   bool CellIsClustered(void);
   bool CellIsMacro(void);
   bool CellIsFixed(void);
+  bool CellIsSequential(void);
+  bool CellIsPort(void);
   string CellGetName(void);
+  string CellGetOrigName(void);
+  string CellGetLibCellName(void);
+  string CellGetLibName(void);
   vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);
   vector<Cell*> CellGetChildCells(void);
@@ -93,6 +109,8 @@ class Cell {
   void CellMoveUp(int);
   void CellMoveDown(int);
   void CellMoveCell(int, int);
+  Pin* CellGetPinByName(const string &PinName);
+
 };
 
 # endif

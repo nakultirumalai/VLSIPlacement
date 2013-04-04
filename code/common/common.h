@@ -4,6 +4,7 @@
 # include <fstream>
 # include <sstream>
 # include <vector>
+# include <queue>
 # include <map>
 # include <utility>
 # include <commonIter.h>
@@ -86,5 +87,7 @@ void vectorRemoveDuplicates(vector<unsigned int>& vec);
 bool strIsNumber(const string& s);
 string strToLower(const char *s);
 string strToLower(const string& s);
+bool fileExists(string& fullFileName);
+bool fileExists(string& filePath, string &fileName);
 
 #endif

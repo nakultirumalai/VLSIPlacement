@@ -10,7 +10,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   bool rowBasedPlacement;
   vector<string> fileList;
   
-  fullDesignPath = DesignPath + DIR_SEP + DesignName + DIR_SEP;
+  fullDesignPath = DesignPath + DIR_SEP;
   fullFileName = fullDesignPath + DesignName + DESIGN_AUX_FILE_EXT;
 
   /* Open the aux fle and read all the other files that need to be
@@ -54,9 +54,15 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
     }
   } END_FOR;
 
+  DesignMapFileName = fullDesignPath + DesignName + DESIGN_NODES_MAP_FILE_EXT;
+  if (!fileExists(DesignMapFileName)) {
+    DesignMapFileName = "";
+  }
+
   this->Name = DesignName;
   DesignReadRows();
   DesignReadCells();
+  DesignReadMapFile();
   DesignReadNets();
   DesignReadCellPlacement();
   
@@ -145,8 +151,8 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
   float xoffset, yoffset;
   char dir;
 
-  pinNum = 1;
   NetName = newNet.NetGetName();
+  pinNum = 1;
   for (int i=0; i < netDegree; i++, pinNum++) {
     if (file.eof()) {
       break;
@@ -162,13 +168,18 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     if (pinDir == PIN_DIR_INPUT_STRING) dir = PIN_DIR_INPUT;
     else if (pinDir == PIN_DIR_OUTPUT_STRING) dir = PIN_DIR_OUTPUT;
 
-    PinName = nodeName + "_" + getStrFromInt(pinNum);
+    node = DesignGetNode(nodeName);
+
+    /* Adjust the offset so that it is from the left bottom corner of the 
+       cell */
+    xoffset = xoffset + (*node).CellGetWidth();
+    yoffset = yoffset + (*node).CellGetHeight();
+    PinName = nodeName + "_" + getStrFromInt(((*node).CellGetNumPins() + 1));
     Pin *newPin = new Pin(0, (int)xoffset, (int)yoffset, dir, *node, PinName);
 
     Msg = "Created Pin " + PinName + " on cell " + nodeName;
     common_message(Msg);                                   
     (*newPin).Connect(newNet);
-    node = DesignGetNode(nodeName);
     (*newPin).PinSetParentCell(*node);
     (*node).CellAddPin(newPin);
     newNet.NetAddPin(*newPin);
@@ -238,7 +249,6 @@ Design::DesignFileReadNets(ifstream& file)
     DesignFileReadOneNet(file);
   }
 }
-
 
 void
 Design::DesignReadNets()
@@ -439,18 +449,16 @@ void
 Design::DesignFileReadFixedCells(ifstream& file)
 {
   string Property, Value;
-  unsigned int numRows;
-  int idx, netCount;
+  unsigned int numCells;
+  int idx;
 
   for (idx = 0; idx < NUM_FIXED_CELL_PROPERTIES; idx++) {
     do {
       DesignProcessProperty(file, Property, Value);
     } while (Property == "" && !file.eof());
-    if (Property == NUM_ROWS_PROPERTY) {
-      numRows = atoi(Value.data());
-    }
   }
-  for (idx = 0; idx < numRows; idx++) {
+  numCells = (*this).DesignGetNumCells();
+  for (idx = 0; idx < numCells; idx++) {
     DesignFileReadOneFixedCell(file);
   }
 }
@@ -468,4 +476,55 @@ Design::DesignReadCellPlacement()
   
   Msg += "Loaded " + getStrFromInt(NumFixedCells) + " cells positions";
   _STEP_END("Read fixed cells");
+}
+
+void 
+Design::DesignFileReadCellMap(ifstream &file)
+{
+  Cell *thisCell;
+  string cellName, cellType;
+  string cellOrigName, libCellName, cellLibName;
+  string line;
+  string garbage;
+
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    if (line.find('#') == 0) {
+      continue;
+    }
+
+    istringstream stream(line, istringstream::in);
+    cellType.clear();
+    stream >> cellName;
+    stream >> cellOrigName;
+    stream >> cellLibName;
+    stream >> libCellName;
+    stream >> cellType;
+    
+    thisCell = DesignGetNode(cellName);
+    (*thisCell).CellSetOrigName(cellOrigName);
+    (*thisCell).CellSetLibCellName(libCellName);
+    (*thisCell).CellSetLibName(cellLibName);
+    if (cellType == "FF") {
+      (*thisCell).CellSetIsSequential(true);
+    } else if (cellType == "PAD") {
+      (*thisCell).CellSetIsPort(true);
+    }
+  }
+}
+
+void
+Design::DesignReadMapFile()
+{
+  _STEP_BEGIN("Read map file");
+  if (DesignMapFileName == "") {
+    cout << "Map file cannot be found.. Skipping" << endl;
+  } else {
+    DesignOpenFile(DesignMapFileName);
+    DesignFileReadCellMap(DesignFile);
+  }
+  _STEP_END("Read map file");
 }

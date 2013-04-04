@@ -44,6 +44,24 @@ Cell::CellSetName(const string& cellName)
 }
 
 void
+Cell::CellSetOrigName(const string& origName)
+{
+  this->origName = origName;
+}
+
+void
+Cell::CellSetLibCellName(const string& libCellName)
+{
+  this->libCellName = libCellName;
+}
+
+void
+Cell::CellSetLibName(const string& libName)
+{
+  this->libName = libName;
+}
+
+void
 Cell::CellSetIsTerminal(const bool& terminalCell)
 {
   this->terminalCell = terminalCell;
@@ -101,6 +119,18 @@ void
 Cell::CellSetClusterLevel(unsigned int clusterLevel)
 {
   this->clusterLevel = clusterLevel;
+}
+
+void 
+Cell::CellSetIsSequential(const bool & isSequential)
+{
+  this->isSequential = isSequential;
+}
+
+void 
+Cell::CellSetIsPort(const bool & isPort)
+{
+  this->isPort = isPort;
 }
 
 void
@@ -270,10 +300,41 @@ Cell::CellIsFixed(void)
   return (isFixed);
 }
 
+bool
+Cell::CellIsSequential(void)
+{
+  return (isSequential);
+}
+
+bool
+Cell::CellIsPort(void)
+{
+  return (isPort);
+}
+
+
 string
 Cell::CellGetName(void)
 {
   return name;
+}
+
+string
+Cell::CellGetOrigName(void)
+{
+  return origName;
+}
+
+string
+Cell::CellGetLibCellName(void)
+{
+  return libCellName;
+}
+
+string
+Cell::CellGetLibName(void)
+{
+  return libName;
 }
 
 vector<Pin *>
@@ -318,6 +379,8 @@ Cell::Cell()
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -334,6 +397,8 @@ Cell::Cell(int Height, int Width)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -351,6 +416,8 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -369,6 +436,8 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -385,6 +454,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -402,6 +473,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -420,6 +493,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -436,6 +511,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -453,6 +530,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -470,8 +549,27 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsSequential(false);
+  CellSetIsPort(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
 }
 
+Pin *
+Cell::CellGetPinByName(const string &PinName) 
+{
+  Pin* pinPtr;
+  Pin* rtv;
+  
+  rtv = NIL(Pin *);
+  CELL_FOR_ALL_PINS((*this), PIN_DIR_ALL, pinPtr) {
+    cout << "Given name: " << PinName << " Pin Name: " << (*pinPtr).PinGetName() << endl;
+    if ((*pinPtr).PinGetName() == PinName) {
+      rtv = pinPtr;
+      break;
+    }
+  } CELL_END_FOR;
+  
+  return (rtv);
+}

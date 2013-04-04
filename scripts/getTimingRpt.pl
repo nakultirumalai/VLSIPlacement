@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 
 my $timingFileName = $ARGV[0];
-my $outputFileName = "out";
+my $outputFileName = $ARGV[1];
 
 open (timingRptFile, $timingFileName) or die "Cannot open timing report";
+open (OUT, ">$outputFileName") or die "Cannot open output file";
 
 # Print in the following format
 # PATH        DELAY         MAX DELAY       SETUP TIME        REQUIRED TIME         ARRIVAL TIME     SLACK
@@ -15,55 +16,84 @@ open (timingRptFile, $timingFileName) or die "Cannot open timing report";
 my $count=0;
 my $startPath = 0;
 my $createArr;
+my $starDefBegin = 0;
 my @pathsArray;
 my @path;
 foreach $line (<timingRptFile>) {
-    if ($line =~ /[-]+/) {
+#    print "LINE: $line";
+#    print "starDefBegin: $starDefBegin\n";
+    chomp($line);
+
+    if ($starDefBegin == 0) {
+	if ($line =~ m/^\*+/) {
+	    $starDefBegin = 1;
+	    next;
+	}
+    }
+    if ($starDefBegin == 1) {
+	if ($line =~ m/^\*+/) {
+	    $starDefBegin = 0;
+	}
 	next;
     }
 
-    print 
+#    print "$line\n";
     if ($startPath == 1) {
 	# start matching to any of the below 
 	if ($line =~ /[ \t]*input external delay[ \t]+([0-9]+\.[0-9]+)[ \t]+([0-9]+\.[0-9]+)[ ]+([fr]*).*$/) {
-	    push(@path, "input_external_delay");
-	    push(@path, $1);
+	    push @path, ( "input_external_delay" );
+#	    print "MATCH\n";
+#	    print "@path\n";
+	    push @path, ( $1 );
 	} elsif ($line =~ /[ \t]*data arrival time[ \t]+([0-9]+\.[0-9]+).*$/) {
-	    push(@path, "data_arrival_time");
-	    push(@path, $1);
+	    push @path, ( "data_arrival_time" );
+	    push @path, ( $1 );
+#	    print "MATCH\n";
+#	    print "@path\n";
 	} elsif ($line =~ /[ \t]*max_delay[ \t]+([0-9]+\.[0-9]+).*$/) {
-	    push(@path, "max_delay");
-	    push(@path, $1);
+	    push @path, ( "max_delay" );
+	    push @path, ( $1 );
+#	    print "MATCH\n";
+#	    print "@path\n";
 	} elsif ($line =~ /[ \t]*library setup time[ \t]+([0-9]+\.[0-9]+).*$/) {
-	    push(@path, "library_setup_time");
-	    push(@path, $1);
+	    push @path, ( "library_setup_time" );
+	    push @path, ( $1 );
+#	    print "MATCH\n";
+#	    print "@path\n";
 	} elsif ($line =~ /[ \t]*data required time[ \t]+([0-9]+\.[0-9]+).*$/) {
-	    push(@path, "data_required_time");
-	    push(@path, $1);
-	} elsif ($line =~ /^[ \t]*([^ ]+) ([^ ]+)[ \t]+([0-9]+\.[0-9]+)[ \t]+([0-9]+\.[0-9]+)[ ]+([fr]*).*$/) {
-	    push(@path, $1);
-	    push(@path, $2);
+	    push @path, ( "data_required_time" );
+	    push @path, ( $1 );
+#	    print "MATCH\n";
+#	    print "@path\n";
+	} elsif ($line =~ /\s*(\S+)\s+(\S+)\s+([0-9]+\.[0-9]+).*([0-9]+\.[0-9]+)\s+([fr]+)/) {
+#	    print "MATCH CELL\n";
+#	    print "FIRST ARG: $1\n";
+#	    print "SECOND ARG: $2\n";
+	    push @path, ( $1 );
+	    push @path, ( $2 );
 	}
     }
     if ($line =~/[ \t]*Point[ \t]*Incr[ \t]*Path[ \t]*$/) {
+#	print "MATCH begin\n";
+#	print "@path\n";
 	$startPath = 1;
 	@path = ();
     } elsif ($line =~/[ \t]*slack[ \t]+([^ ]+)[ \t]+([^ ]+).*$/) {
-	push(@path, "slack");
-	push(@path, $2);
+	push @path, ( "slack" );
+	push @path, ( $2 );
 	$startPath = 0;
+#	print "MATCH end\n";
+#	print "@path\n";
 	my @pathToBeAdded;
 	foreach $pathData (@path) {
-	    push @pathToBeAdded, ($pathData);
+	    push @pathToBeAdded, ( $pathData );
 	}
 	push @pathsArray, [ @pathToBeAdded ];
     }
 }
 
-print scalar(@pathsArray);
 
 foreach $pathArrayRef ( @pathsArray ) {
- #   print "$pathArrayRef";
     my $getKeyWord = 0;
     my $addDelay = 0;
     my $pathDelay = 0;
@@ -95,14 +125,14 @@ foreach $pathArrayRef ( @pathsArray ) {
 	    } elsif ($keyword eq "slack") {
 		$slack = $pathData;
 	    } else {
-		print "$keyword ";
+		print OUT "$keyword ";
 		$pathDelay = $pathDelay + $pathData;
 	    }
 	} else {
 	    $keyword = $pathData;
 	}
     }
-    print " $slack\n";
+    print OUT " $slack\n";
 }
 
  #   my @pathArray = $$pathArrayRef;

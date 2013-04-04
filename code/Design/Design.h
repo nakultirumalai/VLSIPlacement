@@ -11,6 +11,7 @@
 # include <Sort.h>
 # include <Flags.h>
 # include <DesignIter.h>
+# include <AnalyticalSolve.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -24,6 +25,7 @@
 # define DESIGN_NET_WTS_FILE_EXT ".wts"
 # define DESIGN_SCL_FILE_EXT ".scl"
 # define DESIGN_PL_FILE_EXT ".pl"
+# define DESIGN_NODES_MAP_FILE_EXT ".nodes.map"
 
 /*******************************************************************************
   Number of lines in the header of each type of file
@@ -127,6 +129,8 @@ class Design {
   string DesignNetWtsFileName;
   string DesignSclFileName;
   string DesignPlFileName;
+  string DesignMapFileName;
+
   bool RowBasedPlacement;
 
   ifstream DesignFile;
@@ -148,6 +152,7 @@ class Design {
   void DesignFileReadRows(ifstream &);
   void DesignFileReadOneFixedCell(ifstream &file);
   void DesignFileReadFixedCells(ifstream& file);
+  void DesignFileReadCellMap(ifstream& file);
 
   void DesignOpenFile(string);
   void DesignCloseFile(void);
@@ -165,6 +170,7 @@ class Design {
   Design(string, string);
   void DesignSetPath();
   void DesignReadCells();
+  void DesignReadMapFile();
   void DesignReadNets();
   void DesignReadRows();
   void DesignReadCellPlacement();
@@ -191,6 +197,8 @@ class Design {
   map<unsigned int, unsigned int> DesignGetRowHeights();
   void DesignClusterCells(HyperGraph&, clusteringType);
   void DesignCollapseCluster(Cell& MasterCell);
+  void DesignSolveForSeqCellsOld(void);
+  void DesignSolveForSeqCells(void);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);

@@ -17,8 +17,10 @@ while(my $line = <termFile>) {
 	my $xhigh = $4 * 1000;
 	my $yhigh = $5 * 1000;
 
-	my $relCX = ($xhigh - $xlow) / 2;
-	my $relCY = ($yhigh - $ylow) / 2;
+#	my $relCX = ($xhigh - $xlow) / 2;
+#	my $relCY = ($yhigh - $ylow) / 2;
+	my $relCX = 0;
+	my $relCY = 0;
 #	print "DBG: Relative X : $relCX Relative Y : $relCY\n";
 	my $termX = $xlow + $relCX;
 	my $termY = $ylow + $relCY;
@@ -37,7 +39,7 @@ open(plFile, ">$placedFile") || die ("Cannot open pl file");
 # Replace the positions of terminals from the MAP
 while (my $line = <plFileCpy>) {
     chomp($line);
-    if ($line =~ m/\s*(.*)\s+([0-9]+\.?[0-9]*)\s*([0-9]+\.?[0-9]*)\s*:\s*(.*)\s*/) {
+    if ($line =~ m/\s*(.*)\s+([0-9]+\.?[0-9]*)\s*([0-9]+\.?[0-9]*)\s*:\s*(.*) \/FIXED\s*/) {
 	my $portName = $1;
 	my $portX = $2;
 	my $portY = $3;
@@ -46,7 +48,7 @@ while (my $line = <plFileCpy>) {
 	    my @portPosArr = @{$portLocHash{$portName}};
 	    my $portPosX = $portPosArr[0];
 	    my $portPosY = $portPosArr[1];
-	    print plFile "$portName $portPosX $portPosY : $portOrient /FIXED\n";
+	    print plFile "$portName\t$portPosX\t$portPosY\t: $portOrient \n";
 	} else {
 	    print plFile "$line\n";
 	}

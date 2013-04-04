@@ -4,11 +4,12 @@ MAKEFLAGS += -j1
 
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
+LIBS= -L/usr/local/lib -lQuadProgpp -lc -ldl -lm -lmosek64 -pthread
 
 ifeq ($(MAKECMDGOALS), debug)
 	CFLAGS= -g 
 else
-	CFLAGS= -O3 -pg
+	CFLAGS= -pg
 endif
 
 export CFLAGS
@@ -26,7 +27,7 @@ CC=g++
 
 TARGETS = all debug
 
-SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags AnalyticalSolve
 
 OBJFILES:= $(OBJDIR)/*.o
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
@@ -39,8 +40,8 @@ COMPILE_ALL: $(SRCDIRS)
 		make -C $$dir; \
 	done	
 
-GEN_EXEC: main.cxx
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) 
+GEN_EXEC: main.cxx 
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
 
 debug: COMPILE_ALL GEN_EXEC
 
