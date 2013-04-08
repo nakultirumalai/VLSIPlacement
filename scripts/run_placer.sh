@@ -21,3 +21,9 @@ if [ "$PLACER" = "mPL6" ]; then
     cd $PRESENT_WORKING_DIR
 fi
 
+if [ "$PLACER" = "ourplacer" ]; then
+    cd $2
+    /home/tirumanl/thesis/VLSIPlacement/code/the_exec . $3
+    cd $PRESENT_WORKING_DIR
+fi
+

@@ -109,6 +109,7 @@ source -e -v ${DESIGN_NAME}.cstrs.tcl
 
 read_def  ${RESULT_DIR}/bookshelf/${DEF_FILE}
 
+return
 extract_rc -coupling_cap
 write_parasitics -format SPEF -output ${RESULT_DIR}/bookshelf/${SPEF_FILE_OUT}.prerout.spef
 

@@ -43,7 +43,7 @@ proc genBookShelf {nodesFileStr netsFileStr plFileStr indicateFF} {
 	set cellName [get_object_name $cell]
 	set libCellName [get_object_name [get_lib_cells -of $cell]]
 	set nodeOutputLine "\t$cellName $libCellName  "
-	set cellPlOutput "$cellName\t0\t0\t: N PAD"
+	set cellPlOutput "$cellName\t0\t0\t: N"
 	if {$indicateFF == "true"} {
 	    if {[info exists hierCellHash("$cellName")]} {
 		continue
@@ -62,7 +62,7 @@ proc genBookShelf {nodesFileStr netsFileStr plFileStr indicateFF} {
 	set portName [get_object_name $port]
 	set libCellName "PAD"
 	set nodeOutputLine "\t$portName $libCellName "
-	set cellPlOutput "$portName\t0\t0\t: N "
+	set cellPlOutput "$portName\t0\t0\t: N PAD"
 	puts ${nodesFile} ${nodeOutputLine}
 	puts ${plFile} ${cellPlOutput}
     }

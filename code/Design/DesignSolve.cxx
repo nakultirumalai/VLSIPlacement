@@ -1,5 +1,11 @@
 # include <Design.h>
 # include <DesignIter.h>
+# include <HyperGraphIter.h>
+
+# define RPERLENGTHX 1
+# define CPERLENGTHX 1
+# define RPERLENGTHY 1
+# define CPERLENGTHY 1
 
 bool debugPrint = false;
 
@@ -150,6 +156,7 @@ Design::DesignSolveForSeqCells(void)
   map<Cell*, bool> addedCells;
   map<unsigned int, pair<Pin*, Pin* > > pinPairsOfEdge;
   vector<Cell*> inputCells;
+  vector<Cell*> inputPorts;
   
   _STEP_BEGIN("Building graph for sequential cells");
   /* Traverse the input cone of each sequential cell 
@@ -198,6 +205,12 @@ Design::DesignSolveForSeqCells(void)
       logicalDepths.push_back(tmpLogicalDepth);
     } END_FOR;
     
+    cout << "Printing details for cell " << seqCell.CellGetName() << "(" << seqCell.CellGetOrigName() << ")" << endl;
+    for (int i = 0; i < logicalDepths.size(); i++) {
+      Cell &termCell = *(Cell *)relatedCells[i];
+      cout << "\t" << termCell.CellGetName() << "\t(" << termCell.CellGetOrigName() << ")\t" << logicalDepths[i] << endl;
+    }  
+    return;
     /* Add the subject sequential cell into the graph and 
        the list of input cells  */
     if (addedCells.find(cellPtr) == addedCells.end()) {
@@ -225,7 +238,7 @@ Design::DesignSolveForSeqCells(void)
       edgeIndex = seqCellGraph.HyperGraphNodesAreAdjacent(listOfCells[0], listOfCells[1]);
       if (edgeIndex == -1) {
 	/* If the edge does not exist, add the edge */
-	seqCellGraph.HyperGraphAddEdge(listOfCells, NIL(void *), 1);
+	seqCellGraph.HyperGraphAddEdge(listOfCells, NIL(void *), (1/logicalDepths[i]));
 	edgeIndex = seqCellGraph.HyperGraphNodesAreAdjacent(listOfCells[0], listOfCells[1]);
 	if (0 || debugPrint) {cout << "DBG: edgeIndex for the newly added edge is " << edgeIndex << endl;}
       }
@@ -256,7 +269,7 @@ Design::DesignSolveForSeqCells(void)
       }
     }
   }
-  mosekSolveQuadratic(*this, inputCells, seqCellGraph, pinPairsOfEdge);
+  mosekSolveQuadratic(*this, inputCells, inputPorts, seqCellGraph, pinPairsOfEdge);
 }
 
 
@@ -270,6 +283,7 @@ Design::DesignSolveForSeqCellsOld(void)
   map<Cell*, bool> addedCells;
   map<unsigned int, pair<Pin*, Pin* > > pinPairsOfEdge;
   vector<Cell*> inputCells;
+  vector<Cell*> inputPorts;
   
   _STEP_BEGIN("Building graph for sequential cells");
   /* Traverse the input cone of each sequential cell 
@@ -368,45 +382,56 @@ Design::DesignSolveForSeqCellsOld(void)
   void *portCell2;
   seqCell1 = (void *)myDesign.DesignGetNode("o0");
   seqCell2 = (void *)myDesign.DesignGetNode("o1");
-  portCell1 = (void *)myDesign.DesignGetNode("o2644");
-  portCell2 = (void *)myDesign.DesignGetNode("o2661");
+  portCell1 = (void *)myDesign.DesignGetNode("o3939");
+  portCell2 = (void *)myDesign.DesignGetNode("o3944");
 
+  
+  /*
+  (*(Cell*)seqCell1).CellSetXpos(114365);
+  (*(Cell*)seqCell2).CellSetXpos(112633);
+  (*(Cell*)seqCell1).CellSetYpos(97304);
+  (*(Cell*)seqCell2).CellSetYpos(107330);
+  
+  return;
+  */
   seqCellGraph.HyperGraphAddNode(seqCell1); inputCells.push_back((Cell *)seqCell1);
   seqCellGraph.HyperGraphAddNode(seqCell2); inputCells.push_back((Cell *)seqCell2);
-  seqCellGraph.HyperGraphAddNode(portCell1); inputCells.push_back((Cell *)portCell1);
-  seqCellGraph.HyperGraphAddNode(portCell2); inputCells.push_back((Cell *)portCell2);
+  seqCellGraph.HyperGraphAddNode(portCell1); inputPorts.push_back((Cell *)portCell1);
+  seqCellGraph.HyperGraphAddNode(portCell2); inputPorts.push_back((Cell *)portCell2);
   
   vector<void*> listOfCells;
   unsigned int edgeIdx;
+  /* First edge */
   listOfCells.push_back(seqCell1); listOfCells.push_back(seqCell2);
   seqCellGraph.HyperGraphAddEdge(listOfCells, NIL(void *), 1);
   edgeIdx = seqCellGraph.HyperGraphNodesAreAdjacent(seqCell1, seqCell2);
-  Pin *pin1 = (*(Cell*)seqCell1).CellGetPinByName("o0_2");
+  Pin *pin1 = (*(Cell*)seqCell2).CellGetPinByName("o1_1");
   if (pin1 == NIL(Pin *)) {
-    cout << "o0_2 not found " << endl;
-  }
-  Pin *pin2 = (*(Cell*)seqCell2).CellGetPinByName("o1_1");
-  if (pin2 == NIL(Pin *)) {
     cout << "o1_1 not found " << endl;
+  }
+  Pin *pin2 = (*(Cell*)seqCell1).CellGetPinByName("o0_2");
+  if (pin2 == NIL(Pin *)) {
+    cout << "o0_2 not found " << endl;
   }
   pinPairsOfEdge[edgeIdx] = make_pair(pin1, pin2);
   listOfCells.clear();
 
+  /* Second edge */
   listOfCells.push_back(portCell1); listOfCells.push_back(seqCell1);
   seqCellGraph.HyperGraphAddEdge(listOfCells, NIL(void *), 1);
   edgeIdx = seqCellGraph.HyperGraphNodesAreAdjacent(portCell1, seqCell1);
-  pin1 = (*(Cell *)portCell1).CellGetPinByName("o2644_1");
+  pin1 = (*(Cell *)seqCell1).CellGetPinByName("o0_1");
   if (pin1 == NIL(Pin *)) {
-    cout << "o2644_1 not found " << endl;
-  }
-  pin2 = (*(Cell *)seqCell1).CellGetPinByName("o0_1");
-  if (pin2 == NIL(Pin *)) {
     cout << "o0_1 not found " << endl;
   }
-
+  pin2 = (*(Cell *)portCell1).CellGetPinByName("o3939_1");
+  if (pin2 == NIL(Pin *)) {
+    cout << "o3939_1 not found " << endl;
+  }
   pinPairsOfEdge[edgeIdx] = make_pair(pin1, pin2);
   listOfCells.clear();
-
+  
+  /* Third edge */
   listOfCells.push_back(seqCell2); listOfCells.push_back(portCell2);
   seqCellGraph.HyperGraphAddEdge(listOfCells, NIL(void *), 1);
   edgeIdx = seqCellGraph.HyperGraphNodesAreAdjacent(seqCell2, portCell2);
@@ -414,11 +439,10 @@ Design::DesignSolveForSeqCellsOld(void)
   if (pin1 == NIL(Pin *)) {
     cout << "o1_2 not found " << endl;
   }
-  pin2 = (*(Cell *)portCell2).CellGetPinByName("o2661_1");
+  pin2 = (*(Cell *)portCell2).CellGetPinByName("o3944_1");
   if (pin2 == NIL(Pin *)) {
-    cout << "o2661_1 not found " << endl;
+    cout << "o3944_1 not found " << endl;
   }
-
   pinPairsOfEdge[edgeIdx] = make_pair(pin1, pin2);
   listOfCells.clear();
   
@@ -449,6 +473,56 @@ Design::DesignSolveForSeqCellsOld(void)
     }
   }
   debugPrint = false;
-  mosekSolveQuadratic(*this, inputCells, seqCellGraph, pinPairsOfEdge);
+  mosekSolveQuadratic(*this, inputCells, inputPorts, seqCellGraph, pinPairsOfEdge);
+
+  cout << "Results of the solved function:" << endl;
+  unsigned int edgeWeight, edgeNum;
+  
+  HYPERGRAPH_FOR_ALL_EDGES(seqCellGraph, edgeNum, edgeWeight) {
+    pair<Pin*, Pin*> pinPair = pinPairsOfEdge[edgeNum];
+    Pin *pin1 = pinPair.first; Pin *pin2 = pinPair.second;
+
+    double coeffX, coeffY;
+    double xOff1, yOff1, xOff2, yOff2;
+    double cell1X, cell1Y, cell2X, cell2Y;
+
+    xOff1 = (double)(*pin1).PinGetXOffset(); yOff1 = (double)(*pin1).PinGetYOffset();
+    xOff2 = (double)(*pin2).PinGetXOffset(); yOff2 = (double)(*pin2).PinGetYOffset();
+
+    xOff1 /= 1000; yOff1 /= 1000; xOff2 /= 1000; yOff2 /= 1000;
+
+    Cell* cellPtr1 = &((*pin1).PinGetParentCell()); Cell* cellPtr2 = &((*pin2).PinGetParentCell());
+
+    Cell &cell1 = *cellPtr1; Cell &cell2 = *cellPtr2;
+    coeffX = (RPERLENGTHX) * (CPERLENGTHX) * edgeWeight;
+    coeffY = (RPERLENGTHY) * (CPERLENGTHY) * edgeWeight;
+    
+    cell1X = cell1.CellGetXpos(); cell1Y = cell1.CellGetYpos();
+    cell2X = cell2.CellGetXpos(); cell2Y = cell2.CellGetYpos();
+
+    cell1X /= 1000; cell1Y /= 1000; cell2X /= 1000; cell2Y /= 1000;
+
+    cout << "Source cell " << cell1.CellGetName() << "(" << cell1.CellGetOrigName() << ")" << endl
+	 << " Destination cell " << cell2.CellGetName() << "(" << cell2.CellGetOrigName() << ")" << endl;
+
+    double srcx, srcy, destx, desty;
+    srcx = cell1X; srcy = cell1Y; destx = cell2X; desty = cell2Y;
+    if (!cell1.CellIsTerminal()) {
+      srcx += xOff1;
+      srcy += yOff1;
+    }
+    if (!cell2.CellIsTerminal()) {
+      destx += xOff2;
+      desty += yOff2;
+    }
+    
+    double length = (((double)(srcx - destx))*(srcx - destx) + ((double)(srcy - desty))*(srcy - desty));
+    //    double time = (((double)(srcx - destx)*(srcx - destx) * RPERLENGTHX * CPERLENGTHX) + ((double)(srcy - desty)*(srcy - desty) * RPERLENGTHY * CPERLENGTHY));
+    //    time *= 1000;
+    cout << "Source pin (" << (*pin1).PinGetName() << ") position : (" << srcx << "," << srcy << ")" << endl;
+    cout << "Destination pin (" << (*pin2).PinGetName() << ") position : (" << destx << "," << desty << ")" << endl;
+    cout << "Length: " << length << endl;
+    //    cout << "Time: " << time << "microseconds" << "   TCLOCK: 14.4 microseconds" << endl;
+  } HYPERGRAPH_END_FOR;
 }
 

@@ -233,10 +233,12 @@ Cell::CellGetNumPins(int pinDir)
 
   if (pinDir == PIN_DIR_INPUT) {
     pinCount = numInPins;
-  } else {
+  } else if (pinDir == PIN_DIR_OUTPUT) {
     pinCount = numOutPins;
+  } else {
+    pinCount = numPins;
   }
-  
+
   return (pinCount);
 }
 
@@ -377,6 +379,7 @@ Cell::Cell()
   CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -395,6 +398,7 @@ Cell::Cell(int Height, int Width)
   CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -414,6 +418,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -434,6 +439,7 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetOrientation(N);
   CellSetIsTerminal(terminalCell);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -471,6 +477,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetOrientation(N);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -491,6 +498,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetOrientation(N);
   CellSetIsTerminal(terminalCell);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -509,6 +517,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetOrientation(Orientation);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -528,6 +537,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetOrientation(Orientation);
   CellSetIsTerminal(false);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -547,6 +557,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetOrientation(Orientation);
   CellSetIsTerminal(terminalCell);
   CellSetIsCluster(false);
+  CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
   CellSetIsSequential(false);
@@ -573,3 +584,4 @@ Cell::CellGetPinByName(const string &PinName)
   
   return (rtv);
 }
+

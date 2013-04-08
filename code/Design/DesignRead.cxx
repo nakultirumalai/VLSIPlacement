@@ -169,11 +169,13 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     else if (pinDir == PIN_DIR_OUTPUT_STRING) dir = PIN_DIR_OUTPUT;
 
     node = DesignGetNode(nodeName);
-
+    if (nodeName == "o1") {
+      cout << nodeName << endl;
+    }
     /* Adjust the offset so that it is from the left bottom corner of the 
        cell */
-    xoffset = xoffset + (*node).CellGetWidth();
-    yoffset = yoffset + (*node).CellGetHeight();
+    xoffset = xoffset + ((*node).CellGetWidth()/2);
+    yoffset = yoffset + ((*node).CellGetHeight()/2);
     PinName = nodeName + "_" + getStrFromInt(((*node).CellGetNumPins() + 1));
     Pin *newPin = new Pin(0, (int)xoffset, (int)yoffset, dir, *node, PinName);
 

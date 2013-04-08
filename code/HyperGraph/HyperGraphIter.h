@@ -8,9 +8,11 @@
   for (int nodeIdx=0; nodeIdx < Graph.HyperGraphGetNumNodes(); nodeIdx++) {	\
     if (Graph.nodeIsTop(nodeIdx)) continue; \
   
-# define HYPERGRAPH_FOR_ALL_EDGES(HyperGraph, EdgeIdx) \
+# define HYPERGRAPH_FOR_ALL_EDGES(HyperGraph, EdgeIdx, EdgeWeight) \
   { \
-  for (int edgeIdx=0; edgeIdx < Graph.HyperGraphGetNumNodes(); edgeIdx++) {	\
+  for (int edgeIdx=0; edgeIdx < HyperGraph.GetNumEdges(); edgeIdx++) {	\
+  EdgeIdx = edgeIdx;							\
+  EdgeWeight = HyperGraph.GetEdgeWeight(EdgeIdx); 
 
 # define HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(HyperGraph, ObjPtr, EdgeIdx, Weight) \
   {									\

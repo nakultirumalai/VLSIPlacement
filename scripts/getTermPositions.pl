@@ -39,7 +39,7 @@ open(plFile, ">$placedFile") || die ("Cannot open pl file");
 # Replace the positions of terminals from the MAP
 while (my $line = <plFileCpy>) {
     chomp($line);
-    if ($line =~ m/\s*(.*)\s+([0-9]+\.?[0-9]*)\s*([0-9]+\.?[0-9]*)\s*:\s*(.*) \/FIXED\s*/) {
+    if ($line =~ m/\s*(.*)\s+([0-9]+\.?[0-9]*)\s*([0-9]+\.?[0-9]*)\s*:\s*(.*)\s*PAD\s*/) {
 	my $portName = $1;
 	my $portX = $2;
 	my $portY = $3;

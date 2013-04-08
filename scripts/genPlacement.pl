@@ -42,6 +42,7 @@ my $stepCount = 1;
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Check if the benchmark has been generated successfully\n"; $stepCount++;
+print "$benchmarkGenRoot/results/$designName/bookshelf/$designName.done\n";
 open(doneFile, "$benchmarkGenRoot/results/$designName/bookshelf/$designName.done") || 
     die ("Benchmark generation incomplete");
 close(doneFile);
@@ -76,6 +77,11 @@ if (($plName eq "NTUPlace") || $allPlacers) {
     (system("$scriptRoot/run_placer.sh NTUPlace $benchmarkGenRoot/results/$designName/bookshelf $designName.aux | tee NTUPlace_log") == 0) ||
 	die ("Cannot run placer \"$plName\"\n");
     push ( @outPLFiles,  "${designName}.ntup.pl" );
+}
+if (($plName eq "ourPlacer") || $allPlacers) {
+    (system("$scriptRoot/run_placer.sh ourplacer $benchmarkGenRoot/results/$designName/bookshelf $designName | tee ourplacer_log") == 0) ||
+	die ("Cannot run placer \"$plName\"\n");
+    push ( @outPLFiles,  "${designName}.ourplacer.pl" );
 }
 if (($plName eq "ICC") || $allPlacers) {
     (system("$iccPath/icc_shell -f $scriptRoot/icc_place.tcl | tee icc_place_log") == 0) ||
@@ -125,6 +131,8 @@ print "Performing extraction and timing analysis for $plFile\n";
 if ($plFile ne "ICC.pl") {
 (system("cp $benchmarkGenRoot/results/$designName/bookshelf/$plFile $benchmarkGenRoot/results/$designName/bookshelf/$plFile.orig") == 0) ||
     die ("Cannot make copy of $plFile ");
+
+
 ####################################################################################
 ####################################################################################
 # STEP 4: Execute script to replace the pseudo names in the .pl output of the 
@@ -143,8 +151,8 @@ print "STEP $stepCount: Replace pseudo names in the PL file with original names\
 print "STEP $stepCount: Generating placed DEF \n"; $stepCount++;
 (system("cp $benchmarkGenRoot/results/$designName/bookshelf/$designName.def $benchmarkGenRoot/results/$designName/bookshelf/$plFile.def"));
 (system("$scriptRoot/convertPlToDef.pl $benchmarkGenRoot/results/$designName/bookshelf/$plFile.def $benchmarkGenRoot/results/$designName/bookshelf/$plFile $benchmarkGenRoot/results/$designName/bookshelf/$plFile.placed.def") == 0) || die ("Cannot generate DEF for placed netlist");
-
 }
+
 ####################################################################################
 ####################################################################################
 # STEP 6: Run ICC to generate a routed netlist

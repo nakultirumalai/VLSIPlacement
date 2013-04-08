@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
 
     //myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
     myDesign.DesignSolveForSeqCells();
+    DesignWriteBookShelfOutput(myDesign);
     /* Second param is clustering type. Can take on the following values:
        FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
 

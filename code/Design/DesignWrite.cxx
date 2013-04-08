@@ -42,13 +42,39 @@ void DesignWriteNodes(Design &myDesign, string fname)
   opFile.close();
 }
 
-void DesignWritePlacement(Design &myDesign) 
+void
+DesignWritePlacement(Design &myDesign, string fname) 
 {
+  string cellName;
+  Cell *cellPtr;
+  ofstream opFile;
+
+  _STEP_BEGIN("Writing placement for current design");
+  opFile.open(fname.data(), ifstream::out);
+  opFile << "UCLA pl 1.0" << endl;
+  opFile << "# Created      : " << getCurrentTime() << endl;
+  opFile << "# User         : tirumanl@arugula" << endl;
+  opFile << "# Platform     : Linux 3.2.0-35-generic" << endl;
+  opFile << endl << endl;
+
+  DESIGN_FOR_ALL_CELLS_ON_TOP(myDesign, cellName, cellPtr) {
+    opFile << cellName << "\t" << (*cellPtr).CellGetXpos() << "\t" << (*cellPtr).CellGetYpos() << 
+      "\t:\t" << getStrForOrientation((*cellPtr).CellGetOrientation());
+    if ((*cellPtr).CellIsTerminal() && !(*cellPtr).CellIsPort()) {
+      opFile << "\t" << "/FIXED";
+    }
+    opFile << endl;
+  } DESIGN_END_FOR;
+
+  _STEP_END("Writing placement for current design");
+  
+  opFile.close();
 }
 
 void DesignWriteBookShelfOutput(Design& myDesign)
 {
-  DesignWriteNets(myDesign);
-  DesignWriteNodes(myDesign, "");
-  DesignWritePlacement(myDesign);
+  //DesignWriteNets(myDesign);
+  //  DesignWriteNodes(myDesign, "");
+  DesignWritePlacement(myDesign, (myDesign.DesignGetName() + ".ourplacer.pl"));
 }
+

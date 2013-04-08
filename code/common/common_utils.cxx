@@ -46,6 +46,23 @@ getOrientationFromStr(string orient)
   return (retVal);
 }
 
+string
+getStrForOrientation(objOrient orient)
+{
+  string retVal;;
+
+  if (orient == N || orient == 1) retVal = "N";
+  else if (orient == E) retVal = "E";
+  else if (orient == S) retVal = "S";
+  else if (orient == W) retVal = "W";
+  else if (orient == FN) retVal = "FN";
+  else if (orient == FE) retVal = "FE";
+  else if (orient == FS) retVal = "FS";
+  else if (orient == FW) retVal = "FW";
+
+  return (retVal);
+}
+
 /* Rounds a double/float to a single decimal point */
 double dround(double thisDouble)
 {
@@ -144,3 +161,16 @@ bool fileExists(string& fileName, string& filePath)
   
   return (retVal);
 } 
+
+string getCurrentTime(void)
+{
+  string returnStr;
+
+  time_t t = time(0);   // get time now
+  struct tm * now = localtime( & t );
+  returnStr = " " + getStrFromInt(now->tm_year + 1900) + "-" + getStrFromInt(now->tm_mon + 1) + "-" + getStrFromInt(now->tm_mon + 1);
+    //  cout << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' <<  now->tm_mda << endl;
+
+  return (returnStr);
+}
+

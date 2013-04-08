@@ -47,7 +47,7 @@ print "STEP $stepCount: Deleting the old benchmark bookshelf files\n"; $stepCoun
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Run DC to generate files\n"; $stepCount++;
-#(system("$synPath/dc_shell -f $scriptRoot/genericRTLCompile_dc.tcl > dc_syn_log") == 0) ||     die ("Synthesis using Design Compiler failed\n");
+#(system("$synPath/dc_shell -64bit -f $scriptRoot/genericRTLCompile_dc.tcl > dc_syn_log") == 0) ||     die ("Synthesis using Design Compiler failed\n");
 (system("$synPath/dc_shell -f $scriptRoot/readCompiledRTLDC.tcl > dc_syn_log") == 0) || die ("Synthesis using Design Compiler failed\n");
 
 

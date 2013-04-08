@@ -10,7 +10,7 @@ void* Edge::EdgeGetObject(void)
   return (object);
 }
 
-unsigned int Edge::EdgeGetWeight(void)
+double Edge::EdgeGetWeight(void)
 {
   return (this->weight);
 }
@@ -25,7 +25,7 @@ void Edge::EdgeSetIdx(unsigned int edgeIdx)
   this->edgeIdx = edgeIdx;
 }
 
-void Edge::EdgeSetWeight(unsigned int weight)
+void Edge::EdgeSetWeight(double weight)
 {
   this->weight = weight;
 }
@@ -39,13 +39,13 @@ Edge::Edge()
 {
   EdgeSetIdx(0);
   EdgeSetObject(NIL(void*));
-  EdgeSetWeight(0);
+  EdgeSetWeight(0.0);
 }
 
 Edge::Edge(void *object)
 {
   EdgeSetIdx(0);
   EdgeSetObject(object);
-  EdgeSetWeight(0);
+  EdgeSetWeight(0.0);
 }
 

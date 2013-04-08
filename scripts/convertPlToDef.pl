@@ -2,9 +2,9 @@
 
 # parameter : (original DEF, .pl file from Capo, final DEF)
 #open(NODES,"$ARGV[0]") || die "Can't open $_[0] for input\n";
-open(ORIG,"$ARGV[0]") || die "Can't open $_[0] for input\n";
-open(PLACED,"$ARGV[1]") || die "Can't open $_[1] for input\n";
-open(OUT,"> $ARGV[2]") || die "Can't open $_[2] for output\n";
+open(ORIG,"$ARGV[0]") || die "Can't open $ARGV[0] for input\n";
+open(PLACED,"$ARGV[1]") || die "Can't open $ARGV[1] input\n";
+open(OUT,"> $ARGV[2]") || die "Can't open  $ARGV[2] output\n";
 
 my %XLOCS;
 my %YLOCS;
@@ -70,7 +70,7 @@ while ($line = <ORIG>)
 	    $cellName =~ s/\\//g;
 	    $xloc = $XLOCS{$cellName};
 	    $yloc = $YLOCS{$cellName};
-	    $orient = $ORIENTS{$nodeName};
+	    $orient = $ORIENTS{$cellName};
 #	    $width = $WIDTHS{$cellName};
 #	    $height = $HEIGHTS{$cellName};
 #	    $xloc = $xloc + ($width / 2);

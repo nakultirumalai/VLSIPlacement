@@ -3,7 +3,7 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-SRCFILES:= AnalyticalSolve MosekSolve
+SRCFILES:= MosekSolve
 
 HFILES:= AnalyticalSolve.h HyperGraph.h mosek.h
 

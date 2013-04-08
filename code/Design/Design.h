@@ -212,5 +212,6 @@ extern void DesignCollectStats(Design& myDesign);
 extern void DesignWriteStats(Design& myDesign);
 extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
 extern void DesignWriteNodes(Design &myDesign, string fname);
+extern void DesignWriteBookShelfOutput(Design& myDesign);
 
 #endif

@@ -15,6 +15,8 @@
 # include <Stat.h>
 # include <algorithm>
 # include <stdlib.h>
+# include <ctime>
+# include <iomanip>
 
 # define NIL(type) (type)0
 # define COMMON_DEBUG 1
@@ -83,11 +85,14 @@ string getStrFromInt(int);
 double dround(double);
 
 objOrient getOrientationFromStr(string);
+string getStrForOrientation(objOrient);
+
 void vectorRemoveDuplicates(vector<unsigned int>& vec);
 bool strIsNumber(const string& s);
 string strToLower(const char *s);
 string strToLower(const string& s);
 bool fileExists(string& fullFileName);
 bool fileExists(string& filePath, string &fileName);
+string getCurrentTime(void);
 
 #endif

@@ -8,16 +8,17 @@
 # define CPERLENGTHX 1 // in micro farad per length
 # define RPERLENGTHY 1 // in micro farad per length
 # define CPERLENGTHY 1 // in micro farad per length
-# define TCLK 2
+# define TCLK 50000
+# define GRID_COMPACTION_RATIO 1000 // to convert to micro
 
-void
+void 
 MSKAPI printstr(void *handle, char str[]) 
 {
   printf("%s", str);
 }
 
 void
-mskGetObjectiveMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityGraph,
+mskGetObjectiveMatrix(vector<Cell *>& inputCells, HyperGraph& connectivityGraph,
 		      map<unsigned int, pair<Pin*, Pin* > >& pinsOfEdges,
 		      MSKidxt **qsubi, MSKidxt **qsubj, MSKrealt **qval, 
 		      unsigned int &numValues)
@@ -30,64 +31,74 @@ mskGetObjectiveMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityGraph
   vector<unsigned int> qsubi_vec, qsubj_vec;
   vector<double> qval_vec;
   
-  numCells = listOfCells.size();
+  numCells = inputCells.size();
   numConstraints = connectivityGraph.GetNumEdges();
-  for (i=0;i<numCells;i++) {
-    cellPtri = listOfCells[i];
-    for (j=0;j<=i;j++) {
-      cellPtrj = listOfCells[j];
-      if (i == j) {
-	unsigned int edgeIdx;
-	unsigned int edgeWeight;
-	double weight = 0;
-	HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(connectivityGraph, cellPtri, edgeIdx, 
-					   edgeWeight) {
-	  weight += edgeWeight;
-	} HYPERGRAPH_END_FOR;
-	qsubi_vec.push_back(i);
-	qsubj_vec.push_back(i);
-	qval_vec.push_back(((RPERLENGTHX) * (CPERLENGTHX) * (0.5) * weight));
 
-	qsubi_vec.push_back(i + numCells);
-	qsubj_vec.push_back(i + numCells);
-	qval_vec.push_back(((RPERLENGTHY) * (CPERLENGTHY) * (0.5) * weight));
-      } else {
-	if (connectivityGraph.HyperGraphNodesAreAdjacent(cellPtri, cellPtrj) >= 0) {
-	  unsigned int edgeWeight;
-	  double weight = 0;
-	  HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECTS(connectivityGraph, cellPtri, cellPtrj, 
-					      edgeIdx, edgeWeight) {
-	    weight += edgeWeight;
-	  } HYPERGRAPH_END_FOR;
-	  qsubi_vec.push_back(i);
-	  qsubj_vec.push_back(j);
-	  qval_vec.push_back(-((RPERLENGTHX) * (CPERLENGTHX) * (0.5) * weight));
+  vector<double> squaredTerms(2 * numCells);
+  for (i = 0; i < (2 * numCells); i++) {
+    squaredTerms.push_back(0.0);
+  }
 
-	  qsubi_vec.push_back(i + numCells);
-	  qsubj_vec.push_back(j + numCells);
-	  qval_vec.push_back(-((RPERLENGTHY) * (CPERLENGTHY) * (0.5) * weight));
-	}
+  for (i = 0; i < numCells; i++) {
+    Cell *cellPtri = inputCells[i];
+    unsigned int edgeIdx;
+    double edgeWeight;
+    double coeffX, coeffY;
+    coeffX = 0; coeffY = 0;
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(connectivityGraph, cellPtri, edgeIdx, edgeWeight)  {
+      pair<Pin*, Pin*> pinPair = pinsOfEdges[edgeIdx];
+      Pin *pin1 = pinPair.first; Pin *pin2 = pinPair.second;
+      Cell* cellPtr1 = &((*pin1).PinGetParentCell()); Cell* cellPtr2 = &((*pin2).PinGetParentCell());
+      if ((*cellPtr1).CellGetName() != (*cellPtri).CellGetName()) {
+	continue;
       }
+      Cell &cell1 = *cellPtr1; Cell &cell2 = *cellPtr2;
+      coeffX = (RPERLENGTHX) * (CPERLENGTHX) * edgeWeight;
+      coeffY = (RPERLENGTHY) * (CPERLENGTHY) * edgeWeight;
+      
+      squaredTerms[i]+= coeffX;
+      squaredTerms[i+numCells]+= coeffY;
+      if (!cell2.CellIsTerminal()) {
+	/* Contributes to the ij term here */
+	for (j = 0; j < numCells; j++) {
+	  if (cellPtr2 == inputCells[j]) {
+	    break;
+	  }
+	}
+	squaredTerms[j] += coeffX;
+	squaredTerms[j+numCells] += coeffY;
+	if (j > i) {
+	  i = i + j; j = i - j; i = i - j;
+	}
+	qsubi_vec.push_back(i); qsubj_vec.push_back(j); qval_vec.push_back(-coeffX); 
+	qsubi_vec.push_back(i+numCells); qsubj_vec.push_back(j+numCells); qval_vec.push_back(-coeffY);
+     }
+    } HYPERGRAPH_END_FOR;
+  }
+  
+  for (i = 0; i < numCells; i++) {
+    if (squaredTerms[i] != 0.0) {
+      qsubi_vec.push_back(i);
+      qsubj_vec.push_back(i);
+      qval_vec.push_back(squaredTerms[i]);
+
+      qsubi_vec.push_back(i+numCells);
+      qsubj_vec.push_back(i+numCells);
+      qval_vec.push_back(squaredTerms[i+numCells]);
     }
   }
-  if (qsubi_vec.size() != qsubj_vec.size()) {
-    _ASSERT_TRUE("Vector sizes are not the same");
-  }
-  if (qsubi_vec.size() != qval_vec.size()) {
-    _ASSERT_TRUE("Vector sizes are not the same");
-  }
-
   *qsubi = (MSKidxt *)malloc(sizeof(MSKidxt) * qsubi_vec.size());
   *qsubj = (MSKidxt *)malloc(sizeof(MSKidxt) * qsubj_vec.size());
   *qval = (MSKrealt *)malloc(sizeof(MSKrealt) * qval_vec.size());
   
   bool debugPrint = false;
+  //  bool debugPrint = true;
   if (debugPrint) cout << "  i\tj\tvalue " << endl;
 
   for (i = 0; i < qsubi_vec.size(); i++) {
     (*qsubi)[i] = qsubi_vec[i];
     (*qsubj)[i] = qsubj_vec[i];
-    (*qval)[i] = qval_vec[i];
+    (*qval)[i] = 2 * qval_vec[i];
     if (debugPrint) cout << "  " << (*qsubi)[i] << "\t" << (*qsubj)[i] << "\t" << (*qval)[i] << endl;
   }
 
@@ -122,7 +133,7 @@ mskGetObjectiveMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityGraph
 }
 
 void
-mskGetQuadraticCstrMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityGraph,
+mskGetQuadraticCstrMatrix(vector<Cell *>& inputCells, HyperGraph& connectivityGraph,
 			  map<unsigned int, pair<Pin*, Pin* > >& pinsOfEdges,
 			  MSKidxt **qsubk, MSKidxt **qsubi, MSKidxt **qsubj, 
 			  MSKrealt **qval, unsigned int &numValues)
@@ -136,52 +147,55 @@ mskGetQuadraticCstrMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityG
   vector<unsigned int> qsubk_vec, qsubi_vec, qsubj_vec;
   vector<double> qval_vec;
 
-  numCells = listOfCells.size();
+  numCells = inputCells.size();
   numConstraints = connectivityGraph.GetNumEdges();
 
   cstrNum = 0;
-  for (i=0;i<numCells;i++) {
-    cellPtri = listOfCells[i];
-    for (j=0;j<i;j++) {
-      cellPtrj = listOfCells[j];
-      long int edgeIdx = connectivityGraph.HyperGraphNodesAreAdjacent(cellPtri, cellPtrj);
-      if (edgeIdx < 0) {
+  for (i = 0; i < numCells; i++) {
+    Cell *cellPtri = inputCells[i];
+    unsigned int edgeIdx;
+    double edgeWeight;
+    double coeffX, coeffY;
+    coeffX = 0; coeffY = 0;
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(connectivityGraph, cellPtri, edgeIdx, edgeWeight) {
+      pair<Pin*, Pin*> pinPair = pinsOfEdges[edgeIdx];
+      
+      Pin *pin1 = pinPair.first;
+      Pin *pin2 = pinPair.second;
+      
+      Cell* cellPtr1 = &((*pin1).PinGetParentCell());
+      Cell* cellPtr2 = &((*pin2).PinGetParentCell());
+      
+      if ((*cellPtr1).CellGetName() != (*cellPtri).CellGetName()) {
 	continue;
       }
-      /* 
-	 Now the cells i & j have an edge between them, populate 
-	 qii, qjj, qij and q(i+n)(i+n) q(j+n)(j+n) 
-       */
-      /* Populate for x */
-      /* first the ii coeff */
-      double constX, constY;
-      double weight;
-      weight = connectivityGraph.GetEdgeWeight(edgeIdx);
-      constX = (RPERLENGTHX) * (CPERLENGTHX) * (0.5) * weight;
-      constY = (RPERLENGTHY) * (CPERLENGTHY) * (0.5) * weight;
-
-      /* Populate for x */
-      /* Next the ii coeff */
-      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i); qsubj_vec.push_back(i); qval_vec.push_back((2 * (constX))); 
-      /* Next the jj coeff */
-      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(j); qsubj_vec.push_back(j); qval_vec.push_back((2 * (constX))); 
-      /* Next the ij coeff */
-      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i); qsubj_vec.push_back(j); qval_vec.push_back((-2 * (constX))); 
-      /* Next the ji coeff */
-      //      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i); qsubj_vec.push_back(j); qval_vec.push_back((-2 * (constX))); 
       
-      /* Populate for y */
-      /* Next the ii coeff */
-      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i + numCells); qsubj_vec.push_back(i + numCells); qval_vec.push_back((2 * (constY))); 
-      /* Next the jj coeff */
-      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(j + numCells); qsubj_vec.push_back(j + numCells); qval_vec.push_back((2 * (constY))); 
-      /* Next the ij coeff */
-      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i + numCells); qsubj_vec.push_back(j + numCells); qval_vec.push_back((-2 * (constY))); 
-      /* Next the ji coeff */
-      //      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(j + numCells); qsubj_vec.push_back(i + numCells); qval_vec.push_back((-2 * (constY))); 
+      Cell &cell1 = *cellPtr1;
+      Cell &cell2 = *cellPtr2;
+      
+      coeffX = edgeWeight * (RPERLENGTHX) * (CPERLENGTHX); coeffY = edgeWeight * (RPERLENGTHY) * (CPERLENGTHY);
 
+      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i); qsubj_vec.push_back(i); qval_vec.push_back(coeffX);
+      qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i+numCells); qsubj_vec.push_back(i+numCells); qval_vec.push_back(coeffY);
+
+      /* Now cell1 cannot be a terminal cell; Check if cell2 is a terminal */
+      if (!cell2.CellIsTerminal()) {
+	/* Contributes to the ij term here */
+	for (j = 0; j < numCells; j++) {
+	  if (cellPtr2 == inputCells[j]) {
+	    break;
+	  }
+	}
+	qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(j); qsubj_vec.push_back(j); qval_vec.push_back(coeffX);
+	qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(j+numCells); qsubj_vec.push_back(j+numCells); qval_vec.push_back(coeffY);
+	if (j > i) {
+	  i = i + j; j = i - j; i = i - j;
+	}
+	qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i); qsubj_vec.push_back(j);	qval_vec.push_back(-coeffX); 
+	qsubk_vec.push_back(cstrNum); qsubi_vec.push_back(i+numCells); qsubj_vec.push_back(j+numCells); qval_vec.push_back(-coeffY);
+     }
       cstrNum++;
-    }
+    } HYPERGRAPH_END_FOR;
   }
   *qsubk = (MSKidxt *)malloc(sizeof(MSKidxt) * qsubk_vec.size());
   *qsubi = (MSKidxt *)malloc(sizeof(MSKidxt) * qsubi_vec.size());
@@ -189,12 +203,13 @@ mskGetQuadraticCstrMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityG
   *qval = (MSKrealt *)malloc(sizeof(MSKrealt) * qval_vec.size());
 
   bool debugPrint = false;
+  //  bool debugPrint = true;
   if (debugPrint) cout << "  k\ti\tj\tvalue " << endl;
   for (i = 0; i < qsubk_vec.size(); i++) {
     (*qsubk)[i] = qsubk_vec[i];
     (*qsubi)[i] = qsubi_vec[i];
     (*qsubj)[i] = qsubj_vec[i];
-    (*qval)[i] = qval_vec[i];
+    (*qval)[i] = 2 * qval_vec[i];
     if (debugPrint) cout << "  " << (*qsubk)[i] << "\t" << (*qsubi)[i] << "\t" << (*qsubj)[i] << "\t" << (*qval)[i] << endl;
   }
 
@@ -254,74 +269,106 @@ mskGetQuadraticCstrMatrix(vector<Cell *>& listOfCells, HyperGraph& connectivityG
    function */
 void
 mskGetObjectiveLinearArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph, 
-			   map<unsigned int, pair<Pin*, Pin* > >& pinPairsOfEdge,
+			   map<unsigned int, pair<Pin*, Pin* > >& pinsOfEdges,
 			   MSKidxt **subj, MSKrealt **val, unsigned int &numNonZero)
 {
+  unsigned int i,j;
   unsigned int numCells = inputCells.size();
   unsigned int numConstraints = connectivityGraph.GetNumEdges();
   
-  double coeffVector[numCells*2];
+  vector<double> val_vec(2 * numCells);
+  vector<unsigned int>subj_vec;
   numNonZero = 0;
-
-  for (int i = 0; i < numCells; i++) {
+  for (i = 0; i < (2 * numCells); i++) {
+    val_vec[i] = 0.0;
+  }
+  for (i = 0; i < numCells; i++) {
     Cell *cellPtri = inputCells[i];
-    double coeffix = 0;
-    double coeffiy = 0;
-    unsigned int edgeWeight;
-    double weight = 0;
-    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(connectivityGraph, cellPtri, edgeIdx, 
-				       edgeWeight) {
-      double xoffset1, xoffset2;
-      double yoffset1, yoffset2;
-      Pin *pinPtr1 = pinPairsOfEdge[edgeIdx].first;
-      Pin *pinPtr2 = pinPairsOfEdge[edgeIdx].second;
-      Cell &cell1 = (*pinPtr1).PinGetParentCell();
-      Cell &cell2 = (*pinPtr2).PinGetParentCell();
-      
-      if (cell2.CellGetName() == (*cellPtri).CellGetName()) {
-	Pin *tmpPinPtr = pinPtr2;
-	pinPtr2 = pinPtr1;
-	pinPtr1 = tmpPinPtr;
-      }
-      xoffset1 = ((double)((*pinPtr1).PinGetXOffset()))/10000; xoffset2 = ((double)(*pinPtr2).PinGetXOffset())/10000;
-      yoffset1 = ((double)((*pinPtr1).PinGetYOffset()))/10000; yoffset2 = ((double)(*pinPtr2).PinGetYOffset())/10000;
-      weight+= edgeWeight;
+    unsigned int edgeIdx;
+    double edgeWeight;
+    double coeffX, coeffY;
+    coeffX = 0; coeffY = 0;
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(connectivityGraph, cellPtri, edgeIdx, edgeWeight)  {
+      pair<Pin*, Pin*> pinPair = pinsOfEdges[edgeIdx];
+      Pin *pin1 = pinPair.first; Pin *pin2 = pinPair.second;
+      double xOff1, yOff1, xOff2, yOff2;
+      double cell1X, cell1Y, cell2X, cell2Y;
+      unsigned int cell1Width, cell1Height, cell2Width, cell2Height;
 
-      coeffix += weight * (RPERLENGTHX) * (CPERLENGTHX) * (0.5) * ((xoffset1 - xoffset2));
-      coeffiy += weight * (RPERLENGTHY) * (CPERLENGTHY) * (0.5) * ((yoffset1 - yoffset2));
+      xOff1 = (double)(*pin1).PinGetXOffset() / GRID_COMPACTION_RATIO; yOff1 = (double)(*pin1).PinGetYOffset() / GRID_COMPACTION_RATIO;
+      xOff2 = (double)(*pin2).PinGetXOffset() / GRID_COMPACTION_RATIO; yOff2 = (double)(*pin2).PinGetYOffset() / GRID_COMPACTION_RATIO;
+
+      Cell* cellPtr1 = &((*pin1).PinGetParentCell()); Cell* cellPtr2 = &((*pin2).PinGetParentCell());
+      if ((*cellPtr1).CellGetName() != (*cellPtri).CellGetName()) {
+	continue;
+      }
+      Cell &cell1 = *cellPtr1; Cell &cell2 = *cellPtr2;
+
+      cell1X = (double)(cell1.CellGetXpos()) / GRID_COMPACTION_RATIO; cell1Y = (double)(cell1.CellGetYpos()) / GRID_COMPACTION_RATIO;
+      cell2X = (double)(cell2.CellGetXpos()) / GRID_COMPACTION_RATIO; cell2Y = (double)(cell2.CellGetYpos()) / GRID_COMPACTION_RATIO;
+      cell1Width = cell1.CellGetWidth(); cell1Height = cell1.CellGetHeight(); 
+      cell2Width = cell2.CellGetWidth(); cell2Height = cell2.CellGetHeight();
+
+      coeffX = (RPERLENGTHX) * (CPERLENGTHX) * edgeWeight;
+      coeffY = (RPERLENGTHY) * (CPERLENGTHY) * edgeWeight;
+
+      if (!cell2.CellIsTerminal()) {
+	/* Contributes to the ij term here */
+	for (j = 0; j < numCells; j++) {
+	  if (cellPtr2 == inputCells[j]) {
+	    break;
+	  }
+	}
+	if (j > i) {
+	  i = i + j; j = i - j; i = i - j;
+	}
+	val_vec[i] += (2 * coeffX * (xOff1 - xOff2));
+	val_vec[j] += -(2 * coeffX * (xOff1 - xOff2));
+
+	val_vec[i+numCells] += (2 * coeffY * (yOff1 - yOff2));
+	val_vec[j+numCells] += -(2 * coeffY * (yOff1 - yOff2));
+      } else {
+	val_vec[i] += (2 * coeffX * (xOff1 - cell2X));
+
+	val_vec[i+numCells] += (2 * coeffY * (yOff1 - cell2Y));
+      }
     } HYPERGRAPH_END_FOR;
-    if (coeffix != 0)  numNonZero++;
-    coeffVector[i] = (-4 * coeffix);
-    coeffVector[i + numCells] = (-4 * coeffiy);
   }
-  
-  *subj = (MSKidxt *)malloc(sizeof(MSKidxt) * (2 * numNonZero));
-  *val = (MSKrealt *)malloc(sizeof(MSKrealt) * (2 * numNonZero));
-  
-  unsigned int k = 0;
-  for (int i = 0; i < numCells; i++) {
-    if (coeffVector[i] == 0.0) {
-      continue;
+
+  cout << "Linear matrix:" << endl;
+  vector<double> newValVec;
+  for (int i = 0; i < val_vec.size(); i++) {
+    if (val_vec[i] != 0.0) {
+      subj_vec.push_back(i);
+      newValVec.push_back(val_vec[i]);
+      numNonZero++;
     }
-    (*subj)[k] = i;
-    (*val)[k] = coeffVector[i];
-    k++;
+    cout << val_vec[i] << "\t";
   }
+  
+  *val = (MSKrealt *)malloc(sizeof(MSKrealt) * newValVec.size());
+  *subj = (MSKidxt *)malloc(sizeof(MSKidxt) * newValVec.size());
+  for (int i = 0; i < newValVec.size();i++) {
+    (*val)[i] = newValVec[i];
+    (*subj)[i] = subj_vec[i];
+  }
+  cout << endl;
 }
 
 
 /* Get linear array of constraints */
 void 
-msgGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph, 
-		      map<unsigned int, pair<Pin*, Pin* > >& pinPairsOfEdge,
+mskGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph, 
+		      map<unsigned int, pair<Pin*, Pin* > >& pinsOfEdges,
 		      MSKidxt **sub, MSKintt **ptrb, MSKintt **ptre, MSKidxt **asub,
-		      MSKrealt **aval, unsigned int &numNonZero)
+		      MSKrealt **aval, double**aconst, unsigned int &numNonZero)
 {
   vector<unsigned int> sub_vec;
   vector<unsigned int> ptrb_vec;
   vector<unsigned int> ptre_vec;
   vector<unsigned int> asub_vec;
   vector<double> aval_vec;
+  vector<double> aconst_vec;
   unsigned int i, j;
   
   /* sub here holds the indices of the columns */
@@ -330,54 +377,63 @@ msgGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph,
   unsigned int numCells = inputCells.size();
   for (i=0;i<numCells;i++) {
     Cell *cellPtri = inputCells[i];
-    for (j=0;j<numCells;j++) {
-      if (j == i) continue;
-      Cell *cellPtrj = inputCells[j];
-      long int edgeIdx = connectivityGraph.HyperGraphNodesAreAdjacent(cellPtri, cellPtrj);
-      if (edgeIdx < 0) {
+    unsigned int edgeIdx;
+    double edgeWeight;
+    double coeffX, coeffY, constTerm; 
+    coeffX = 0; coeffY = 0;
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(connectivityGraph, cellPtri, edgeIdx, edgeWeight) {
+      pair<Pin*, Pin*> pinPair = pinsOfEdges[edgeIdx];
+      
+      Pin *pin1 = pinPair.first;
+      Pin *pin2 = pinPair.second;
+      double xOff1, yOff1, xOff2, yOff2;
+      double cell1X, cell1Y, cell2X, cell2Y;
+
+      xOff1 = (double)(*pin1).PinGetXOffset() / GRID_COMPACTION_RATIO; yOff1 = (double)(*pin1).PinGetYOffset() / GRID_COMPACTION_RATIO;
+      xOff2 = (double)(*pin2).PinGetXOffset() / GRID_COMPACTION_RATIO; yOff2 = (double)(*pin2).PinGetYOffset() / GRID_COMPACTION_RATIO;
+
+      Cell* cellPtr1 = &((*pin1).PinGetParentCell()); Cell* cellPtr2 = &((*pin2).PinGetParentCell());
+      if ((*cellPtr1).CellGetName() != (*cellPtri).CellGetName()) {
 	continue;
       }
-      unsigned int xoffset1, xoffset2;
-      unsigned int yoffset1, yoffset2;
-      unsigned int edgeWeight = connectivityGraph.GetEdgeWeight(edgeIdx);
-      unsigned int weight;
-      double coeffix, coeffiy;
-      Pin *pinPtr1 = pinPairsOfEdge[edgeIdx].first;
-      Pin *pinPtr2 = pinPairsOfEdge[edgeIdx].second;
-      Cell &cell1 = (*pinPtr1).PinGetParentCell();
-      Cell &cell2 = (*pinPtr2).PinGetParentCell();
+      
+      Cell &cell1 = *cellPtr1; Cell &cell2 = *cellPtr2;
+      
+      cell1X = (double)(cell1.CellGetXpos()) / GRID_COMPACTION_RATIO; cell1Y = (double)(cell1.CellGetYpos()) / GRID_COMPACTION_RATIO;
+      cell2X = (double)(cell2.CellGetXpos()) / GRID_COMPACTION_RATIO; cell2Y = (double)(cell2.CellGetYpos()) / GRID_COMPACTION_RATIO;
 
-      if (cell2.CellGetName() == (*cellPtri).CellGetName()) {
-	Pin *tmpPinPtr = pinPtr2;
-	pinPtr2 = pinPtr1;
-	pinPtr1 = tmpPinPtr;
+      sub_vec.push_back(cstrNum); 
+
+      ptrb_vec.push_back(asub_vec.size());
+      if (!cell2.CellIsTerminal()) {
+	coeffX = 2 * edgeWeight * (RPERLENGTHX) * (CPERLENGTHX) * (xOff1 - xOff2); 
+	coeffY = 2 * edgeWeight * (RPERLENGTHY) * (CPERLENGTHY) * (yOff1 - yOff2);
+      
+	for (j = 0; j < numCells; j++) {
+	  if (cellPtr2 == inputCells[j]) {
+	    break;
+	  }
+	}
+
+	asub_vec.push_back(i); aval_vec.push_back(coeffX);
+	asub_vec.push_back(i + numCells); aval_vec.push_back(coeffY);
+
+	asub_vec.push_back(j); aval_vec.push_back(-coeffX);
+	aval_vec.push_back(j + numCells); aval_vec.push_back(-coeffY);
+
+	aconst_vec.push_back((coeffX * coeffX) + (coeffY * coeffY));
+      } else {
+	coeffX = 2 * edgeWeight * (RPERLENGTHX) * (CPERLENGTHX) * (xOff1 - cell2X);
+	coeffY = 2 * edgeWeight * (RPERLENGTHY) * (CPERLENGTHY) * (yOff1 - cell2Y);
+
+	asub_vec.push_back(i); aval_vec.push_back(coeffX);
+	asub_vec.push_back(i + numCells); aval_vec.push_back(coeffY);
+	
+	aconst_vec.push_back((coeffX * coeffX) + (coeffY * coeffY));
       }
-
-      xoffset1 = (*pinPtr1).PinGetXOffset(); xoffset2 = (*pinPtr2).PinGetXOffset();
-      yoffset1 = (*pinPtr1).PinGetYOffset(); yoffset2 = (*pinPtr2).PinGetYOffset();
-      weight+= edgeWeight;
-
-      coeffix += weight * (RPERLENGTHX) * (CPERLENGTHX) * (0.5) * (xoffset1 - xoffset2);
-      coeffiy += weight * (RPERLENGTHY) * (CPERLENGTHY) * (0.5) * (yoffset1 - yoffset2);
-
-      sub_vec.push_back(cstrNum);
-      ptrb_vec.push_back(asub_vec.size() - 1); 
-
-      asub_vec.push_back(i);
-      aval_vec.push_back(4 * coeffix);
-
-      asub_vec.push_back(i + numCells);
-      aval_vec.push_back(4 * coeffix);
-
-      asub_vec.push_back(j);
-      aval_vec.push_back(-4 * coeffix);
-
-      aval_vec.push_back(j + numCells);
-      aval_vec.push_back(-4 * coeffix);
-
       ptre_vec.push_back(asub_vec.size());
       cstrNum++;
-    }
+    } HYPERGRAPH_END_FOR;
   }
   
   *sub = (MSKidxt *) malloc(sizeof(MSKidxt)*sub_vec.size());
@@ -385,6 +441,7 @@ msgGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph,
   *ptre = (MSKidxt *) malloc(sizeof(MSKidxt)*ptre_vec.size());
   *asub = (MSKidxt *) malloc(sizeof(MSKidxt)*asub_vec.size());
   *aval = (MSKrealt *) malloc(sizeof(MSKrealt)*aval_vec.size());
+  *aconst = (double *) malloc(sizeof(double)*aconst_vec.size());
 
   for (i = 0; i < sub_vec.size(); i++) {
     (*sub)[i] = sub_vec[i];
@@ -401,8 +458,34 @@ msgGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph,
   for (i = 0; i < asub_vec.size(); i++) {
     (*asub)[i] = asub_vec[i];
   }
+  for (i = 0; i < aconst_vec.size(); i++) {
+    (*aconst)[i] = aconst_vec[i];
+  }
 
   numNonZero = aval_vec.size();
+  bool debugPrint = false;
+  //  bool debugPrint = true;
+  /* Print the linear constraints here */
+  if (debugPrint) {
+    unsigned int startIdx, endIdx;
+    for (i = 0; i < cstrNum; i++) {
+      startIdx = (*ptrb)[i];
+      endIdx = (*ptre)[i];
+      cout << "Constraint number: " << i << endl;
+      cout << "Start idx in ptrb: " << startIdx << " End idx in ptre: " << endIdx << endl;
+      cout << "asub:" << endl;
+      for (j = startIdx; j < endIdx; j++) {
+	cout << "\t" << (*asub)[j];
+      }
+      cout << endl;
+      cout << "aval:" << endl;
+      for (j = startIdx; j < endIdx; j++) {
+	cout << "\t" << (*aval)[j];
+      }
+      cout << endl << endl;
+      cout << "Constant term for the constraint: " << (*aconst)[i] << endl;
+    }
+  }
 }
 
 /* 
@@ -411,7 +494,8 @@ msgGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph,
    s.t. lkx <= (1/2)(x^T)*Q1*(x) + Ax <= b
  */
 void 
-mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& seqCellGraph, 
+mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, 
+		    vector<Cell *>& inputPorts, HyperGraph& seqCellGraph, 
 		    map<unsigned int, pair<Pin*, Pin* > >& pinPairsOfEdge)
 {
   unsigned int numConstraints;
@@ -430,9 +514,13 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& se
   if (r == MSK_RES_OK) {
     MSK_linkfunctoenvstream(env, MSK_STREAM_LOG, NULL, printstr);
   }
-  
+
+  /* Define the array of variables */
+  double xx[2 * numCells];
+
   /* Initialize the environment */
   r = MSK_initenv(env);
+  numConstraints = 0;
   if (r == MSK_RES_OK) {
     /* Create the optimization task */
     r = MSK_maketask(env, numConstraints, 2 * numCells, &task);
@@ -443,8 +531,7 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& se
       /* Provide MOSEK with an estimate of the size of the input data. */
       if (r == MSK_RES_OK) r = MSK_putmaxnumvar(task, 2 * numCells);
       if (r == MSK_RES_OK) r = MSK_putmaxnumcon(task, numConstraints);
-
-      // OPTIONAL: if (r == MSK_RES_OK) r = MSK_putmaxnumanz(task, NUMANZ); // REVISIT
+      if (r == MSK_RES_OK) r = MSK_putmaxnumanz(task, 2 * numCells);
       
       /* Append 'numConstraints' empty constraints. The constraints will initially have no bounds. */
       if (r == MSK_RES_OK) r = MSK_append(task, MSK_ACC_CON, numConstraints);
@@ -466,28 +553,19 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& se
 	double lowerX, lowerY, upperX, upperY;
 	//lowerX = myDesign.DesignGetXLower(); upperX = myDesign.DesignGetXUpper(); 
 	//lowerY = myDesign.DesignGetYLower(); upperY = myDesign.DesignGetYUpper(); 
-	lowerX = 0.0; upperX = 15.0; lowerY = 0.0; upperY = 15.0;
+	lowerX = 0.0; upperX = 11.9; lowerY = 0.0; upperY = 11.9;
 
 	if (r == MSK_RES_OK) r = MSK_putbound(task, MSK_ACC_VAR, j,
 					      MSK_BK_RA,
 					      0.0,
-					      +MSK_INFINITY);
+					      118.00);
 	if (r == MSK_RES_OK) r = MSK_putbound(task, MSK_ACC_VAR, j + numCells,
 					      MSK_BK_RA,
 					      0.0,
-					      +MSK_INFINITY);
+					      118.00);
       }
       if (progressDebug) cout << "Bounds on variables applied successfully" << endl;
       
-      /* Put bounds on the constraints */
-      for (int j=0; j < numConstraints && r == MSK_RES_OK; j++) {
-	if (r == MSK_RES_OK) r = MSK_putbound(task, MSK_ACC_CON, j,
-					      MSK_BK_UP,
-					      0,
-					      TCLK);
-      }
-      if (progressDebug) cout << "Bounds on constraints applied successfully" << endl;
-
       MSKidxt *qcsubk; MSKidxt *qcsubi; MSKidxt *qcsubj; MSKrealt *qcval;
       unsigned int numNonZero;
 
@@ -495,6 +573,11 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& se
       mskGetObjectiveMatrix(inputCells, seqCellGraph, pinPairsOfEdge,
 			    &qcsubi, &qcsubj, &qcval, numNonZero);
 
+      cout << "Before sending to mosek OBJECTIVE:" << endl;
+      cout << "qcsubi\tqcsubj\tqcval\t" << endl;
+      for (int i = 0; i < numNonZero; i++) {
+	cout << qcsubi[i] << "\t" << qcsubj[i] << "\t" << qcval[i] << "\t" << endl;
+      }
       if (r == MSK_RES_OK) r = MSK_putqobj(task, numNonZero, qcsubi, qcsubj, 
 					   qcval);
       if (progressDebug) cout << "Objective quadratic function coefficients added successfully" << endl;
@@ -503,35 +586,50 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& se
       MSKidxt *subj; MSKrealt *val;
       mskGetObjectiveLinearArray(inputCells, seqCellGraph, pinPairsOfEdge,
 				 &subj, &val, numNonZero);
+      cout << "Before sending to mosek LINEAR ARRAY C:" << endl;
+      cout << "qcsubi\tqcval\t" << endl;
+      for (int i = 0; i < numNonZero; i++) {
+	cout << subj[i] << "\t" << val[i] << "\t" << endl;
+      }
+
       if (r == MSK_RES_OK) r = MSK_putclist(task, numNonZero, subj, val);
       if (progressDebug) cout << "Objective linear function coefficients added successfully" << endl;
 
       /* Input the quadratic constraint matrices for k constraints */
+      /*
       mskGetQuadraticCstrMatrix(inputCells, seqCellGraph, pinPairsOfEdge,
 				&qcsubk, &qcsubi, &qcsubj, &qcval, numNonZero);
-
-      bool debugPrint = false;
-      if (debugPrint) cout << "  \tk\ti\tj\tvalue " << endl;
-      for (int i = 0; i < numNonZero; i++) {
-	if (debugPrint) cout << "  " << i << ": " <<  qcsubk[i] << "\t" << qcsubi[i] << "\t" << qcsubj[i] << "\t" << qcval[i] << endl;
-      }
-
       if (r == MSK_RES_OK) r = MSK_putqcon(task, numNonZero, qcsubk, qcsubi, qcsubj, qcval);
+      */
       if (progressDebug) cout << "Constraint quadratic function coefficients added successfully" << endl;
 			     
       /* Input the linear constraint vectors for k constraints */
       MSKintt *ptrb; MSKintt *ptre;
       MSKidxt *sub; MSKidxt *asub; MSKrealt *aval;
-      msgGetLinearCstrArray(inputCells, seqCellGraph, pinPairsOfEdge,
-			    &sub, &ptrb, &ptre, &asub, &aval, numNonZero);
+      double *consts;
+      /*
+      mskGetLinearCstrArray(inputCells, seqCellGraph, pinPairsOfEdge,
+			    &sub, &ptrb, &ptre, &asub, &aval, &consts, numNonZero);
 
       if (r == MSK_RES_OK) r = MSK_putaveclist(task, MSK_ACC_CON, numConstraints,
 					       sub, ptrb, ptre, asub, aval);
+      /* Put bounds on the constraints 
+      for (int j=0; j < numConstraints && r == MSK_RES_OK; j++) {
+	if (r == MSK_RES_OK) r = MSK_putbound(task, MSK_ACC_CON, j,
+					      MSK_BK_FR,
+					      0.0,
+					      (TCLK - consts[j]));
+      }
+      */
+
+      if (progressDebug) cout << "Bounds on constraints applied successfully" << endl;
+
+
       if (progressDebug) cout << "Constraint linear function coefficients added successfully" << endl;
       
       /* Spicify minimize/maximize */
-      if (r == MSK_RES_OK) r = MSK_putobjsense (task , MSK_OBJECTIVE_SENSE_MINIMIZE);
-      
+      if (r == MSK_RES_OK) r = MSK_putobjsense(task , MSK_OBJECTIVE_SENSE_MINIMIZE);
+
       if (r == MSK_RES_OK) {
 	if (progressDebug) cout << "Minimization sense objective added successfully" << endl;
 	MSKrescodee trmcode;
@@ -539,11 +637,60 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, HyperGraph& se
 	/* Run the optimizer */
 	r = MSK_optimizetrm(task, &trmcode);
 	
-	/* Print a summary containing information 
-	   about the solution for debugging purposes */
+	/* Print a summary containing information about the solution for debugging purposes */
 	MSK_solutionsummary(task, MSK_STREAM_LOG);
+
 	if (r == MSK_RES_OK) {
-	  cout << "Solution has been generated" << endl;
+	  MSKsolstae solsta;
+	  MSK_getsolutionstatus(task, MSK_SOL_ITR, NULL, &solsta);
+
+	  switch(solsta) {
+	  case MSK_SOL_STA_OPTIMAL: 
+	  case MSK_SOL_STA_NEAR_OPTIMAL: 
+	    MSK_getsolutionslice(task, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, 2 * numCells, xx);
+	    cout << "Optimal primal solution found\n";
+	    for (int i = 0; i < numCells; i++) {
+	      Cell& myCell = *(inputCells[i]);
+	      cout << "Cell Name: " << myCell.CellGetName() << " Original name: " << myCell.CellGetOrigName() << endl;
+	      double xpos = xx[i];
+	      double ypos = xx[i+numCells];
+
+	      cout << "Before rounding up: " << endl;
+	      cout << "x[" << i << "]: " << xpos << "  " << "y[" << i << "]: " << ypos << endl;
+
+	      xpos *= GRID_COMPACTION_RATIO;
+	      ypos *= GRID_COMPACTION_RATIO;
+	      
+	      xpos = dround(xpos);
+	      ypos = dround(ypos);
+
+	      cout << "After rounding up: " << endl;
+	      cout << "x[" << i << "]: " << xpos << "  " << "y[" << i << "]: " << ypos << endl;
+	      unsigned int xpos_int = (int)xpos;
+	      unsigned int ypos_int = (int)ypos;
+	      if ((xpos - (double)xpos_int) >= 0.5) xpos_int++; 
+	      if ((ypos - (double)ypos_int) >= 0.5) ypos_int++;
+
+	      cout << "After conversion to integers: " << endl;
+	      cout << "x[" << i << "]: " << xpos_int << "  " << "y[" << i << "]: " << ypos_int << endl;
+
+	      myCell.CellSetXpos(xpos_int);
+	      myCell.CellSetYpos(ypos_int);
+	    }
+	    break;
+	  case MSK_SOL_STA_DUAL_INFEAS_CER:
+	  case MSK_SOL_STA_PRIM_INFEAS_CER:
+	  case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
+	  case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
+	    cout << "Primal or dual infeasibility certificate found" << endl;
+	    break;
+	  case MSK_SOL_STA_UNKNOWN:
+	    cout << "The status of the solution could not be determined" << endl;
+	    break;
+	  default: 
+	    cout << "Other solution status" << endl;
+	    break;
+	  };
 	} else {
 	  cout << "Error while optimizing" << endl;
 	}
