@@ -26,6 +26,9 @@
 # define DESIGN_SCL_FILE_EXT ".scl"
 # define DESIGN_PL_FILE_EXT ".pl"
 # define DESIGN_NODES_MAP_FILE_EXT ".nodes.map"
+# define DESIGN_CMDS_FILE_EXT ".cmds"
+# define DESIGN_PINS_MAP_FILE_EXT ".pins.map"
+# define DESIGN_CELL_DELAYS_FILE_EXT ".nodes.delays"
 
 /*******************************************************************************
   Number of lines in the header of each type of file
@@ -119,7 +122,6 @@ class Design {
   unsigned int NumPhysRows;
   unsigned int NumFixedCells;
   unsigned int NumTerminalCells;
-
   unsigned int singleRowHeight;
 
   string Name;
@@ -130,7 +132,12 @@ class Design {
   string DesignSclFileName;
   string DesignPlFileName;
   string DesignMapFileName;
+  string DesignCmdsFileName;
+  string DesignPinsMapFileName;
+  string DesignCellDelaysFileName;
 
+  /* Stores clock period in nanoseconds */
+  double clockPeriod;
   bool RowBasedPlacement;
 
   ifstream DesignFile;
@@ -142,10 +149,11 @@ class Design {
   void DesignAddOneCellToDesignDB(Cell *);
   void DesignAddOneNetToDesignDB(Net *);
   void DesignAddOnePhysRowToDesignDB(PhysRow *);
+  void DesignAddDelayArc(string, string, string, double);
+
   void DesignFileReadOneNode(ifstream &);
   void DesignFileReadNodes(ifstream &);
-  void DesignFileReadPins(ifstream &, unsigned int,
-			  Net &);
+  void DesignFileReadPins(ifstream &, unsigned int, Net &);
   void DesignFileReadOneNet(ifstream &);
   void DesignFileReadOneRow(ifstream &);
   void DesignFileReadNets(ifstream &);
@@ -153,6 +161,9 @@ class Design {
   void DesignFileReadOneFixedCell(ifstream &file);
   void DesignFileReadFixedCells(ifstream& file);
   void DesignFileReadCellMap(ifstream& file);
+  void DesignFileReadCmds(ifstream& file);
+  void DesignFileReadPinsMap(ifstream& file);
+  void DesignFileReadCellDelays(ifstream& file);
 
   void DesignOpenFile(string);
   void DesignCloseFile(void);
@@ -165,6 +176,7 @@ class Design {
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
   vector<PhysRow*> DesignPhysRows;
+  map<string, map<string, map<string, double > > >  libCellDelayDB;
   
   Design();
   Design(string, string);
@@ -174,6 +186,9 @@ class Design {
   void DesignReadNets();
   void DesignReadRows();
   void DesignReadCellPlacement();
+  void DesignReadCmdsFile();
+  void DesignReadPinsMapFile();
+  void DesignReadCellDelaysFile();
 
   map<string, Net*>& DesignGetNets(void);
   map<string, Cell*>& DesignGetCells(void);
@@ -205,6 +220,11 @@ class Design {
   bool DesignDoFCCluster(HyperGraph&);
   bool DesignDoNetCluster(HyperGraph&);
   bool DesignDoESCCluster(HyperGraph&);
+  
+  /* Constraint functions */
+  void DesignSetClockPeriod(double);
+  double DesignGetClockPeriod(void);
+  double DesignGetDelayArc(string, string, string);
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);

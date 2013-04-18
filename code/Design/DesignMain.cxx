@@ -86,6 +86,52 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
   this->NumPhysRows++;
 }
 
+void 
+Design::DesignAddDelayArc(string libCell, string outputPin, string inputPin, 
+			  double arcDelay)
+{
+  _KEY_EXISTS(libCellDelayDB, libCell) {
+    map<string, map<string, double> >& cellDelays = libCellDelayDB[libCell];
+    _KEY_EXISTS(cellDelays, outputPin) {
+      map<string, double> &arcDelays = cellDelays[outputPin];
+      _KEY_EXISTS(arcDelays, inputPin) {
+	cout << "Warning: Delay for library cell (" << libCell 
+	     << ") arc " << outputPin << " - " << inputPin << " being replaced" << endl;
+      }
+      arcDelays[inputPin] = arcDelay;
+    } else {
+      map<string, double> arcDelays;
+      arcDelays[inputPin] = arcDelay;
+      cellDelays[outputPin] = arcDelays;
+    }
+  } else {
+    map<string, map<string, double > > cellDelays;
+    map<string, double> arcDelays;
+    arcDelays[inputPin] = arcDelay;
+    cellDelays[outputPin] = arcDelays;
+    libCellDelayDB[libCell] = cellDelays;
+  }
+}
+
+double
+Design::DesignGetDelayArc(string libCell, string outputPin, string inputPin)
+{
+  double rtv;
+
+  rtv = -1;
+  _KEY_EXISTS(libCellDelayDB, libCell) {
+    map<string, map<string, double> >& cellDelays = libCellDelayDB[libCell];
+    _KEY_EXISTS(cellDelays, outputPin) {
+      map<string, double> &arcDelays = cellDelays[outputPin];
+      _KEY_EXISTS(arcDelays, inputPin) {
+	rtv = arcDelays[inputPin];
+      }
+    }
+  }
+  
+  return (rtv);
+}
+
 void
 Design::DesignOpenFile(string FileName)
 {
@@ -182,6 +228,22 @@ Design::DesignGetGraph(void)
   return (rtv);
 }
 
+double
+Design::DesignGetClockPeriod(void)
+{
+  double rtv;
+  
+  rtv = clockPeriod;
+  
+  return (rtv);
+}
+
+void
+Design::DesignSetClockPeriod(double clkPeriod)
+{
+  this->clockPeriod = clkPeriod;
+}
+
 void
 Design::DesignInit()
 {
@@ -193,6 +255,7 @@ Design::DesignInit()
   NumTerminalCells = 0;
 
   singleRowHeight = -1;
+  clockPeriod = 0.0;
 
   Name = "";
   DesignPath = "";

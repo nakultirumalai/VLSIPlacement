@@ -1,7 +1,5 @@
-# include <mosek.h>
 # include <HyperGraph.h>
 # include <HyperGraphIter.h>
-# include <QuadProg++.hh>
 # include <AnalyticalSolve.h>
 
 # define RPERLENGTHX 1 // in milli ohms per length
@@ -335,7 +333,6 @@ mskGetObjectiveLinearArray(vector<Cell*> inputCells, HyperGraph& connectivityGra
     } HYPERGRAPH_END_FOR;
   }
 
-  cout << "Linear matrix:" << endl;
   vector<double> newValVec;
   for (int i = 0; i < val_vec.size(); i++) {
     if (val_vec[i] != 0.0) {
@@ -343,7 +340,6 @@ mskGetObjectiveLinearArray(vector<Cell*> inputCells, HyperGraph& connectivityGra
       newValVec.push_back(val_vec[i]);
       numNonZero++;
     }
-    cout << val_vec[i] << "\t";
   }
   
   *val = (MSKrealt *)malloc(sizeof(MSKrealt) * newValVec.size());
@@ -573,11 +569,6 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells,
       mskGetObjectiveMatrix(inputCells, seqCellGraph, pinPairsOfEdge,
 			    &qcsubi, &qcsubj, &qcval, numNonZero);
 
-      cout << "Before sending to mosek OBJECTIVE:" << endl;
-      cout << "qcsubi\tqcsubj\tqcval\t" << endl;
-      for (int i = 0; i < numNonZero; i++) {
-	cout << qcsubi[i] << "\t" << qcsubj[i] << "\t" << qcval[i] << "\t" << endl;
-      }
       if (r == MSK_RES_OK) r = MSK_putqobj(task, numNonZero, qcsubi, qcsubj, 
 					   qcval);
       if (progressDebug) cout << "Objective quadratic function coefficients added successfully" << endl;
@@ -586,11 +577,6 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells,
       MSKidxt *subj; MSKrealt *val;
       mskGetObjectiveLinearArray(inputCells, seqCellGraph, pinPairsOfEdge,
 				 &subj, &val, numNonZero);
-      cout << "Before sending to mosek LINEAR ARRAY C:" << endl;
-      cout << "qcsubi\tqcval\t" << endl;
-      for (int i = 0; i < numNonZero; i++) {
-	cout << subj[i] << "\t" << val[i] << "\t" << endl;
-      }
 
       if (r == MSK_RES_OK) r = MSK_putclist(task, numNonZero, subj, val);
       if (progressDebug) cout << "Objective linear function coefficients added successfully" << endl;
@@ -651,12 +637,12 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells,
 	    cout << "Optimal primal solution found\n";
 	    for (int i = 0; i < numCells; i++) {
 	      Cell& myCell = *(inputCells[i]);
-	      cout << "Cell Name: " << myCell.CellGetName() << " Original name: " << myCell.CellGetOrigName() << endl;
+	      //	      cout << "Cell Name: " << myCell.CellGetName() << " Original name: " << myCell.CellGetOrigName() << endl;
 	      double xpos = xx[i];
 	      double ypos = xx[i+numCells];
 
-	      cout << "Before rounding up: " << endl;
-	      cout << "x[" << i << "]: " << xpos << "  " << "y[" << i << "]: " << ypos << endl;
+	      //	      cout << "Before rounding up: " << endl;
+	      //	      cout << "x[" << i << "]: " << xpos << "  " << "y[" << i << "]: " << ypos << endl;
 
 	      xpos *= GRID_COMPACTION_RATIO;
 	      ypos *= GRID_COMPACTION_RATIO;
@@ -664,15 +650,15 @@ mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells,
 	      xpos = dround(xpos);
 	      ypos = dround(ypos);
 
-	      cout << "After rounding up: " << endl;
-	      cout << "x[" << i << "]: " << xpos << "  " << "y[" << i << "]: " << ypos << endl;
+	      //	      cout << "After rounding up: " << endl;
+	      //	      cout << "x[" << i << "]: " << xpos << "  " << "y[" << i << "]: " << ypos << endl;
 	      unsigned int xpos_int = (int)xpos;
 	      unsigned int ypos_int = (int)ypos;
 	      if ((xpos - (double)xpos_int) >= 0.5) xpos_int++; 
 	      if ((ypos - (double)ypos_int) >= 0.5) ypos_int++;
 
-	      cout << "After conversion to integers: " << endl;
-	      cout << "x[" << i << "]: " << xpos_int << "  " << "y[" << i << "]: " << ypos_int << endl;
+	      //	      cout << "After conversion to integers: " << endl;
+	      //	      cout << "x[" << i << "]: " << xpos_int << "  " << "y[" << i << "]: " << ypos_int << endl;
 
 	      myCell.CellSetXpos(xpos_int);
 	      myCell.CellSetYpos(ypos_int);

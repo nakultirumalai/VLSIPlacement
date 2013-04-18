@@ -3,9 +3,7 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-MODULE = PhysData
-SRCFILES = PhysRow
-HFILES := PhysRow
+include src.mk
 
 HFILES:=$(HFILES:=.h)
 HFILES:= $(addprefix $(INCLUDE_DIR)/, $(HFILES))

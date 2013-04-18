@@ -91,7 +91,7 @@ if (($plName eq "ICC") || $allPlacers) {
 
 
 ####################################################################################
-####################################################################################
+####n################################################################################
 # STEP 3: Clip components and nets from the original def to produce the bare def
 ####################################################################################
 ####################################################################################
@@ -162,7 +162,7 @@ print "STEP $stepCount: Run IC compiler to generate the routed netlist and extra
 (system("$scriptRoot/run_routing.sh $designName $plFile.placed.def $plFile") == 0) ||
     die ("STEP ($stepCount - 1) failed\n");
 
-
+exit(0);
 ####################################################################################
 ####################################################################################
 # STEP 7: Read the parasitics file in prime time and generate the timing report

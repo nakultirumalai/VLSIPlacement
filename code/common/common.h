@@ -17,9 +17,12 @@
 # include <stdlib.h>
 # include <ctime>
 # include <iomanip>
+# include <mosek.h>
 
 # define NIL(type) (type)0
+
 # define COMMON_DEBUG 1
+
 # define _setNULL(arg, type) \
   arg = NIL(type)
 
@@ -31,6 +34,8 @@
 # define _ASSERT_TRUE(txt)  \
     cout << txt << endl;    \
     exit(0);		    
+
+# define DBL_MAX 1e+37
 
 using namespace std;
 
@@ -71,6 +76,9 @@ extern bool performAnalysis;
   cout << msg << endl;
 
 # define MCOMMA ,
+
+# define _KEY_EXISTS(mapName, mapKey) \
+  if (mapName.find(mapKey) != mapName.end()) \
 
 /*******************************************************************************
   Type definitions common for all objects

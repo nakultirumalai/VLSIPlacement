@@ -83,6 +83,20 @@ HyperGraph::GetEdgeWeight(unsigned int edgeIdx)
   return edgeWeight;
 }
 
+void* 
+HyperGraph::GetEdgeObject(unsigned int edgeIdx)
+{
+  Edge *thisEdge;
+  void *edgeObject;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  if (thisEdge != NULL) {
+    edgeObject = (*thisEdge).EdgeGetObject();
+  }
+  
+  return edgeObject;
+}
+
 map<unsigned int, unsigned int>&
 HyperGraph::getEdgeConnectivity(unsigned int edgeIdx)
 {

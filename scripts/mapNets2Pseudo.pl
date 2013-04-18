@@ -9,7 +9,7 @@ open(inFile, $netsFile) || die ("Cannot open $netsFile for reading");
 open(outFile, ">$outFile") || die ("Cannot open file for writing");
 my $i=0;
 
-print outFile "Pseudo_name\tNet_name\n";
+print outFile "# Pseudo_name\tNet_name\n";
 while(my $line = <inFile>) {
     next if($line =~ m/^(#|\n|NumNodes|NumTerminals|UCLA)/);
     chomp($line);

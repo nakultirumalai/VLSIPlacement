@@ -60,7 +60,7 @@ sub get_riseandfall_delay{
     my $arc_group2;
     
     open(outFile, ">$out_file") || die("Cannot open file: $out_file\n");
-    print outFile "Cell\tOutput_pin\tInput_pin\tRise\tFall\n";
+    print outFile "# Cell\tOutput_pin\tInput_pin\tRise\tFall\n";
     my $g = $parser->read_file("$lib_name");
     my $cells;
     foreach $cells(keys %{$uniqCellsRef}) 

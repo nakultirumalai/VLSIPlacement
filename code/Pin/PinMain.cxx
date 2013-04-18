@@ -13,6 +13,12 @@ Pin::PinSetName(string pinName)
 {
   Name = pinName;
 }
+
+void 
+Pin::PinSetLibName(string libPinName)
+{
+  this->libPinName = libPinName;
+}
   
 void 
 Pin::PinSetParentCell(const Cell& parentCell)
@@ -38,6 +44,12 @@ Pin::PinSetDirection(char direction)
   dir = direction;
 }
 
+void
+Pin::PinSetIsClock(const bool &isClock)
+{
+  this->isClock = isClock;
+}
+
 /* Get functions */
 int 
 Pin::PinGetId(void)
@@ -49,6 +61,12 @@ string
 Pin::PinGetName(void) const
 {
   return (Name);
+}
+
+string 
+Pin::PinGetLibName(void) const
+{
+  return (libPinName);
 }
 
 int
@@ -85,6 +103,12 @@ Pin::PinGetNet(void)
   return (connectedNet);
 }
 
+bool
+Pin::PinIsClock(void)
+{
+  return (isClock);
+}
+
 /* Other functions */
 void 
 Pin::Connect(const Net& netToConnect)
@@ -112,6 +136,7 @@ Pin::Pin()
   PinSetXOffset(0);
   PinSetYOffset(0);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
 }
@@ -123,6 +148,7 @@ Pin::Pin(int id)
   PinSetXOffset(0);
   PinSetYOffset(0);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
 }
@@ -134,6 +160,7 @@ Pin::Pin(int id, int xoffset, int yoffset)
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
 }
@@ -145,6 +172,7 @@ Pin::Pin(int id, int xoffset, int yoffset, char direction)
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection(direction);
+  PinSetIsClock(false);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
 }
@@ -157,6 +185,7 @@ Pin::Pin(int id, const string& name)
   PinSetXOffset(0);
   PinSetYOffset(0);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
 }
@@ -167,6 +196,7 @@ Pin::Pin(int id, int xoffset, int yoffset, const string& name)
   PinSetName(name);
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
+  PinSetIsClock(false);
   PinSetDirection((char)PIN_DIR_INPUT);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
@@ -179,6 +209,7 @@ Pin::Pin(int id, int xoffset, int yoffset, char direction, const string& name)
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection(direction);
+  PinSetIsClock(false);
   _setNULL(ParentCell, Cell*);
   _setNULL(ConnectedNet, Net*);
 }
@@ -189,6 +220,7 @@ Pin::Pin(int id, const Cell& parentCell)
   PinSetXOffset(0);
   PinSetYOffset(0);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -199,6 +231,7 @@ Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell)
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -209,6 +242,7 @@ Pin::Pin(int id, int xoffset, int yoffset, char direction, const Cell& parentCel
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection(direction);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -220,6 +254,7 @@ Pin::Pin(int id, const Cell& parentCell, const string& name)
   PinSetXOffset(0);
   PinSetYOffset(0);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -232,6 +267,7 @@ Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell,
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -244,6 +280,7 @@ Pin::Pin(int id, int xoffset, int yoffset, char direction,
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection(direction);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -254,6 +291,7 @@ Pin::Pin(int id, const Cell& parentCell, const Net& connectedNet)
   PinSetXOffset(0);
   PinSetYOffset(0);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   _setNULL(ConnectedNet, Net*);
 }
@@ -265,6 +303,7 @@ Pin::Pin(int id, int xoffset, int yoffset, const Cell& parentCell,
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection((char)PIN_DIR_INPUT);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   Connect(connectedNet);
 }
@@ -276,6 +315,7 @@ Pin::Pin(int id, int xoffset, int yoffset, char direction,
   PinSetXOffset(xoffset);
   PinSetYOffset(yoffset);
   PinSetDirection(direction);
+  PinSetIsClock(false);
   PinSetParentCell(parentCell);
   Connect(connectedNet);
 }

@@ -157,6 +157,15 @@ Cell::CellAddPin(Pin *pinPtr)
 }
 
 void
+Cell::CellAddArcDelay(Pin *fromPin, Pin *toPin, double delay) 
+{
+  unsigned int pin1Idx = (*fromPin).PinGetId();
+  unsigned int pin2Idx = (*toPin).PinGetId();
+  
+  (arcDelays[pin1Idx])[pin2Idx] = delay;
+}
+
+void
 Cell::CellIncrementClusterLevel(void)
 {
   clusterLevel++;
@@ -370,6 +379,18 @@ Cell::CellGetChildCells(void)
   return (this->childCells);
 }
 
+double
+Cell::CellGetArcDelay(Pin *fromPin, Pin *toPin)
+{
+  unsigned int pin1Idx, pin2Idx;
+  double rtv;
+
+  pin1Idx = (*fromPin).PinGetId();
+  pin2Idx = (*toPin).PinGetId();
+
+  rtv = ((arcDelays[pin1Idx])[pin2Idx]);
+}
+
 Cell::Cell()
 {
   CellSetPos(0, 0);
@@ -575,7 +596,6 @@ Cell::CellGetPinByName(const string &PinName)
   
   rtv = NIL(Pin *);
   CELL_FOR_ALL_PINS((*this), PIN_DIR_ALL, pinPtr) {
-    cout << "Given name: " << PinName << " Pin Name: " << (*pinPtr).PinGetName() << endl;
     if ((*pinPtr).PinGetName() == PinName) {
       rtv = pinPtr;
       break;

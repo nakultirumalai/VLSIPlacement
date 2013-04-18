@@ -20,8 +20,10 @@ class Pin {
   char dir; 
   Cell *ParentCell;
   Net *ConnectedNet;
- public:
+  bool isClock;
+  string libPinName;
   string Name;
+ public:
 
   /* Constructors */
   Pin();
@@ -50,10 +52,12 @@ class Pin {
   /* Set functions */
   void PinSetId(int);
   void PinSetName(string);
+  void PinSetLibName(string);
   void PinSetParentCell(const Cell&);
   void PinSetXOffset(int);
   void PinSetYOffset(int);
   void PinSetDirection(char);
+  void PinSetIsClock(const bool&);
 
   /* Get functions */
   int PinGetId(void);
@@ -61,9 +65,11 @@ class Pin {
   int PinGetYOffset(void);
   char PinGetDirection(void) const;
   string PinGetName(void) const;
+  string PinGetLibName(void) const;
   Cell& PinGetParentCell(void);
   Net& PinGetNet(void);
-  
+  bool PinIsClock(void);
+
   /* Other functions */
   void Connect(const Net&);
   Net& Disconnect(void);

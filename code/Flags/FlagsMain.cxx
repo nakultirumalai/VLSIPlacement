@@ -35,6 +35,34 @@ void CellClearAllIsClustered(void)
   FlagsDefClearAllObjs(CELL_IS_CLUSTERED_FLAG);
 }
 
+unsigned int PortGetNumRelatedCells(Cell *obj)
+{
+  unsigned int rtv;
+
+  rtv = FlagsDefGetInt(PORT_NUM_RELATED_CELLS, (void *)obj);
+  
+  return (rtv);
+}
+
+void PortSetNumRelatedCells(Cell *portPtr, unsigned int numCells)
+{
+  void *obj = (void *)portPtr;
+  
+  FlagsDefSetInt(PORT_NUM_RELATED_CELLS, obj, numCells);
+}
+
+void PortClearAllNumRelatedCells(void)
+{
+  FlagsDefClearAllObjs(PORT_NUM_RELATED_CELLS);
+}
+
+void PortClearNumRelatedCells(Cell *portPtr)
+{
+  void *obj = (void *)portPtr;
+
+  FlagsDefClearFlag(CELL_IS_CLUSTERED_FLAG, obj);
+}
+
 bool NetIsHidden(Net *netPtr)
 {
   bool rtv;
@@ -93,3 +121,28 @@ void PinClearAllOriginalPin(void)
   FlagsDefClearAllObjs(PIN_ORIGINAL_PIN_FLAG);
 }
 
+double PathGetCellDelay(Net *thisNet)
+{
+  void *obj = (void *)thisNet;
+  double totalCellDelay = 
+    FlagsDefGetDouble(PATH_TOTAL_CELL_DELAY, obj);
+}
+
+void PathSetCellDelay(Net *thisNet, double totalCellDelay)
+{
+  void *obj = (void *)thisNet;
+  FlagsDefSetDouble(PATH_TOTAL_CELL_DELAY, obj, 
+		    totalCellDelay);
+}
+
+void PathClearCellDelay(Net *thisNet)
+{
+  void *obj = (void *)thisNet;
+
+  FlagsDefClearDouble(PATH_TOTAL_CELL_DELAY, obj);
+}
+
+void PathClearAllCellDelay(void)
+{
+  FlagsDefClearAllObjs(PATH_TOTAL_CELL_DELAY);
+}

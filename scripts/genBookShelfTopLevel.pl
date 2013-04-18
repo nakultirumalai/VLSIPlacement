@@ -71,7 +71,8 @@ print "STEP $stepCount: Make copies of the original files. These are golden\n"; 
 ####################################################################################
 print "STEP $stepCount: Run IC compiler to generate the DEF file and the terminal positions for top level ports\n"; $stepCount++;
 (system("$iccPath/icc_shell -f $scriptRoot/generateFloorplanICC.tcl > icc_floor_log") == 0) ||    die ("Floorplan generation using IC compiler failed\n");
-#(system("cp $benchmarkGenRoot/results/$designName/${designName}.def $benchmarkGenRoot/results/$designName/bookshelf/${designName}.def") == 0) || 
+(system("cp $benchmarkGenRoot/results/$designName/${designName}.def $benchmarkGenRoot/results/$designName/bookshelf/${designName}.def") == 0) || 
+    die ("Cannot copy DEF file to bookshelf folder \n");
 
 
 ####################################################################################
@@ -81,9 +82,9 @@ print "STEP $stepCount: Run IC compiler to generate the DEF file and the termina
 #         file
 ####################################################################################
 ####################################################################################
-print "STEP $stepCount: Get the cell dimensions and relative pin positions from LEF\n"; $stepCount++;
-(system("$scriptRoot/getCellDimAndPinPos.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $LEFfile") == 0) ||
-    die ("Obtaining cell dimensions and relative pin positions from LEF failed \n");
+#print "STEP $stepCount: Get the cell dimensions and relative pin positions from LEF\n"; $stepCount++;
+#(system("$scriptRoot/getCellDimAndPinPos.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $LEFfile") == 0) ||
+#    die ("Obtaining cell dimensions and relative pin positions from LEF failed \n");
 
 
 ####################################################################################
@@ -140,7 +141,7 @@ print "STEP $stepCount: Generate the pseudo names for cells\n"; $stepCount++;
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Generate the pseudo names for nets\n"; $stepCount++;
-(system("$scriptRoot/mapNets2Pseudo.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.map") == 0) ||
+(system("$scriptRoot/mapNets2Pseudo.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.orig $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.map") == 0) ||
     die ("Generate pseudo names for nets failed\n");    
 
 
@@ -169,6 +170,17 @@ print "STEP $stepCount: Substitute CELL pseudo names in the pl file\n"; $stepCou
 
 print "STEP $stepCount: Substitute NET pseudo names in the nets file\n"; $stepCount++;
 (system("$scriptRoot/subNetsFromMaps.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nets.map") == 0) || die ("Replace pseudo net names in .nets file failed\n");    
+
+####################################################################################
+####################################################################################
+# STEP  : Get the cell dimensions for the cells and relative positions of pins
+#         from the LEF file. Substitution occurs in the nodes file and the nets
+#         file
+####################################################################################
+####################################################################################
+print "STEP $stepCount: Get the cell dimensions and relative pin positions from LEF\n"; $stepCount++;
+(system("$scriptRoot/getCellDimAndPinPos.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $LEFfile") == 0) ||
+    die ("Obtaining cell dimensions and relative pin positions from LEF failed \n");
 
 
 ####################################################################################

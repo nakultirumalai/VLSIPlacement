@@ -5,6 +5,7 @@
 # include <Node.h>
 # include <Edge.h>
 # include <algorithm>
+# include <HyperGraphIter.h>
 
 typedef std::map<unsigned int, std::vector<unsigned int > > mapOfVectors;
 
@@ -135,6 +136,7 @@ class HyperGraph {
 
   /* Given an edge index, return the weight of the edge */
   double GetEdgeWeight(unsigned int);
+  void* GetEdgeObject(unsigned int);
 
   unsigned int HyperGraphGetCellIndex(void *);
   vector<void *> HyperGraphGetConnectedCells(void*);

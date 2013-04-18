@@ -3,15 +3,19 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 
 CFLAGS_LOCAL = $(CFLAGS) -c
 
-SRCFILES:=  Sort
+MODULE = Sort
+SRCFILES = SortMain
+HFILES := Sort
 
-HFILES:= Sort.h
+HFILES:=$(HFILES:=.h)
 HFILES:= $(addprefix $(INCLUDE_DIR)/, $(HFILES))
 
+OBJFILES:= $(SRCFILES:=.o)
+OBJS := $(addprefix $(OBJDIR)/,$(OBJFILES))
 SRCCPPFILES:= $(SRCFILES:=.cxx)
 
-MAKE_DESIGN: $(SRCCPPFILES) $(HFILES)
-	for file in $(SRCFILES); do \
-		g++ $(CFLAGS_LOCAL) $$file.cxx -I $(INCLUDE_DIR) -o $(OBJDIR)/$$file.o; \
-	done
+$(OBJDIR)/%.o : %.cxx $(HFILES)
+	g++ $(CFLAGS_LOCAL) $*.cxx -I $(INCLUDE_DIR) -o $(OBJDIR)/$*.o
 
+all:  $(OBJS)
+	ld -r $(OBJS) -o $(OBJDIR)/$(MODULE).o

@@ -4,13 +4,22 @@ MAKEFLAGS += -j1
 
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
-LIBS= -L/usr/local/lib -lQuadProgpp -lc -ldl -lm -lmosek64 -pthread
+LIBS= -L/usr/local/lib -lc -ldl -lm -lmosek64 -pthread
+
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags AnalyticalSolve
+
+OBJFILES:= $(SRCDIRS)
+DEBUG = 
 
 ifeq ($(MAKECMDGOALS), debug)
+	OBJFILES:= $(SRCDIRS:=-g)
+	DEBUG = debug
 	CFLAGS= -g 
 else
 	CFLAGS= -pg
 endif
+OBJFILES:= $(OBJFILES:=.o)
+OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
 
 export CFLAGS
 
@@ -25,25 +34,18 @@ endif
 
 CC=g++
 
-TARGETS = all debug
-
-SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags AnalyticalSolve
-
-OBJFILES:= $(OBJDIR)/*.o
-OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
+TARGETS = all 
 
 all: COMPILE_ALL GEN_EXEC
 
 COMPILE_ALL: $(SRCDIRS)
 	echo $(OBJDIR)
 	@+for dir in $(SRCDIRS); do \
-		make -C $$dir; \
+		make $(DEBUG) -C $$dir; \
 	done	
 
-GEN_EXEC: main.cxx 
-	$(CC) $(CFLAGS) $(LFLAGS) $(OBJDIR)/*.o main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
-
-debug: COMPILE_ALL GEN_EXEC
+GEN_EXEC: main.cxx $(OBJFILES) 
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
 
 tag: 	
 	ctags . -R $(CODE_ROOT)
@@ -52,3 +54,9 @@ tag:
 	mv __tags tags
 	rm -rf _tags
 
+debug: all
+
+clean:
+	rm -rf $(OBJDIR)/*.o
+	rm -rf $(CODE_ROOT)/the_exec
+	rm -rf $(CODE_ROOT)/the_exec-g

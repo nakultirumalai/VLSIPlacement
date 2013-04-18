@@ -3,7 +3,7 @@
 
 # include <common.h>
 # include <Pin.h>
-# include <CellMacros.h>
+# include <CellIter.h>
 
 using namespace std;
 
@@ -29,6 +29,7 @@ class Cell {
   bool isPort;
   vector<Pin*> Pins;
   vector<Cell*> childCells;
+  map<unsigned int, map<unsigned int, double > > arcDelays;
 
   string name;
   string origName;
@@ -74,6 +75,7 @@ class Cell {
   void CellSetIsPort(const bool &);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
+  void CellAddArcDelay(Pin *, Pin *, double);
   void CellIncrementClusterLevel(void);
   void CellDecrementClusterLevel(void);
 
@@ -102,6 +104,7 @@ class Cell {
   vector<Pin*> CellGetPins(int);
   vector<Pin*> CellGetPins(void);
   vector<Cell*> CellGetChildCells(void);
+  double CellGetArcDelay(Pin *, Pin *);
 
   /* Other functions */
   void CellMoveRight(int);

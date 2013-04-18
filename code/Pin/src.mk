@@ -1,0 +1,3 @@
+MODULE = Pin
+SRCFILES = PinMain
+HFILES := Pin

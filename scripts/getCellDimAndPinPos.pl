@@ -12,7 +12,8 @@ $mod_filename =~ s/\.nodes$//;
 my $PAD_HEIGHT = 56;
 my $PAD_WIDTH = 56;
 
-open(bkshlfFile, "${mod_filename}.nodes.orig") || die ("Can't open $bookshelf file");
+(system("mv ${mod_filename}.nodes ${mod_filename}.nodes.copy") == 0) || die ("Cannot move of the existing nodes file");
+open(bkshlfFile, "${mod_filename}.nodes.copy") || die ("Can't open $bookshelf file");
 
 my $mod_filename_1 = $mod_filename.".nodes";
 my $mod_filename_2 = $mod_filename.".nodes.flowplace";
@@ -197,10 +198,15 @@ if (0) {
 }
 
 # Parse the nets file here to replace the positions of all the pins
-$netOrigFile = $mod_filename.".nets.orig";
+(system("mv ${mod_filename}.nets ${mod_filename}.nets.copy") == 0) || die ("Cannot move of the existing nodes file");
+$netOrigFile = $mod_filename.".nets.copy";
 $netFile = $mod_filename.".nets";
+$pinMapFile = $mod_filename.".pins.map";
 open(netOrigFile, $netOrigFile) || die ("Cannot open file $netFile");
 open(netFile, ">$netFile") || die ("Cannot open file $netFile for writing");
+open(pinMapFile, ">$pinMapFile") || die("Cannot open file $pinMapFile for writing");
+
+my %pinCount;
 while(my $line = <netOrigFile>) {
     if ($line =~ /^(#(.*)|\n|NumNets|NumPins|UCLA|NetDegree)/) {
 	print netFile $line;
@@ -208,6 +214,17 @@ while(my $line = <netOrigFile>) {
 	chomp($line);
     	$line =~ s/^\s*//; 
     	my ($cellName, $pinDir, $colon, $libDetails) = split('\s+', $line); 
+
+	my $cellPinCount;
+	if (exists $pinCount{$cellName}) {
+	    $cellPinCount = $pinCount{$cellName};
+	} else {
+	    $pinCount{$cellName} = 0;
+	    $cellPinCount = 0;
+	}
+	$cellPinCount = $cellPinCount + 1;
+	$pinCount{$cellName} = $cellPinCount;
+
 	if ($libDetails ne " ") {
 	    my $pinx, $piny;
 #	    print "RECOGNIZED: Cell: $cellName Lib details: $libDetails\n";
@@ -236,9 +253,10 @@ while(my $line = <netOrigFile>) {
 		$piny = $piny * 1000;
 		$piny = sprintf "%.3f", $piny;
 #		print "\tPIN POSITION of pin $libPinName $pinx $piny \n";
+		print pinMapFile "${cellName}_${cellPinCount} $libPinName\n";
 	    }
 	    print netFile "\t$cellName  $pinDir  $colon  $pinx  $piny \n";
-	} 
+	}
     }
 }
 

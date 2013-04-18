@@ -58,6 +58,18 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   if (!fileExists(DesignMapFileName)) {
     DesignMapFileName = "";
   }
+  DesignCmdsFileName = fullDesignPath + DesignName + DESIGN_CMDS_FILE_EXT;
+  if (!fileExists(DesignCmdsFileName)) {
+    DesignCmdsFileName = "";
+  }
+  DesignPinsMapFileName = fullDesignPath + DesignName + DESIGN_PINS_MAP_FILE_EXT;
+  if (!fileExists(DesignPinsMapFileName)) {
+    DesignPinsMapFileName = "";
+  }
+  DesignCellDelaysFileName = fullDesignPath + DesignName + DESIGN_CELL_DELAYS_FILE_EXT;
+  if (!fileExists(DesignCellDelaysFileName)) {
+    DesignCellDelaysFileName = "";
+  }
 
   this->Name = DesignName;
   DesignReadRows();
@@ -65,7 +77,10 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   DesignReadMapFile();
   DesignReadNets();
   DesignReadCellPlacement();
-  
+  DesignReadCmdsFile();
+  DesignReadPinsMapFile();
+  DesignReadCellDelaysFile();
+
   DesignFile.close();
 }
 
@@ -147,7 +162,7 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
   string nodeName, pinDir, garbage;
   string PinName, Msg, line;
   string NetName;
-  unsigned int pinNum;
+  unsigned int pinNum, cellPinNum;
   float xoffset, yoffset;
   char dir;
 
@@ -169,15 +184,13 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     else if (pinDir == PIN_DIR_OUTPUT_STRING) dir = PIN_DIR_OUTPUT;
 
     node = DesignGetNode(nodeName);
-    if (nodeName == "o1") {
-      cout << nodeName << endl;
-    }
     /* Adjust the offset so that it is from the left bottom corner of the 
        cell */
     xoffset = xoffset + ((*node).CellGetWidth()/2);
     yoffset = yoffset + ((*node).CellGetHeight()/2);
-    PinName = nodeName + "_" + getStrFromInt(((*node).CellGetNumPins() + 1));
-    Pin *newPin = new Pin(0, (int)xoffset, (int)yoffset, dir, *node, PinName);
+    cellPinNum = (*node).CellGetNumPins() + 1;
+    PinName = nodeName + "_" + getStrFromInt(cellPinNum);
+    Pin *newPin = new Pin(cellPinNum, (int)xoffset, (int)yoffset, dir, *node, PinName);
 
     Msg = "Created Pin " + PinName + " on cell " + nodeName;
     common_message(Msg);                                   
@@ -529,4 +542,146 @@ Design::DesignReadMapFile()
     DesignFileReadCellMap(DesignFile);
   }
   _STEP_END("Read map file");
+}
+
+void 
+Design::DesignFileReadCmds(ifstream &file)
+{
+  string cmd, arg;
+  string line;
+
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    if (line.find('#') == 0) {
+      continue;
+    }
+
+    istringstream stream(line, istringstream::in);
+    /* Typically a command of the form: <command> <arg>  */
+    stream >> cmd;
+    if (cmd == "set_clock_port") {
+      stream >> arg;
+      cout << "Read command \"set_clock_port " << arg << "\"" << endl;
+      Cell *thisCell = DesignGetNode(arg);
+      Pin *PinPtr;
+      CELL_FOR_ALL_PINS((*thisCell), PIN_DIR_ALL, PinPtr) {
+	(*PinPtr).PinSetIsClock(true);
+      } CELL_END_FOR;
+    } else if (cmd == "set_clock_period") {
+      double clkPeriod;
+      stream >> clkPeriod;
+      cout << "Read command \"set_clock_period " << clkPeriod << " ns\"" << endl;
+      DesignSetClockPeriod(clkPeriod);
+    }
+  }
+}
+
+void 
+Design::DesignReadCmdsFile()
+{
+  _STEP_BEGIN("Read commands file");
+  if (DesignCmdsFileName == "") {
+    cout << "Commands file cannot be found.. Skipping" << endl;
+  } else {
+    DesignOpenFile(DesignCmdsFileName);
+    DesignFileReadCmds(DesignFile);
+  }
+  _STEP_END("Read commands file");
+}
+
+void 
+Design::DesignFileReadPinsMap(ifstream &file)
+{
+  string pin, libPin;
+  string line;
+
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    if (line.find('#') == 0) {
+      continue;
+    }
+
+    istringstream stream(line, istringstream::in);
+    /* Typically a command of the form: <command> <arg>  */
+    stream >> pin;
+    stream >> libPin;
+    
+    unsigned int _pos = pin.find('_');
+    if (_pos == string::npos) {
+      cout << "Error: Invalid pin name " << pin << endl;
+      continue;
+    }
+    
+    string cellName = pin.substr(0, _pos);
+    Cell *thisCellPtr = DesignGetNode(cellName);    
+    if (thisCellPtr == NIL(Cell *)) {
+      cout << "Error: Cell " << cellName << "Not found " << endl;
+    }
+    Pin *thisPin = (*thisCellPtr).CellGetPinByName(pin);
+    (*thisPin).PinSetLibName(libPin);
+  }
+}
+
+void 
+Design::DesignReadPinsMapFile()
+{
+  _STEP_BEGIN("Read Pins Map file");
+  if (DesignPinsMapFileName == "") {
+    cout << "Pins Map file cannot be found.. Skipping" << endl;
+  } else {
+    DesignOpenFile(DesignPinsMapFileName);
+    DesignFileReadPinsMap(DesignFile);
+  }
+  _STEP_END("Read Pins Map file");
+}
+
+void 
+Design::DesignFileReadCellDelays(ifstream &file)
+{
+  string libCell, outputPin, inputPin;
+  double rise, fall;
+  string line;
+
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    if (line.find('#') == 0) {
+      continue;
+    }
+
+    istringstream stream(line, istringstream::in);
+    /* Typically a command of the form: <command> <arg>  */
+    stream >> libCell;
+    stream >> outputPin;
+    stream >> inputPin;
+    stream >> rise;
+    stream >> fall;
+    
+    if (fall < 0) fall = -fall;
+    if (rise < 0) rise = -rise;
+    double cellDelay = (fall + rise) / 2;
+
+    DesignAddDelayArc(libCell, outputPin, inputPin, cellDelay);
+  }
+}
+
+void 
+Design::DesignReadCellDelaysFile()
+{
+  _STEP_BEGIN("Read Cell Delays file");
+  if (DesignCellDelaysFileName == "") {
+    cout << "Cell Delays file cannot be found.. Skipping" << endl;
+  } else {
+    DesignOpenFile(DesignCellDelaysFileName);
+    DesignFileReadCellDelays(DesignFile);
+  }
+  _STEP_END("Read Cell Delays file");
 }
