@@ -13,7 +13,8 @@ typedef enum {
   CELL_IS_CLUSTERED_FLAG = 0,
   NET_IS_HIDDEN_FLAG,
   PORT_NUM_RELATED_CELLS,
-  TOTAL_NUM_INT_FLAGS
+  TOTAL_NUM_INT_FLAGS,
+  CELL_IS_FIXED_FLAG = 0
 } flagIntType;
 
 typedef enum {
@@ -70,5 +71,10 @@ extern void PinClearAllOriginalPin(void);
 extern void PinClearOriginalPin(Pin *);
 extern void* PinGetOriginalPin(Pin *);
 extern void PinSetOriginalPin(Pin *, Pin *);
+
+extern bool CellIsFixed(Cell *);
+extern void CellSetIsFixed(Cell *);
+extern void CellClearIsFixed(Cell *);
+extern void CellClearAllIsFixed(Cell *);
 
 # endif

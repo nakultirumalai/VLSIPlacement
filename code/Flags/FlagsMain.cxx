@@ -146,3 +146,35 @@ void PathClearAllCellDelay(void)
 {
   FlagsDefClearAllObjs(PATH_TOTAL_CELL_DELAY);
 }
+
+/* Cell is fixed flag */
+
+bool CellIsFixed(Cell *cellPtr)
+{
+  bool rtv;
+
+  void *obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetFlag(CELL_IS_FIXED_FLAG, obj);
+  
+  return (rtv);
+}
+
+void CellSetIsFixed(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetFlag(CELL_IS_FIXED_FLAG, obj);
+}
+
+void CellClearIsFixed(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearFlag(CELL_IS_FIXED_FLAG, obj);
+}
+
+void CellClearAllIsFixed(Cell *cellPtr)
+{
+  FlagsDefClearAllObjs(CELL_IS_FIXED_FLAG);
+}

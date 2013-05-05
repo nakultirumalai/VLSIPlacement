@@ -171,11 +171,14 @@ class Design {
   vector<Cell*> DesignClusterSpecifiedCells(vector<vector<void * > >, double);
   void DesignHideNets(std::vector<void*>, std::vector<void *>);
   void DesignPropagateTerminals(Cell *, Cell *);
+  
 
  public:
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
+  
   vector<PhysRow*> DesignPhysRows;
+  
   map<string, map<string, map<string, double > > >  libCellDelayDB;
   
   Design();
@@ -192,6 +195,8 @@ class Design {
 
   map<string, Net*>& DesignGetNets(void);
   map<string, Cell*>& DesignGetCells(void);
+  vector<PhysRow*>& DesignGetRows(void);
+
   void DesignSetName(string);
   void DesignReadDesign(string, string);
   string DesignGetName(void);
@@ -208,6 +213,8 @@ class Design {
   unsigned int DesignGetNumFixedCells(void);
   unsigned int DesignGetNumTerminalCells(void);
   unsigned int DesignGetNumPhysRows(void);
+  void DesignAddCellToPhysRow(Cell*, vector<vector<int> > &, vector<PhysRow*> &);
+  void DesignAddAllCellsToPhysRows(void);
 
   map<unsigned int, unsigned int> DesignGetRowHeights();
   void DesignClusterCells(HyperGraph&, clusteringType);

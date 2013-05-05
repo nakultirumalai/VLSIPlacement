@@ -112,7 +112,7 @@ getLogicCone(Design &myDesign, Cell &cellObj, vector<Cell*>& relatedCells,
       double thisCellDelay = totalCellDelay + cellObj.CellGetArcDelay(pinPtr, nextPinPtr);
       if (nextCell.CellIsSequential() || nextCell.CellIsPort()) {
 	if (noReg == true) {
-	  if (!nextCell.CellIsSequential()) continue;
+	  if (nextCell.CellIsSequential()) continue;
 	}
 	if (nextCell.CellIsTerminal()) {
 	  numRelatedCells = PortGetNumRelatedCells(&nextCell);
@@ -222,6 +222,11 @@ Design::DesignSolveForSeqCells(void)
       if (debugPrint) cout<< "Error in iterator" << endl;
       exit(0);
     }
+
+    /* Clear related vectors */
+    relatedCells.clear(); relatedPins.clear(); 
+    logicalDepths.clear(); cellDelays.clear();
+
     /* Get the input logic cone */
     getLogicCone(myDesign, seqCell, tmpRelatedCells, tmpLogicalDepths, tmpCellDelays, 
 		 tmpRelatedPins, PIN_DIR_INPUT, false);
@@ -241,6 +246,7 @@ Design::DesignSolveForSeqCells(void)
     /* Clear vectors */
     tmpRelatedCells.clear(); tmpLogicalDepths.clear(); 
     tmpCellDelays.clear(); tmpRelatedPins.clear();
+    
     getLogicCone(myDesign, seqCell, tmpRelatedCells, tmpLogicalDepths, tmpCellDelays,
 		 tmpRelatedPins, PIN_DIR_OUTPUT, true);
     VECTOR_FOR_ALL_ELEMS(tmpRelatedCells, Cell*, tmpCellPtr) {
@@ -293,7 +299,7 @@ Design::DesignSolveForSeqCells(void)
 	/* Edge weight is inversly proportional to: number of objects the 
 	   terminal is connected to  */
 	edgeWeight = ((double)1)/(logicalDepths[i]);
-	if (1) {
+	if (0) {
 	  cout << "Edge start cell: " << (*cellPtr).CellGetName() 
 	       << " (" << (*cellPtr).CellGetOrigName() << ")" 
 	       << " End cell: " << endCell.CellGetName() 
@@ -309,7 +315,7 @@ Design::DesignSolveForSeqCells(void)
 		 << "  Logical Depth: "  << logicalDepths[i] << endl;
 	  //<< "  Port num related cells: " << portNumRelatedCells << endl;
 	} else {
-	  if (1)
+	  if (0)
 	    cout << "EdgeWeight: " << edgeWeight 
 		 << "  Total comb cell delay: " << cellDelays[i] 
 		 << "  Logical Depth: "  << logicalDepths[i] << endl;
@@ -320,13 +326,11 @@ Design::DesignSolveForSeqCells(void)
       pinPairsOfEdge[edgeIndex] = relatedPins[i];
     } 
   } DESIGN_END_FOR;
-  HYPERGRAPH_FOR_ALL_EDGES(seqCellGraph, edgeIndex, edgeWeight) {
-    
-  } HYPERGRAPH_END_FOR;
   _STEP_END("Building graph for sequential cells");
-  return;
+
   seqSolveQuadraticWL(*this, seqCellGraph, inputCells);
 
+  return;
   /* Analyze the result */
   unsigned int edgeIdx;
   double lengthDiff;

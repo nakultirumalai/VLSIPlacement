@@ -27,6 +27,8 @@ class Cell {
   bool isFixed;
   bool isSequential;
   bool isPort;
+  bool isXLegal;
+  bool isYLegal;
   vector<Pin*> Pins;
   vector<Cell*> childCells;
   map<unsigned int, map<unsigned int, double > > arcDelays;
@@ -73,6 +75,8 @@ class Cell {
   void CellSetClusterLevel(unsigned int);
   void CellSetIsSequential(const bool &);
   void CellSetIsPort(const bool &);
+  void CellSetXIsLegal(const bool&);
+  void CellSetYIsLegal(const bool&);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
   void CellAddArcDelay(Pin *, Pin *, double);
@@ -97,6 +101,8 @@ class Cell {
   bool CellIsFixed(void);
   bool CellIsSequential(void);
   bool CellIsPort(void);
+  bool CellXIsLegal(void);
+  bool CellYIsLegal(void);
   string CellGetName(void);
   string CellGetOrigName(void);
   string CellGetLibCellName(void);

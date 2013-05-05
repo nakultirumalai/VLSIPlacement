@@ -134,6 +134,19 @@ Cell::CellSetIsPort(const bool & isPort)
 }
 
 void
+Cell::CellSetXIsLegal(const bool & isXLegal)
+{
+  this->isXLegal = isXLegal;
+  
+}
+
+void
+Cell::CellSetYIsLegal(const bool & isYLegal)
+{
+  this->isYLegal = isYLegal;
+}
+
+void
 Cell::CellAddChildCell(Cell &thisCell)
 {
   childCells.push_back(&thisCell);
@@ -323,6 +336,17 @@ Cell::CellIsPort(void)
   return (isPort);
 }
 
+bool
+Cell::CellXIsLegal(void)
+{
+  return isXLegal;
+}
+
+bool
+Cell::CellYIsLegal(void)
+{
+  return isYLegal;
+}
 
 string
 Cell::CellGetName(void)
@@ -408,6 +432,8 @@ Cell::Cell()
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width) 
@@ -427,6 +453,8 @@ Cell::Cell(int Height, int Width)
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, string Name)
@@ -447,6 +475,8 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 
@@ -468,6 +498,8 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos)
@@ -486,6 +518,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
@@ -506,6 +540,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name, 
@@ -527,6 +563,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
@@ -546,6 +584,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name)
@@ -566,6 +606,8 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name, bool terminalCell)
@@ -586,7 +628,12 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
+  CellSetXIsLegal(false);
+  CellSetYIsLegal(false);
 }
+
+Cell::~Cell()
+{}
 
 Pin *
 Cell::CellGetPinByName(const string &PinName) 

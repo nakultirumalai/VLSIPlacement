@@ -2,7 +2,8 @@
 # define PHYSROW_H
 
 # include <common.h>
-
+# include <Cell.h>
+# include <Flags.h>
 /* Default definitions */
 # define DEFAULT_COORDINATE 0
 # define DEFAULT_SITE_ORIENTATION N
@@ -12,7 +13,11 @@
 # define DEFAULT_SITE_SPACING 1
 # define DEFAULT_NUM_SITES 0
 # define DEFAULT_NUM_SUBROWS 0
+# define DEFAULT_TOTAL_CELL_WIDTH 0
+# define DEFAULT_TOTAL_BOUNDINGBOX_WIDTH 0
+# define DEFAULT_BLOCKED_WIDTH 0
 # define DEFAULT_SUBROWS map<unsigned int, unsigned int> ()
+# define DEFAULT_ROW_BEGIN 0
 
 using namespace std;
 
@@ -46,6 +51,7 @@ typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;
 
 class PhysRow {
  private:
+  int rowBegin;
   int coordinate;
   objOrient siteOrient;
   siteSymmetry siteSym;
@@ -56,7 +62,16 @@ class PhysRow {
   unsigned int numSubRows;
   unsigned int numSites;
   map<unsigned int,unsigned int> subRows;
-
+  bool containsFixed;
+  //vector<vector<Cell*> > allCellsInRow;
+  vector<Cell*> cellsInRow;
+  int totalCellWidth;
+  int blockedWidth;
+  int totalBoundingBoxWidth;
+  int wMax;
+  //int columnWidth;
+  
+;
  public:
   /* Constructors */
   PhysRow();
@@ -84,8 +99,15 @@ class PhysRow {
   unsigned int PhysRowGetSiteSpacing(void);
   unsigned int PhysRowGetNumSubRows(void);
   unsigned int PhysRowGetNumSites(void);
+  int PhysRowGetTotalCellWidth(void);
+  int PhysRowGetBoundingBoxWidth(void);
+  int PhysRowGetBlockedWidth(void);
+  int PhysRowGetWMax(void);
   map<unsigned int,unsigned int> PhysRowGetSubRows(void);
-
+  void PhysRowGetBoundingBox(vector<int>& );
+  void PhysRowGetCellsInRow(vector<Cell*> &); 
+  int  PhysRowGetRowBegin(void);
+  
   /* Set functions */
   void PhysRowSetCoordinate(int);
   void PhysRowSetType(rowOrientation);
@@ -98,9 +120,31 @@ class PhysRow {
   void PhysRowSetNumSubRows(unsigned int);
   void PhysRowSetSubRows(map<unsigned int, unsigned int>);
   void PhysRowIncrementSubRows(void);
-  
+  void PhysRowSetTotalCellWidth(int);
+  void PhysRowSetBoundingBoxWidth(int);
+  void PhysRowSetBlockedWidth(int);
+  void PhysRowCalculateWMax(void);
+  void PhysRowSetRowBegin(int);
+
   /* Add a subrow to an existing row */
   void PhysRowAddSubRow(unsigned int, unsigned int);
+
+   /* Add a cell to a subrow of an existing row */
+  void PhysRowAddCellToSubRow(Cell* &, unsigned int);
+  
+  /* Add a cell to a row */ 
+  void PhysRowAddCellToRow(Cell* &);
+  
+  /* Add a zone to row */
+  void PhysRowAddZoneToRow(int, int);
+  
+  /* Find zones in a row 
+  void PhysRowFindZonesInRow(void);
+
+  Print all the zones in a row 
+  void PhysRowPrintAllZones(void);
+  */
+  void PhysRowMarkFixedCellsInRow(int);
 };
 
 extern rowOrientation PhysRowGetRowTypeFromStr(string);

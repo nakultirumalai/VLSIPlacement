@@ -108,7 +108,9 @@ Design::DesignFileReadOneNode(ifstream& file)
       terminalCell = true;
     }
     newCell = new Cell(height, width, NodeName, terminalCell);
+    
     DesignAddOneCellToDesignDB(newCell);
+    
     break;
   }
 }

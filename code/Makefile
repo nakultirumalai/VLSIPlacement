@@ -6,7 +6,7 @@ OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 LIBS= -L/usr/local/lib -lc -ldl -lm -lmosek64 -pthread
 
-SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags AnalyticalSolve
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags AnalyticalSolve Legalize
 
 OBJFILES:= $(SRCDIRS)
 DEBUG = 
@@ -50,7 +50,7 @@ GEN_EXEC: main.cxx $(OBJFILES)
 tag: 	
 	ctags . -R $(CODE_ROOT)
 	sed 's/\/home\/nakul\/thesis\/VLSIPlacement\/code/\$$CODE_ROOT/g' tags > _tags
-	sed 's/\/home\/tirumanl\/thesis\/VLSIPlacement\/code/\$$CODE_ROOT/g' _tags > __tags
+	sed 's/\/home\/mukherts\/thesis\/VLSIPlacement\/code/\$$CODE_ROOT/g' _tags > __tags
 	mv __tags tags
 	rm -rf _tags
 
