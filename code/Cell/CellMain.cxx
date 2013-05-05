@@ -152,7 +152,7 @@ Cell::CellAddPin(Pin *pinPtr)
   } else {
     numOutPins++;
   }
-
+  (*pinPtr).PinSetParentCell((*this));
   numPins++;
 }
 

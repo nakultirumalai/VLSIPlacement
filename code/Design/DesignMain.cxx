@@ -57,10 +57,10 @@ Design::DesignAddOneCellToDesignDB(Cell *newCell)
   this->NumCells++;
 }
 
-
 void
-Design::DesignAddOneNetToDesignDB(Net *newNet)
+Design::DesignAddOneNetToDesignDB(Net *newNet, double Weight)
 {
+  (*newNet).NetSetWeight(Weight);
   DesignNets[(*newNet).NetGetName()] = newNet;
   this->NumNets++;
 }
@@ -73,6 +73,7 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
   RowHeight = (*row).PhysRowGetHeight();
 
   DesignPhysRows.push_back(row);
+  DesignUpdateChipDim(row);
 
   if (RowHeights.find(RowHeight) == RowHeights.end()) {
     RowHeights[RowHeight] = 1;
@@ -82,7 +83,7 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
       singleRowHeight = -1;
     }
   } 
-
+  
   this->NumPhysRows++;
 }
 
@@ -242,6 +243,12 @@ void
 Design::DesignSetClockPeriod(double clkPeriod)
 {
   this->clockPeriod = clkPeriod;
+}
+
+void
+Design::DesignUpdateChipDim(PhysRow *row)
+{
+  
 }
 
 void

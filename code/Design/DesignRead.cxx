@@ -238,10 +238,9 @@ Design::DesignFileReadOneNet(ifstream &file)
 
     Msg = "Created Net " + NetName + " of Degree " + getStrFromInt(netDegree);
     DesignFileReadPins(file, netDegree, *newNet);
-    DesignAddOneNetToDesignDB(newNet);
+    DesignAddOneNetToDesignDB(newNet, 1.0);
     break;
   }
-
 }
 
 void
@@ -365,7 +364,7 @@ Design::DesignFileReadOneRow(ifstream &file)
   PhysRow *row;
   row = new PhysRow(rowType, rowCoordinate, height, siteWidth, siteSpacing,
 		    siteOrient, symmetry);
-
+  
   VECTOR_FOR_ALL_ELEMS_DOUBLE(subRowOrigins, int, subRowOrigin,
 			      numSitesForSubRows, unsigned int, numSites) {
     (*row).PhysRowAddSubRow(subRowOrigin, numSites);

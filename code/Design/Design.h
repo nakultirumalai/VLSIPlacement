@@ -12,6 +12,7 @@
 # include <Flags.h>
 # include <DesignIter.h>
 # include <AnalyticalSolve.h>
+# include <CellSpread.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -123,6 +124,7 @@ class Design {
   unsigned int NumFixedCells;
   unsigned int NumTerminalCells;
   unsigned int singleRowHeight;
+  unsigned int maxx, maxy;
 
   string Name;
   string DesignPath;
@@ -147,7 +149,7 @@ class Design {
   void DesignProcessProperty(ifstream&, string &, 
 			     string &);
   void DesignAddOneCellToDesignDB(Cell *);
-  void DesignAddOneNetToDesignDB(Net *);
+  void DesignAddOneNetToDesignDB(Net *, double);
   void DesignAddOnePhysRowToDesignDB(PhysRow *);
   void DesignAddDelayArc(string, string, string, double);
 
@@ -209,11 +211,18 @@ class Design {
   unsigned int DesignGetNumTerminalCells(void);
   unsigned int DesignGetNumPhysRows(void);
 
+  /* Chip boundary function */
+  void DesignGetBoundingBox(uint&, uint&);
+
   map<unsigned int, unsigned int> DesignGetRowHeights();
   void DesignClusterCells(HyperGraph&, clusteringType);
   void DesignCollapseCluster(Cell& MasterCell);
-  void DesignSolveForSeqCellsOld(void);
-  void DesignSolveForSeqCells(void);
+
+  /* Solver functions */
+  void DesignSolveForSeqCells(seqSolverType);
+  void DesignSolveForAllCells(allSolverType);
+  void DesignSolveForAllCellsTest(allSolverType);
+  void DesignSolveAllCells(seqSolverType, allSolverType);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);
