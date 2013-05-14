@@ -159,10 +159,11 @@ print "STEP $stepCount: Generating placed DEF \n"; $stepCount++;
 ####################################################################################
 ####################################################################################
 print "STEP $stepCount: Run IC compiler to generate the routed netlist and extract parasitics\n"; $stepCount++;
-(system("$scriptRoot/run_routing.sh $designName $plFile.placed.def $plFile") == 0) ||
-    die ("STEP ($stepCount - 1) failed\n");
+#(system("$scriptRoot/run_routing.sh $designName $plFile.placed.def $plFile") == 0) ||
+#    die ("STEP ($stepCount - 1) failed\n");
+(system("$scriptRoot/view_placement.sh $designName $plFile.placed.def $plFile") == 0) ||
+    die ("STEP ($stepCount - 1) failed\n"); exit(0);
 
-exit(0);
 ####################################################################################
 ####################################################################################
 # STEP 7: Read the parasitics file in prime time and generate the timing report

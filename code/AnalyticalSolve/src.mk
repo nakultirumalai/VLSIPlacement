@@ -1,3 +1,3 @@
 MODULE = AnalyticalSolve
-SRCFILES = SeqSolveWL SeqSolveTD SolverCommon MosekSolveQuadratic 
+SRCFILES =  SolverCommon GenSolveWL
 HFILES := AnalyticalSolve

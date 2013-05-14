@@ -2,6 +2,20 @@
 
 using namespace std;
 
+bool cmpCellLeftPos(Cell *cellPtri, Cell *cellPtrj)
+{
+  uint lefti = (*cellPtri).CellGetXpos();
+  uint leftj = (*cellPtrj).CellGetXpos();
+  return (lefti < leftj);
+}
+
+bool cmpCellBotPos(Cell *cellPtri, Cell *cellPtrj)
+{
+  uint boti = (*cellPtri).CellGetYpos();
+  uint botj = (*cellPtrj).CellGetYpos();
+  return (boti < botj);
+}
+
 map<string,Net*>& Design::DesignGetNets(void)
 {
   map<string, Net*>& retVal = this->DesignNets;
@@ -13,6 +27,20 @@ map<string,Net*>& Design::DesignGetNets(void)
 map<string,Cell*>& Design::DesignGetCells(void)
 {
   map<string, Cell*>& retVal = this->DesignCells;
+
+  return (retVal);
+}
+
+vector<PhysRow*>& Design::DesignGetRows(void)
+{
+  vector<PhysRow*>& retVal = this->DesignPhysRows;
+
+  return (retVal);
+}
+
+vector<Bin*>& Design::DesignGetBins(void)
+{
+  vector<Bin*>& retVal = this->DesignBins;
 
   return (retVal);
 }
@@ -60,7 +88,10 @@ Design::DesignAddOneCellToDesignDB(Cell *newCell)
 void
 Design::DesignAddOneNetToDesignDB(Net *newNet, double Weight)
 {
-  (*newNet).NetSetWeight(Weight);
+  double actualWeight;
+  
+  actualWeight = Weight / ((*newNet).NetGetPinCount() - 1);
+  (*newNet).NetSetWeight(actualWeight);
   DesignNets[(*newNet).NetGetName()] = newNet;
   this->NumNets++;
 }
@@ -85,6 +116,193 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
   } 
   
   this->NumPhysRows++;
+}
+
+void
+Design::DesignSetPeakUtil(double maxUtil)
+{
+  this->peakUtilization = maxUtil;
+}
+
+void
+Design::DesignSetPeakUtilBinIdx(uint peakUtilBinIdx)
+{
+  this->peakUtilizationBinIdx = peakUtilBinIdx;
+}
+
+void
+Design::DesignSetNumBinRows(uint numRows)
+{
+  this->numBinRows = numRows;
+}
+
+void
+Design::DesignSetNumBinCols(uint numCols)
+{
+  this->numBinCols = numCols;
+}
+
+void
+Design::DesignCreateBins(uint binHeight, uint binWidth)
+{
+  Bin *binPtr;
+  vector<Cell*> cellsOfBin;
+  vector<Cell*> cellsSortedByLeft;
+  vector<Cell*> cellsSortedByBot;
+  double maxUtilization, overlapArea;
+  double utilization;
+  uint maxx, maxy;
+  uint binCount, numRows, numCols;
+  uint left, right, bot, top;
+  uint peakUtilBinIdx;
+  uint i, j;
+
+  _STEP_BEGIN("Bin construction");
+  DesignGetBoundingBox(maxx, maxy);
+  cellsSortedByLeft = DesignGetCellsSortedByLeft();
+  cellsSortedByBot = DesignGetCellsSortedByBot();
+  numCols = (uint)ceil(((double)maxx) / binWidth);
+  numRows = (uint)ceil(((double)maxy) / binHeight);
+
+  binCount = 0; 
+  maxUtilization = 0; 
+  peakUtilBinIdx = 0;
+  bot = 0; top = binHeight;
+  for (i = 0; i < numRows; i++) {
+    left = 0; right = binWidth;
+    for (j = 0; j < numCols; j++) {
+      cellsOfBin =
+        DesignGetCellsOfRegion(left, right, bot, top, cellsSortedByLeft,
+                               cellsSortedByBot, overlapArea);
+      binPtr = new Bin(binCount, left, right, bot, top, cellsOfBin);
+      (*binPtr).BinSetCellArea(overlapArea);
+      utilization = overlapArea / (((double)binHeight) * binWidth);
+      if (maxUtilization < utilization) {
+        maxUtilization = utilization;
+        peakUtilBinIdx = binCount;
+      }
+      (*binPtr).BinSetUtilization(utilization);
+      left += binWidth;
+      right += binWidth;
+      DesignBins.push_back(binPtr);
+      binCount++;
+    }
+    bot += binHeight;
+    top += binHeight;
+  }
+  
+  DesignSetPeakUtil(maxUtilization);
+  DesignSetPeakUtilBinIdx(peakUtilBinIdx);
+  DesignSetNumBinRows(numRows);
+  DesignSetNumBinCols(numCols);
+
+  _STEP_END("Bin construction");
+}
+
+void
+Design::DesignClearBins(void)
+{
+  Bin *binPtr;
+
+  VECTOR_FOR_ALL_ELEMS(DesignBins, Bin*, binPtr) {
+    free(binPtr);
+  } END_FOR;
+  
+  DesignBins.clear();
+}
+
+double
+Design::DesignGetPeakUtil(void)
+{
+  return (this->peakUtilization);
+}
+
+uint
+Design::DesignGetPeakUtilBinIdx(void)
+{
+  return (this->peakUtilizationBinIdx);
+}
+
+vector<Cell *>&
+Design::DesignGetCellsToSolve(void)
+{
+  return cellsToSolve;
+}
+
+void
+Design::DesignSetCellsToSolve(vector<Cell *> cellsToSolve)
+{
+  this->cellsToSolve = cellsToSolve;
+}
+
+int
+Design::DesignGetNextRowBinIdx(uint binIdx)
+{
+  int rtv;
+
+  rtv = -1;
+  if (!((binIdx + 1) % numBinCols == 0)) 
+    rtv = binIdx + 1;
+  
+  return (rtv);
+}
+
+int
+Design::DesignGetNextColBinIdx(uint binIdx)
+{
+  int rtv;
+  
+  rtv = -1;
+  if (!((binIdx + numBinCols) / numBinRows == (numBinRows - 1)))
+    rtv = binIdx + numBinCols;
+
+  return (rtv);
+}
+
+int
+Design::DesignGetPrevRowBinIdx(uint binIdx)
+{
+  int rtv;
+
+  rtv = -1;
+  if (!(binIdx % numBinCols == 0)) 
+    rtv = binIdx - 1;
+  
+  return (rtv);
+}
+
+int
+Design::DesignGetPrevColBinIdx(uint binIdx)
+{
+  int rtv;
+
+  rtv = -1;
+  if (!(binIdx / numBinCols == 0))
+    rtv = binIdx - numBinCols;
+  
+  return (rtv);
+}
+
+vector<Cell *>
+Design::DesignGetCellsSortedByLeft(void)
+{
+  vector<Cell *> rtv;
+  
+  rtv = DesignGetCellsToSolve();
+  sort(rtv.begin(), rtv.end(), cmpCellLeftPos);
+
+  return (rtv);
+}
+
+vector<Cell *>
+Design::DesignGetCellsSortedByBot(void)
+{
+  vector<Cell *> rtv;
+  
+  rtv = DesignGetCellsToSolve();
+  sort(rtv.begin(), rtv.end(), cmpCellBotPos);
+
+  return (rtv);
 }
 
 void 
@@ -131,6 +349,83 @@ Design::DesignGetDelayArc(string libCell, string outputPin, string inputPin)
   }
   
   return (rtv);
+}
+
+void
+Design::DesignAddCellToPhysRow(Cell* cell, vector<vector<int> > &allRowBounds, 
+			       vector<PhysRow*> &allPhysRows)
+{
+  /* Getting cell bounds */
+
+  int cellX = cell->CellGetXpos();
+  int cellY = cell->CellGetYpos();
+  int cellHeight = cell->CellGetHeight();
+  int cellWidth = cell->CellGetWidth();
+  
+  vector<int> Obj;
+  int rowIndex;
+  int cellCount;
+  rowOrientation rowType = (allPhysRows[0]->PhysRowGetType());
+  bool foundPos = false;
+
+  VECTOR_FOR_ALL_ELEMS(allRowBounds, vector<int>, Obj){
+    rowIndex = i;
+    if (rowType == HORIZONTAL){
+      int botX = Obj[0];
+      int botY = Obj[1];
+      int topX = Obj[2];
+      int topY = Obj[3];
+      int cellXend = cellX + cellWidth;
+      int cellYend = cellY + cellHeight;
+      
+      if ((cellX >= botX) && (cellX < topX) && (cellXend > cellX) && 
+	  (cellXend <= topX) && (cellY == botY) && (cellYend > botY) && 
+	  ((cellHeight % (topY - botY)) == 0)){
+	
+	  (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
+	  foundPos = true;
+	  break;
+      }
+    }
+    else if (rowType == VERTICAL){
+      int botX = Obj[0];
+      int botY = Obj[1];
+      int topX = Obj[2];
+      int topY = Obj[3];
+      int cellXend = cellX + cellHeight;
+      int cellYend = cellY + cellWidth;
+      if ((cellX == botX) && (cellXend > botX) && 
+	  ((cellHeight % (topX-botX)) == 0) && (cellY >= botY) &&
+	  (cellY < topY) && (cellYend > cellY) && (cellYend <= topY)){
+	allPhysRows[rowIndex]->PhysRowAddCellToRow(cell);
+	foundPos = true;
+	break;
+      }
+    }
+  }END_FOR;
+  if (!foundPos)
+    cout<<"No suitable location for cell: "<<(cell->CellGetName())<<endl;
+}
+
+void
+Design::DesignAddAllCellsToPhysRows(void)
+{
+  string CellName;
+  Cell* CellPtr;
+  vector<PhysRow*> allPhysRows = DesignGetRows();
+  vector<vector<int> > allRowBounds;
+  rowOrientation rowType = (allPhysRows[0]->PhysRowGetType());
+  /* Get Bounding boxes for all rows */
+  PhysRow* Obj;  
+  VECTOR_FOR_ALL_ELEMS(allPhysRows, PhysRow*, Obj){
+    vector<int> v;
+    Obj->PhysRowGetBoundingBox(v);
+    allRowBounds.push_back(v);
+  } END_FOR;
+  
+  DESIGN_FOR_ALL_CELLS((*this), CellName, CellPtr){
+    DesignAddCellToPhysRow(CellPtr, allRowBounds, allPhysRows);
+  } DESIGN_END_FOR;
 }
 
 void
@@ -216,6 +511,13 @@ Design::DesignGetNumPhysRows(void)
 }
 
 void
+Design::DesignGetBoundingBox(uint &maxx, uint &maxy)
+{
+  maxx = (*this).maxx;
+  maxy = (*this).maxy;
+}
+
+void
 Design::DesignSetGraph(HyperGraph& thisGraph) 
 {
   this->DesignGraphPtr = &thisGraph;
@@ -248,7 +550,21 @@ Design::DesignSetClockPeriod(double clkPeriod)
 void
 Design::DesignUpdateChipDim(PhysRow *row)
 {
+  vector<int> boundingBox;
+  uint left, bottom, right, top;
+  (*row).PhysRowGetBoundingBox(boundingBox);
+  left = boundingBox[0];
+  bottom = boundingBox[1];
+  right = boundingBox[2];
+  top = boundingBox[3];
   
+  if (right > (*this).maxx) {
+    (*this).maxx = right;
+  } 
+
+  if (top > (*this).maxy) {
+    (*this).maxy = top;
+  } 
 }
 
 void
@@ -260,6 +576,8 @@ Design::DesignInit()
   NumPhysRows = 0;
   NumFixedCells = 0;
   NumTerminalCells = 0;
+  maxx = 0;
+  maxy = 0;
 
   singleRowHeight = -1;
   clockPeriod = 0.0;
@@ -290,3 +608,117 @@ Design::Design(string DesignPath, string DesignName)
   DesignReadDesign(DesignPath, DesignName);
 }
 
+/* Calculate WMax for each PhysRow */
+/*
+  vector<PhysRow*> allPhysRows = DesignGetRows();
+  PhysRow* Obj;
+  VECTOR_FOR_ALL_ELEMS(allPhysRows, PhysRow*, Obj){
+    Obj->PhysRowCalculateWMax();
+  }END_FOR;
+*/
+# if 0
+void
+Design::DesignAddCellToPhysRow(Cell *cell)
+{
+  /* Getting cell bounds */
+
+  int cellX = cell->CellGetXpos();
+  int cellY = cell->CellGetYpos();
+  int cellHeight = cell->CellGetHeight();
+  int cellWidth = cell->CellGetWidth();
+  
+  vector< unsigned int> Obj;
+  int rowIndex;
+  unsigned int subRowIndex;
+  int cellCount;
+  rowOrientation rowType = allPhysRows[0]->PhysRowGetType();
+  
+  VECTOR_FOR_ALL_ELEMS(allRowBounds, vector<unsigned int>, Obj){
+    rowIndex = i;
+    if (Obj.size() > 4){
+      if (rowType == HORIZONTAL){
+	int cellXend = cellX + cellWidth;
+	int cellYend = cellY + cellHeight;
+	
+	for (int i = 0; i < Obj.size(); i+=4){
+	  
+	  int botX = Obj[i];
+	  int botY = Obj[i+1];
+	  int topX = Obj[i+2];
+	  int topY = Obj[i+3];
+ 
+	  /* Cell found in subrow */
+	  if((cellX >= botX) && (cellX < topX) && (cellXend > cellX) && 
+	     (cellXend <= topX) && (cellY == botY) && (cellYend > botY) && 
+	     ((cellHeight % (topY - botY)) == 0)){
+	    subRowIndex = (i % 4);
+	    //cout<<"subRowIndex="<<subRowIndex<<endl;
+	    (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
+	    //cout<<"Added "<<cellCount++<<"cell"<<endl;
+	    break; /* No more checks required */
+	  }
+	}
+      }
+      else if(rowType == VERTICAL){
+	int cellXend = cellX + cellHeight;
+	int cellYend = cellY + cellWidth;
+	
+	for(int i = 0; i < Obj.size(); i += 4){
+	  int botX = Obj[i];
+	  int botY = Obj[i+1];
+	  int topX = Obj[i+2];
+	  int topY = Obj[i+3];
+	  
+	  if((cellX == botX) && (cellXend > botX) && 
+	     ((cellHeight % (topX - botX)) == 0) && (cellY >= botY) && 
+	     (cellY < topY) && (cellYend > cellY) && (cellYend <= topY)){
+	    subRowIndex = (i % 4);
+	    (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
+	    //cout<<"Added "<<cellCount++<<"cell"<<endl;
+	    break;
+	  }
+	}
+      }
+    }
+    /* Indicates one subRow present in the entire row */
+    
+    else if ((Obj.size() == 4)){
+      if (rowType == HORIZONTAL){
+	int botX = Obj[0];
+	int botY = Obj[1];
+	int topX = Obj[2];
+	int topY = Obj[3];
+	int cellXend = cellX + cellWidth;
+	int cellYend = cellY + cellHeight;
+	
+	if ((cellX >= botX) && (cellX < topX) && (cellXend > cellX) && 
+	   (cellXend <= topX) && (cellY == botY) && (cellYend > botY) && 
+	   ((cellHeight % (topY - botY)) == 0)){
+	  
+	  //cout<<"Will add cell: "<<cell->CellGetName()<<endl;
+	  //cout<<"rowIndex :"<<rowIndex<<endl;
+	  //cout<<allPhysRows[rowIndex]->PhysRowGetCoordinate()<<endl;
+	  (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
+	  
+	  //cout<<"Added "<<cellCount++<<"cell"<<endl;
+	}
+      }
+      else if (rowType == VERTICAL){
+	int botX = Obj[0];
+	int botY = Obj[1];
+	int topX = Obj[2];
+	int topY = Obj[3];
+	int cellXend = cellX + cellHeight;
+	int cellYend = cellY + cellWidth;
+	if ((cellX == botX) && (cellXend > botX) && 
+	   ((cellHeight % (topX-botX)) == 0) && (cellY >= botY) &&
+	    (cellY < topY) && (cellYend > cellY) && (cellYend <= topY)){
+	  allPhysRows[rowIndex]->PhysRowAddCellToRow(cell);
+	  //cout<<"Added "<<cellCount++<<"cell"<<endl;
+	}
+      }
+    }
+  } END_FOR;
+}
+
+# endif

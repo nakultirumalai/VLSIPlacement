@@ -1,28 +1,16 @@
 # include <Design.h>
 
-/* Define the sorting function */
-bool cmpCellXpos(Cell *cellPtri, Cell *cellPtrj) 
-{ 
-  return ((*cellPtri).CellGetXpos() < (*cellPtrj).CellGetXpos());
-}
-/* Define the sorting function */
-bool cmpCellYpos(Cell *cellPtri, Cell *cellPtrj) 
-{ 
-  return ((*cellPtri).CellGetYpos() < (*cellPtrj).CellGetYpos());
-}
-
 void 
 Design::DesignSolveForAllCells(allSolverType solverType)
 {
   vector<Cell *> inputCells;
-  vector <Cell *> cellsSortedByX;
-  vector <Cell *> cellsSortedByY;
+  vector<Cell *> cellsToSolve;
+  vector<Cell *> cellsSortedByLeft;
   Cell *cellPtr;
   void *cellObj;
   string cellName;
   double alphax, alphay;
   uint windowWidth;
-
   uint lastLineXpos, lastLineYpos;
   uint newLineXpos, newLineYpos;
 
@@ -39,34 +27,45 @@ Design::DesignSolveForAllCells(allSolverType solverType)
      hypergraph */ 
   HYPERGRAPH_FOR_ALL_NODES(myGraph, nodeIdx, cellObj) {
     if ((*(Cell*)cellObj).CellIsTerminal()) continue;
-    //    cout << "Cell name: " << (*(Cell *)cellObj).CellGetName() << endl;    
     inputCells.push_back((Cell *)cellObj);
-    cellsSortedByX.push_back((Cell *)cellObj);
-    cellsSortedByY.push_back((Cell *)cellObj);
+    cellsToSolve.push_back((Cell *)cellObj);
   } HYPERGRAPH_END_FOR;
   
-  double alphaX, alphaY;
-  alphaX = 0.01; alphaY = 0.01;
-  /* Execute the solver to obtain a result */
-  genSolve((*this), myGraph, inputCells);
-  
-  newLineXpos = 0;
-  while (1) {
-    if (newLineXpos > 118000) {
-      break;
-    }
-    sort(cellsSortedByX.begin(), cellsSortedByX.end(), cmpCellXpos);
-    CellSpreadInDesign((*this), myGraph, cellsSortedByX, alphaX,
-		       windowWidth, XDIRECTION, newLineXpos);
-    cout << "Alpha X: " << alphaX << "  Stretch line position: " << newLineXpos << endl;
-    if (alphaX < 1.0) alphaX += 0.05;
-    if (alphaX > 1.0) {
-      alphaX = 1.0;
-    } 
-    /* Execute the solver to obtain a result */
-    genSolve((*this), myGraph, inputCells);
-  }
-  /* After all iterations, remove pseudo pins, pseudo ports and
-     pseudo nets */
-}
+  uint count = 0; uint binIdx;
+  double peakUtilization;
 
+  (*this).DesignSetCellsToSolve(cellsToSolve);
+  /* Invoke solver */
+  genSolveX((*this), myGraph, inputCells);
+  genSolveY((*this), myGraph, inputCells);
+  /* Check force on cells */
+  if (!(*this).DesignCheckSolvedCellsProperty(cellsToSolve)) {
+    cout << "Cells are not matched" << endl;
+  }
+
+  while (1) {
+    (*this).DesignCreateBins(6000,6000);
+    peakUtilization = (*this).DesignGetPeakUtil();
+    binIdx = (*this).DesignGetPeakUtilBinIdx();
+    cout << "Iteration: " << count << " Peak Utilization: " << peakUtilization 
+	 << " Bin index: " << binIdx << endl;
+
+    if (peakUtilization < 10) break;
+
+    /* Add spreading forces */
+    CellSpreadInDesignFastPlace((*this), myGraph);
+    
+    /* Clear bins */
+    (*this).DesignClearBins();
+
+    /* Invoke solver */
+    genSolveX((*this), myGraph, inputCells);
+    genSolveY((*this), myGraph, inputCells);
+    count++;
+  }
+  
+  /* Check force on cells */
+  if (!(*this).DesignCheckSolvedCellsProperty(cellsToSolve)) {
+    cout << "Cells are not matched" << endl;
+  }
+}

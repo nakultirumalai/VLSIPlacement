@@ -13,6 +13,8 @@
 # include <DesignIter.h>
 # include <AnalyticalSolve.h>
 # include <CellSpread.h>
+# include <Bin.h>
+# include <Plot.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -115,7 +117,6 @@ class Design {
   map<unsigned int, unsigned int>RowHeights;
 
   HyperGraph *DesignGraphPtr;
-
   unsigned int NumCells;
   unsigned int NumTopCells;
   unsigned int NumNets;
@@ -142,8 +143,15 @@ class Design {
   double clockPeriod;
   bool RowBasedPlacement;
 
+  /* Generic input file stream from which all
+     design related data is read */
   ifstream DesignFile;
-  
+
+  /* Bin and utilization related stuff */
+  uint peakUtilizationBinIdx;
+  uint numBinRows, numBinCols;
+  double peakUtilization;
+
   void DesignInit(void);
   void DesignFileReadHeader(ifstream&);
   void DesignProcessProperty(ifstream&, string &, 
@@ -174,10 +182,26 @@ class Design {
   void DesignHideNets(std::vector<void*>, std::vector<void *>);
   void DesignPropagateTerminals(Cell *, Cell *);
 
+  void DesignUpdateChipDim(PhysRow *);
+
+  /* Bin related set functions */
+  void DesignSetPeakUtil(double);
+  void DesignSetPeakUtilBinIdx(uint);
+  void DesignSetNumBinRows(uint);
+  void DesignSetNumBinCols(uint);
+
+  /* Set the vector of cells to a particular list */
+  vector<Cell *>& DesignGetCellsToSolve(void);
+  vector<Cell *> DesignGetCellsSortedByLeft(void);
+  vector<Cell *> DesignGetCellsSortedByBot(void);
+
  public:
   map<string, Cell*> DesignCells;
   map<string, Net*> DesignNets;
   vector<PhysRow*> DesignPhysRows;
+  vector<Bin *> DesignBins;
+  vector<Cell *> cellsToSolve;
+
   map<string, map<string, map<string, double > > >  libCellDelayDB;
   
   Design();
@@ -191,9 +215,15 @@ class Design {
   void DesignReadCmdsFile();
   void DesignReadPinsMapFile();
   void DesignReadCellDelaysFile();
+  void DesignCreateBins(uint, uint);
+
+  void DesignClearBins(void);
 
   map<string, Net*>& DesignGetNets(void);
   map<string, Cell*>& DesignGetCells(void);
+  vector<PhysRow*>& DesignGetRows(void);
+  vector<Bin*>& DesignGetBins(void);
+
   void DesignSetName(string);
   void DesignReadDesign(string, string);
   string DesignGetName(void);
@@ -210,10 +240,12 @@ class Design {
   unsigned int DesignGetNumFixedCells(void);
   unsigned int DesignGetNumTerminalCells(void);
   unsigned int DesignGetNumPhysRows(void);
+  void DesignAddCellToPhysRow(Cell*, vector<vector<int> > &, vector<PhysRow*> &);
+  void DesignAddAllCellsToPhysRows(void);
 
   /* Chip boundary function */
   void DesignGetBoundingBox(uint&, uint&);
-
+  
   map<unsigned int, unsigned int> DesignGetRowHeights();
   void DesignClusterCells(HyperGraph&, clusteringType);
   void DesignCollapseCluster(Cell& MasterCell);
@@ -223,6 +255,7 @@ class Design {
   void DesignSolveForAllCells(allSolverType);
   void DesignSolveForAllCellsTest(allSolverType);
   void DesignSolveAllCells(seqSolverType, allSolverType);
+  void DesignSetCellsToSolve(vector<Cell *>);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);
@@ -234,6 +267,23 @@ class Design {
   void DesignSetClockPeriod(double);
   double DesignGetClockPeriod(void);
   double DesignGetDelayArc(string, string, string);
+  
+  /* Property checking function */
+  bool DesignCheckSolvedCellsProperty(vector<Cell*>);
+
+  /* Bin related functions */
+  double DesignGetPeakUtil(void);
+  uint DesignGetPeakUtilBinIdx(void);
+  int DesignGetNextRowBinIdx(uint);
+  int DesignGetNextColBinIdx(uint);
+  int DesignGetPrevRowBinIdx(uint);
+  int DesignGetPrevColBinIdx(uint);
+
+  /* Miscellaneous utility functions */
+  vector<Cell *> DesignGetCellsOfRegion(uint, uint, uint, uint, 
+					vector<Cell *> &, vector<Cell *> &, 
+					double &);
+  
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);
@@ -242,5 +292,4 @@ extern void DesignWriteStats(Design& myDesign);
 extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
 extern void DesignWriteNodes(Design &myDesign, string fname);
 extern void DesignWriteBookShelfOutput(Design& myDesign);
-
 #endif

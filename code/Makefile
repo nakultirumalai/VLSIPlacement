@@ -4,9 +4,11 @@ MAKEFLAGS += -j1
 
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
-LIBS= -L/usr/local/lib -lc -ldl -lm -lmosek64 -pthread
+LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm -lmosek64 -pthread
 
-SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData Flags AnalyticalSolve TimingModels CellSpread
+SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData \
+	Flags AnalyticalSolve Legalize TimingModels Bin CellSpread \
+	Plot
 
 OBJFILES:= $(SRCDIRS)
 DEBUG = 
@@ -37,6 +39,8 @@ TARGETS = all
 
 all: COMPILE_ALL GEN_EXEC
 
+all-g: COMPILE_ALL GEN_EXEC-g
+
 COMPILE_ALL: $(SRCDIRS)
 	echo $(OBJDIR)
 	@+for dir in $(SRCDIRS); do \
@@ -46,6 +50,9 @@ COMPILE_ALL: $(SRCDIRS)
 GEN_EXEC: main.cxx $(OBJFILES) 
 	$(CC) $(CFLAGS) $(LFLAGS) $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
 
+GEN_EXEC-g: main.cxx $(OBJFILES) 
+	$(CC) $(CFLAGS) -g $(LFLAGS) $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
+
 tag: 	
 	ctags . -R $(CODE_ROOT)
 	sed 's/\/home\/nakul\/thesis\/VLSIPlacement\/code/\$$CODE_ROOT/g' tags > _tags
@@ -53,7 +60,7 @@ tag:
 	mv __tags tags
 	rm -rf _tags
 
-debug: all
+debug: all-g
 
 clean:
 	rm -rf $(OBJDIR)/*.o

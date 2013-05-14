@@ -63,6 +63,24 @@ getStrForOrientation(objOrient orient)
   return (retVal);
 }
 
+/* Rounds a double/float to the nearest integer */
+int dtoi(double thisDouble)
+{
+  int upper, lower;
+  int rtv;
+  
+  upper = ceil(thisDouble);
+  lower = floor(thisDouble);
+  
+  rtv = thisDouble;
+  if ((((double)upper) - thisDouble) >= (((double)thisDouble) - lower)) {
+    rtv = lower;
+  } else {
+    rtv = upper;
+  }
+  return rtv;
+}
+
 /* Rounds a double/float to a single decimal point */
 double dround(double thisDouble)
 {
@@ -172,5 +190,12 @@ string getCurrentTime(void)
     //  cout << (now->tm_year + 1900) << '-' << (now->tm_mon + 1) << '-' <<  now->tm_mda << endl;
 
   return (returnStr);
+}
+
+void swap(uint &a, uint &b)
+{
+  a = a + b;
+  b = a - b;
+  a = a - b;
 }
 

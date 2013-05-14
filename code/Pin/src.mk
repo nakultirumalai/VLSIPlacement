@@ -1,3 +1,3 @@
 MODULE = Pin
-SRCFILES = PinMain
+SRCFILES = PinMain 
 HFILES := Pin

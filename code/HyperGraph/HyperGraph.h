@@ -108,7 +108,7 @@ class HyperGraph {
  public:
   /* Insertion routines */
   void HyperGraphAddNode(void *);
-  void HyperGraphAddEdge(vector<void *>&, void *, double);
+  unsigned int HyperGraphAddEdge(vector<void *>&, void *, double);
   
   /* Routines for checking */
   bool HyperGraphNodeExists(void *);
@@ -136,11 +136,21 @@ class HyperGraph {
 
   /* Given an edge index, return the weight of the edge */
   double GetEdgeWeight(unsigned int);
+  /* Given an edge index, return the weight of the edge */
+  void SetEdgeWeight(unsigned int, double);
+  /* Given an edge index, return the net associated with the edge */
   void* GetEdgeObject(unsigned int);
+
+  /* Given a node index, return the weight of the edge */
+  void* GetNodeObject(unsigned int);
 
   unsigned int HyperGraphGetCellIndex(void *);
   vector<void *> HyperGraphGetConnectedCells(void*);
   long int HyperGraphNodesAreAdjacent(void*, void*);
+
+  /* Remove the last edge */
+  void RemoveEdge(void);
+  void RemoveNode(void);
 
   HyperGraph();
   ~HyperGraph();

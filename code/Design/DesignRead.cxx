@@ -98,17 +98,22 @@ Design::DesignFileReadOneNode(ifstream& file)
     if (line == "") {
       continue;
     }
-
+    if (line.find('#') == 0) {
+      continue;
+    }
     istringstream stream(line, istringstream::in);
 
     stream >> NodeName; stream >> width; stream >> height;
     if (!stream.eof()) stream >> terminalString;
 
+    terminalCell = false;
     if (terminalString == NODE_TERMINAL_KEYWORD) {
       terminalCell = true;
     }
     newCell = new Cell(height, width, NodeName, terminalCell);
+    
     DesignAddOneCellToDesignDB(newCell);
+    
     break;
   }
 }
@@ -173,6 +178,9 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
       break;
     }
     getline(file, line);
+    if (line.find('#') == 0) {
+      continue;
+    }
     
     Cell *node;
     istringstream stream(line, istringstream::in);
@@ -219,7 +227,9 @@ Design::DesignFileReadOneNet(ifstream &file)
     if (line == "") {
       continue;
     }
-
+    if (line.find('#') == 0) {
+      continue;
+    }
     istringstream stream(line, istringstream::in);
     stream >> NetDegree;
 

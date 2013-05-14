@@ -6,9 +6,7 @@
 # include <Net.h>
 # include <HyperGraph.h>
 # include <common.h>
-
-# define XDIRECTION 0
-# define YDIRECTION 1
+# include <Bin.h>
 
 class Design;
 
@@ -17,4 +15,6 @@ CellSpreadInDesign(Design &myDesign, HyperGraph &myGraph,
 		   vector<Cell *> cellsSortedByDir, double alpha,
                    uint windowWidth, char dir, uint &lastLinePos);
 
+double
+CellSpreadInDesignFastPlace(Design &myDesign, HyperGraph &myGraph);
 # endif

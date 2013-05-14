@@ -6,6 +6,8 @@
 
 typedef enum {
   PATH_TOTAL_CELL_DELAY = 0,
+  CELL_DBLX,
+  CELL_DBLY,
   TOTAL_NUM_DOUBLE_FLAGS
 } flagDoubleType;
 
@@ -16,6 +18,7 @@ typedef enum {
   PIN_IS_PSEUDO_FLAG,
   NET_IS_PSEUDO_FLAG,
   CELL_IS_PSEUDO_FLAG,
+  CELL_IS_FIXED_FLAG,
   TOTAL_NUM_INT_FLAGS
 } flagIntType;
 
@@ -94,5 +97,20 @@ extern void* CellGetPseudoPort(Cell *);
 extern void CellSetPseudoPort(Cell *, Cell *);
 extern void CellClearPseudoPort(Cell *);
 extern void CellClearAllPseudoPort(void);
+
+extern bool CellIsFixed(Cell *);
+extern void CellSetIsFixed(Cell *);
+extern void CellClearIsFixed(Cell *);
+extern void CellClearAllIsFixed(Cell *);
+
+extern double CellGetDblX(Cell *);
+extern void CellSetDblX(Cell *, double);
+extern void CellClearDblX(Cell *);
+extern void CellClearAllDblX(Cell *);
+
+extern double CellGetDblY(Cell *);
+extern void CellSetDblY(Cell *, double);
+extern void CellClearDblY(Cell *);
+extern void CellClearAllDblY(Cell *);
 
 # endif

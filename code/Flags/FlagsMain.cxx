@@ -215,9 +215,9 @@ bool CellIsPseudo(Cell *cellPtr)
   bool rtv;
 
   void *obj = (void *)cellPtr;
-  
+
   rtv = FlagsDefGetFlag(CELL_IS_PSEUDO_FLAG, obj);
-  
+
   return (rtv);
 }
 
@@ -269,5 +269,94 @@ void CellClearPseudoPort(Cell *cellPtr)
 void CellClearAllPseudoPort(void)
 {
   FlagsDefClearAllObjs(CELL_PSEUDO_PORT);
+}
+
+/* Cell is fixed flag */
+bool CellIsFixed(Cell *cellPtr)
+{
+  bool rtv;
+
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetFlag(CELL_IS_FIXED_FLAG, obj);
+
+  return (rtv);
+}
+
+void CellSetIsFixed(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetFlag(CELL_IS_FIXED_FLAG, obj);
+}
+
+void CellClearIsFixed(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearFlag(CELL_IS_FIXED_FLAG, obj);
+}
+
+void CellClearAllIsFixed(Cell *cellPtr)
+{
+  FlagsDefClearAllObjs(CELL_IS_FIXED_FLAG);
+}
+
+double CellGetDblX(Cell *cellPtr)
+{
+  double rtv;
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetDouble(CELL_DBLX, obj);
+  
+  return rtv;
+}
+
+void CellSetDblX(Cell *cellPtr, double cellDblX)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_DBLX, obj, cellDblX);
+}
+
+void CellClearDblX(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_DBLX, obj);
+}
+
+void CellClearAllDblX(Cell *cellPtr) 
+{
+  FlagsDefClearAllObjs(CELL_DBLX);
+}
+
+double CellGetDblY(Cell *cellPtr)
+{
+  double rtv;
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetDouble(CELL_DBLY, obj);
+  
+  return rtv;
+}
+
+void CellSetDblY(Cell *cellPtr, double cellDblY)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_DBLY, obj, cellDblY);
+}
+
+void CellClearDblY(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_DBLY, obj);
+}
+
+void CellClearAllDblY(Cell *cellPtr) 
+{
+  FlagsDefClearAllObjs(CELL_DBLY);
 }
 
