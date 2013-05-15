@@ -118,8 +118,8 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
 						bk, bl, bu);
       
       /* Get the constraint bounds */
-      if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_CON, numCstrBounds, subc,
-						bkc, blc, buc);
+      //      if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_CON, numCstrBounds, subc,
+      //						bkc, blc, buc);
       
       /* Put the quadratic part of the objective function */   
       if (r == MSK_RES_OK) r = MSK_putqobj(task, qoNonZero, qsubi, qsubj, qval);
@@ -131,11 +131,11 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
       if (r == MSK_RES_OK) r = MSK_putcfix(task, constant);
       
       /* Put the quadratic part of the constraint function */
-      if (r == MSK_RES_OK) r = MSK_putqcon(task, qcNonZero, qcsubk, qcsubi, qcsubj, qcval);
+      //      if (r == MSK_RES_OK) r = MSK_putqcon(task, qcNonZero, qcsubk, qcsubi, qcsubj, qcval);
       
       /* Put the linear part of the constraint function */
-      if (r == MSK_RES_OK) r = MSK_putaveclist(task, MSK_ACC_CON, lcNonZero, sub, ptrb, 
-      					       ptre, asub, aval);
+      //      if (r == MSK_RES_OK) r = MSK_putaveclist(task, MSK_ACC_CON, lcNonZero, sub, ptrb, 
+      //      					       ptre, asub, aval);
       
       /* Ready to invoke the optimizer here. Add the optimization sense which 
          is minimization for now. Can be parametrized later */

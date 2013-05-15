@@ -23,7 +23,7 @@ genGetCstrBoundsWL(Design& myDesign, HyperGraph& myGraph,
     (*bu)[i] = 118.0 - cstrUBounds[i];
     (*bl)[i] = 0.0;
     (*bk)[i] = MSK_BK_UP;
-    cout << "For constraint " << i << " Upper bound : " << (*bu)[i] << " Lower bound : " << (*bl)[i] << endl;
+    
   }
 }
 
@@ -434,7 +434,6 @@ seqSolveQuadraticWL(Design& myDesign, HyperGraph& seqCellGraph,
   for (int i = 0; i < numCells; i++) {
     Cell &thisCell = *((Cell*)inputCells[i]);
     thisCell.CellSetXpos((X[i] * GRID_COMPACTION_RATIO)); thisCell.CellSetYpos((X[i+numCells] * GRID_COMPACTION_RATIO));
-    cout << "Cell: " << thisCell.CellGetName() << "\t" << thisCell.CellGetXpos() << "\t" << thisCell.CellGetYpos() << endl;
   }
   
   return;

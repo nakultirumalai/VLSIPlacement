@@ -23,7 +23,7 @@ seqGetCstrBoundsWL(Design& myDesign, HyperGraph& myGraph,
     (*bu)[i] = upperBound;
     if (upperBound < 0) {
       //      (*bl)[i] = -DBL_MAX;
-      cout << "For constraint " << i << " Upper bound : " << (*bu)[i] << " Lower bound : " << (*bl)[i] << endl;
+      //      cout << "For constraint " << i << " Upper bound : " << (*bu)[i] << " Lower bound : " << (*bl)[i] << endl;
     }
     (*bk)[i] = MSK_BK_UP;
   }
