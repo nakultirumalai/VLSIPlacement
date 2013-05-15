@@ -173,8 +173,7 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
 			   double magnitude, char forceDir)
 {
   double spreadForce, springConstant;
-  double pseudoPinX;
-  double pseudoPinY;
+  double pseudoPinX, pseudoPinY;
   double cellXpos, cellYpos;
   double portXForce, portYForce;
   uint minx, miny, maxx, maxy;
@@ -186,13 +185,13 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
 
   switch (forceDir) {
   case FORCE_DIR_NO_FORCE: return;
-  case FORCE_DIR_LEFT: pseudoPinX = chipBoundRight;
-    pseudoPinY = cellYpos; break;
-  case FORCE_DIR_RIGHT: pseudoPinX = chipBoundLeft;
-    pseudoPinY = cellYpos; break;
-  case FORCE_DIR_TOP: pseudoPinY = cellXpos;
+  case FORCE_DIR_LEFT: pseudoPinX = maxx;
+    pseudoPinY = chipBoundRight; break;
+  case FORCE_DIR_RIGHT: pseudoPinX = minx;
+    pseudoPinY = chipBoundLeft; break;
+  case FORCE_DIR_TOP: pseudoPinY = miny;
     pseudoPinX = chipBoundBot; break;
-  case FORCE_DIR_BOT: pseudoPinX = cellXpos;
+  case FORCE_DIR_BOT: pseudoPinY = maxy;
     pseudoPinX = chipBoundTop; break;
   case FORCE_DIR_FIRST_QUAD: 
     if (chipBoundLeft <= miny) {
@@ -222,6 +221,7 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
       pseudoPinX = minx; pseudoPinY = chipBoundLeft;
     }
     break;
+  default: cout << "DEFAULT CASE NOT EXPECTED" << endl;
   };
 
   /* Since we are minimizing quadratic wirelength. Model of force for 
@@ -230,6 +230,16 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
   portYForce = pseudoPinY - cellYpos;
   spreadForce = sqrt(portXForce * portXForce + portYForce * portYForce);
   springConstant = magnitude / spreadForce;
+
+  if (debugPrint) {
+    cout << "Created pseudopin: X: " << pseudoPinX
+	 << "  Y: " << pseudoPinY << endl;
+    cout << "Diff of cell from pseudo pin in X : " << (pseudoPinX - cellXpos) << endl;
+    cout << "Diff of cell from pseudo pin in Y : " << (pseudoPinY - cellYpos) << endl;
+    cout << "Total force acting on cell from pseudo pin in X : " << springConstant * (pseudoPinX - cellXpos) << endl;
+    cout << "Total force acting on cell from pseudo pin in Y : " << springConstant * (pseudoPinY - cellYpos) << endl;
+    cout << "Spring constant: " << springConstant << endl;
+  }
   
   Cell *pseudoPort;
   pseudoPort = (Cell *)CellGetPseudoPort(&thisCell);
@@ -249,6 +259,7 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
 
     /* Create the pseudo net */
     Net *netPtr = new Net(0, "**pn**");
+    myDesign.DesignAddPseudoNet(netPtr);
     NetSetIsPseudo(netPtr);
 
     /* Make the connection */
@@ -297,7 +308,7 @@ CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,
 {
   Cell *cellPtr;
   vector<Cell *>& binCells = (*binPtr).BinGetCells();
-  uint binBoundaryX, binBoundaryY, binLeft, binBot;
+  uint binRight, binTop, binLeft, binBot;
   uint xj, yj;
   uint cellWidth, cellHeight;
   uint maxx, maxy;
@@ -305,16 +316,20 @@ CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,
   double newXPos, newYPos;
   bool noXSpread, noYSpread;
   double alphaX, alphaY;
+  double magnitude, totalXForce, totalYForce;
+  double chipBoundLeft, chipBoundRight;
+  double chipBoundTop, chipBoundBot;
+  double averageCellWidth;
+  char forceDir;
 
-  (*binPtr).BinGetBoundingBox(binLeft, binBoundaryX, binBot, binBoundaryY);
+  (*binPtr).BinGetBoundingBox(binLeft, binRight, binBot, binTop);
   myDesign.DesignGetBoundingBox(maxx, maxy);
   noXSpread = false; noYSpread = false;
-  if (newBinRight == binBoundaryX) noXSpread = true;
-  if (newBinTop == binBoundaryY) noYSpread = true;
+  if (newBinRight == binRight) noXSpread = true;
+  if (newBinTop == binTop) noYSpread = true;
   if (noXSpread && noYSpread) return;
 
-  //  alphaX = 0.02 + (0.5 / maxUtil); alphaY = alphaX;
-  alphaX = 1.0; alphaY = 1.0;
+  averageCellWidth = (*binPtr).BinGetAverageCellWidth();
   VECTOR_FOR_ALL_ELEMS(binCells, Cell*, cellPtr) {
     Cell &thisCell = (*cellPtr);
     xj = thisCell.CellGetXpos();
@@ -324,58 +339,38 @@ CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,
     newXPos = xj; newYPos = yj;
     if (!noXSpread) {
       xjPrime = newBinRight * (xj - binLeft);
-      xjPrime += newBinRightPrev * (binBoundaryX - xj);
-      xjPrime /= (binBoundaryX - binLeft);
-      newXPos = xjPrime;
-      newXPos = 
-	xj + alphaX * (((double)thisCell.CellGetWidth())/thisCell.CellGetHeight()) * (newXPos - xj);
-      if ((newXPos + cellWidth) >  maxx) {
-	newXPos = maxx - cellWidth;
-      }
+      xjPrime += newBinRightPrev * (binRight - xj);
+      xjPrime /= (binRight - binLeft);
+      alphaX = 0.5 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+      newXPos = xj + alphaX * (xjPrime - xj);
     }
     if (!noYSpread) {
       yjPrime = newBinTop * (yj - binBot);
-      yjPrime += newBinTopPrev * (binBoundaryY - yj);
-      yjPrime /= (binBoundaryY - binBot);
-      newYPos = yjPrime;
-      if ((newYPos + cellHeight) >  maxy) {
-	newYPos = maxy - cellHeight;
-      }
-      newYPos = 
-	yj + alphaY * (newYPos - yj);
-    }
-      
-    double magnitude, totalXForce, totalYForce;
-    double chipBoundLeft, chipBoundRight;
-    double chipBoundTop, chipBoundBot;
-    char forceDir;
-    CellSpreadGetForceOnCell(myDesign, thisCell, -1, -1, magnitude,
-			     totalXForce, totalYForce, forceDir, chipBoundLeft, 
-			     chipBoundRight, chipBoundTop, chipBoundBot);
-    if (debugPrint) {
-      cout << "Cell: " << thisCell.CellGetName() 
-	   << " OLD X:" << thisCell.CellGetXpos() 
-	   << " OLD Y:" << thisCell.CellGetYpos()
-	   << endl;
-      cout << "Force: " << magnitude << " X-Comp: " << totalXForce
-	   << " Y-comp: " << totalYForce << " Direction: ";
-      printForceDir(forceDir);
-      cout << endl;
-      cout << endl;
+      yjPrime += newBinTopPrev * (binTop - yj);
+      yjPrime /= (binTop - binBot);
+      alphaY = 0.8 + (0.5/maxUtil);
+      newYPos = yj + alphaY * (yjPrime - yj);
     }
 
+    double oldXForce, oldYForce, oldMagnitude;
+    char oldForceDir;
+    if (debugPrint) {
+      CellSpreadGetForceOnCell(myDesign, thisCell, -1, -1, oldMagnitude,
+			       oldXForce, oldYForce, oldForceDir, 
+			       chipBoundLeft, chipBoundRight, chipBoundTop, 
+			       chipBoundBot);
+    }
     CellSpreadGetForceOnCell(myDesign, thisCell, newXPos, newYPos, magnitude,
 			     totalXForce, totalYForce, forceDir, chipBoundLeft, 
 			     chipBoundRight, chipBoundTop, chipBoundBot);
+
     if (debugPrint) {
-      cout << "Cell: " << thisCell.CellGetName() 
-	   << " NEW X:" << newXPos 
-	   << " NEW Y:" << newYPos
-	   << endl;
-      cout << "Force: " << magnitude << " X-Comp: " << totalXForce
-	   << " Y-comp: " << totalYForce << " Direction: ";
+      cout << "Cell: " << thisCell.CellGetName() << endl;
+      cout << "xj\txj'\tyj\tyj'\ttotXF\ttotYF\ttot" << endl;
+      cout << xj << "\t" << newXPos << "\t" << yj << "\t" << newYPos << "\t" 
+	   << totalXForce << "\t" << totalYForce << "\t" << magnitude << endl;
+      cout << "Force direction: ";
       printForceDir(forceDir);
-      cout << endl;
       cout << endl;
     }
     CellSpreadCreatePseudoPort(myDesign, myGraph, thisCell, newXPos, newYPos,
@@ -427,7 +422,7 @@ CellSpreadInDesignFastPlace(Design &myDesign, HyperGraph &myGraph)
       nextBinPtr = DesignBins[nextBinIdx];
       Ui = (*curBinPtr).BinGetUtilization();
       UiPlus1 = (*nextBinPtr).BinGetUtilization();
-      xi = (*nextBinPtr).BinGetRight();
+      xi = (*curBinPtr).BinGetRight();
       xiPlus1 = (*nextBinPtr).BinGetRight();
       xiPrime = (xiMinus1) * (UiPlus1 + delta) + (xiPlus1) * (Ui + delta);
       xiPrime /= (Ui + UiPlus1 + 2 * delta);
@@ -454,7 +449,7 @@ CellSpreadInDesignFastPlace(Design &myDesign, HyperGraph &myGraph)
       nextBinPtr = DesignBins[nextBinIdx];
       Ui = (*curBinPtr).BinGetUtilization();
       UiPlus1 = (*nextBinPtr).BinGetUtilization();
-      yi = (*nextBinPtr).BinGetTop();
+      yi = (*curBinPtr).BinGetTop();
       yiPlus1 = (*nextBinPtr).BinGetTop();
       yiPrime = (yiMinus1) * (UiPlus1 + delta) + (yiPlus1) * (Ui + delta);
       yiPrime /= (Ui + UiPlus1 + 2 * delta);
@@ -482,6 +477,13 @@ CellSpreadInDesignFastPlace(Design &myDesign, HyperGraph &myGraph)
       prevBinNewTop = (*(DesignBins[prevBinIdx])).BinGetNewTop();
     } 
     curBinPtr = DesignBins[binIdx];
+    if (debugPrint) {
+      if (!((*curBinPtr).BinGetUtilization() == 0)) {
+	(*curBinPtr).BinPrintBin();
+	cout << "Previous bin new Right" << prevBinNewRight << endl;
+	cout << "Previous bin new Top" << prevBinNewTop << endl;
+      }
+    }
     thisBinNewTop = (*curBinPtr).BinGetNewTop();
     thisBinNewRight = (*curBinPtr).BinGetNewRight();
     CellSpreadInBin(myDesign, myGraph, curBinPtr, thisBinNewRight, thisBinNewTop,

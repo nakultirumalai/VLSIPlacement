@@ -89,7 +89,8 @@ vector<Cell *>
 Design::DesignGetCellsOfRegion(uint left, uint right, uint bot, uint top,
 			       vector<Cell *> &cellsSortedByLeft,
 			       vector<Cell *> &cellsSortedByBot,
-			       double &overLapArea)
+			       double &overLapArea, 
+			       double &totalCellWidth)
 {
   uint last, sortedListsSize, lastPos;
   uint cellLeftPos, cellRightPos, cellTopPos, cellBotPos;
@@ -101,6 +102,7 @@ Design::DesignGetCellsOfRegion(uint left, uint right, uint bot, uint top,
   vector<Cell *> listOfCells;
 
   overLapArea = 0.0;
+  totalCellWidth = 0.0;
   /* Compute the overlap here after checking the y-positions of the cells in a 
      detailed manner */
   for (int i = 0; i < cellsSortedByLeft.size(); i++) {
@@ -115,11 +117,47 @@ Design::DesignGetCellsOfRegion(uint left, uint right, uint bot, uint top,
 
     if (thisCellOverlapArea != 0.0) {
       if ((cellLeftPos >= left && cellLeftPos < right) &&
-          (cellBotPos >= bot && cellBotPos < top))
+          (cellBotPos >= bot && cellBotPos < top)) {
         listOfCells.push_back(&thisCell);
+	totalCellWidth += thisCell.CellGetWidth();
+      }
       overLapArea += thisCellOverlapArea;
     }
   }
 
   return (listOfCells);
+}
+
+void
+Design::DesignPlotData(string plotTitle, string plotFileName)
+{
+  vector<Cell *> cellsToSolve;
+  Bin *binPtr;
+  uint binIdx;
+
+  Plot newPlot(plotTitle, plotFileName);
+  newPlot.PlotSetBoundary(*this);
+  cellsToSolve = (*this).DesignGetCellsToSolve();
+  
+  newPlot.PlotAddCells(cellsToSolve);
+
+  DESIGN_FOR_ALL_BINS((*this), binIdx, binPtr) {
+    newPlot.PlotAddBin(*binPtr);
+  } DESIGN_END_FOR;
+
+  newPlot.PlotWriteOutput();
+}
+
+void
+Design::DesignClearPseudoNetWeights(void)
+{
+  Net *pseudoNetPtr;
+  uint idx;
+  uint numPseudoNets;
+  
+  numPseudoNets = PseudoNets.size();
+  for (idx = 0; idx < numPseudoNets; idx++) {
+    pseudoNetPtr = PseudoNets[idx];
+    (*pseudoNetPtr).NetSetWeight(0.0);
+  }
 }

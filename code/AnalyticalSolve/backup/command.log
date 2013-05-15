@@ -1,0 +1,8 @@
+#@ # 
+#@ # Running icc_shell Version E-2010.12-ICC-SP3 for linux -- Apr 13, 2011
+#@ # Date:   Tue Apr 30 18:58:39 2013
+#@ # Run by: tirumanl@arugula
+#@ 
+
+man legalize_placement
+quit

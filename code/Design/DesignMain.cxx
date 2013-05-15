@@ -97,6 +97,12 @@ Design::DesignAddOneNetToDesignDB(Net *newNet, double Weight)
 }
 
 void
+Design::DesignAddPseudoNet(Net *pseudoNet)
+{
+  PseudoNets.push_back(pseudoNet);
+}
+
+void
 Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
 {
   unsigned int RowHeight;
@@ -150,6 +156,7 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
   vector<Cell*> cellsSortedByLeft;
   vector<Cell*> cellsSortedByBot;
   double maxUtilization, overlapArea;
+  double totalCellWidth, averageCellWidth;
   double utilization;
   uint maxx, maxy;
   uint binCount, numRows, numCols;
@@ -173,15 +180,17 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
     for (j = 0; j < numCols; j++) {
       cellsOfBin =
         DesignGetCellsOfRegion(left, right, bot, top, cellsSortedByLeft,
-                               cellsSortedByBot, overlapArea);
+                               cellsSortedByBot, overlapArea, totalCellWidth);
       binPtr = new Bin(binCount, left, right, bot, top, cellsOfBin);
-      (*binPtr).BinSetCellArea(overlapArea);
       utilization = overlapArea / (((double)binHeight) * binWidth);
+      averageCellWidth = totalCellWidth / (cellsOfBin.size());
       if (maxUtilization < utilization) {
         maxUtilization = utilization;
         peakUtilBinIdx = binCount;
       }
+      (*binPtr).BinSetCellArea(overlapArea);
       (*binPtr).BinSetUtilization(utilization);
+      (*binPtr).BinSetAverageCellWidth(averageCellWidth);
       left += binWidth;
       right += binWidth;
       DesignBins.push_back(binPtr);
@@ -251,11 +260,15 @@ int
 Design::DesignGetNextColBinIdx(uint binIdx)
 {
   int rtv;
+  uint nextColBinIdx;
+  uint rowOfBin;
   
   rtv = -1;
-  if (!((binIdx + numBinCols) / numBinRows == (numBinRows - 1)))
+  rowOfBin = binIdx / numBinRows;
+  if (rowOfBin < (numBinRows - 1)) {
     rtv = binIdx + numBinCols;
-
+  }
+  
   return (rtv);
 }
 

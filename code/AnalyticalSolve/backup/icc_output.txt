@@ -1,0 +1,121 @@
+icc_shell> man legalize_placement
+2.  Synopsys Commands                                        Command Reference
+                              legalize_placement
+
+NAME
+       legalize_placement
+              Executes detailed placement on a design.
+
+SYNTAX
+       status legalize_placement
+              [-effort low | medium | high]
+              [-check_only]
+              [-eco]
+              [-incremental]
+              [-cells cell_objects]
+              [-priority low | medium | high]
+              [-timing]
+              [-coordinates {llx1 lly1 urx1 ury1 ...}]
+
+ARGUMENTS
+       -effort low | medium | high
+              Specifies  the  effort level for detailed placement. The default
+              effort level is medium.
+
+       -check_only
+              Checks whether the design and the libraries have all the  neces-
+              sary information to run the command.
+
+       -eco   Derives locations for unplaced cells in the netlist. These cells
+              are legally placed.
+
+       -incremental
+              This option specifies incremental legalization. This  option  is
+              mainly  used  at the situation that most cells have already been
+              legalized. This option will try to move as fewer cells as possi-
+              ble  (but  may  be larger distance). A suitable situation to use
+              this option is in  post-route  optimization.   This  option  can
+              also  minimize  the  timing  critical cell displacement if it is
+              used combined with -timing option.
+
+       -cells cell_objects
+              This option will legalize a group of cells which have been spec-
+              ified  by this option. This option will need to be used combined
+              with the option  -priority.   If  -priority  low  is  specified,
+              legalizer  will legalize the cells without moving other existing
+              cells.  If -priority high is specified, the legalizer  will  try
+              to  move  the cells in minimum distance by moving other existing
+              cell away.  If -priority med is specified,  the  legalizer  will
+              move both these cells and their surrounding cells.
+
+       -priority low | medium | high
+              This  option  is  only  used  with -cells option together.  This
+              option specify the priority of a group of cells when this  group
+
+E-2010.12-ICC-SP3   Synopsys Inc. 1988-2011. All rights reserved.          2-1
+
+2.  Synopsys Commands                                        Command Reference
+                              legalize_placement
+
+              of  cells are being legalized.  The default value is "low", i.e.
+              legalizer will legalize the group of cells without  moving other
+              surrounding  cells.   If -priority "med" is specified, legalizer
+              will move this group of cells and their surrounding  cells  when
+              they  are being legalized. At this time,  the cell movement will
+              depend on their cell weights (cells are weighted  by  the  worst
+              pin  slack as well as cell size).  If -priority "high" is speci-
+              fied, legalizer will first snap these cells into  their  nearest
+              legal  locations,  then  move other cells at those locations  to
+              other legal locations.
+
+       -timing
+              This option is only used with  -cells  or  -incremental  option.
+              This  option will control the incremental legalization move less
+              distance for the cells on critical paths,  i.e.  the  cells  are
+              weighted by the worst pin slack as well as cell size. The incre-
+              mental legalization will weight a cell only based on  cell  size
+              if -timing is not specified.
+
+       -coordinates {llx1 lly1 urx1 ury1 ...}
+              Only  used  with  -cells  option. Specify the rectilinear region
+              (multiple rectangles) so that  the  command  only  legalize  the
+              cells  within  the  region.  No  cell  will be moved outside the
+              region, works like a fence to prevent  cells  move  out  of  the
+              region.  The  coordinate is the float_list of {x1 y1 x2 y2 ...},
+              unit of um.
+
+DESCRIPTION
+       The legalize_placement command performs placement legalization  on  the
+       current  design,  where coarse placement has already been performed. If
+       no -eco specified, it is necessary  to  supply  initial  locations  for
+       every  cell  and blockage in the design before legalize. In addition, a
+       physical library needs to be set using the  physical_library  variable.
+       It is also necessary to specify a site array for the floorplan.
+
+       Also note that the option -timing can only be used together with -cells
+       or -incremental option.
+
+       Note: After executinglegalize_placement, all the timings are  based  on
+       steiner  routes of the design and any previous annotations are ignored.
+
+   Multicorner-Multimode Support
+       This command uses information from all active scenarios.
+
+EXAMPLES
+       The following example runs the legalize_placement command.
+
+E-2010.12-ICC-SP3   Synopsys Inc. 1988-2011. All rights reserved.          2-2
+
+2.  Synopsys Commands                                        Command Reference
+                              legalize_placement
+
+              prompt> legalize_placement -effort high
+
+SEE ALSO
+       current_design(2)
+       create_placement(2)
+
+icc_shell> quit
+
+Thank you...
+

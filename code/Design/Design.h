@@ -151,6 +151,9 @@ class Design {
   uint peakUtilizationBinIdx;
   uint numBinRows, numBinCols;
   double peakUtilization;
+  
+  /* Average cell width */
+  double averageCellWidth;
 
   void DesignInit(void);
   void DesignFileReadHeader(ifstream&);
@@ -201,9 +204,9 @@ class Design {
   vector<PhysRow*> DesignPhysRows;
   vector<Bin *> DesignBins;
   vector<Cell *> cellsToSolve;
-
   map<string, map<string, map<string, double > > >  libCellDelayDB;
-  
+  vector<Net *> PseudoNets;
+
   Design();
   Design(string, string);
   void DesignSetPath();
@@ -271,6 +274,10 @@ class Design {
   /* Property checking function */
   bool DesignCheckSolvedCellsProperty(vector<Cell*>);
 
+  /* Spreading related : pseudo net add / get functions */
+  void DesignAddPseudoNet(Net *);
+  void DesignClearPseudoNetWeights(void);
+
   /* Bin related functions */
   double DesignGetPeakUtil(void);
   uint DesignGetPeakUtilBinIdx(void);
@@ -282,7 +289,8 @@ class Design {
   /* Miscellaneous utility functions */
   vector<Cell *> DesignGetCellsOfRegion(uint, uint, uint, uint, 
 					vector<Cell *> &, vector<Cell *> &, 
-					double &);
+					double&, double&);
+  void DesignPlotData(string, string);
   
 };
 
