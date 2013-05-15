@@ -52,6 +52,7 @@ typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;
 class PhysRow {
  private:
   int rowBegin;
+  int rowEnd;
   int coordinate;
   objOrient siteOrient;
   siteSymmetry siteSym;
@@ -69,9 +70,9 @@ class PhysRow {
   int blockedWidth;
   int totalBoundingBoxWidth;
   int wMax;
-  //int columnWidth;
-  
-;
+  int supply;
+  int rowIndex;
+
  public:
   /* Constructors */
   PhysRow();
@@ -106,8 +107,10 @@ class PhysRow {
   map<unsigned int,unsigned int> PhysRowGetSubRows(void);
   void PhysRowGetBoundingBox(vector<int>& );
   void PhysRowGetCellsInRow(vector<Cell*> &); 
-  int  PhysRowGetRowBegin(void);
-  
+  int PhysRowGetRowBegin(void);
+  int PhysRowGetSupply(void);
+  int PhysRowGetIndex(void);
+
   /* Set functions */
   void PhysRowSetCoordinate(int);
   void PhysRowSetType(rowOrientation);
@@ -125,7 +128,10 @@ class PhysRow {
   void PhysRowSetBlockedWidth(int);
   void PhysRowCalculateWMax(void);
   void PhysRowSetRowBegin(int);
-
+  void PhysRowSetSupply(int);
+  void PhysRowCalcSupp(void);
+  void PhysRowSetIndex(int);
+  
   /* Add a subrow to an existing row */
   void PhysRowAddSubRow(unsigned int, unsigned int);
 
@@ -134,6 +140,7 @@ class PhysRow {
   
   /* Add a cell to a row */ 
   void PhysRowAddCellToRow(Cell* &);
+  void PhysRowRemoveCellFromRow(Cell* &);
   
   /* Add a zone to row */
   void PhysRowAddZoneToRow(int, int);
@@ -145,6 +152,8 @@ class PhysRow {
   void PhysRowPrintAllZones(void);
   */
   void PhysRowMarkFixedCellsInRow(int);
+  int PhysRowCalculateRowEnd(void);
+  
 };
 
 extern rowOrientation PhysRowGetRowTypeFromStr(string);

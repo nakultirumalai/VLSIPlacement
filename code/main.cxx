@@ -96,8 +96,8 @@ int main(int argc, char *argv[])
       DesignWriteStats(myDesign);
     }
 
-    //LegalizeTestMinCostFlow();
-
+    LegalizeDesign(myDesign);
+    
     /*
     
     string CellName="";

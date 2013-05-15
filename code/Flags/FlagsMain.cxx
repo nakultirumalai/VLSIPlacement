@@ -360,3 +360,64 @@ void CellClearAllDblY(Cell *cellPtr)
   FlagsDefClearAllObjs(CELL_DBLY);
 }
 
+/* Move Cost Flag on Cell */
+
+double CellGetMoveCost(Cell *cellPtr)
+{
+  double rtv;
+
+  void *obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetDouble(CELL_MOVE_COST, obj);
+  
+  return (rtv);
+}
+
+void CellSetMoveCost(Cell *cellPtr, double cost)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_MOVE_COST, obj, cost);
+}
+
+void CellClearMoveCost(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_MOVE_COST, obj);
+}
+
+void CellClearAllMoveCost(Cell *cellPtr)
+{
+  FlagsDefClearAllObjs(CELL_MOVE_COST);
+}
+
+bool CellIsLocked(Cell *cellPtr)
+{
+  bool rtv;
+
+  void *obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetFlag(CELL_IS_LOCKED_FLAG, obj);
+  
+  return (rtv);
+}
+
+void CellSetIsLocked(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetFlag(CELL_IS_LOCKED_FLAG, obj);
+}
+
+void CellClearIsLocked(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearFlag(CELL_IS_LOCKED_FLAG, obj);
+}
+
+void CellClearAllIsLocked(Cell *cellPtr)
+{
+  FlagsDefClearAllObjs(CELL_IS_LOCKED_FLAG);
+}

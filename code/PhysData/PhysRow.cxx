@@ -84,6 +84,31 @@ PhysRow::PhysRowSetRowBegin(int rowBegin)
   this->rowBegin = rowBegin;
 }
 
+void
+PhysRow::PhysRowSetSupply(int supply)
+{
+  this->supply = supply;
+}
+
+void
+PhysRow::PhysRowSetIndex(int index)
+{
+  this->rowIndex = index;
+}
+
+
+void
+PhysRow::PhysRowCalcSupp(void)
+{
+  int rowSupply = (this->totalCellWidth) - (this->totalBoundingBoxWidth);
+  this->supply = rowSupply;
+}
+
+int
+PhysRow::PhysRowCalculateRowEnd(void)
+{
+  return ((this->numSites) * (this->siteSpacing));
+}
 
 void
 PhysRow::PhysRowCalculateWMax(void)
@@ -191,6 +216,18 @@ PhysRow::PhysRowGetWMax(void)
   return wMax;
 }
 
+int 
+PhysRow::PhysRowGetSupply(void)
+{
+  return supply;
+}
+
+int
+PhysRow::PhysRowGetIndex(void)
+{
+  return rowIndex;
+}
+
 void
 PhysRow::PhysRowAddSubRow(unsigned int rowOrigin, unsigned int numSites) 
 {
@@ -199,7 +236,6 @@ PhysRow::PhysRowAddSubRow(unsigned int rowOrigin, unsigned int numSites)
   this->numSites += numSites;
   PhysRowIncrementSubRows();
   this->totalBoundingBoxWidth += (numSites * siteSpacing);
-  
   /* Initializing the vector containing all cells */
   //(this->allCellsInRow).push_back(emptyVec);  
 }
@@ -210,12 +246,20 @@ PhysRow::PhysRowAddSubRow(unsigned int rowOrigin, unsigned int numSites)
 void
 PhysRow::PhysRowAddCellToRow(Cell* &myCell)
 {
-  //int cellWidth;
+  int cellWidth;
   (this->cellsInRow).push_back(myCell);
-  //cellWidth =  (myCell->CellGetWidth());
-  //if(cellWidth >= (2*columnWidth)){
-  //CellIsFixed(myCell);
-    //}
+  cellWidth =  (myCell->CellGetWidth());
+  (this->totalCellWidth) += cellWidth;
+}
+
+void
+PhysRow::PhysRowRemoveCellFromRow(Cell* &myCell)
+{
+  int cellWidth;
+  cellWidth =  (myCell->CellGetWidth());
+  (this->totalCellWidth) -= cellWidth;
+  (this->cellsInRow).erase(remove(this->cellsInRow.begin(),this->cellsInRow.end(), myCell), this->cellsInRow.end());
+  (this->supply) -= cellWidth;
 }
 
 void 
@@ -235,6 +279,13 @@ PhysRow::PhysRowMarkFixedCellsInRow(int columnWidth)
     }
   }END_FOR;
 }
+/*
+int  
+PhysRow::PhysRowGetRowEnd(void)
+{
+  return rowEnd;
+}
+*/
 
 void
 PhysRow::PhysRowGetBoundingBox(vector<int> &v)
@@ -248,7 +299,7 @@ PhysRow::PhysRowGetBoundingBox(vector<int> &v)
     v.push_back((this->numSites)*(this->siteSpacing));
     v.push_back((this->coordinate)+(this->height));
   }
-  else if((this->rowType) == VERTICAL){
+  else if ((this->rowType) == VERTICAL){
     /* Left Bottom */
     v.push_back(this->coordinate);
     v.push_back(this->rowBegin);
@@ -258,6 +309,7 @@ PhysRow::PhysRowGetBoundingBox(vector<int> &v)
     v.push_back((this->numSites) * (this->siteSpacing));
   }
 }
+
 /* Constructors begin */
 PhysRow::PhysRow(rowOrientation orient)
 {
@@ -294,6 +346,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate)
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);
+  
 }
 
 PhysRow::PhysRow(rowOrientation orient, unsigned int height)
@@ -312,7 +365,9 @@ PhysRow::PhysRow(rowOrientation orient, unsigned int height)
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);
+  
 }
+
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height)
 {
   PhysRowSetType(orient);
@@ -329,6 +384,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height)
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);  
+  
 }
 
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
@@ -348,6 +404,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);  
+  
 }
 
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
@@ -368,7 +425,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);  
-
+  
 }
 
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
@@ -389,6 +446,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);  
+  
 }
 
 PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
@@ -408,6 +466,7 @@ PhysRow::PhysRow(rowOrientation orient, int coordinate, unsigned int height,
   PhysRowSetBoundingBoxWidth(DEFAULT_TOTAL_BOUNDINGBOX_WIDTH);
   PhysRowSetBlockedWidth(DEFAULT_BLOCKED_WIDTH);
   PhysRowSetRowBegin(DEFAULT_ROW_BEGIN);  
+  
 }
 
 PhysRow::~PhysRow()
