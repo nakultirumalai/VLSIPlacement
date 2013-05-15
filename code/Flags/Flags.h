@@ -6,6 +6,7 @@
 
 typedef enum {
   PATH_TOTAL_CELL_DELAY = 0,
+  CELL_MOVE_COST,
   TOTAL_NUM_DOUBLE_FLAGS
 } flagDoubleType;
 
@@ -13,8 +14,9 @@ typedef enum {
   CELL_IS_CLUSTERED_FLAG = 0,
   NET_IS_HIDDEN_FLAG,
   PORT_NUM_RELATED_CELLS,
-  TOTAL_NUM_INT_FLAGS,
-  CELL_IS_FIXED_FLAG = 0
+  CELL_IS_FIXED_FLAG,
+  CELL_IS_LOCKED_FLAG,
+  TOTAL_NUM_INT_FLAGS
 } flagIntType;
 
 typedef enum {
@@ -76,5 +78,15 @@ extern bool CellIsFixed(Cell *);
 extern void CellSetIsFixed(Cell *);
 extern void CellClearIsFixed(Cell *);
 extern void CellClearAllIsFixed(Cell *);
+
+extern double CellGetMoveCost(Cell *);
+extern void CellSetMoveCost(Cell *, double);
+extern void CellClearMoveCost(Cell *);
+extern void CellClearAllMoveCost(Cell *);
+
+extern bool CellIsLocked(Cell *);
+extern void CellSetIsLocked(Cell *);
+extern void CellClearIsLocked(Cell *);
+extern void CellClearAllIsLocked(Cell *);
 
 # endif

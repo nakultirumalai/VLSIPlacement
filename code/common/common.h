@@ -77,13 +77,30 @@ extern bool performAnalysis;
 
 # define MCOMMA ,
 
-# define _KEY_EXISTS(mapName, mapKey) \
+# define _KEY_EXISTS(mapName, mapKey)	     \
   if (mapName.find(mapKey) != mapName.end()) \
+
+# define _KEY_EXISTS_WITH_VAL(mapName, mapKey, mapItrVal) \
+  if ((mapItrVal = mapName.find(mapKey)) != mapName.end()) \
 
 /*******************************************************************************
   Type definitions common for all objects
 *******************************************************************************/
 typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;
+typedef unsigned int uinteger;
+
+/*******************************************************************************
+  Type definition to specify solver types
+*******************************************************************************/
+typedef enum {NO_SEQ_SOLVE, 
+	      SEQSOLVE_QO_WL, 
+	      SEQSOLVE_QCQO_WL, 
+	      SEQSOLVE_QO_TD, 
+	      SEQSOLVE_QCQO_TD} seqSolverType;
+typedef enum {ALL_QO_WL, 
+	      ALL_QCQO_WL, 
+	      ALL_QO_TD, 
+	      ALL_QCQO_TD} allSolverType;
 
 void common_error(string);
 void common_message(string);
@@ -91,6 +108,7 @@ void common_message(string);
 string getStrFromInt(int);
 
 double dround(double);
+int dtoi(double);
 
 objOrient getOrientationFromStr(string);
 string getStrForOrientation(objOrient);
@@ -102,5 +120,7 @@ string strToLower(const string& s);
 bool fileExists(string& fullFileName);
 bool fileExists(string& filePath, string &fileName);
 string getCurrentTime(void);
+
+void swap(uint& a, uint &b);
 
 #endif

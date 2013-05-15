@@ -204,17 +204,20 @@ Design::DesignAddAllCellsToPhysRows(void)
   rowOrientation rowType = (allPhysRows[0]->PhysRowGetType());
   /* Get Bounding boxes for all rows */
   PhysRow* Obj;  
-  VECTOR_FOR_ALL_ELEMS(allPhysRows, PhysRow*, Obj){
+  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
     vector<int> v;
     Obj->PhysRowGetBoundingBox(v);
     allRowBounds.push_back(v);
-  }END_FOR;
+  } END_FOR;
   
   DESIGN_FOR_ALL_CELLS((*this), CellName, CellPtr){
     DesignAddCellToPhysRow(CellPtr, allRowBounds, allPhysRows);
   }DESIGN_END_FOR;
-
   
+  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
+    Obj->PhysRowSetIndex(i);
+    Obj->PhysRowCalcSupp();
+  } END_FOR;
 }
 
 void
