@@ -2,6 +2,20 @@
 
 using namespace std;
 
+bool cmpCellLeftPos(Cell *cellPtri, Cell *cellPtrj)
+{
+  uint lefti = (*cellPtri).CellGetXpos();
+  uint leftj = (*cellPtrj).CellGetXpos();
+  return (lefti < leftj);
+}
+
+bool cmpCellBotPos(Cell *cellPtri, Cell *cellPtrj)
+{
+  uint boti = (*cellPtri).CellGetYpos();
+  uint botj = (*cellPtrj).CellGetYpos();
+  return (boti < botj);
+}
+
 map<string,Net*>& Design::DesignGetNets(void)
 {
   map<string, Net*>& retVal = this->DesignNets;
@@ -23,6 +37,14 @@ vector<PhysRow*>& Design::DesignGetRows(void)
 
   return (retVal);
 }
+
+vector<Bin*>& Design::DesignGetBins(void)
+{
+  vector<Bin*>& retVal = this->DesignBins;
+
+  return (retVal);
+}
+
 
 Cell *
 Design::DesignGetNode(string nodeName)
@@ -63,12 +85,21 @@ Design::DesignAddOneCellToDesignDB(Cell *newCell)
   this->NumCells++;
 }
 
-
 void
-Design::DesignAddOneNetToDesignDB(Net *newNet)
+Design::DesignAddOneNetToDesignDB(Net *newNet, double Weight)
 {
+  double actualWeight;
+  
+  actualWeight = Weight / ((*newNet).NetGetPinCount() - 1);
+  (*newNet).NetSetWeight(actualWeight);
   DesignNets[(*newNet).NetGetName()] = newNet;
   this->NumNets++;
+}
+
+void
+Design::DesignAddPseudoNet(Net *pseudoNet)
+{
+  PseudoNets.push_back(pseudoNet);
 }
 
 void
@@ -79,6 +110,7 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
   RowHeight = (*row).PhysRowGetHeight();
 
   DesignPhysRows.push_back(row);
+  DesignUpdateChipDim(row);
 
   if (RowHeights.find(RowHeight) == RowHeights.end()) {
     RowHeights[RowHeight] = 1;
@@ -88,8 +120,202 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
       singleRowHeight = -1;
     }
   } 
-
+  
   this->NumPhysRows++;
+}
+
+void
+Design::DesignSetPeakUtil(double maxUtil)
+{
+  this->peakUtilization = maxUtil;
+}
+
+void
+Design::DesignSetPeakUtilBinIdx(uint peakUtilBinIdx)
+{
+  this->peakUtilizationBinIdx = peakUtilBinIdx;
+}
+
+void
+Design::DesignSetNumBinRows(uint numRows)
+{
+  this->numBinRows = numRows;
+}
+
+void
+Design::DesignSetNumBinCols(uint numCols)
+{
+  this->numBinCols = numCols;
+}
+
+void
+Design::DesignCreateBins(uint binHeight, uint binWidth)
+{
+  Bin *binPtr;
+  vector<Cell*> cellsOfBin;
+  vector<Cell*> cellsSortedByLeft;
+  vector<Cell*> cellsSortedByBot;
+  double maxUtilization, overlapArea;
+  double totalCellWidth, averageCellWidth;
+  double utilization;
+  uint maxx, maxy;
+  uint binCount, numRows, numCols;
+  uint left, right, bot, top;
+  uint peakUtilBinIdx;
+  uint i, j;
+
+  _STEP_BEGIN("Bin construction");
+  DesignGetBoundingBox(maxx, maxy);
+  cellsSortedByLeft = DesignGetCellsSortedByLeft();
+  cellsSortedByBot = DesignGetCellsSortedByBot();
+  numCols = (uint)ceil(((double)maxx) / binWidth);
+  numRows = (uint)ceil(((double)maxy) / binHeight);
+
+  binCount = 0; 
+  maxUtilization = 0; 
+  peakUtilBinIdx = 0;
+  bot = 0; top = binHeight;
+  for (i = 0; i < numRows; i++) {
+    left = 0; right = binWidth;
+    for (j = 0; j < numCols; j++) {
+      cellsOfBin =
+        DesignGetCellsOfRegion(left, right, bot, top, cellsSortedByLeft,
+                               cellsSortedByBot, overlapArea, totalCellWidth);
+      binPtr = new Bin(binCount, left, right, bot, top, cellsOfBin);
+      utilization = overlapArea / (((double)binHeight) * binWidth);
+      averageCellWidth = totalCellWidth / (cellsOfBin.size());
+      if (maxUtilization < utilization) {
+        maxUtilization = utilization;
+        peakUtilBinIdx = binCount;
+      }
+      (*binPtr).BinSetCellArea(overlapArea);
+      (*binPtr).BinSetUtilization(utilization);
+      (*binPtr).BinSetAverageCellWidth(averageCellWidth);
+      left += binWidth;
+      right += binWidth;
+      DesignBins.push_back(binPtr);
+      binCount++;
+    }
+    bot += binHeight;
+    top += binHeight;
+  }
+  
+  DesignSetPeakUtil(maxUtilization);
+  DesignSetPeakUtilBinIdx(peakUtilBinIdx);
+  DesignSetNumBinRows(numRows);
+  DesignSetNumBinCols(numCols);
+
+  _STEP_END("Bin construction");
+}
+
+void
+Design::DesignClearBins(void)
+{
+  Bin *binPtr;
+
+  VECTOR_FOR_ALL_ELEMS(DesignBins, Bin*, binPtr) {
+    free(binPtr);
+  } END_FOR;
+  
+  DesignBins.clear();
+}
+
+double
+Design::DesignGetPeakUtil(void)
+{
+  return (this->peakUtilization);
+}
+
+uint
+Design::DesignGetPeakUtilBinIdx(void)
+{
+  return (this->peakUtilizationBinIdx);
+}
+
+vector<Cell *>&
+Design::DesignGetCellsToSolve(void)
+{
+  return cellsToSolve;
+}
+
+void
+Design::DesignSetCellsToSolve(vector<Cell *> cellsToSolve)
+{
+  this->cellsToSolve = cellsToSolve;
+}
+
+int
+Design::DesignGetNextRowBinIdx(uint binIdx)
+{
+  int rtv;
+
+  rtv = -1;
+  if (!((binIdx + 1) % numBinCols == 0)) 
+    rtv = binIdx + 1;
+  
+  return (rtv);
+}
+
+int
+Design::DesignGetNextColBinIdx(uint binIdx)
+{
+  int rtv;
+  uint nextColBinIdx;
+  uint rowOfBin;
+  
+  rtv = -1;
+  rowOfBin = binIdx / numBinRows;
+  if (rowOfBin < (numBinRows - 1)) {
+    rtv = binIdx + numBinCols;
+  }
+  
+  return (rtv);
+}
+
+int
+Design::DesignGetPrevRowBinIdx(uint binIdx)
+{
+  int rtv;
+
+  rtv = -1;
+  if (!(binIdx % numBinCols == 0)) 
+    rtv = binIdx - 1;
+  
+  return (rtv);
+}
+
+int
+Design::DesignGetPrevColBinIdx(uint binIdx)
+{
+  int rtv;
+
+  rtv = -1;
+  if (!(binIdx / numBinCols == 0))
+    rtv = binIdx - numBinCols;
+  
+  return (rtv);
+}
+
+vector<Cell *>
+Design::DesignGetCellsSortedByLeft(void)
+{
+  vector<Cell *> rtv;
+  
+  rtv = DesignGetCellsToSolve();
+  sort(rtv.begin(), rtv.end(), cmpCellLeftPos);
+
+  return (rtv);
+}
+
+vector<Cell *>
+Design::DesignGetCellsSortedByBot(void)
+{
+  vector<Cell *> rtv;
+  
+  rtv = DesignGetCellsToSolve();
+  sort(rtv.begin(), rtv.end(), cmpCellBotPos);
+
+  return (rtv);
 }
 
 void 
@@ -212,7 +438,7 @@ Design::DesignAddAllCellsToPhysRows(void)
   
   DESIGN_FOR_ALL_CELLS((*this), CellName, CellPtr){
     DesignAddCellToPhysRow(CellPtr, allRowBounds, allPhysRows);
-  }DESIGN_END_FOR;
+  } DESIGN_END_FOR;
   
   VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
     Obj->PhysRowSetIndex(i);
@@ -303,6 +529,13 @@ Design::DesignGetNumPhysRows(void)
 }
 
 void
+Design::DesignGetBoundingBox(uint &maxx, uint &maxy)
+{
+  maxx = (*this).maxx;
+  maxy = (*this).maxy;
+}
+
+void
 Design::DesignSetGraph(HyperGraph& thisGraph) 
 {
   this->DesignGraphPtr = &thisGraph;
@@ -333,6 +566,26 @@ Design::DesignSetClockPeriod(double clkPeriod)
 }
 
 void
+Design::DesignUpdateChipDim(PhysRow *row)
+{
+  vector<int> boundingBox;
+  uint left, bottom, right, top;
+  (*row).PhysRowGetBoundingBox(boundingBox);
+  left = boundingBox[0];
+  bottom = boundingBox[1];
+  right = boundingBox[2];
+  top = boundingBox[3];
+  
+  if (right > (*this).maxx) {
+    (*this).maxx = right;
+  } 
+
+  if (top > (*this).maxy) {
+    (*this).maxy = top;
+  } 
+}
+
+void
 Design::DesignInit()
 {
   /* Initialize private variables */
@@ -341,6 +594,8 @@ Design::DesignInit()
   NumPhysRows = 0;
   NumFixedCells = 0;
   NumTerminalCells = 0;
+  maxx = 0;
+  maxy = 0;
 
   singleRowHeight = -1;
   clockPeriod = 0.0;
@@ -481,7 +736,7 @@ Design::DesignAddCellToPhysRow(Cell *cell)
 	}
       }
     }
-  }END_FOR;
+  } END_FOR;
 }
 
 # endif

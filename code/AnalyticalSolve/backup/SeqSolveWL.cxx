@@ -10,14 +10,17 @@ seqGetCstrBoundsWL(Design& myDesign, HyperGraph& myGraph,
   double maxx, maxy, minx, miny;
   unsigned int numVars;
   unsigned int numCells;
+  double maxWL;
 
   *subj = (MSKidxt *)malloc(sizeof(MSKidxt) * numCstrs);
   *bu = (MSKrealt *)malloc(sizeof(MSKrealt) * numCstrs);
   *bl = (MSKrealt *)malloc(sizeof(MSKrealt) * numCstrs);
   *bk = (MSKboundkeye *)malloc(sizeof(MSKboundkeye) * numCstrs);
 
+  maxWL = getMaxWLForDesign(myDesign);
+
   for (int i = 0; i < numCstrs; i++) {
-    double upperBound = MAXWL_CSTR - cstrUBounds[i];
+    double upperBound = maxWL - cstrUBounds[i];
     (*subj)[i] = (*sub)[i];
     (*bl)[i] = 0.0;
     (*bu)[i] = upperBound;
@@ -70,7 +73,10 @@ seqGetObjectiveMatrixWL(Design& myDesign, HyperGraph& connectivityGraph,
 	Cell &cell1 = *cellPtri; Cell &cell2 = *cellPtr2;
 	coeffX = edgeWeight;
 	coeffY = edgeWeight;
-      
+	/* Skip constraints to terminal cells */
+	if (cell2.CellIsTerminal()) {
+	  continue;
+	}
 	squaredTerms[i]+= coeffX;
 	squaredTerms[i+numCells]+= coeffY;
 	if (!cell2.CellIsTerminal()) {
@@ -157,6 +163,10 @@ seqGetObjectiveLinearArrayWL(Design &myDesign, HyperGraph& connectivityGraph,
 	Cell &cell1 = *cellPtri; 
 	Cell &cell2 = *cellPtr2;
 
+	/* Skip constraints to terminal cells */
+	if (cell2.CellIsTerminal()) {
+	  continue;
+	}
 	double xOff1, yOff1, xOff2, yOff2;
 	double cell1X, cell1Y, cell2X, cell2Y;
 	double dOffx, dOffy;
@@ -351,7 +361,6 @@ seqGetLinearCstrArrayWL(Design& myDesign, HyperGraph& connectivityGraph,
 
 	double xOff1, yOff1, xOff2, yOff2;
 	double cell1X, cell1Y, cell2X, cell2Y;
-
 	xOff1 = (double)(*pin1).PinGetXOffset() / GRID_COMPACTION_RATIO; 
 	yOff1 = (double)(*pin1).PinGetYOffset() / GRID_COMPACTION_RATIO;
 	xOff2 = (double)(*pin2).PinGetXOffset() / GRID_COMPACTION_RATIO; 
@@ -413,7 +422,30 @@ seqGetLinearCstrArrayWL(Design& myDesign, HyperGraph& connectivityGraph,
    by the solver as positions of the cells 
  */
 void 
-seqSolveQuadraticWL(Design& myDesign, HyperGraph& seqCellGraph, 
+seqSolveQOWL(Design& myDesign, HyperGraph& seqCellGraph, 
+		    vector<Cell *>& inputCells) 
+{
+  vector<double> X;
+  X =  mosekSolveQCQO(myDesign, seqCellGraph, inputCells, 
+		      (2 * inputCells.size()),
+		      (seqCellGraph.GetNumEdges()), 
+		      seqGetObjectiveMatrixWL, 
+		      seqGetObjectiveLinearArrayWL,
+		      NULL,
+		      NULL,
+		      mskGetVarBounds,
+		      NULL);
+
+  unsigned int numCells = inputCells.size();
+  for (int i = 0; i < numCells; i++) {
+    Cell &thisCell = *((Cell*)inputCells[i]);
+    thisCell.CellSetXpos((X[i] * GRID_COMPACTION_RATIO)); 
+    thisCell.CellSetYpos((X[i+numCells] * GRID_COMPACTION_RATIO));
+  }
+}
+
+void 
+seqSolveQCQOWL(Design& myDesign, HyperGraph& seqCellGraph, 
 		    vector<Cell *>& inputCells) 
 {
   vector<double> X;
@@ -430,9 +462,8 @@ seqSolveQuadraticWL(Design& myDesign, HyperGraph& seqCellGraph,
   unsigned int numCells = inputCells.size();
   for (int i = 0; i < numCells; i++) {
     Cell &thisCell = *((Cell*)inputCells[i]);
-    thisCell.CellSetXpos((X[i] * GRID_COMPACTION_RATIO)); thisCell.CellSetYpos((X[i+numCells] * GRID_COMPACTION_RATIO));
-    cout << "Cell: " << thisCell.CellGetName() << "\t" << thisCell.CellGetXpos() << "\t" << thisCell.CellGetYpos() << endl;
+    thisCell.CellSetXpos((X[i] * GRID_COMPACTION_RATIO)); 
+    thisCell.CellSetYpos((X[i+numCells] * GRID_COMPACTION_RATIO));
+    thisCell.CellSetIsTerminal(true);
   }
-  
-  return;
 }

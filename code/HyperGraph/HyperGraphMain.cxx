@@ -83,6 +83,17 @@ HyperGraph::GetEdgeWeight(unsigned int edgeIdx)
   return edgeWeight;
 }
 
+void 
+HyperGraph::SetEdgeWeight(unsigned int edgeIdx, double newWeight)
+{
+  Edge *thisEdge;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  if (thisEdge != NULL) {
+    (*thisEdge).EdgeSetWeight(newWeight);
+  }
+}
+
 void* 
 HyperGraph::GetEdgeObject(unsigned int edgeIdx)
 {
@@ -95,6 +106,18 @@ HyperGraph::GetEdgeObject(unsigned int edgeIdx)
   }
   
   return edgeObject;
+}
+
+void* 
+HyperGraph::GetNodeObject(unsigned int nodeIdx) 
+{
+  Node *thisNode;
+  void *nodeObject;
+  
+  thisNode = idx2Node[nodeIdx];
+  nodeObject = (*thisNode).NodeGetData();
+  
+  return (nodeObject);
 }
 
 map<unsigned int, unsigned int>&
@@ -315,7 +338,7 @@ HyperGraph::HyperGraphNodeExists(void *object)
   return nodeExists(object);
 }
 
-void 
+unsigned int
 HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject, 
 			      double weight)
 {
@@ -342,6 +365,8 @@ HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject,
     (Nodes2Edges[nodeIdx]).insert((Nodes2Edges[nodeIdx]).end(), edgeIdx);
     (Edges2Nodes[edgeIdx])[nodeIdx] = 1;
   } END_FOR;
+  
+  return edgeIdx;
 }
 
 bool 
@@ -499,7 +524,7 @@ HyperGraph::HyperGraphGetCellIndex(void *cellPtr)
   _ASSERT("Unable to find cell in design database", (cellPtr == NIL(void*)));
 
   subjectIdx = obj2idx[cellPtr];
-  
+
   return (subjectIdx);
 }
 
@@ -535,6 +560,18 @@ HyperGraph::HyperGraphGetConnectedCells(void* cellPtr)
   } END_FOR;
 
   return (rtvCells);
+}
+
+void 
+HyperGraph::RemoveEdge(void)
+{
+
+}
+
+void 
+HyperGraph::RemoveNode(void)
+{
+
 }
 
 vector<unsigned int>

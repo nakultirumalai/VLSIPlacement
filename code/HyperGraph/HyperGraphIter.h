@@ -3,11 +3,13 @@
 
 # include <HyperGraph.h>
 
-# define HYPERGRAPH_FOR_ALL_NODES(Graph, NodeIdx) \
-  { \
-  for (int nodeIdx=0; nodeIdx < Graph.HyperGraphGetNumNodes(); nodeIdx++) {	\
-    if (Graph.nodeIsTop(nodeIdx)) continue; \
-  
+# define HYPERGRAPH_FOR_ALL_NODES(Graph, NodeIdx, NodeObj)		\
+  {									\
+  unsigned int numNodes = Graph.HyperGraphGetNumNodes();		\
+  for (NodeIdx=0; NodeIdx < numNodes; NodeIdx++) {			\
+  if (!Graph.nodeIsTop(NodeIdx)) continue;				\
+  NodeObj = Graph.GetNodeObject(NodeIdx);
+
 # define HYPERGRAPH_FOR_ALL_EDGES(HyperGraph, EdgeIdx, EdgeWeight) \
   { \
   for (int edgeIdx=0; edgeIdx < HyperGraph.GetNumEdges(); edgeIdx++) {	\

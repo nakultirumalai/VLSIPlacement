@@ -56,12 +56,10 @@ int main(int argc, char *argv[])
       }
       i++;
     }
+    FlagsInit();
 
     Design myDesign(designPath, designName);
-    
-
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
-    FlagsInit();
     
     //myDesign.DesignSolveForSeqCells();
     
@@ -84,10 +82,22 @@ int main(int argc, char *argv[])
     }DESIGN_END_FOR;
 # endif
 
+    //    myDesign.DesignSolveForAllCells(ALL_QO_WL);
+    //LegalizeDesign(myDesign);
+    DesignWriteBookShelfOutput(myDesign); 
+
+    /* Plot the stuff in the design */
+    string plotFileName;
+    plotFileName = "Itr.plt";
+    myDesign.DesignPlotData("Title", plotFileName);
+
+    if (performAnalysis == true) {
+      DesignCollectStats(myDesign);
+      DesignWriteStats(myDesign);
+    }
 
     LegalizeDesign(myDesign);
     
-
     /*
     
     string CellName="";
@@ -138,6 +148,9 @@ int main(int argc, char *argv[])
        for all cells accordingly */
 
 
+    //myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
+    /* Second param is clustering type. Can take on the following values:
+       FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
     /* Function moved to LegalizeDesign 
     DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
       if(!(CellPtr->CellIsTerminal()))
@@ -161,17 +174,6 @@ int main(int argc, char *argv[])
       }
     }DESIGN_END_FOR;
     */
-
-    
-
-
-
-
-
-
-
-
-
     /* Will add later after testing SnapToRows 
 
      //Get the subRow locations and row locations for all Cells
@@ -216,13 +218,6 @@ int main(int argc, char *argv[])
      
      LegalizeConstructGNFGraph(allPhysRows, g);
     */
-    DesignWriteBookShelfOutput(myDesign); 
-    
-    
-    if (performAnalysis == true) {
-      DesignCollectStats(myDesign);
-      DesignWriteStats(myDesign);
-    }
 
         
     //    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;

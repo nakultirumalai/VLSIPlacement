@@ -85,7 +85,9 @@ class Cell {
 
   /* Get functions */
   int CellGetXpos(void);
+  int CellGetRight(void);
   int CellGetYpos(void);
+  int CellGetTop(void);
   int CellGetHeight(void);
   int CellGetWidth(void);
   int CellGetNumPins(int);

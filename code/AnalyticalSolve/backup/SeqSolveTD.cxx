@@ -451,7 +451,31 @@ seqGetLinearCstrArrayTD(Design& myDesign, HyperGraph& connectivityGraph,
    by the solver as positions of the cells 
  */
 void 
-seqSolveQuadraticTD(Design& myDesign, HyperGraph& seqCellGraph, 
+seqSolveQOTD(Design& myDesign, HyperGraph& seqCellGraph, 
+		    vector<Cell *>& inputCells) 
+{
+  vector<double> X;
+
+  X =  mosekSolveQCQO(myDesign, seqCellGraph, inputCells, 
+		      (2 * inputCells.size()),
+		      (seqCellGraph.GetNumEdges()), 
+		      seqGetObjectiveMatrixTD, 
+		      seqGetObjectiveLinearArrayTD, 
+		      seqGetQuadraticCstrMatrixTD,
+		      seqGetLinearCstrArrayTD,
+		      mskGetVarBounds, 
+		      seqGetCstrBoundsTD);
+
+  unsigned int numCells = inputCells.size();
+  for (int i = 0; i < numCells; i++) {
+    Cell &thisCell = *((Cell*)inputCells[i]);
+    thisCell.CellSetXpos((X[i] * GRID_COMPACTION_RATIO)); thisCell.CellSetYpos((X[i+numCells] * GRID_COMPACTION_RATIO));
+    cout << "Cell: " << thisCell.CellGetName() << "\t" << thisCell.CellGetXpos() << "\t" << thisCell.CellGetYpos() << endl;
+  }
+}
+
+void 
+seqSolveQCQOTD(Design& myDesign, HyperGraph& seqCellGraph, 
 		    vector<Cell *>& inputCells) 
 {
   vector<double> X;

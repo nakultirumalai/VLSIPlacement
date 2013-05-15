@@ -1,8 +1,20 @@
 # ifndef CELL_MACROS_H
 # define CELL_MACROS_H
+# include <Flags.h>
 
 /* Define the iterators here */
 # define CELL_FOR_ALL_PINS(CellObj, Dir, PinPtr) {	\
+  vector<Pin*> CellPins = CellObj.CellGetPins();	\
+  Pin* PinPtr;						\
+  for (int n=0; n<CellPins.size(); n++) {		\
+    PinPtr = CellPins[n];				\
+    if (PinIsPseudo(PinPtr)) continue;			\
+    if (Dir != PIN_DIR_ALL &&				\
+	Dir != (*PinPtr).PinGetDirection()) {		\
+      continue;						\
+    }							
+
+# define CELL_FOR_ALL_PINS_NOFILT(CellObj, Dir, PinPtr) {	\
   vector<Pin*> CellPins = CellObj.CellGetPins();	\
   Pin* PinPtr;						\
   for (int n=0; n<CellPins.size(); n++) {		\
@@ -18,7 +30,8 @@
   Net* NetPtr;						\
   map<Net*, bool> netHash;				\
   for (int n=0; n<CellPins.size(); n++) {		\
-    PinPtr = CellPins[n];				\
+    PinPtr = CellPins[n];                               \
+    if (PinIsPseudo(PinPtr)) continue;			\
     if (Dir != PIN_DIR_ALL &&				\
 	Dir != (*PinPtr).PinGetDirection()) {		\
       continue;						\

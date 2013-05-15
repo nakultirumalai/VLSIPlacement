@@ -71,6 +71,13 @@
     if (!((*CellPtr).CellIsSequential()))	\
       continue;
 
+# define DESIGN_FOR_ALL_BINS(Design, BinIdx, BinPtr) \
+  { \
+  vector<Bin*> DesignBins = Design.DesignGetBins(); \
+  uint NumBins = DesignBins.size();              \
+  for (BinIdx = 0; BinIdx < NumBins; BinIdx++) { \
+    BinPtr = DesignBins[BinIdx];
+
 # define DESIGN_END_FOR }}
   
 # endif

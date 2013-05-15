@@ -98,12 +98,15 @@ Design::DesignFileReadOneNode(ifstream& file)
     if (line == "") {
       continue;
     }
-
+    if (line.find('#') == 0) {
+      continue;
+    }
     istringstream stream(line, istringstream::in);
 
     stream >> NodeName; stream >> width; stream >> height;
     if (!stream.eof()) stream >> terminalString;
 
+    terminalCell = false;
     if (terminalString == NODE_TERMINAL_KEYWORD) {
       terminalCell = true;
     }
@@ -175,6 +178,9 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
       break;
     }
     getline(file, line);
+    if (line.find('#') == 0) {
+      continue;
+    }
     
     Cell *node;
     istringstream stream(line, istringstream::in);
@@ -221,7 +227,9 @@ Design::DesignFileReadOneNet(ifstream &file)
     if (line == "") {
       continue;
     }
-
+    if (line.find('#') == 0) {
+      continue;
+    }
     istringstream stream(line, istringstream::in);
     stream >> NetDegree;
 
@@ -240,10 +248,9 @@ Design::DesignFileReadOneNet(ifstream &file)
 
     Msg = "Created Net " + NetName + " of Degree " + getStrFromInt(netDegree);
     DesignFileReadPins(file, netDegree, *newNet);
-    DesignAddOneNetToDesignDB(newNet);
+    DesignAddOneNetToDesignDB(newNet, 1.0);
     break;
   }
-
 }
 
 void
@@ -367,7 +374,7 @@ Design::DesignFileReadOneRow(ifstream &file)
   PhysRow *row;
   row = new PhysRow(rowType, rowCoordinate, height, siteWidth, siteSpacing,
 		    siteOrient, symmetry);
-
+  
   VECTOR_FOR_ALL_ELEMS_DOUBLE(subRowOrigins, int, subRowOrigin,
 			      numSitesForSubRows, unsigned int, numSites) {
     (*row).PhysRowAddSubRow(subRowOrigin, numSites);

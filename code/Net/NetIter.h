@@ -18,6 +18,13 @@
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
     PinPtr = mapIter->second;
 
+# define NET_FOR_ALL_PINS_DIR(Net, direction, PinPtr)	\
+  {								\
+  map<string, Pin*> NetPins = Net.NetGetPins(direction);	\
+  map<string, Pin*>::iterator mapIter;					\
+  for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
+    PinPtr = mapIter->second;
+
 # define NET_END_FOR }}
   
 # endif

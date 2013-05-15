@@ -10,13 +10,15 @@ using namespace std;
 class Net {
  private:
   int Id;
-  unsigned int weight;
   unsigned int pinCount;
   unsigned int driverCount;
   unsigned int loadCount;
   bool isUnderCluster;
+  double weight;
 
  public:
+  map<string, Pin*> inPins;
+  map<string, Pin*> outPins;
   map<string, Pin*> Pins;
   string name;
   Net();
@@ -25,7 +27,7 @@ class Net {
   
   void NetSetName(const string&);
   void NetSetId(int);
-  void NetSetWeight(unsigned int);
+  void NetSetWeight(double);
   void NetSetPinCount(unsigned int);
   void NetSetDriverCount(unsigned int);
   void NetSetLoadCount(unsigned int);
@@ -36,11 +38,12 @@ class Net {
   unsigned int NetGetPinCount(void);
   unsigned int NetGetDriverCount(void);
   unsigned int NetGetLoadCount(void);
-  unsigned int NetGetWeight(void);
+  double NetGetWeight(void);
   string NetGetName(void);
   bool NetIsUnderCluster(void);
   
   map<string, Pin*>& NetGetPins(void);
+  map<string, Pin*>& NetGetPins(char);
   ~Net();
 };
 

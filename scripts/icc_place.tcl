@@ -107,8 +107,7 @@ source -e -v ${DESIGN_NAME}.cstrs.tcl
 
 read_def  ${RESULT_DIR}/${DESIGN_NAME}.def
 
-return
-#create_fp_placement -effort high -timing_driven
+create_fp_placement -effort high -timing_driven
 
 write_def -output ${RESULT_DIR}/bookshelf/ICC.pl.placed.def
 

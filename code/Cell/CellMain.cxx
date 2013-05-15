@@ -165,7 +165,7 @@ Cell::CellAddPin(Pin *pinPtr)
   } else {
     numOutPins++;
   }
-
+  (*pinPtr).PinSetParentCell((*this));
   numPins++;
 }
 
@@ -231,9 +231,21 @@ Cell::CellGetXpos(void)
 }
 
 int 
+Cell::CellGetRight(void)
+{
+  return (x + width);
+}
+
+int 
 Cell::CellGetYpos(void)
 {
   return (y);
+}
+
+int 
+Cell::CellGetTop(void)
+{
+  return (y + height);
 }
 
 int 

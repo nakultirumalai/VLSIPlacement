@@ -77,18 +77,6 @@ print "STEP $stepCount: Run IC compiler to generate the DEF file and the termina
 
 ####################################################################################
 ####################################################################################
-# STEP  : Get the cell dimensions for the cells and relative positions of pins
-#         from the LEF file. Substitution occurs in the nodes file and the nets
-#         file
-####################################################################################
-####################################################################################
-#print "STEP $stepCount: Get the cell dimensions and relative pin positions from LEF\n"; $stepCount++;
-#(system("$scriptRoot/getCellDimAndPinPos.pl $benchmarkGenRoot/results/$designName/bookshelf/${designName}.nodes $LEFfile") == 0) ||
-#    die ("Obtaining cell dimensions and relative pin positions from LEF failed \n");
-
-
-####################################################################################
-####################################################################################
 # STEP  : Get the terminal top level port positions from the floorplan
 #         and substitute it in the .pl file. These terminals are fixed objects.
 ####################################################################################
@@ -218,6 +206,13 @@ open(auxFile, ">$benchmarkGenRoot/results/$designName/bookshelf/${designName}.au
 print auxFile "RowBasedPlacement : ${designName}.nodes ${designName}.nets ${designName}.wts ${designName}.pl ${designName}.scl\n";
 close(auxFile);
 
+
+####################################################################################
+####################################################################################
+# STEP  : Copy the commands file 
+####################################################################################
+####################################################################################
+system("cp $benchmarkGenRoot/results/${designName}/${designName}.cmds $benchmarkGenRoot/results/${designName}/bookshelf/${designName}.cmds");
 
 ####################################################################################
 ####################################################################################

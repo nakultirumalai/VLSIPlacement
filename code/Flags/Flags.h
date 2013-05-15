@@ -6,6 +6,8 @@
 
 typedef enum {
   PATH_TOTAL_CELL_DELAY = 0,
+  CELL_DBLX,
+  CELL_DBLY,
   CELL_MOVE_COST,
   TOTAL_NUM_DOUBLE_FLAGS
 } flagDoubleType;
@@ -14,6 +16,9 @@ typedef enum {
   CELL_IS_CLUSTERED_FLAG = 0,
   NET_IS_HIDDEN_FLAG,
   PORT_NUM_RELATED_CELLS,
+  PIN_IS_PSEUDO_FLAG,
+  NET_IS_PSEUDO_FLAG,
+  CELL_IS_PSEUDO_FLAG,
   CELL_IS_FIXED_FLAG,
   CELL_IS_LOCKED_FLAG,
   TOTAL_NUM_INT_FLAGS
@@ -21,6 +26,7 @@ typedef enum {
 
 typedef enum {
   PIN_ORIGINAL_PIN_FLAG = 0,
+  CELL_PSEUDO_PORT,
   TOTAL_NUM_PTR_FLAGS
 } flagPtrType;
 
@@ -64,6 +70,11 @@ extern void NetSetIsHidden(Net *);
 extern void NetClearIsHidden(Net *);
 extern void NetClearAllIsHidden(Net *);
 
+extern bool NetIsPseudo(Net *);
+extern void NetSetIsPseudo(Net *);
+extern void NetClearIsPseudo(Net *);
+extern void NetClearAllIsPseudo(void);
+
 extern double PathGetCellDelay(Net *);
 extern void PathSetCellDelay(Net *, double);
 extern void PathClearCellDelay(Net *);
@@ -74,10 +85,35 @@ extern void PinClearOriginalPin(Pin *);
 extern void* PinGetOriginalPin(Pin *);
 extern void PinSetOriginalPin(Pin *, Pin *);
 
+extern bool PinIsPseudo(Pin *);
+extern void PinSetIsPseudo(Pin *);
+extern void PinClearIsPseudo(Pin *);
+extern void PinClearAllIsPseudo(Pin *);
+
+extern bool CellIsPseudo(Cell *);
+extern void CellSetIsPseudo(Cell *);
+extern void CellClearIsPseudo(Cell *);
+extern void CellClearAllIsPseudo(void);
+
+extern void* CellGetPseudoPort(Cell *);
+extern void CellSetPseudoPort(Cell *, Cell *);
+extern void CellClearPseudoPort(Cell *);
+extern void CellClearAllPseudoPort(void);
+
 extern bool CellIsFixed(Cell *);
 extern void CellSetIsFixed(Cell *);
 extern void CellClearIsFixed(Cell *);
 extern void CellClearAllIsFixed(Cell *);
+
+extern double CellGetDblX(Cell *);
+extern void CellSetDblX(Cell *, double);
+extern void CellClearDblX(Cell *);
+extern void CellClearAllDblX(Cell *);
+
+extern double CellGetDblY(Cell *);
+extern void CellSetDblY(Cell *, double);
+extern void CellClearDblY(Cell *);
+extern void CellClearAllDblY(Cell *);
 
 extern double CellGetMoveCost(Cell *);
 extern void CellSetMoveCost(Cell *, double);

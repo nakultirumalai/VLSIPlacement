@@ -3,7 +3,7 @@
 Net::Net()
 {
   NetSetId(0);
-  NetSetWeight(0);
+  NetSetWeight(0.0);
   NetSetPinCount(0);
   NetSetDriverCount(0);
   NetSetLoadCount(0);
@@ -13,7 +13,7 @@ Net::Net()
 Net::Net(int id)
 {
   NetSetId(id);
-  NetSetWeight(0);
+  NetSetWeight(0.0);
   NetSetPinCount(0);
   NetSetDriverCount(0);
   NetSetLoadCount(0);
@@ -24,7 +24,7 @@ Net::Net(int id, const string& Name)
 {
   NetSetId(id);
   NetSetName(Name);
-  NetSetWeight(0);
+  NetSetWeight(0.0);
   NetSetPinCount(0);
   NetSetDriverCount(0);
   NetSetLoadCount(0);
@@ -44,7 +44,7 @@ Net::NetSetId(int id)
 }
 
 void
-Net::NetSetWeight(unsigned int weight)
+Net::NetSetWeight(double weight)
 {
   this->weight = weight;
 }
@@ -81,8 +81,10 @@ Net::NetAddPin(const Pin& pinToAdd)
   Pins[Name] = (Pin *) &pinToAdd;
   this->pinCount++;
   if (pinToAdd.PinGetDirection() == PIN_DIR_INPUT) {
+    inPins[Name] = (Pin *) &pinToAdd;
     this->loadCount++;
   } else if (pinToAdd.PinGetDirection() == PIN_DIR_OUTPUT) {
+    outPins[Name] = (Pin *) &pinToAdd;
     this->driverCount++;
   }
 }
@@ -93,7 +95,7 @@ Net::NetGetId(void)
   return Id;
 }
 
-unsigned int
+double
 Net::NetGetWeight(void)
 {
   return weight;
@@ -132,4 +134,14 @@ Net::NetIsUnderCluster(void)
 map<string, Pin*>& Net::NetGetPins(void)
 {
   return this->Pins;
+}
+
+map<string, Pin*>& Net::NetGetPins(char direction)
+{
+  if (direction == PIN_DIR_INPUT) {
+    return this->inPins;
+  }
+  if (direction == PIN_DIR_OUTPUT) {
+    return this->outPins;
+  }
 }

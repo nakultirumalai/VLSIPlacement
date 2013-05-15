@@ -1,48 +1,54 @@
 # include <AnalyticalSolve.h>
 
 void
-getDesignBounds(Design& myDesign, double *minx, double *miny, 
-		double *maxx, double *maxy) 
+mskGetVarBoundsX(Design& myDesign, vector<Cell*>& listOfCells,
+		 vector<uint> &sub_vec, vector<double> &bu_vec,
+		 vector<double> &bl_vec, vector<MSKboundkeye> &bk_vec)
 {
-  *minx = 0.0;
-  *miny = 0.0;
-  *maxx = 119.0;
-  *maxy = 119.0;
+  uint maxx, maxy;
+  double upperBound, lowerBound, delta;
+  unsigned int numCells;
+  unsigned int count;
+  
+  myDesign.DesignGetBoundingBox(maxx, maxy);
+  numCells = listOfCells.size();
+  count = sub_vec.size();
+  delta = 0.001;
+  for (int i = 0; i < numCells; i++) {
+    Cell &thisCell = *(listOfCells[i]);
+    sub_vec.push_back(count++);
+    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO - 
+      ((double)thisCell.CellGetWidth()) / GRID_COMPACTION_RATIO;
+    lowerBound = 0.0 + delta;
+    bu_vec.push_back(upperBound);
+    bl_vec.push_back(lowerBound);
+    bk_vec.push_back(MSK_BK_RA);
+  }
 }
 
 void
-mskGetVarBounds(Design& myDesign, HyperGraph& myGraph, 
-		vector<Cell*>& listOfCells,
-		MSKidxt **subj, MSKrealt **bu, MSKrealt **bl,
-		MSKboundkeye **bk, unsigned int& numNonZero) 
+mskGetVarBoundsY(Design& myDesign, vector<Cell*>& listOfCells,
+		 vector<uint> &sub_vec, vector<double> &bu_vec,
+		 vector<double> &bl_vec, vector<MSKboundkeye> &bk_vec)
 {
-  double maxx, maxy, minx, miny;
-  unsigned int numVars;
+  uint maxx, maxy;
+  double upperBound, lowerBound, delta;
   unsigned int numCells;
+  unsigned int count;
   
-  numCells = listOfCells.size();
-  numVars = (2 * numCells);
-  *subj = (MSKidxt *) malloc(sizeof(MSKidxt) * numVars);
-  *bu = (MSKrealt *) malloc(sizeof(MSKrealt) * numVars);
-  *bl = (MSKrealt *) malloc(sizeof(MSKrealt) * numVars);
-  *bk = (MSKboundkeye *) malloc(sizeof(MSKboundkeye) * numVars);
-
-  getDesignBounds(myDesign, &minx, &miny, &maxx, &maxy);
-
+  myDesign.DesignGetBoundingBox(maxx, maxy);
+  numCells = listOfCells.size();  
+  count = sub_vec.size();
+  delta = 0.001;
   for (int i = 0; i < numCells; i++) {
     Cell &thisCell = *(listOfCells[i]);
-    (*subj)[i] = i;
-    (*bu)[i] = maxx - 
-      ((double)thisCell.CellGetWidth()) / GRID_COMPACTION_RATIO;
-    (*bl)[i] = minx;
-    (*bk)[i] = MSK_BK_RA;
-    (*subj)[i+numCells] = i + numCells;
-    (*bu)[i+numCells] = maxy - 
+    sub_vec.push_back(count++);
+    upperBound = ((double)maxy)/GRID_COMPACTION_RATIO - 
       ((double)thisCell.CellGetHeight()) / GRID_COMPACTION_RATIO;
-    (*bl)[i+numCells] = miny;
-    (*bk)[i+numCells] = MSK_BK_RA;
+    lowerBound = 0.0 + delta;
+    bu_vec.push_back(upperBound);
+    bl_vec.push_back(lowerBound);
+    bk_vec.push_back(MSK_BK_RA);
   }
-  
-  numNonZero = numVars;
 }
 

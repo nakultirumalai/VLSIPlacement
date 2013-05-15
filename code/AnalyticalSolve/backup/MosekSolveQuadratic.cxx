@@ -59,28 +59,40 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
 
   _STEP_BEGIN("Begin creating objective matrix entries");
   /* Get the quadratic objective matrix */
-  qof(myDesign, myGraph, listOfCells, &qsubi, &qsubj, &qval, qoNonZero);
+  if (qof != NULL) {
+    qof(myDesign, myGraph, listOfCells, &qsubi, &qsubj, &qval, qoNonZero);
+  }
 
   /* Get the linear objective matrix */
-  lof(myDesign, myGraph, listOfCells, &subi, &val, constant, loNonZero);  
+  if (lof != NULL) {
+    lof(myDesign, myGraph, listOfCells, &subi, &val, constant, loNonZero);  
+  }
   _STEP_END("Begin creating objective matrix entries");
 
   _STEP_BEGIN("Begin creating constraint matrices");
   /* Get the quadratic constraints matrices */
-  qcstrf(myDesign, myGraph, listOfCells, &qcsubk, &qcsubi, &qcsubj, &qcval, 
-	 qcNonZero);
+  if (qcstrf != NULL) {
+    qcstrf(myDesign, myGraph, listOfCells, &qcsubk, &qcsubi, &qcsubj, &qcval, 
+	   qcNonZero);
+  }
 
   /* Get the linear constraints matrices */
-  lcstrf(myDesign, myGraph, listOfCells, &sub, &ptrb, &ptre, &asub, &aval, 
-	 &cstrUBounds, lcNonZero);
+  if (lcstrf != NULL) {
+    lcstrf(myDesign, myGraph, listOfCells, &sub, &ptrb, &ptre, &asub, &aval, 
+	   &cstrUBounds, lcNonZero);
+  }
 
   /* Get the variable bounds */
-  vbf(myDesign, myGraph, listOfCells, &subb, &bu, &bl, &bk, numVarBounds);
+  if (vbf != NULL) {
+    vbf(myDesign, myGraph, listOfCells, &subb, &bu, &bl, &bk, numVarBounds);
+  }
 
   /* Get the constraint bounds */
-  numCstrBounds = lcNonZero;
-  cbf(myDesign, myGraph, listOfCells, &sub, cstrUBounds, &subc, &buc, &blc, &bkc, 
-      numCstrBounds);
+  if (cbf != NULL) {
+    numCstrBounds = lcNonZero;
+    cbf(myDesign, myGraph, listOfCells, &sub, cstrUBounds, &subc, &buc, &blc, &bkc, 
+	numCstrBounds);
+  }
 
   _STEP_BEGIN("End creating constraint matrices");
 
@@ -114,21 +126,44 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
       if (r == MSK_RES_OK) r = MSK_append(task, MSK_ACC_VAR, numVars);
 
       /* Put bounds on the variables */
-      if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_VAR, numVarBounds, subb,
-						bk, bl, bu);
-      
+      if (vbf != NULL) {
+	if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_VAR, numVarBounds, subb,
+						  bk, bl, bu);
+      } else {
+	for (int i = 0; i < numVars && r == MSK_RES_OK; i++) {
+	  r = MSK_putbound(task, MSK_ACC_VAR, i, MSK_BK_FR, 0.0, 
+			   MSK_DPAR_DATA_TOL_BOUND_INF);
+	}
+      }
+
       /* Get the constraint bounds */
       //      if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_CON, numCstrBounds, subc,
       //						bkc, blc, buc);
       
+      if (cbf != NULL) {
+	if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_CON, numCstrBounds, subc,
+						  bkc, blc, buc);
+      } else if (numCstrs > 0) {
+	for (int i = 0; i < numCstrs && r == MSK_RES_OK; i++) {
+	  r = MSK_putbound(task, MSK_ACC_CON, i, MSK_BK_FR, 0.0, 
+			   MSK_DPAR_DATA_TOL_BOUND_INF);
+	}
+      } 
+
       /* Put the quadratic part of the objective function */   
-      if (r == MSK_RES_OK) r = MSK_putqobj(task, qoNonZero, qsubi, qsubj, qval);
+      if (qof != NULL) {
+	if (r == MSK_RES_OK) r = MSK_putqobj(task, qoNonZero, qsubi, qsubj, qval);
+      }
       
       /* Put the linear part of the objective function */
-      if (r == MSK_RES_OK) r = MSK_putclist(task, loNonZero, subi, val);
+      if (lof != NULL) {
+	if (r == MSK_RES_OK) r = MSK_putclist(task, loNonZero, subi, val);
+      }
 
       /* Optionally add a constant term to the objective. */
-      if (r == MSK_RES_OK) r = MSK_putcfix(task, constant);
+      if (constant > 0.0) {
+	if (r == MSK_RES_OK) r = MSK_putcfix(task, constant);
+      }
       
       /* Put the quadratic part of the constraint function */
       //      if (r == MSK_RES_OK) r = MSK_putqcon(task, qcNonZero, qcsubk, qcsubi, qcsubj, qcval);
@@ -136,6 +171,16 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
       /* Put the linear part of the constraint function */
       //      if (r == MSK_RES_OK) r = MSK_putaveclist(task, MSK_ACC_CON, lcNonZero, sub, ptrb, 
       //      					       ptre, asub, aval);
+      if (qcstrf != NULL) {
+	if (r == MSK_RES_OK) r = MSK_putqcon(task, qcNonZero, qcsubk, qcsubi, qcsubj, 
+					     qcval);
+      }
+      
+      /* Put the linear part of the constraint function */
+      if (lcstrf != NULL) {
+	if (r == MSK_RES_OK) r = MSK_putaveclist(task, MSK_ACC_CON, lcNonZero, sub, 
+						 ptrb, ptre, asub, aval);
+      }
       
       /* Ready to invoke the optimizer here. Add the optimization sense which 
          is minimization for now. Can be parametrized later */

@@ -147,16 +147,139 @@ void PathClearAllCellDelay(void)
   FlagsDefClearAllObjs(PATH_TOTAL_CELL_DELAY);
 }
 
-/* Cell is fixed flag */
+/* Net is pseudo flag */
+bool NetIsPseudo(Net *netPtr)
+{
+  bool rtv;
 
+  void *obj = (void *)netPtr;
+  
+  rtv = FlagsDefGetFlag(NET_IS_PSEUDO_FLAG, obj);
+  
+  return (rtv);
+}
+
+void NetSetIsPseudo(Net *netPtr)
+{
+  void *obj = (void *)netPtr;
+  
+  FlagsDefSetFlag(NET_IS_PSEUDO_FLAG, obj);
+}
+
+void NetClearIsPseudo(Net *netPtr)
+{
+  void *obj = (void *)netPtr;
+
+  FlagsDefClearFlag(NET_IS_PSEUDO_FLAG, obj);
+}
+
+void NetClearAllIsPseudo(void)
+{
+  FlagsDefClearAllObjs(NET_IS_PSEUDO_FLAG);
+}
+
+/* Pin is pseudo flag */
+bool PinIsPseudo(Pin *pinPtr)
+{
+  bool rtv;
+
+  void *obj = (void *)pinPtr;
+  
+  rtv = FlagsDefGetFlag(PIN_IS_PSEUDO_FLAG, obj);
+  
+  return (rtv);
+}
+
+void PinSetIsPseudo(Pin *pinPtr)
+{
+  void *obj = (void *)pinPtr;
+  
+  FlagsDefSetFlag(PIN_IS_PSEUDO_FLAG, obj);
+}
+
+void PinClearIsPseudo(Pin *pinPtr)
+{
+  void *obj = (void *)pinPtr;
+
+  FlagsDefClearFlag(PIN_IS_PSEUDO_FLAG, obj);
+}
+
+void PinClearAllIsPseudo(void)
+{
+  FlagsDefClearAllObjs(PIN_IS_PSEUDO_FLAG);
+}
+
+/* Cell is pseudo flag */
+bool CellIsPseudo(Cell *cellPtr)
+{
+  bool rtv;
+
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetFlag(CELL_IS_PSEUDO_FLAG, obj);
+
+  return (rtv);
+}
+
+void CellSetIsPseudo(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetFlag(CELL_IS_PSEUDO_FLAG, obj);
+}
+
+void CellClearIsPseudo(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearFlag(CELL_IS_PSEUDO_FLAG, obj);
+}
+
+void CellClearAllIsPseudo(void)
+{
+  FlagsDefClearAllObjs(CELL_IS_PSEUDO_FLAG);
+}
+
+/* Pseudo port of cell */
+void* CellGetPseudoPort(Cell *cellPtr)
+{
+  void *rtv;
+
+  void *obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetPtr(CELL_PSEUDO_PORT, obj);
+  
+  return (rtv);
+}
+
+void CellSetPseudoPort(Cell *cellPtr, Cell *pseudoPort)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetPtr(CELL_PSEUDO_PORT, obj, (void *)pseudoPort);
+}
+
+void CellClearPseudoPort(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefClearPtr(CELL_PSEUDO_PORT, obj);
+}
+
+void CellClearAllPseudoPort(void)
+{
+  FlagsDefClearAllObjs(CELL_PSEUDO_PORT);
+}
+
+/* Cell is fixed flag */
 bool CellIsFixed(Cell *cellPtr)
 {
   bool rtv;
 
   void *obj = (void *)cellPtr;
-  
+
   rtv = FlagsDefGetFlag(CELL_IS_FIXED_FLAG, obj);
-  
+
   return (rtv);
 }
 
@@ -179,6 +302,63 @@ void CellClearAllIsFixed(Cell *cellPtr)
   FlagsDefClearAllObjs(CELL_IS_FIXED_FLAG);
 }
 
+double CellGetDblX(Cell *cellPtr)
+{
+  double rtv;
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetDouble(CELL_DBLX, obj);
+  
+  return rtv;
+}
+
+void CellSetDblX(Cell *cellPtr, double cellDblX)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_DBLX, obj, cellDblX);
+}
+
+void CellClearDblX(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_DBLX, obj);
+}
+
+void CellClearAllDblX(Cell *cellPtr) 
+{
+  FlagsDefClearAllObjs(CELL_DBLX);
+}
+
+double CellGetDblY(Cell *cellPtr)
+{
+  double rtv;
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetDouble(CELL_DBLY, obj);
+  
+  return rtv;
+}
+
+void CellSetDblY(Cell *cellPtr, double cellDblY)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_DBLY, obj, cellDblY);
+}
+
+void CellClearDblY(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_DBLY, obj);
+}
+
+void CellClearAllDblY(Cell *cellPtr) 
+{
+  FlagsDefClearAllObjs(CELL_DBLY);
+}
 
 /* Move Cost Flag on Cell */
 
