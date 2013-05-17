@@ -297,7 +297,7 @@ void CellClearIsFixed(Cell *cellPtr)
   FlagsDefClearFlag(CELL_IS_FIXED_FLAG, obj);
 }
 
-void CellClearAllIsFixed(Cell *cellPtr)
+void CellClearAllIsFixed(void)
 {
   FlagsDefClearAllObjs(CELL_IS_FIXED_FLAG);
 }
@@ -387,7 +387,7 @@ void CellClearMoveCost(Cell *cellPtr)
   FlagsDefClearDouble(CELL_MOVE_COST, obj);
 }
 
-void CellClearAllMoveCost(Cell *cellPtr)
+void CellClearAllMoveCost(void)
 {
   FlagsDefClearAllObjs(CELL_MOVE_COST);
 }
@@ -417,7 +417,38 @@ void CellClearIsLocked(Cell *cellPtr)
   FlagsDefClearFlag(CELL_IS_LOCKED_FLAG, obj);
 }
 
-void CellClearAllIsLocked(Cell *cellPtr)
+void CellClearAllIsLocked(void)
 {
   FlagsDefClearAllObjs(CELL_IS_LOCKED_FLAG);
+}
+
+/* PhysRowSupply Flag */
+double PhysRowGetSupply(PhysRow * rowPtr)
+{
+  double rtv;
+
+  void *obj = (void *)rowPtr;
+  
+  rtv = FlagsDefGetDouble(PHYSROW_SUPPLY, obj);
+  
+  return (rtv);
+}
+
+void PhysRowSetSupply(PhysRow *rowPtr, double supply)
+{
+  void *obj = (void *)rowPtr;
+  
+  FlagsDefSetDouble(PHYSROW_SUPPLY, obj, supply);
+}
+
+void PhysRowClearSupply(PhysRow *rowPtr)
+{
+  void *obj = (void *)rowPtr;
+
+  FlagsDefClearDouble(PHYSROW_SUPPLY, obj);
+}
+
+void PhysRowClearAllSupply(void)
+{
+  FlagsDefClearAllObjs(PHYSROW_SUPPLY);
 }

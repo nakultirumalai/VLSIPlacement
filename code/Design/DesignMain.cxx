@@ -416,8 +416,8 @@ Design::DesignAddCellToPhysRow(Cell* cell, vector<vector<int> > &allRowBounds,
       }
     }
   }END_FOR;
-  if (!foundPos)
-    cout<<"No suitable location for cell: "<<(cell->CellGetName())<<endl;
+  //if (!foundPos)
+    //cout<<"No suitable location for cell: "<<(cell->CellGetName())<<endl;
 }
 
 void
@@ -433,17 +433,13 @@ Design::DesignAddAllCellsToPhysRows(void)
   VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
     vector<int> v;
     Obj->PhysRowGetBoundingBox(v);
+    Obj->PhysRowSetIndex(i);
     allRowBounds.push_back(v);
   } END_FOR;
   
   DESIGN_FOR_ALL_CELLS((*this), CellName, CellPtr){
     DesignAddCellToPhysRow(CellPtr, allRowBounds, allPhysRows);
   } DESIGN_END_FOR;
-  
-  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
-    Obj->PhysRowSetIndex(i);
-    Obj->PhysRowCalcSupp();
-  } END_FOR;
 }
 
 void

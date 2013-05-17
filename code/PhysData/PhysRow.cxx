@@ -84,11 +84,6 @@ PhysRow::PhysRowSetRowBegin(int rowBegin)
   this->rowBegin = rowBegin;
 }
 
-void
-PhysRow::PhysRowSetSupply(int supply)
-{
-  this->supply = supply;
-}
 
 void
 PhysRow::PhysRowSetIndex(int index)
@@ -96,13 +91,6 @@ PhysRow::PhysRowSetIndex(int index)
   this->rowIndex = index;
 }
 
-
-void
-PhysRow::PhysRowCalcSupp(void)
-{
-  int rowSupply = (this->totalCellWidth) - (this->totalBoundingBoxWidth);
-  this->supply = rowSupply;
-}
 
 int
 PhysRow::PhysRowCalculateRowEnd(void)
@@ -216,12 +204,6 @@ PhysRow::PhysRowGetWMax(void)
   return wMax;
 }
 
-int 
-PhysRow::PhysRowGetSupply(void)
-{
-  return supply;
-}
-
 int
 PhysRow::PhysRowGetIndex(void)
 {
@@ -250,6 +232,8 @@ PhysRow::PhysRowAddCellToRow(Cell* &myCell)
   (this->cellsInRow).push_back(myCell);
   cellWidth =  (myCell->CellGetWidth());
   (this->totalCellWidth) += cellWidth;
+  double supply = totalCellWidth - totalBoundingBoxWidth;
+  PhysRowSetSupply(this, supply);
 }
 
 void
@@ -259,7 +243,8 @@ PhysRow::PhysRowRemoveCellFromRow(Cell* &myCell)
   cellWidth =  (myCell->CellGetWidth());
   (this->totalCellWidth) -= cellWidth;
   (this->cellsInRow).erase(remove(this->cellsInRow.begin(),this->cellsInRow.end(), myCell), this->cellsInRow.end());
-  (this->supply) -= cellWidth;
+  double supply = totalCellWidth - totalBoundingBoxWidth;
+  PhysRowSetSupply(this, supply);
 }
 
 void 
@@ -308,6 +293,13 @@ PhysRow::PhysRowGetBoundingBox(vector<int> &v)
     v.push_back((this->coordinate) + (this->height));
     v.push_back((this->numSites) * (this->siteSpacing));
   }
+}
+
+void
+PhysRow::PhysRowRemoveAllCells(void)
+{
+  (this->cellsInRow).clear();
+  (this->totalCellWidth) = 0;
 }
 
 /* Constructors begin */

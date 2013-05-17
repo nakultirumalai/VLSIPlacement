@@ -70,7 +70,6 @@ class PhysRow {
   int blockedWidth;
   int totalBoundingBoxWidth;
   int wMax;
-  int supply;
   int rowIndex;
 
  public:
@@ -108,7 +107,6 @@ class PhysRow {
   void PhysRowGetBoundingBox(vector<int>& );
   void PhysRowGetCellsInRow(vector<Cell*> &); 
   int PhysRowGetRowBegin(void);
-  int PhysRowGetSupply(void);
   int PhysRowGetIndex(void);
 
   /* Set functions */
@@ -128,8 +126,6 @@ class PhysRow {
   void PhysRowSetBlockedWidth(int);
   void PhysRowCalculateWMax(void);
   void PhysRowSetRowBegin(int);
-  void PhysRowSetSupply(int);
-  void PhysRowCalcSupp(void);
   void PhysRowSetIndex(int);
   
   /* Add a subrow to an existing row */
@@ -153,7 +149,7 @@ class PhysRow {
   */
   void PhysRowMarkFixedCellsInRow(int);
   int PhysRowCalculateRowEnd(void);
-  
+  void PhysRowRemoveAllCells(void);
 };
 
 extern rowOrientation PhysRowGetRowTypeFromStr(string);

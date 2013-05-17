@@ -83,12 +83,12 @@ int main(int argc, char *argv[])
 # endif
 
     //    myDesign.DesignSolveForAllCells(ALL_QO_WL);
-    //LegalizeDesign(myDesign);
+    LegalizeDesign(myDesign);
     DesignWriteBookShelfOutput(myDesign); 
 
     /* Plot the stuff in the design */
     string plotFileName;
-    plotFileName = "Itr.plt";
+    plotFileName = "Legal.plt";
     myDesign.DesignPlotData("Title", plotFileName);
 
     if (performAnalysis == true) {
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
       DesignWriteStats(myDesign);
     }
 
-    LegalizeDesign(myDesign);
+    //LegalizeDesign(myDesign);
     
     /*
     
