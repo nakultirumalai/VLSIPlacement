@@ -189,6 +189,7 @@ Design::DesignCreatePseudoPort(Cell &thisCell,
     }
     break;
   default: cout << "DEFAULT CASE NOT EXPECTED" << endl;
+    exit(0);
   };
 
   /* Since we are minimizing quadratic wirelength. Model of force for 
@@ -199,18 +200,19 @@ Design::DesignCreatePseudoPort(Cell &thisCell,
   springConstant = magnitude / spreadForce;
   
   coeffX = 2 * springConstant; coeffY = coeffX;
-
   _KEY_EXISTS_WITH_VAL(quadMap, (&thisCell), quadMapItr) {
     quadCellIdx = quadMapItr->second;
   } else {
     cout << "SEVERE ERROR QUAD: ENTRY FOR cell: (PTR: " << &thisCell << ") " 
 	 << thisCell.CellGetName() << " not found in quadMap" << endl;
+    exit(0);
   }
   _KEY_EXISTS_WITH_VAL(linMap, (&thisCell), linMapItr) {
     linCellIdx = linMapItr->second;
   } else {
     cout << "SEVERE ERROR LINEAR: ENTRY FOR cell: (PTR: " << &thisCell << ") " 
 	 << thisCell.CellGetName() << " not found in linMap" << endl;
+    exit(0);
   }
 
   /* Update the diagonals of the quadratic matrix */

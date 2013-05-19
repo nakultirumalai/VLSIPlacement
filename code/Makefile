@@ -16,7 +16,7 @@ ifeq ($(MAKECMDGOALS), debug)
 	OBJFILES:= $(SRCDIRS:=-g)
 	DEBUG = debug
 else
-	CFLAGS= -pg
+	CFLAGS= -pg -O3
 endif
 OBJFILES:= $(OBJFILES:=.o)
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))

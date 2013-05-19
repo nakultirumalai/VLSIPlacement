@@ -198,6 +198,7 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
 			    cellsSortedByBot, overlapArea, totalCellWidth);
       utilization = overlapArea / (((double)binHeight) * binWidth);
       numCells = cellsOfBin.size();
+      averageCellWidth = 0.0;
       if (numCells > 0) {
 	averageCellWidth = totalCellWidth / numCells;
       }
