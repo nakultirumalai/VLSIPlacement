@@ -1,14 +1,19 @@
 # ifndef FLAGS_H
 # define FLAGS_H
+
 # include <common.h>
 # include <Cell.h>
 # include <Net.h>
+# include <PhysRow.h>
+
+class PhysRow;
 
 typedef enum {
   PATH_TOTAL_CELL_DELAY = 0,
   CELL_DBLX,
   CELL_DBLY,
   CELL_MOVE_COST,
+  PHYSROW_SUPPLY,
   TOTAL_NUM_DOUBLE_FLAGS
 } flagDoubleType;
 
@@ -119,12 +124,17 @@ extern void CellClearAllDblY(Cell *);
 extern double CellGetMoveCost(Cell *);
 extern void CellSetMoveCost(Cell *, double);
 extern void CellClearMoveCost(Cell *);
-extern void CellClearAllMoveCost(Cell *);
+extern void CellClearAllMoveCost(void);
 
 extern bool CellIsLocked(Cell *);
 extern void CellSetIsLocked(Cell *);
 extern void CellClearIsLocked(Cell *);
-extern void CellClearAllIsLocked(Cell *);
+extern void CellClearAllIsLocked(void);
+
+extern double PhysRowGetSupply(PhysRow *);
+extern void PhysRowSetSupply(PhysRow *, double);
+extern void PhysRowClearSupply(PhysRow *);
+extern void PhysRowClearAllSupply(void);
 
 extern void* CellGetBin(Cell *);
 extern void CellSetBin(Cell *, void *);

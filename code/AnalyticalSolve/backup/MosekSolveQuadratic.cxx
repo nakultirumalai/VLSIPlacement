@@ -137,6 +137,9 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
       }
 
       /* Get the constraint bounds */
+      //      if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_CON, numCstrBounds, subc,
+      //						bkc, blc, buc);
+      
       if (cbf != NULL) {
 	if (r == MSK_RES_OK) r = MSK_putboundlist(task, MSK_ACC_CON, numCstrBounds, subc,
 						  bkc, blc, buc);
@@ -163,6 +166,11 @@ mosekSolveQCQO(Design& myDesign, HyperGraph& myGraph,
       }
       
       /* Put the quadratic part of the constraint function */
+      //      if (r == MSK_RES_OK) r = MSK_putqcon(task, qcNonZero, qcsubk, qcsubi, qcsubj, qcval);
+      
+      /* Put the linear part of the constraint function */
+      //      if (r == MSK_RES_OK) r = MSK_putaveclist(task, MSK_ACC_CON, lcNonZero, sub, ptrb, 
+      //      					       ptre, asub, aval);
       if (qcstrf != NULL) {
 	if (r == MSK_RES_OK) r = MSK_putqcon(task, qcNonZero, qcsubk, qcsubi, qcsubj, 
 					     qcval);

@@ -199,7 +199,7 @@ findRowCoordinates(vector<int> &RowCoordinates, int min, int max, int key, int n
 bool
 descendingSupp(PhysRow* row1, PhysRow* row2)
 {
-  return((row1->PhysRowGetSupply()) > (row2->PhysRowGetSupply()));
+  return((PhysRowGetSupply(row1)) > (PhysRowGetSupply(row2)));
 }
 
 PhysRow* 
@@ -220,6 +220,12 @@ bool
 ascendingX(Cell* cell1, Cell* cell2)
 {
   return((cell1->CellGetXpos()) > (cell2->CellGetXpos()));
+}
+
+bool
+ascendingY(Cell* cell1, Cell* cell2)
+{
+  return((cell1->CellGetYpos()) > (cell2->CellGetYpos()));
 }
 
 void
@@ -273,13 +279,21 @@ decForce(const pair<Cell*, int> &i, const pair<Cell*, int> &j)
   return i.second > j.second;
 }
 
+bool 
+incForce(const pair<Cell*, int> &i, const pair<Cell*, int> &j)
+{
+  return i.second < j.second;
+}
+
 void
 LegalizeDesign(Design &myDesign)
 {
   /* Get all the physical rows in Design */
   vector<PhysRow*> allPhysRows;
+  vector<PhysRow*> copyAllRows;
   allPhysRows  = myDesign.DesignGetRows();
-  
+  copyAllRows = allPhysRows;
+
   /* Get bounding boxes for all subrows in all rows in Design */
   vector<vector<int> > allRowBounds;
   LegalizeGetAllBoundingBoxes(allPhysRows, allRowBounds);
@@ -327,283 +341,101 @@ LegalizeDesign(Design &myDesign)
   */
   
   /******************************************************************************/
-  
-  Cell* cObj;
-  /* Sort all the rows in non-increasing order of supply */
-  sort(allPhysRows.begin(), allPhysRows.end(), descendingSupp);
-  int lastIdx = allPhysRows.size() - 1;
+  vector<Cell*> allCells;
   VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj) {
     vector<Cell*> cellsInRow;
-    Obj->PhysRowGetCellsInRow(cellsInRow);\
+    Obj->PhysRowGetCellsInRow(cellsInRow);
+    allCells.insert(allCells.end(),cellsInRow.begin(), cellsInRow.end());
+  } END_FOR;
+  cout << "Total numCell : " << allCells.size() << endl;
+  vector<Cell*> allCellsCopy = allCells;
+  int k1 = 2;
+  int k2 = 2;
+  sort(allCells.begin(), allCells.end(), ascendingY);
+  int totalWidth = 0;
+  int size = allPhysRows.size();
+  
+  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj) {
     
-    sort(cellsInRow.begin(), cellsInRow.end(), ascendingX);
-
-    int supply = Obj->PhysRowGetSupply();
-    int rowIndex = Obj->PhysRowGetIndex();
+    Obj->PhysRowRemoveAllCells();
     int rowWidth = Obj->PhysRowGetBoundingBoxWidth();
-    
-    if (supply > 0){
-      if ((rowIndex != 0) && (rowIndex != lastIdx)) {
-	/* Calculate the cost of cells to move to prev and next row */
-	PhysRow* prevRow = LegalizeGetRowByIndex(allPhysRows, (rowIndex - 1));
-	PhysRow* nextRow = LegalizeGetRowByIndex(allPhysRows, (rowIndex + 1));
-	int prevSupply = prevRow->PhysRowGetSupply();
-	int nextSupply = nextRow->PhysRowGetSupply();
-	if (nextSupply < prevSupply){
-	  /* Push cells to next row */
-	  int lockedWidth = 0;
-	  vector<pair<Cell*, int> > forceOnCells;
-	  VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cObj) {
-	    string cellName = cObj->CellGetName();
-	    
-	    if (!CellIsLocked(cObj)) {
-	      double newXPos, newYPos, magnitude, totalXForce, totalYForce;
-	      newXPos = cObj->CellGetXpos();
-	      newYPos = nextRow->PhysRowGetCoordinate();
-	      LegalizeCellGetCost(*cObj, newXPos, newYPos, magnitude, totalXForce, totalYForce);
-	      forceOnCells.push_back(make_pair(cObj, totalYForce));
-	    }
-	    else {
-	      int cellWidth = cObj->CellGetWidth();
-	      lockedWidth += cellWidth;
-	    }	      
-	  } END_FOR;
-	  
-	  /* Sort the vector of forces in decreasing order */
-	  sort(forceOnCells.begin(), forceOnCells.end(), decForce);
-	  int availWidth = rowWidth - lockedWidth;
-	  int widthInserted = 0;
-	  int idx = 0;
-	  while (forceOnCells.size() > 0) {
-	    Cell* thisCell = forceOnCells[idx].first;
-	    int cellWidth = thisCell->CellGetWidth();
-	    widthInserted += cellWidth;
-	    if (widthInserted > availWidth){
-	      break;
-	    } else {
-	      CellSetIsLocked(thisCell);
-	      forceOnCells.erase(forceOnCells.begin() + idx);
-	      idx--;
-	    }
-	    idx++;
-	  } 
-	  if (forceOnCells.size()) {
-	    for (int idx = 0; idx < forceOnCells.size(); idx++) {
-	      Cell* thisCell = forceOnCells[idx].first;
-	      int yPos = nextRow->PhysRowGetCoordinate();
-	      thisCell->CellSetYpos(yPos);
-	      nextRow->PhysRowAddCellToRow(thisCell);
-	      CellSetIsLocked(thisCell);
-	      Obj->PhysRowRemoveCellFromRow(thisCell);
-	    }
-	  }
-	} else if (nextSupply >= prevSupply){
-	  /* Push cells to next row */
-	  int lockedWidth = 0;
-	  vector<pair<Cell*, int> > forceOnCells;
-	  VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cObj) {
-	    if (!CellIsLocked(cObj)) {
-	      double newXPos, newYPos, magnitude, totalXForce, totalYForce;
-	      newXPos = cObj->CellGetXpos();
-	      newYPos = prevRow->PhysRowGetCoordinate();
-	      LegalizeCellGetCost(*cObj, newXPos, newYPos, magnitude, totalXForce, totalYForce);
-	      forceOnCells.push_back(make_pair(cObj, totalYForce));
-	    }
-	    else {
-	      int cellWidth = cObj->CellGetWidth();
-	      lockedWidth += cellWidth;
-	    }	      
-	  } END_FOR;
-	  
-	  /* Sort the vector of forces in decreasing order */
-	  sort(forceOnCells.begin(), forceOnCells.end(), decForce);
-	  int availWidth = rowWidth - lockedWidth;
-	  int widthInserted = 0;
-	  int idx = 0;
-	  while (forceOnCells.size() > 0) {
-	    Cell* thisCell = forceOnCells[idx].first;
-	    int cellWidth = thisCell->CellGetWidth();
-	    widthInserted += cellWidth;
-	    if (widthInserted > availWidth){
-	      break;
-	    } else {
-	      CellSetIsLocked(thisCell);
-	      forceOnCells.erase(forceOnCells.begin() + idx);
-	      idx--;
-	    }
-	    idx++;
-	  } 
-	  if (forceOnCells.size()) {
-	    for (int idx = 0; idx < forceOnCells.size(); idx++) {
-	      Cell* thisCell = forceOnCells[idx].first;
-	      int yPos = prevRow->PhysRowGetCoordinate();
-	      thisCell->CellSetYpos(yPos);
-	      prevRow->PhysRowAddCellToRow(thisCell);
-	      CellSetIsLocked(thisCell);
-	      Obj->PhysRowRemoveCellFromRow(thisCell);
-	    }
-	  }
-	}
-      } else if (rowIndex == 0) {
-	/* Calculate the cost of cells to move to prev and next row */
-	PhysRow* nextRow = LegalizeGetRowByIndex(allPhysRows, (rowIndex + 1));
-	int nextSupply = nextRow->PhysRowGetSupply();
-	
-	int lockedWidth = 0;
-	vector<pair<Cell*, int> > forceOnCells;
-	VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cObj) {
-	  if (!CellIsLocked(cObj)) {
-	    double newXPos, newYPos, magnitude, totalXForce, totalYForce;
-	    newXPos = cObj->CellGetXpos();
-	    newYPos = nextRow->PhysRowGetCoordinate();
-	    LegalizeCellGetCost(*cObj, newXPos, newYPos, magnitude, totalXForce, totalYForce);
-	    forceOnCells.push_back(make_pair(cObj, totalYForce));
-	  }
-	  else {
-	    int cellWidth = cObj->CellGetWidth();
-	    lockedWidth += cellWidth;
-	  }	      
-	} END_FOR;
-	
-	/* Sort the vector of forces in decreasing order */
-	sort(forceOnCells.begin(), forceOnCells.end(), decForce);
-	int availWidth = rowWidth - lockedWidth;
-	int widthInserted = 0;
-	int idx = 0;
-	while (forceOnCells.size() > 0) {
-	  Cell* thisCell = forceOnCells[idx].first;
-	  int cellWidth = thisCell->CellGetWidth();
-	  widthInserted += cellWidth;
-	  if (widthInserted > availWidth){
-	    break;
-	  } else {
-	    CellSetIsLocked(thisCell);
-	    forceOnCells.erase(forceOnCells.begin() + idx);
-	    idx--;
-	  }
-	  idx++;
-	}
-	if (forceOnCells.size()) {
-	  for (int idx = 0; idx < forceOnCells.size(); idx++) {
-	    Cell* thisCell = forceOnCells[idx].first;
-	    int yPos = nextRow->PhysRowGetCoordinate();
-	    thisCell->CellSetYpos(yPos);
-	    nextRow->PhysRowAddCellToRow(thisCell);
-	    CellSetIsLocked(thisCell);
-	    Obj->PhysRowRemoveCellFromRow(thisCell);
-	  }
-	}
-      } else if(rowIndex == lastIdx){
-	PhysRow* prevRow = LegalizeGetRowByIndex(allPhysRows, (rowIndex - 1));
-	int prevSupply = prevRow->PhysRowGetSupply();
-	int lockedWidth = 0;
-	vector<pair<Cell*, int> > forceOnCells;
-	VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cObj) {
-	  if (!CellIsLocked(cObj)) {
-	    double newXPos, newYPos, magnitude, totalXForce, totalYForce;
-	    newXPos = cObj->CellGetXpos();
-	    newYPos = prevRow->PhysRowGetCoordinate();
-	    LegalizeCellGetCost(*cObj, newXPos, newYPos, magnitude, totalXForce, totalYForce);
-	    forceOnCells.push_back(make_pair(cObj, totalYForce));
-	  }
-	  else {
-	    int cellWidth = cObj->CellGetWidth();
-	    lockedWidth += cellWidth;
-	  }	      
-	} END_FOR;
-	
-	/* Sort the vector of forces in decreasing order */
-	sort(forceOnCells.begin(), forceOnCells.end(), decForce);
-	int availWidth = rowWidth - lockedWidth;
-	int widthInserted = 0;
-	int idx = 0;
-	while (forceOnCells.size() > 0) {
-	  Cell* thisCell = forceOnCells[idx].first;
-	  int cellWidth = thisCell->CellGetWidth();
-	  widthInserted += cellWidth;
-	  if (widthInserted > availWidth){
-	    break;
-	  } else {
-	    CellSetIsLocked(thisCell);
-	    forceOnCells.erase(forceOnCells.begin() + idx);
-	    idx--;
-	  }
-	  idx++;
-	} 
-	if (forceOnCells.size()) {
-	  for (int idx = 0; idx < forceOnCells.size(); idx++) {
-	    Cell* thisCell = forceOnCells[idx].first;
-	    int yPos = prevRow->PhysRowGetCoordinate();
-	    thisCell->CellSetYpos(yPos);
-	    prevRow->PhysRowAddCellToRow(thisCell);
-	    CellSetIsLocked(thisCell);
-	    Obj->PhysRowRemoveCellFromRow(thisCell);
-	  }
-	}
-      }
-      //cout << "In a supply row " << endl;
-    } else {
-      //cout << "In a demand row " << Obj->PhysRowGetIndex() <<endl;
-    }
-  } END_FOR;
-  
-  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj) {
-    vector<Cell*> cellsInRow;
-    Obj->PhysRowGetCellsInRow(cellsInRow);
-    sort(cellsInRow.begin(), cellsInRow.end(), ascendingX);
-    Cell* cell;
-    bool firstCell = true;
-    int nextCellBegin;
-    VECTOR_FOR_ALL_ELEMS(cellsInRow, Cell*, cell){
-      if (firstCell){
-	int cellBegin = cell->CellGetXpos();
-	nextCellBegin = cellBegin + cell->CellGetWidth();
-	firstCell = false;
+    Cell* cellObj;
+    vector<Cell*> toPlace;
+    VECTOR_FOR_ALL_ELEMS (allCells, Cell*, cellObj) {
+      int cellWidth = cellObj->CellGetWidth();
+      totalWidth += cellWidth;
+      if (totalWidth < (k2 * rowWidth)){
+	toPlace.push_back(cellObj);
       } else {
-	cell->CellSetXpos(nextCellBegin);
-	int cellWidth = cell->CellGetWidth();
-	nextCellBegin += cellWidth;
+	break;
       }
     } END_FOR;
-       
-  } END_FOR;
+    totalWidth = 0;
+    /* Calculate cost for all the candidate cells */
+    vector<pair<Cell*, int> > costForCell;
+    VECTOR_FOR_ALL_ELEMS (toPlace, Cell*, cellObj) {
+      double newXPos = (double)cellObj->CellGetXpos();
+      double newYPos = (double)Obj->PhysRowGetCoordinate();
+      double magnitude, totalXForce, totalYForce;
+      LegalizeCellGetCost(*cellObj, newXPos, newYPos, magnitude, totalXForce, totalYForce);
+      pair<Cell*, int> thisCell;
+      thisCell.first = cellObj;
+      thisCell.second = totalYForce;
+      costForCell.push_back(thisCell);
+    } END_FOR;
+    sort(costForCell.begin(), costForCell.end(), incForce);
+    int insertWidth = 0;
+    for (int idx = 0; idx < costForCell.size(); idx++) {
+      Cell* thisCell = costForCell[idx].first;
+      int cellWidth = thisCell->CellGetWidth();
+      insertWidth += cellWidth;
+      if (insertWidth > rowWidth){
+	break;
+      } else {
+	int yPos = Obj->PhysRowGetCoordinate();
+	thisCell->CellSetYpos(yPos);
+	Obj->PhysRowAddCellToRow(thisCell);
+	allCells.erase(remove(allCells.begin(), allCells.end(), thisCell),allCells.end());
 
-  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj) {
+      }
+    }
+    cout << "After remove " << allCells.size() << endl;
+  } END_FOR;
+  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
     vector<Cell*> cellsInRow;
-    
     Obj->PhysRowGetCellsInRow(cellsInRow);
     sort(cellsInRow.begin(), cellsInRow.end(), ascendingX);
-    if (cellsInRow.size()){
-      cout << " ROW: " << i << "," << endl;
-      Cell* cell;
-      VECTOR_FOR_ALL_ELEMS(cellsInRow, Cell*, cell){
-	cout << cell->CellGetName() << " (" << cell->CellGetXpos() << "," << cell->CellGetYpos() << ")   ";
-      } END_FOR;
-      cout << endl;
-    }
+    Cell* cellObj;
+    bool firstCell = true;
+    int nextBegin;
+    VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cellObj){
+      int cellX = cellObj->CellGetXpos();
+      if (firstCell) {
+	cellObj->CellSetXpos(0);
+	nextBegin = cellObj->CellGetWidth();
+	firstCell = false;
+      } else{
+	cellObj->CellSetXpos(nextBegin);
+	nextBegin += cellObj->CellGetWidth();
+      }
+    } END_FOR;
   } END_FOR;
-}
 
-
-
-  /*
-  int count = 0;
+  int totalCellCount = 0;
+  int cellCount = 0;
   VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj) {
     vector<Cell*> cellsInRow;
     Obj->PhysRowGetCellsInRow(cellsInRow);
-    count += cellsInRow.size() ;
-    //cout << "Row " << i <<  " has supply " << Obj->PhysRowGetSupply() << endl;
-    cout << "Row Width = " << Obj->PhysRowGetBoundingBoxWidth() << endl;
-    Cell* cell;
-    int cellWidth = 0;
-    VECTOR_FOR_ALL_ELEMS(cellsInRow, Cell*, cell){
-      cellWidth += cell->CellGetWidth();
-      cout << cell->CellGetName() <<  ", " << cell->CellGetWidth() << "   " << endl;
+    sort(cellsInRow.begin(), cellsInRow.end(), ascendingX);
+    cellCount = cellsInRow.size();
+    totalCellCount += cellCount;
+    Cell* cellObj;
+    cout << "Cells n Row " << i << " are : ";
+    VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cellObj){
+      cout << cellObj->CellGetName() << ", " << cellObj->CellGetXpos() << ", " << cellObj->CellGetYpos();
     } END_FOR;
-    cout << " Total cell Width = " << cellWidth << endl;
-   
+    cout << endl;
+    cout << " NUMBER OF CELLS: " << cellCount << endl;
   } END_FOR;
-  
-  cout << "Total number of cells in design : " << count << endl;
-  */
-        
+  cout << " Total Cell Count : " << totalCellCount << endl;
+}
