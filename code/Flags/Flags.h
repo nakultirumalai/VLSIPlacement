@@ -27,6 +27,7 @@ typedef enum {
 typedef enum {
   PIN_ORIGINAL_PIN_FLAG = 0,
   CELL_PSEUDO_PORT,
+  BIN_OF_CELL,
   TOTAL_NUM_PTR_FLAGS
 } flagPtrType;
 
@@ -124,5 +125,10 @@ extern bool CellIsLocked(Cell *);
 extern void CellSetIsLocked(Cell *);
 extern void CellClearIsLocked(Cell *);
 extern void CellClearAllIsLocked(Cell *);
+
+extern void* CellGetBin(Cell *);
+extern void CellSetBin(Cell *, void *);
+extern void CellClearBin(Cell *);
+extern void CellClearAllBin(void);
 
 # endif

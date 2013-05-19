@@ -88,6 +88,8 @@ class Cell {
   int CellGetRight(void);
   int CellGetYpos(void);
   int CellGetTop(void);
+  void CellGetPos(uint &, uint &);
+  void CellGetBoundingBox(uint &, uint &, uint&, uint&);
   int CellGetHeight(void);
   int CellGetWidth(void);
   int CellGetNumPins(int);

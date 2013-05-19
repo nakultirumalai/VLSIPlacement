@@ -421,3 +421,33 @@ void CellClearAllIsLocked(Cell *cellPtr)
 {
   FlagsDefClearAllObjs(CELL_IS_LOCKED_FLAG);
 }
+
+void* CellGetBin(Cell *cellPtr)
+{
+  void *rtv;
+
+  void *obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetPtr(BIN_OF_CELL, obj);
+  
+  return (rtv);
+}
+
+void CellSetBin(Cell *cellPtr, void *bin)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetPtr(BIN_OF_CELL, obj, bin);
+}
+
+void CellClearBin(Cell *cellPtr, void *bin)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearPtr(BIN_OF_CELL, obj);
+}
+
+void CellClearAllIsLocked(void)
+{
+  FlagsDefClearAllObjs(BIN_OF_CELL);
+}

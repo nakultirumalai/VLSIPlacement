@@ -1,9 +1,5 @@
 # include <AnalyticalSolve.h>
 
-# define SOLVE_FOR_X 0
-# define SOLVE_FOR_Y 1
-# define SOLVE_FOR_BOTH 2
-
 void
 MSKAPI printstrGenSolveWL(void *handle, char str[])
 {
@@ -75,16 +71,22 @@ genGetObjectiveMatrixWL(Design &myDesign, HyperGraph &myGraph,
   *qval = (MSKrealt *) malloc(sizeof(MSKrealt) * val_vec.size());
 
   //  printQuadMatrix(subi_vec, subj_vec, valij_vec);
+  //  cout << "QUADRATIC MATRIX: " << endl;
+  //  cout << "subi\tsubj\tvalij" << endl;
   for (i = 0; i < subi_vec.size(); i++) {
     (*qsubi)[i] = subi_vec[i];
     (*qsubj)[i] = subj_vec[i];
     (*qvalij)[i] = 2 * valij_vec[i];
+    //    cout << (*qsubi)[i] << "\t" << (*qsubj)[i] << "\t" << (*qvalij)[i] << endl;
   }
   numValuesQuad = subi_vec.size();
   // printLinMatrix(sub_vec, val_vec);
+  //  cout << "LINEAR MATRIX: " << endl;
+  //  cout << "sub\tval" << endl;
   for (i = 0; i < sub_vec.size(); i++) {
     (*qsub)[i] = sub_vec[i];
     (*qval)[i] = 2 * val_vec[i];
+    //cout << (*qsub)[i] << "\t" << (*qval)[i] << endl;
   }
   numValuesLin = sub_vec.size();
   
@@ -164,7 +166,6 @@ genSolveQOWL(Design &myDesign, HyperGraph &myGraph, vector<Cell *>& inputCells,
   genGetObjectiveMatrixWL(myDesign, myGraph, inputCells, &qsubi, &qsubj, 
 			  &qsub, &qvalij, &qval, qoNonZero, loNonZero, 
 			  constant, solverVar);
-  
   /* Get the variable bounds */
   genGetVarBounds(myDesign, inputCells, &subb, &bu, &bl, &bk, numVarBounds, 
 		  solverVar);
@@ -278,7 +279,6 @@ genSolveX(Design& myDesign, HyperGraph& myGraph, vector<Cell *>& inputCells)
   double cellXPos;
 
   X =  genSolveQOWL(myDesign, myGraph, inputCells, SOLVE_FOR_X);
-
   unsigned int numCells = inputCells.size();
   for (int i = 0; i < numCells; i++) {
     Cell &thisCell = *((Cell*)inputCells[i]);
@@ -296,7 +296,6 @@ genSolveY(Design& myDesign, HyperGraph& myGraph, vector<Cell *>& inputCells)
   double cellYPos;
 
   X =  genSolveQOWL(myDesign, myGraph, inputCells, SOLVE_FOR_Y);
-
   unsigned int numCells = inputCells.size();
   for (int i = 0; i < numCells; i++) {
     Cell &thisCell = *((Cell*)inputCells[i]);

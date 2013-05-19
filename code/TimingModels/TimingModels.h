@@ -43,6 +43,17 @@ getObjectiveCliqueModelY(Design &myDesign, HyperGraph &myGraph,
 			 vector<uint> &sub_vec, vector<double> &val_vec,
 			 double& constant);
 
+void
+getObjectiveCliqueModelXY(Design &myDesign, HyperGraph &myGraph,
+			  vector<Cell*> &inputCells, vector<uint> &subi_vecx, 
+			  vector<uint> &subj_vecx, vector<double> &valij_vecx, 
+			  vector<uint> &sub_vecx, vector<double> &val_vecx, 
+			  vector<uint> &subi_vecy, vector<uint> &subj_vecy, 
+			  vector<double> &valij_vecy, vector<uint> &sub_vecy, 
+			  vector<double> &val_vecy, double& constantx, 
+			  double &constanty, map<Cell *, uint>& quadMap,
+			  map<Cell *, uint>& linMap);
+
 /* Star model */
 
 /* Objective function both linear and quadratic */

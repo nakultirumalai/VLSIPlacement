@@ -15,6 +15,7 @@
 # include <CellSpread.h>
 # include <Bin.h>
 # include <Plot.h>
+# include <mosek.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -259,6 +260,8 @@ class Design {
   void DesignSolveForAllCellsTest(allSolverType);
   void DesignSolveAllCells(seqSolverType, allSolverType);
   void DesignSetCellsToSolve(vector<Cell *>);
+  void DesignSolveForAllCellsIter(void);
+  void DesignSolveForAllCellsIterOld(void);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);
@@ -277,6 +280,24 @@ class Design {
   /* Spreading related : pseudo net add / get functions */
   void DesignAddPseudoNet(Net *);
   void DesignClearPseudoNetWeights(void);
+  void DesignSpreadCellsFast(HyperGraph &, MSKrealt *, 
+			     MSKrealt *, MSKrealt *, 
+			     MSKrealt *, map<Cell *,uint> &,
+			     map<Cell *,uint> &);
+  void DesignGetForceOnCell(Cell &, double, double, 
+			    double &, double &, double &, 
+			    char &, double&, double &, 
+			    double &, double &);
+  void DesignCreatePseudoPort(Cell &, double, double, double, double, 
+			      double, double, double, char, 
+			      MSKrealt *, MSKrealt *,  
+			      MSKrealt *, MSKrealt *, 
+			      map<Cell *, uint>&, map<Cell *, uint>&);
+  void DesignSpreadCreatePseudoPort(Cell&, Bin&, double, double, MSKrealt*, 
+				    MSKrealt*, MSKrealt*, MSKrealt*, 
+				    std::map<Cell *, unsigned int>&, 
+				    std::map<Cell *, unsigned int>&);
+  void DesignStretchBins(void);
 
   /* Bin related functions */
   double DesignGetPeakUtil(void);
@@ -287,9 +308,9 @@ class Design {
   int DesignGetPrevColBinIdx(uint);
 
   /* Miscellaneous utility functions */
-  vector<Cell *> DesignGetCellsOfRegion(uint, uint, uint, uint, 
-					vector<Cell *> &, vector<Cell *> &, 
-					double&, double&);
+  vector<Cell *> DesignGetCellsOfBin(Bin *binPtr, uint, uint, uint, uint, 
+				     vector<Cell *> &, vector<Cell *> &, 
+				     double&, double&);
   void DesignPlotData(string, string);
   
 };

@@ -86,11 +86,11 @@ DesignCellIsStdCell(Design &myDesign, Cell &thisCell)
 }
 
 vector<Cell *>
-Design::DesignGetCellsOfRegion(uint left, uint right, uint bot, uint top,
-			       vector<Cell *> &cellsSortedByLeft,
-			       vector<Cell *> &cellsSortedByBot,
-			       double &overLapArea, 
-			       double &totalCellWidth)
+Design::DesignGetCellsOfBin(Bin *binPtr, uint left, uint right, uint bot, uint top,
+			    vector<Cell *> &cellsSortedByLeft,
+			    vector<Cell *> &cellsSortedByBot,
+			    double &overLapArea, 
+			    double &totalCellWidth)
 {
   uint last, sortedListsSize, lastPos;
   uint cellLeftPos, cellRightPos, cellTopPos, cellBotPos;
@@ -105,20 +105,18 @@ Design::DesignGetCellsOfRegion(uint left, uint right, uint bot, uint top,
   totalCellWidth = 0.0;
   /* Compute the overlap here after checking the y-positions of the cells in a 
      detailed manner */
+  (*binPtr).BinPrintBin();
   for (int i = 0; i < cellsSortedByLeft.size(); i++) {
     Cell &thisCell = *(cellsSortedByLeft[i]);
-    cellLeftPos = thisCell.CellGetXpos();
-    cellRightPos = thisCell.CellGetRight();
-    cellBotPos = thisCell.CellGetYpos();
-    cellTopPos = thisCell.CellGetTop();
-
+    thisCell.CellGetBoundingBox(cellLeftPos, cellBotPos, cellRightPos,
+				cellTopPos);
     thisCellOverlapArea = thetaFunc(left, right, cellLeftPos, cellRightPos) *
       thetaFunc(bot, top, cellBotPos, cellTopPos);
-
     if (thisCellOverlapArea != 0.0) {
       if ((cellLeftPos >= left && cellLeftPos < right) &&
           (cellBotPos >= bot && cellBotPos < top)) {
         listOfCells.push_back(&thisCell);
+	CellSetBin(&thisCell, (void *)binPtr);
 	totalCellWidth += thisCell.CellGetWidth();
       }
       overLapArea += thisCellOverlapArea;

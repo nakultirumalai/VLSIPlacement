@@ -1,7 +1,6 @@
 MAKE=make
 #CODE_ROOT=/root/thesis/Ideas/PlacementImprovement/code
 MAKEFLAGS += -j1
-
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm -lmosek64 -pthread

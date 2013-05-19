@@ -36,6 +36,7 @@
     exit(0);		    
 
 # define DBL_MAX 1e+37
+# define GRID_COMPACTION_RATIO 1000
 
 using namespace std;
 

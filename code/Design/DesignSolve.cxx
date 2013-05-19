@@ -59,7 +59,7 @@ Design::DesignSolveForAllCells(allSolverType solverType)
     binIdx = (*this).DesignGetPeakUtilBinIdx();
     cout << "Iteration: " << count << " Peak Utilization: " << peakUtilization 
 	 << " Bin index: " << binIdx << endl;
-
+    if (count == 2) break;
     /* Add spreading forces */
     CellSpreadInDesignFastPlace((*this), myGraph);
 

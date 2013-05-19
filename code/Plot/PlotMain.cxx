@@ -227,6 +227,10 @@ Plot::PlotWriteOutput(void)
     myRect.RectWriteOutput(plotOpFile);
   } END_FOR;
 
+  plotOpFile << "########################################################" << endl;
+  plotOpFile << "#  BIN RECTANGLES WILL BE PLOTTED BELOW                #" << endl;
+  plotOpFile << "########################################################" << endl;
+
   VECTOR_FOR_ALL_ELEMS(bins, Rect, myRect) {
     myRect.RectSetStyle(BIN_RECT);
     myRect.RectWriteOutput(plotOpFile);

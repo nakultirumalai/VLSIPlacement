@@ -248,6 +248,23 @@ Cell::CellGetTop(void)
   return (y + height);
 }
 
+void
+Cell::CellGetPos(uint &xpos, uint &ypos)
+{
+  xpos = this->x;
+  ypos = this->y;
+}
+
+void
+Cell::CellGetBoundingBox(uint &left, uint &bot, uint &right, uint &top)
+{
+  left = this->x;
+  bot = this->y;
+  
+  right = this->x + this->width;
+  top = this->y + this->height;
+}
+
 int 
 Cell::CellGetHeight(void)
 {

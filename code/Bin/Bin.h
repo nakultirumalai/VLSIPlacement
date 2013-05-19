@@ -9,6 +9,7 @@ class Bin {
   double utilization;
   double cellArea;
   double averageCellWidth;
+  bool stretchedInX, stretchedInY;
   /* Vector to store list of all cells that are cut by the 
      bin or completely encompassed in the bin */
   vector<Cell *> cellsOfBin;
@@ -32,6 +33,8 @@ class Bin {
   double BinGetUtilization(void);
   double BinGetCellArea(void);
   double BinGetAverageCellWidth(void);
+  bool BinStretchInX(void);
+  bool BinStretchInY(void);
   vector<Cell *>& BinGetCells(void);
 
   /* Set functions */
@@ -42,6 +45,8 @@ class Bin {
   void BinSetCells(vector<Cell *>&);
   void BinSetNewRight(double);
   void BinSetNewTop(double);
+
+  void BinDeleteData(void);
 
   /* Debug functions */
   void BinPrintBin(void);

@@ -163,6 +163,8 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
   uint left, right, bot, top;
   uint peakUtilBinIdx;
   uint i, j;
+  uint numBins, numCells;
+  bool createBins;
 
   _STEP_BEGIN("Bin construction");
   DesignGetBoundingBox(maxx, maxy);
@@ -174,32 +176,46 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
   binCount = 0; 
   maxUtilization = 0; 
   peakUtilBinIdx = 0;
+  numBins = DesignBins.size();
+  createBins = false;
+  if (numBins == 0) createBins = true;
   bot = 0; top = binHeight;
   for (i = 0; i < numRows; i++) {
     left = 0; right = binWidth;
     for (j = 0; j < numCols; j++) {
+      if (right > maxx) right = maxx;
+      if (top > maxy) top = maxy;
+      if (createBins) {
+	binPtr = new Bin(binCount, left, right, bot, top);
+	DesignBins.push_back(binPtr);
+      } else {
+	binPtr = DesignBins[binCount];
+      }
+      (*binPtr).BinSetNewRight(right);
+      (*binPtr).BinSetNewTop(top);
       cellsOfBin =
-        DesignGetCellsOfRegion(left, right, bot, top, cellsSortedByLeft,
-                               cellsSortedByBot, overlapArea, totalCellWidth);
-      binPtr = new Bin(binCount, left, right, bot, top, cellsOfBin);
+        DesignGetCellsOfBin(binPtr, left, right, bot, top, cellsSortedByLeft,
+			    cellsSortedByBot, overlapArea, totalCellWidth);
       utilization = overlapArea / (((double)binHeight) * binWidth);
-      averageCellWidth = totalCellWidth / (cellsOfBin.size());
+      numCells = cellsOfBin.size();
+      if (numCells > 0) {
+	averageCellWidth = totalCellWidth / numCells;
+      }
       if (maxUtilization < utilization) {
         maxUtilization = utilization;
         peakUtilBinIdx = binCount;
       }
+      (*binPtr).BinSetCells(cellsOfBin);
       (*binPtr).BinSetCellArea(overlapArea);
       (*binPtr).BinSetUtilization(utilization);
       (*binPtr).BinSetAverageCellWidth(averageCellWidth);
       left += binWidth;
       right += binWidth;
-      DesignBins.push_back(binPtr);
       binCount++;
     }
     bot += binHeight;
     top += binHeight;
   }
-  
   DesignSetPeakUtil(maxUtilization);
   DesignSetPeakUtilBinIdx(peakUtilBinIdx);
   DesignSetNumBinRows(numRows);
@@ -214,10 +230,8 @@ Design::DesignClearBins(void)
   Bin *binPtr;
 
   VECTOR_FOR_ALL_ELEMS(DesignBins, Bin*, binPtr) {
-    free(binPtr);
+    (*binPtr).BinDeleteData();
   } END_FOR;
-  
-  DesignBins.clear();
 }
 
 double
@@ -264,7 +278,7 @@ Design::DesignGetNextColBinIdx(uint binIdx)
   uint rowOfBin;
   
   rtv = -1;
-  rowOfBin = binIdx / numBinRows;
+  rowOfBin = binIdx / numBinCols;
   if (rowOfBin < (numBinRows - 1)) {
     rtv = binIdx + numBinCols;
   }
@@ -599,6 +613,8 @@ Design::DesignInit()
 
   singleRowHeight = -1;
   clockPeriod = 0.0;
+  peakUtilization = 0.0;
+  peakUtilizationBinIdx = 0;
 
   Name = "";
   DesignPath = "";

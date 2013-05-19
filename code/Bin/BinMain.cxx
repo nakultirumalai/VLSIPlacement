@@ -1,5 +1,9 @@
 # include <CellSpread.h>
 
+Bin::~Bin()
+{
+}
+
 Bin::Bin()
 {
   binIdx = 0;
@@ -12,6 +16,8 @@ Bin::Bin()
   newRight = 0;
   newTop = 0;
   averageCellWidth = 0;
+  stretchedInX = false;
+  stretchedInY = false;
 }
 
 Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top)
@@ -26,6 +32,8 @@ Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top)
   newRight = 0;
   newTop = 0;
   averageCellWidth = 0;
+  stretchedInX = false;
+  stretchedInY = false;
 }
 
 Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top, 
@@ -42,6 +50,8 @@ Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top,
   newRight = 0;
   newTop = 0;
   averageCellWidth = 0;
+  stretchedInX = false;
+  stretchedInY = false;
 }
 
 void 
@@ -113,6 +123,18 @@ Bin::BinGetAverageCellWidth(void)
   return averageCellWidth;
 }
 
+bool
+Bin::BinStretchInX(void)
+{
+  return stretchedInX;
+}
+
+bool
+Bin::BinStretchInY(void)
+{
+  return stretchedInY;
+}
+
 vector<Cell *>& 
 Bin::BinGetCells(void)
 {
@@ -157,19 +179,40 @@ void
 Bin::BinSetNewRight(double newRight)
 {
   this->newRight = newRight;
+  if (newRight != right) {
+    stretchedInX = true;
+  }
 }
 
 void
 Bin::BinSetNewTop(double newTop)
 {
   this->newTop = newTop;
+  if (newTop != top) {
+    stretchedInY = true;
+  }
 }
+
+void
+Bin::BinDeleteData(void)
+{
+  this->cellsOfBin.clear();
+  this->newRight = 0;
+  this->newTop = 0;
+  this->utilization = 0;
+  this->cellArea = 0;
+  this->averageCellWidth = 0;
+  this->stretchedInX = false;
+  this->stretchedInY = false;
+}  
+
 
 void
 Bin::BinPrintBin(void)
 {
   cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
   cout << "<<   BIN: " << binIdx << endl;
+  cout << "<<   Address: " << this << endl;
   cout << "<<   left: " << left << endl;
   cout << "<<   bot: " << bot << endl;
   cout << "<<   top: " << top << endl;
@@ -181,3 +224,4 @@ Bin::BinPrintBin(void)
   cout << "<<   Utilization: " << utilization << endl;
   cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
 }
+

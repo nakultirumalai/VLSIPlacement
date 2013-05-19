@@ -231,6 +231,9 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
   spreadForce = sqrt(portXForce * portXForce + portYForce * portYForce);
   springConstant = magnitude / spreadForce;
 
+  cout << "DBG: S.constant :" << springConstant << " PSPX: " << pseudoPinX << " PSPY: " << pseudoPinY
+       << " pXFrc: " << portXForce << " pYFrc: " <<portYForce << endl;
+
   if (debugPrint) {
     cout << "Created pseudopin: X: " << pseudoPinX
 	 << "  Y: " << pseudoPinY << endl;
@@ -303,8 +306,8 @@ CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph,
 *******************************************************************************/
 void
 CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,
-		Bin *binPtr, uint newBinRight, uint newBinTop, 
-		uint newBinRightPrev, uint newBinTopPrev, double maxUtil)
+		Bin *binPtr, double newBinRight, double newBinTop, 
+		double newBinRightPrev, double newBinTopPrev, double maxUtil)
 {
   Cell *cellPtr;
   vector<Cell *>& binCells = (*binPtr).BinGetCells();
@@ -351,6 +354,7 @@ CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,
       alphaY = 0.8 + (0.5/maxUtil);
       newYPos = yj + alphaY * (yjPrime - yj);
     }
+    cout <<"DBG: CELL: " << thisCell.CellGetName() << " OLD: X: " << xj <<" Y: " << yj <<" NEW: X: " << newXPos << " Y: "<< newYPos << " B: OLD R : " << binRight << " OLD T:" << binTop << " NEW R: " << newBinRight << " NEW T: " << newBinTop << endl;
 
     double oldXForce, oldYForce, oldMagnitude;
     char oldForceDir;
@@ -363,6 +367,7 @@ CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,
     CellSpreadGetForceOnCell(myDesign, thisCell, newXPos, newYPos, magnitude,
 			     totalXForce, totalYForce, forceDir, chipBoundLeft, 
 			     chipBoundRight, chipBoundTop, chipBoundBot);
+
 
     if (debugPrint) {
       cout << "Cell: " << thisCell.CellGetName() << endl;

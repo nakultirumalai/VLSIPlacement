@@ -11,7 +11,9 @@
 # include <HyperGraph.h>
 # include <TimingModels.h>
 
-# define GRID_COMPACTION_RATIO 1000
+# define SOLVE_FOR_X 0
+# define SOLVE_FOR_Y 1
+# define SOLVE_FOR_BOTH 2
 
 class Design;
 
@@ -30,4 +32,9 @@ void mskGetVarBoundsY(Design&, vector<Cell*>&,
 		      vector<uint> &, vector<double> &, 
 		      vector<double> &, vector<MSKboundkeye>&);
 
+void
+genGetVarBounds(Design &myDesign, vector<Cell *> inputCells,
+                MSKidxt **subb, MSKrealt **bu, MSKrealt **bl,
+                MSKboundkeye **bk, uint &numVarBounds,
+                char solverVar);
 # endif
