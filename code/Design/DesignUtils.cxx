@@ -105,7 +105,6 @@ Design::DesignGetCellsOfBin(Bin *binPtr, uint left, uint right, uint bot, uint t
   totalCellWidth = 0.0;
   /* Compute the overlap here after checking the y-positions of the cells in a 
      detailed manner */
-  cout << "Getting cells for bin: " << (*binPtr).BinGetIdx() << endl;
   for (int i = 0; i < cellsSortedByLeft.size(); i++) {
     Cell &thisCell = *(cellsSortedByLeft[i]);
     thisCell.CellGetBoundingBox(cellLeftPos, cellBotPos, cellRightPos,

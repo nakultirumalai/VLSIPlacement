@@ -347,7 +347,7 @@ LegalizeDesign(Design &myDesign)
     Obj->PhysRowGetCellsInRow(cellsInRow);
     allCells.insert(allCells.end(),cellsInRow.begin(), cellsInRow.end());
   } END_FOR;
-  cout << "Total numCell : " << allCells.size() << endl;
+  //cout << "Total numCell : " << allCells.size() << endl;
   vector<Cell*> allCellsCopy = allCells;
   int k1 = 2;
   int k2 = 2;
@@ -399,7 +399,7 @@ LegalizeDesign(Design &myDesign)
 
       }
     }
-    cout << "After remove " << allCells.size() << endl;
+    //cout << "After remove " << allCells.size() << endl;
   } END_FOR;
   VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
     vector<Cell*> cellsInRow;
@@ -430,12 +430,12 @@ LegalizeDesign(Design &myDesign)
     cellCount = cellsInRow.size();
     totalCellCount += cellCount;
     Cell* cellObj;
-    cout << "Cells n Row " << i << " are : ";
+    //cout << "Cells n Row " << i << " are : ";
     VECTOR_FOR_ALL_ELEMS (cellsInRow, Cell*, cellObj){
-      cout << cellObj->CellGetName() << ", " << cellObj->CellGetXpos() << ", " << cellObj->CellGetYpos();
+      //cout << cellObj->CellGetName() << ", " << cellObj->CellGetXpos() << ", " << cellObj->CellGetYpos();
     } END_FOR;
-    cout << endl;
-    cout << " NUMBER OF CELLS: " << cellCount << endl;
+    //    cout << endl;
+    //    cout << " NUMBER OF CELLS: " << cellCount << endl;
   } END_FOR;
   cout << " Total Cell Count : " << totalCellCount << endl;
 }

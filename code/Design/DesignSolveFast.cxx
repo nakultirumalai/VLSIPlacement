@@ -121,7 +121,7 @@ putVarBounds(MSKtask_t *task, uint numVarBounds,
 }
 
 void 
-Design::DesignSolveForAllCellsIter()
+Design::DesignSolveForAllCellsIterOld()
 {
   void *cellObj;
   vector<Cell *> inputCells;
@@ -364,7 +364,7 @@ Design::DesignSolveForAllCellsIter()
 }
   
 void 
-Design::DesignSolveForAllCellsIterOld()
+Design::DesignSolveForAllCellsIter()
 {
   void *cellObj;
   vector<Cell *> inputCells;
@@ -569,6 +569,9 @@ Design::DesignSolveForAllCellsIterOld()
       prevPeakUtil = peakUtilization;
     }
 
+    /**************************************************************/
+    /* STRETCH BINS                                               */
+    /**************************************************************/
     _STEP_BEGIN("Stretching Bins");
     DesignStretchBins();
     _STEP_END("Stretching Bins");
