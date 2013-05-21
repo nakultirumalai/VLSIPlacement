@@ -498,7 +498,8 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
   double maxUtil;
   int binIdx, prevBinIdx;
   uint binLeft, binRight, binBot, binTop;
-  uint cellHeight;
+  uint maxx, maxy;
+  uint cellHeight, cellWidth;
   char forceDir;
   bool stretchInX, stretchInY;
 
@@ -525,24 +526,31 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
     newBinTopPrev = prevBin.BinGetNewTop();
   } 
   
-  cellBin.BinGetBoundingBox(binLeft, binBot, binRight, binTop);
+  cellBin.BinGetBoundingBox(binLeft, binRight, binBot, binTop);
   newBinRight = cellBin.BinGetNewRight();
   newBinTop = cellBin.BinGetNewTop();
   maxUtil = DesignGetPeakUtil();
-  
+  DesignGetBoundingBox(maxx, maxy);
   if (stretchInX) {
     xjPrime = newBinRight * (xj - binLeft);
     xjPrime += newBinRightPrev * (binRight - xj);
     xjPrime /= (binRight - binLeft);
-    alphaX = 0.5 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+    alphaX = 0.09 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
     newXPos = xj + alphaX * (xjPrime - xj);
+    cellWidth = thisCell.CellGetWidth();
+    if (newXPos > (maxx - cellWidth)) {
+      newXPos = maxx - cellWidth;
+    }
   }
   if (stretchInY) {
     yjPrime = newBinTop * (yj - binBot);
     yjPrime += newBinTopPrev * (binTop - yj);
     yjPrime /= (binTop - binBot);
-    alphaY = 0.8 + (0.5/maxUtil);
+    alphaY = 0.09 + (0.5/maxUtil);
     newYPos = yj + alphaY * (yjPrime - yj);
+    if (newYPos > (maxy - cellHeight)) {
+      newYPos = maxy - cellHeight;
+    }
   }
   
   /* COMPUTE FORCE ON CELL IN NEW POSITION */

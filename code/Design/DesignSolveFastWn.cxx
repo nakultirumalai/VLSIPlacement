@@ -52,20 +52,19 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
     (*qsubjy)[i] = subj_vecy[i];
     (*qvalijy)[i] = 2 * valij_vecy[i];
     //    cout << (*qsubix)[i] << "\t" << (*qsubjx)[i] << "\t" 
-    //    << (*qvalijx)[i] << "\t" << (*qsubiy)[i] << "\t"
-    //    << (*qsubjy)[i] << "\t" << (*qvalijy)[i] << endl;
+    //	 << (*qvalijx)[i] << "\t" << (*qsubiy)[i] << "\t"
+    //	 << (*qsubjy)[i] << "\t" << (*qvalijy)[i] << endl;
   }
   numValuesQuad = subi_vecx.size();
 
   //  cout << "subx\tvalx\tsuby\tvaly" << endl;
-  cout << "subx\tvalx" << endl;
   for (i = 0; i < sub_vecx.size(); i++) {
     (*qsubx)[i] = sub_vecx[i];
     (*qvalx)[i] = 2 * val_vecx[i];
     (*qsuby)[i] = sub_vecy[i];
     (*qvaly)[i] = 2 * val_vecy[i];
-    cout << (*qsubx)[i] << "\t" << (*qvalx)[i] <<endl; //<< "\t" 
-      //	 << (*qsuby)[i] << "\t" << (*qvaly)[i] << endl;
+    //    cout << (*qsubx)[i] << "\t" << (*qvalx)[i] << "\t" 
+    //	 << (*qsuby)[i] << "\t" << (*qvaly)[i] << endl;
   }
 
   numValuesLin = sub_vecx.size();
@@ -228,7 +227,6 @@ Design::DesignSolveForAllCellsIter()
   prevPeakUtil = 0.0;
   itrCount = 0;
   stopThreshold = 0.5;
-  exit(0);
   _STEP_BEGIN("Analytical solve and spread iterations");
   while (1) {
     /**************************************************************/
@@ -521,7 +519,6 @@ Design::DesignSolveForAllCellsIterOld()
       }
     }
 
-    break;
     /**************************************************************/
     /* ASSIGN LOCATIONS TO CELLS                                  */
     /**************************************************************/

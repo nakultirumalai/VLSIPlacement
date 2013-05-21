@@ -64,9 +64,12 @@ int main(int argc, char *argv[])
     //myDesign.DesignSolveForSeqCells();
     
     myDesign.DesignSolveForAllCellsIter();
+    //    myDesign.DesignSolveForAllCellsIterOld();
+    //    myDesign.DesignSolveFastOOQP();
     //    myDesign.DesignSolveForAllCells(ALL_QO_WL);
     //    LegalizeDesign(myDesign);
     
+    return 0;
     DesignWriteBookShelfOutput(myDesign); 
 
     /* Plot the stuff in the design */

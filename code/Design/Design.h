@@ -11,11 +11,11 @@
 # include <Sort.h>
 # include <Flags.h>
 # include <DesignIter.h>
-# include <AnalyticalSolve.h>
+# include <mosek.h>
+# include <TimingModels.h>
 # include <CellSpread.h>
 # include <Bin.h>
 # include <Plot.h>
-# include <mosek.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -262,6 +262,7 @@ class Design {
   void DesignSetCellsToSolve(vector<Cell *>);
   void DesignSolveForAllCellsIter(void);
   void DesignSolveForAllCellsIterOld(void);
+  void DesignSolveFastOOQP(void);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);

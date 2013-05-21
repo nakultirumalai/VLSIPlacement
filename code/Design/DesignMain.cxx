@@ -180,6 +180,7 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
   createBins = false;
   if (numBins == 0) createBins = true;
   bot = 0; top = binHeight;
+  cout << "Creating " << numCols * numRows << " bins" << endl;
   for (i = 0; i < numRows; i++) {
     left = 0; right = binWidth;
     for (j = 0; j < numCols; j++) {
