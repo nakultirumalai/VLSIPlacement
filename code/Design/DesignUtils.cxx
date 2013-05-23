@@ -105,7 +105,6 @@ Design::DesignGetCellsOfBin(Bin *binPtr, uint left, uint right, uint bot, uint t
   totalCellWidth = 0.0;
   /* Compute the overlap here after checking the y-positions of the cells in a 
      detailed manner */
-  (*binPtr).BinPrintBin();
   for (int i = 0; i < cellsSortedByLeft.size(); i++) {
     Cell &thisCell = *(cellsSortedByLeft[i]);
     thisCell.CellGetBoundingBox(cellLeftPos, cellBotPos, cellRightPos,
@@ -143,6 +142,7 @@ Design::DesignPlotData(string plotTitle, string plotFileName)
     newPlot.PlotAddBin(*binPtr);
   } DESIGN_END_FOR;
 
+  
   newPlot.PlotWriteOutput();
 }
 

@@ -46,6 +46,8 @@ extern bool debug;
 extern bool performNetHidingConsistency;
 extern unsigned int traceDepth;
 extern bool performAnalysis;
+extern bool varOption;
+
 
 # define _STEP_BEGIN(stepName)  {					\
     stepDepth++;							\

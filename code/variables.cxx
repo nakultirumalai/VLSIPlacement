@@ -11,3 +11,4 @@ bool debug=false;
 bool performNetHidingConsistency=false;
 bool performAnalysis=false;
 unsigned int traceDepth=0;
+bool varOption = false;

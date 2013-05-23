@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     
     //myDesign.DesignSolveForSeqCells();
     
-    myDesign.DesignSolveForAllCellsIter();
+    //    myDesign.DesignSolveForAllCellsIter();
     //    myDesign.DesignSolveForAllCells(ALL_QO_WL);
     //    LegalizeDesign(myDesign);
     
