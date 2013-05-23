@@ -6,6 +6,7 @@
 # include <PhysRow.h>
 # include <CellSpread.h>
 # include <Design.h>
+# include <Legalize.h>
 
 /*******************************************************************************
   FUNCTIONS FOR PLOTTING OBJECTS INTO GNUPLOT
@@ -17,7 +18,9 @@ typedef enum {
   HIGHLIGHTED_RECT,
   PORT_RECT,
   BIN_RECT,
-  STRETCHED_BIN_RECT
+  STRETCHED_BIN_RECT,
+  SUPPLY_BIN_RECT,
+  DEMAND_BIN_RECT
 } lineStyle;
 
 typedef enum {
@@ -26,6 +29,7 @@ typedef enum {
 } labelPosition;
 
 class Design;
+class LegalizeBin;
 
 class Line
 {
@@ -87,6 +91,8 @@ class Plot
   vector<Rect> highlightedRects;
   vector<Rect> bins;
   vector<Rect> stretchedBins;
+  vector<Rect> supplyBins;
+  vector<Rect> demandBins;
   ofstream plotOpFile;
   
  public:
@@ -120,6 +126,8 @@ class Plot
   void PlotAddRow(PhysRow &);
   void PlotAddPort(Cell &);
   void PlotAddBin(Bin &);
+  void PlotAddSupplyBin(LegalizeBin &, int);
+  void PlotAddDemandBin(LegalizeBin &, int);
   void PlotAddStretchedBin(Bin &);
 
   /* Write output */

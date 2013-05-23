@@ -3,7 +3,7 @@
 void
 MSKAPI printstrGenSolveWL(void *handle, char str[])
 {
-  //  printf("%s", str);
+  printf("%s", str);
 }
 
 void

@@ -58,6 +58,32 @@ LegalizeBin::BinSetRBound(bool RBound)
   (this->binRBound) = RBound;
 }
 
+void
+LegalizeBin::BinSetIndex(int binIndex)
+{
+  (this->binIndex) = binIndex;
+}
+
+void
+LegalizeBin::BinSetCellFract(Cell* thisCell, double fract)
+{
+  cellFracts[thisCell] = fract;
+}
+
+void
+LegalizeBin::BinSetHeight(int height)
+{
+  this->binHeight = height;
+}
+
+
+void
+LegalizeBin::BinSetBot(int bot)
+{
+  this->binBot = bot;
+}
+
+
 /* Get functions for bin */
 int
 LegalizeBin::BinGetBegin(void)
@@ -115,30 +141,27 @@ LegalizeBin::BinGetLCellWidth(void)
   } else
     return 0;
 }
+
+int 
+LegalizeBin::BinGetIndex(void)
+{
+  return (this->binIndex);
+}
+
+double
+LegalizeBin::BinGetCellFract(Cell* thisCell)
+{
+  return (cellFracts[thisCell]);
+}
   
 /* Other Functions */
 void
-LegalizeBin::BinAddCellToBin(Cell* myCell)
+LegalizeBin::BinAddCellToBin(Cell* thisCell)
 {
-  int cellBegin = myCell->CellGetBegin();
-  int cellEnd = myCell->CellGetEnd();
-  int cellWidth = myCell->CellGetWidth();
-  if ((cellBegin >= (this->binBegin)) && (cellEnd < (this->binEnd))){
-    (this->cellsInBin).push_back(myCell);
-    (this->totalCellWidth) += (myCell->CellGetWidth());
-    cellFracts[myCell] = 1.0;
-  }
-  else if ((cellBegin >= (this->binBegin)) && (cellEnd >= (this->binEnd))){
-    int diff = cellEnd - (this->binEnd) - 1;
-    double fract = diff/cellWidth;
-    cellFracts[myCell] = fract;
-  }
-  else if ((cellBegin < (this->binBegin)) && (cellEnd < (this->binEnd))){
-    int diff = (this->binBegin) - cellBegin;
-    double fract = diff/cellWidth;
-    cellFracts[myCell] = fract;
-  }    
-  sort((this->cellsInBin).begin(),(this->cellsInBin).end(), ascendingXpos);
+  this->cellsInBin.push_back(thisCell);
+  int cellWidth = (*thisCell).CellGetWidth();
+  this->totalCellWidth += cellWidth;
+  cellFracts[thisCell] = 1.0;
 }
 
 void
@@ -170,25 +193,26 @@ LegalizeBin::BinGetRBound(void)
 {
   return binRBound;
 }
-		     
-void
-LegalizeBin::BinFindCellsInBin(vector<Cell*> & cellsInRow)
+
+int
+LegalizeBin::BinGetHeight(void)
 {
-  Cell* CObj;
-  VECTOR_FOR_ALL_ELEMS(cellsInRow, Cell*, CObj){
-    int cellBegin = CObj->CellGetXpos();
-    int cellEnd = cellBegin + (CObj->CellGetWidth());
-    int mid = (cellBegin + cellEnd) / 2 ;
-    if((mid >= (this->binBegin)) && (mid < (this->binEnd))){
-      BinAddCellToBin(CObj);
-    }
-  }END_FOR;
-  sort((this->cellsInBin).begin(),(this->cellsInBin).end(), ascendingXpos);
+  return binHeight;
+}
+
+int
+LegalizeBin::BinGetBot(void)
+{
+  return binBot;
+}
+
+map<Cell*, double>&
+LegalizeBin::BinGetAllFractCells(void)
+{
+  return (this->cellFracts);
 }
 
 
-  
-  
 /* Constructors and Destructors */
 LegalizeBin::LegalizeBin()
 {

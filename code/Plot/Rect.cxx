@@ -52,7 +52,7 @@ Rect::RectWriteOutput(ofstream &opStream)
 	   << " " << styleString << endl;
   
   //  opStream << "set label at " << left << "," << bot 
-  //	   << " \"" << label << "\" " << "front left" 
-  //	   << endl;
+  //  	   << " \"" << label << "\" " << "front left" 
+  //  	   << endl;
 }
 

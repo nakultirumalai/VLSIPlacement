@@ -176,6 +176,46 @@ Plot::PlotAddBin(Bin &thisBin)
 }
 
 void
+Plot::PlotAddSupplyBin(LegalizeBin &thisBin, int supplyVal)
+{
+  double left, bot, right, top;
+  string rectLabel;
+  int height;
+
+  left = thisBin.BinGetBegin();
+  bot = thisBin.BinGetBot();
+  right = thisBin.BinGetEnd();
+  height = thisBin.BinGetHeight();
+  top = bot + height;
+  
+  Rect BinRect(left, bot, right, top);
+  BinRect.RectSetLabel(getStrFromInt(supplyVal));
+  BinRect.RectSetLabelPos(RIGHT_TOP);
+
+  supplyBins.push_back(BinRect);
+}
+
+void
+Plot::PlotAddDemandBin(LegalizeBin &thisBin, int supplyVal)
+{
+  double left, bot, right, top;
+  string rectLabel;
+  int height;
+  
+  left = thisBin.BinGetBegin();
+  bot = thisBin.BinGetBot();
+  right = thisBin.BinGetEnd();
+  height = thisBin.BinGetHeight();
+  top = bot + height;
+  
+  Rect BinRect(left, bot, right, top);
+  BinRect.RectSetLabel(getStrFromInt(supplyVal));
+  BinRect.RectSetLabelPos(RIGHT_TOP);
+
+  demandBins.push_back(BinRect);
+}
+
+void
 Plot::PlotAddStretchedBin(Bin &thisBin)
 {
   double left, bot, right, top;
@@ -241,6 +281,16 @@ Plot::PlotWriteOutput(void)
     myRect.RectWriteOutput(plotOpFile);
   } END_FOR;
 
+  VECTOR_FOR_ALL_ELEMS(supplyBins, Rect, myRect) {
+    myRect.RectSetStyle(SUPPLY_BIN_RECT);
+    myRect.RectWriteOutput(plotOpFile);
+  } END_FOR;
+
+  VECTOR_FOR_ALL_ELEMS(demandBins, Rect, myRect) {
+    myRect.RectSetStyle(DEMAND_BIN_RECT);
+    myRect.RectWriteOutput(plotOpFile);
+  } END_FOR;
+
   Line myLine;
   VECTOR_FOR_ALL_ELEMS(lines, Line, myLine) {
     myLine.LineSetStyle(NORMAL_LINE);
@@ -295,6 +345,12 @@ RectGetStyleString(Rect &thisRect)
     break;
   case STRETCHED_BIN_RECT: 
     styleString = "fs empty border lc rgb \"green\"";
+    break;
+  case SUPPLY_BIN_RECT:
+    styleString = "fs empty border lc rgb \"green\"";
+    break;
+  case DEMAND_BIN_RECT:
+    styleString = "fs empty border lc rgb \"red\"";
     break;
   default: 
     break;

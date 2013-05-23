@@ -42,7 +42,9 @@ class LegalizeBin{
  private:
   int binBegin;
   int binEnd;
+  int binBot;
   int binWidth;
+  int binHeight;
   bool binLBound;
   bool binRBound;
   bool isEmpty;
@@ -51,6 +53,7 @@ class LegalizeBin{
   map<Cell*, double> cellFracts;
   int supply;
   int totalCellWidth;
+  int binIndex;
 
  public:
   /* Constructor and Destructor */
@@ -69,7 +72,11 @@ class LegalizeBin{
   void BinSetTotalCellWidth(int);
   void BinSetLBound(bool);
   void BinSetRBound(bool);
-
+  void BinSetIndex(int);
+  void BinSetCellFract(Cell*, double);
+  void BinSetHeight(int);
+  void BinSetBot(int);
+  
   /* Get functions */
   int BinGetBegin(void);
   int BinGetEnd(void);
@@ -81,16 +88,20 @@ class LegalizeBin{
   bool BinGetRBound(void);
   int BinGetFCellWidth(void);
   int BinGetLCellWidth(void);
-
-  
+  int BinGetIndex(void);
+  double BinGetCellFract(Cell*);
   vector<Cell*>& BinGetCellsInBin(void);
   int BinGetTotalCellWidth(void);
-  
+  void BinGetFractCells(map<Cell*, double> &);
+  int BinGetHeight(void);
+  int BinGetBot(void);  
+
   /* Other functions */
   void BinAddCellToBin(Cell*);
   void BinCalculateWidth(void);
   void BinFindCellsInBin(vector<Cell*> &);
-  //void BinCalculateSupply(void);
+  void BinAddCellFracts(Cell*, double);
+  map<Cell*, double>& BinGetAllFractCells(void);
 };
 
 
@@ -264,6 +275,8 @@ Region* LegalizeFindPorNRegion(vector<Region*> &, Region* , bool);
 void LegalizeSnapCellsToFreeZone(int, int, vector<Cell*> &, int, int);
 void LegalizeAddCellsToRegions(vector<Cell*> &, vector<Region*> &);
 
+void LegalizeFindBinsInRow(vector<Zone*> &, vector<LegalizeBin*> &, PhysRow* &, int, int, int);
+
 void LegalizeMergeBins(vector<LegalizeBin*> &, int);
 
 void LegalizeAddCellsToBins(vector<Cell*> &cellsInRow, vector<LegalizeBin*> &allBins);
@@ -272,5 +285,16 @@ void LegalizeCellGetCost(Cell &, double&, double&, double&, double&, double&);
 
 PhysRow* LegalizeGetRowByIndex(vector<PhysRow*> &, int);
 
+double LegalizeThetaFunc(uint, uint, uint, uint);
+
+void LegalizeDoFractReassign(vector<LegalizeBin*>&, vector<LegalizeBin*>&);
+
+void LegalizePlotData(string, string, Design&, vector<LegalizeBin*> &);
+
+void LegalizeCalcSuppForBins(vector<LegalizeBin*> &, vector<LegalizeBin*> &, vector<LegalizeBin*> &);
+
+void
+LegalizeGetNeighbours(LegalizeBin*&, LegalizeBin*&,
+		      LegalizeBin*&, vector<LegalizeBin*>&);
 # endif
 

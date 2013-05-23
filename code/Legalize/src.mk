@@ -1,3 +1,3 @@
 MODULE = Legalize
-SRCFILES = LegalizeMain
+SRCFILES = LegalizeZone LegalizeBin LegalizeMain
 HFILES := Legalize Pin PhysRow common Cell 
