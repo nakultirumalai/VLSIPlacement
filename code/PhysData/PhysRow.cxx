@@ -264,13 +264,22 @@ PhysRow::PhysRowMarkFixedCellsInRow(int columnWidth)
     }
   }END_FOR;
 }
-/*
-int  
-PhysRow::PhysRowGetRowEnd(void)
+
+void
+PhysRow::PhysRowGetBoundingBox(int &minx, int &miny, int &maxx, int &maxy)
 {
-  return rowEnd;
+  if ((this->rowType) == HORIZONTAL){
+    minx = this->rowBegin;
+    miny = this->coordinate;
+    maxx = minx + (this->numSites) * (this->siteSpacing);
+    maxy = miny + (this->height);
+  } else if ((this->rowType) == VERTICAL) {
+    minx = this->coordinate;
+    miny = this->rowBegin;
+    maxx = minx + this->height;
+    maxy = miny + (this->numSites) * (this->siteSpacing);
+  }
 }
-*/
 
 void
 PhysRow::PhysRowGetBoundingBox(vector<int> &v)

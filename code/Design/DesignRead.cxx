@@ -80,7 +80,8 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   DesignReadCmdsFile();
   DesignReadPinsMapFile();
   DesignReadCellDelaysFile();
-
+  DesignShiftChipToZeroZero();
+  DesignSetVarsPostRead();
   DesignFile.close();
 }
 
@@ -90,7 +91,7 @@ Design::DesignFileReadOneNode(ifstream& file)
   Cell *newCell;
   string NodeName, terminalString;
   string line;
-  unsigned int height, width;
+  double height, width;
   bool terminalCell;
 
   while (!file.eof()) {
@@ -103,12 +104,14 @@ Design::DesignFileReadOneNode(ifstream& file)
     }
     istringstream stream(line, istringstream::in);
 
-    stream >> NodeName; stream >> width; stream >> height;
+    stream >> NodeName; 
+    stream >> width; stream >> height;
     if (!stream.eof()) stream >> terminalString;
 
     terminalCell = false;
     if (terminalString == NODE_TERMINAL_KEYWORD) {
       terminalCell = true;
+      NumTerminalCells++;
     }
     newCell = new Cell(height, width, NodeName, terminalCell);
     
@@ -243,6 +246,10 @@ Design::DesignFileReadOneNet(ifstream &file)
     Net *newNet;
     string Msg;
 
+    if (NetName == "") {
+      int netSuffix = DesignNets.size();
+      NetName = "Net" + getStrFromInt(netSuffix);
+    }
     newNet = new Net(0, NetName);
     DesignNets[NetName] = newNet;
 
@@ -296,7 +303,7 @@ Design::DesignFileReadOneRow(ifstream &file)
 {
   string rowProperty, garbage, line;
   bool rowBegin;
-  int rowCoordinate, subRowOrigin;
+  int rowCoordinate, subRowOrigin, rowLeft;
   unsigned int height, siteWidth, siteSpacing, numSites;
   rowOrientation rowType;
   objOrient siteOrient;
@@ -305,6 +312,7 @@ Design::DesignFileReadOneRow(ifstream &file)
   vector<unsigned int> numSitesForSubRows;
 
   rowBegin = false;
+  rowLeft = -INT_MAX;
   while (!file.eof()) {
     getline(file, line);
     if (line == "") {
@@ -361,6 +369,9 @@ Design::DesignFileReadOneRow(ifstream &file)
 	stream >> numSites;
       } else {_ASSERT_TRUE("Benchmark error: Cannot find NumSites for a subRow");break;}
       subRowOrigins.push_back(subRowOrigin);
+      if (rowLeft == -INT_MAX) {
+	rowLeft = subRowOrigin;
+      }
       numSitesForSubRows.push_back(numSites);
     } else if (strToLower(rowProperty) == strToLower(ROW_END_KEYWORD)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
@@ -374,7 +385,9 @@ Design::DesignFileReadOneRow(ifstream &file)
   PhysRow *row;
   row = new PhysRow(rowType, rowCoordinate, height, siteWidth, siteSpacing,
 		    siteOrient, symmetry);
-  
+  if (rowLeft != -INT_MAX) {
+    (*row).PhysRowSetRowBegin(rowLeft);
+  }
   VECTOR_FOR_ALL_ELEMS_DOUBLE(subRowOrigins, int, subRowOrigin,
 			      numSitesForSubRows, unsigned int, numSites) {
     (*row).PhysRowAddSubRow(subRowOrigin, numSites);
@@ -424,7 +437,7 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
 {
   string line;
   string cellName, orient, fixed;
-  unsigned int xPos, yPos;
+  double xPos, yPos;
   bool cellFixed;
   
   while (!file.eof()) {
@@ -439,6 +452,9 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
     stream >> orient;
     stream >> orient;
 
+    if (cellName == "p1" || cellName == "p10") {
+      cout << "break here";
+    }
     cellFixed = false;
     if (stream >> fixed) {
       if (fixed == "/FIXED") {
@@ -453,16 +469,25 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
     if (thisCell == NIL(Cell *)) {
       _ASSERT_TRUE("Cell not found in design database!");
     }
+
+    if (xPos < preShiftLeft) {
+      preShiftLeft = xPos;
+    }
+    if (yPos < preShiftBot) {
+      preShiftBot = yPos;
+    }
     (*thisCell).CellSetXpos(xPos);
     (*thisCell).CellSetYpos(yPos);
 
     orientation = N;
     if (orient != "") {
-      orientation = 
-	getOrientationFromStr(orient);
+      orientation = getOrientationFromStr(orient);
     }
     (*thisCell).CellSetOrientation(orientation);
     (*thisCell).CellSetIsFixed(cellFixed);
+    if ((*thisCell).CellIsTerminal() && !cellFixed) {
+      (*thisCell).CellSetIsPort(true);
+    }
     if (cellFixed) {
       NumFixedCells++;
     }

@@ -71,6 +71,13 @@
     if (!((*CellPtr).CellIsSequential()))	\
       continue;
 
+# define DESIGN_FOR_ALL_ROWS(Design, RowIdx, PhysRowPtr) \
+  { \
+  vector<PhysRow *> DesignPhysRows = Design.DesignGetRows(); \
+  uint NumRows = DesignPhysRows.size();              \
+  for (RowIdx = 0; RowIdx < NumRows; RowIdx++) { \
+    PhysRowPtr = DesignPhysRows[RowIdx];
+
 # define DESIGN_FOR_ALL_BINS(Design, BinIdx, BinPtr) \
   { \
   vector<Bin*> DesignBins = Design.DesignGetBins(); \

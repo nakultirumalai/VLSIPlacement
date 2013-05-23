@@ -288,6 +288,7 @@ incForce(const pair<Cell*, int> &i, const pair<Cell*, int> &j)
 void
 LegalizeDesign(Design &myDesign)
 {
+  _STEP_BEGIN("Legalizing design");
   /* Get all the physical rows in Design */
   vector<PhysRow*> allPhysRows;
   vector<PhysRow*> copyAllRows;
@@ -438,4 +439,5 @@ LegalizeDesign(Design &myDesign)
     //    cout << " NUMBER OF CELLS: " << cellCount << endl;
   } END_FOR;
   cout << " Total Cell Count : " << totalCellCount << endl;
+  _STEP_END("Legalizing design");
 }

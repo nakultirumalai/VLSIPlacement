@@ -422,6 +422,36 @@ void CellClearAllIsLocked(void)
   FlagsDefClearAllObjs(CELL_IS_LOCKED_FLAG);
 }
 
+bool CellIsStarNode(Cell *cellPtr)
+{
+  bool rtv;
+
+  void *obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetFlag(CELL_IS_STAR_NODE_FLAG, obj);
+  
+  return (rtv);
+}
+
+void CellSetIsStarNode(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetFlag(CELL_IS_STAR_NODE_FLAG, obj);
+}
+
+void CellClearIsStarNode(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetFlag(CELL_IS_STAR_NODE_FLAG, obj);
+}
+
+void CellClearAllIsStarNode(void)
+{
+  FlagsDefClearAllObjs(CELL_IS_STAR_NODE_FLAG);
+}
+
 /* PhysRowSupply Flag */
 double PhysRowGetSupply(PhysRow * rowPtr)
 {

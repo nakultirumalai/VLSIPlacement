@@ -89,6 +89,7 @@ Design::DesignPropagateTerminals(Cell* fromCell, Cell* toCell)
   Pin *PinPtr;
   char dir;
 
+  dir = 0;
   CELL_FOR_ALL_PINS((*fromCell), dir, PinPtr) {
     Pin *pinPtr = new Pin((*PinPtr).PinGetId(), (*toCell), 
 			  (*PinPtr).PinGetName());

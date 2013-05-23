@@ -24,12 +24,12 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
   vector<double> valij_vecy, val_vecy;
   uint i;
 
-  getObjectiveCliqueModelXY(myDesign, myGraph, inputCells, 
-			    subi_vecx, subj_vecx, valij_vecx, 
-			    sub_vecx, val_vecx, 
-			    subi_vecy, subj_vecy, valij_vecy, 
-			    sub_vecy, val_vecy, 
-			    constantx, constanty, quadMap, linMap);
+  getObjectiveStarModelXY(myDesign, myGraph, inputCells, 
+			  subi_vecx, subj_vecx, valij_vecx, 
+			  sub_vecx, val_vecx, 
+			  subi_vecy, subj_vecy, valij_vecy, 
+			  sub_vecy, val_vecy, 
+			  constantx, constanty, quadMap, linMap);
 
   *qsubix = (MSKidxt *) malloc(sizeof(MSKidxt) * subi_vecx.size());
   *qsubiy = (MSKidxt *) malloc(sizeof(MSKidxt) * subi_vecy.size());
@@ -42,7 +42,6 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
   *qvalx = (MSKrealt *) malloc(sizeof(MSKrealt) * val_vecx.size());
   *qvaly = (MSKrealt *) malloc(sizeof(MSKrealt) * val_vecy.size());
 
-  //  cout << "subix\tsubjx\tvalijx\tsubiy\tsubjy\tvalijy" << endl;
   for (i = 0; i < subi_vecx.size(); i++) {
     (*qsubix)[i] = subi_vecx[i];
     (*qsubjx)[i] = subj_vecx[i];
@@ -50,20 +49,14 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
     (*qsubiy)[i] = subi_vecy[i];
     (*qsubjy)[i] = subj_vecy[i];
     (*qvalijy)[i] = 2 * valij_vecy[i];
-    //    cout << (*qsubix)[i] << "\t" << (*qsubjx)[i] << "\t" 
-    //	 << (*qvalijx)[i] << "\t" << (*qsubiy)[i] << "\t"
-    //	 << (*qsubjy)[i] << "\t" << (*qvalijy)[i] << endl;
   }
   numValuesQuad = subi_vecx.size();
 
-  //  cout << "subx\tvalx\tsuby\tvaly" << endl;
   for (i = 0; i < sub_vecx.size(); i++) {
     (*qsubx)[i] = sub_vecx[i];
     (*qvalx)[i] = 2 * val_vecx[i];
     (*qsuby)[i] = sub_vecy[i];
     (*qvaly)[i] = 2 * val_vecy[i];
-    //    cout << (*qsubx)[i] << "\t" << (*qvalx)[i] << "\t" 
-    //	 << (*qsuby)[i] << "\t" << (*qvaly)[i] << endl;
   }
 
   numValuesLin = sub_vecx.size();
@@ -80,6 +73,7 @@ getVarBoundsInMosekFormat(Design &myDesign, vector<Cell *>inputCells,
   uint maxx, maxy;
   double upperBound, lowerBound, delta;
   unsigned int numCells;
+  uint cellHeight, cellWidth;
 
   myDesign.DesignGetBoundingBox(maxx, maxy);
   numCells = inputCells.size();
@@ -100,14 +94,14 @@ getVarBoundsInMosekFormat(Design &myDesign, vector<Cell *>inputCells,
   lowerBound = 0.0 + delta;
   for (int i = 0; i < numCells; i++) {
     Cell &thisCell = *(inputCells[i]);
-    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO -
-      ((double)thisCell.CellGetWidth()) / GRID_COMPACTION_RATIO;
+    cellHeight = thisCell.CellGetHeight();
+    cellWidth = thisCell.CellGetWidth();
+    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO - ((double)cellWidth) / GRID_COMPACTION_RATIO;
     (*blx)[i] = lowerBound;
     (*bux)[i] = upperBound;
     (*bkx)[i] = MSK_BK_RA;
     (*subbx)[i] = i;
-    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO -
-      ((double)thisCell.CellGetWidth()) / GRID_COMPACTION_RATIO;
+    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO - ((double)cellHeight) / GRID_COMPACTION_RATIO;
     (*bly)[i] = lowerBound;
     (*buy)[i] = upperBound;
     (*bky)[i] = MSK_BK_RA;
@@ -215,6 +209,7 @@ Design::DesignSolveForAllCellsIter()
   getVarBoundsInMosekFormat((*this), inputCells, &subbx, &blx, &bux, &bkx, 
 			    &subby, &bly, &buy, &bky, numXbounds, numYbounds);
 
+
   /* STORE THE ORIGINAL VALUES OF THE QUADRATIC TERMS IN A MAP */
   /* THIS WOULD BE A KEY-VALUE: INDEX-VALUE PAIR WHICH WOULD   */
   /* THEN BE USED TO REPLACE THE VALUES IN THE QVALIJ MATRIX   */
@@ -309,7 +304,7 @@ Design::DesignSolveForAllCellsIter()
 	}
       }
     }
-
+    
     /**************************************************************/
     /* ASSIGN LOCATIONS TO CELLS                                  */
     /**************************************************************/
@@ -325,7 +320,7 @@ Design::DesignSolveForAllCellsIter()
       CellSetDblY(cellPtr, ypos);
     }
     _STEP_END("Assigning locations to cells");
-
+    
     /**************************************************************/
     /* BIN CREATION AND STRETCHING                                */
     /**************************************************************/
@@ -387,6 +382,7 @@ Design::DesignSolveForAllCellsIter()
     double cellXpos, cellYpos;
     for (i = 0; i < numVars; i++) {
       Cell &thisCell = (*(Cell *)(inputCells[i]));
+      if (CellIsStarNode(&thisCell)) break;
       Bin &cellBin = *((Bin *)CellGetBin(&thisCell));
       cellXpos = CellGetDblX(&thisCell);
       cellYpos = CellGetDblY(&thisCell);

@@ -69,20 +69,23 @@ int main(int argc, char *argv[])
     //    myDesign.DesignSolveForAllCells(ALL_QO_WL);
     //    LegalizeDesign(myDesign);
     
-    return 0;
     DesignWriteBookShelfOutput(myDesign); 
-
+    LegalizeDesign(myDesign);
+    //    DesignWriteBookShelfOutput(myDesign); 
+    string plotFileName;
+    plotFileName = "Legal.plt";
+    myDesign.DesignPlotData("Title", plotFileName);
+    return 0;
     /* Plot the stuff in the design */
     //    string plotFileName;
     //    plotFileName = "Itr.plt";
     //    myDesign.DesignPlotData("Title", plotFileName);
-    LegalizeDesign(myDesign);
-    DesignWriteBookShelfOutput(myDesign); 
 
-    /* Plot the stuff in the design */
+    /* Plot the stuff in the design 
     string plotFileName;
     plotFileName = "Legal.plt";
     myDesign.DesignPlotData("Title", plotFileName);
+*/
 
     if (performAnalysis == true) {
       DesignCollectStats(myDesign);
