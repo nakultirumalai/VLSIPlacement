@@ -296,5 +296,11 @@ void LegalizeCalcSuppForBins(vector<LegalizeBin*> &, vector<LegalizeBin*> &, vec
 void
 LegalizeGetNeighbours(LegalizeBin*&, LegalizeBin*&,
 		      LegalizeBin*&, vector<LegalizeBin*>&);
+
+/*** FILE LegalizeUtils.cxx ***/
+double 
+LegalizeGetCellsToMove(LegalizeBin &srcBin, LegalizeBin &destBin,
+		       vector<Cell *> &binCells, bool sameZone,
+		       vector<Cell *> &cellsToMove);
 # endif
 

@@ -50,7 +50,13 @@ getObjectiveStarModelXY(Design &myDesign, HyperGraph &myGraph,
       NET_FOR_ALL_PINS(relatedNet, pinPtri) {
 	Cell &celli = (*pinPtri).PinGetParentCell();
 	cellPtri = &celli;
-	cellIdxi = cellLookupMap[cellPtri];
+	/* Skip terminal cells as they do not have a variable associated to 
+	   them */
+	_KEY_EXISTS(cellLookupMap, cellPtri) {
+	  cellIdxi = cellLookupMap[cellPtri];
+	} else {
+	  continue;
+	}
 	coeffX = edgeWeight;
 	coeffY = edgeWeight;
 	/* Mark the pin as visited */
@@ -141,7 +147,6 @@ getObjectiveStarModelXY(Design &myDesign, HyperGraph &myGraph,
 	cellPtri = &celli;
 	coeffX = edgeWeight * numNetPins;
 	coeffY = edgeWeight * numNetPins;
-
 	cellIsTerminal = (*cellPtri).CellIsTerminal();
 	if (!cellIsTerminal) {
 	  cellIdxi = cellLookupMap[cellPtri];

@@ -780,30 +780,6 @@ LegalizeDoFractReassign(vector<LegalizeBin*> &suppBins,
 
 
 void
-LegalizeGetAdjacentBins(LegalizeBin* &thisBin, LegalizeBin* &leftBin, 
-			LegalizeBin* &rightBin, LegalizeBin* &topBin, 
-			LegalizeBin* &botBin, vector<LegalizeBin*> &allBins,
-			vector<PhysRow*> &allPhysRows)
-{
-  int endIdx = allBins.size() - 1;
-  int thisBinIdx = (*thisBin).BinGetIndex();
-  int leftBinIdx = thisBinIdx - 1;
-  if (leftBinIdx < 0) {
-    leftBin = NIL(LegalizeBin*);
-  }
-  if (leftBinIdx >= 0) {
-    leftBin = allBins[leftBinIdx];
-  }
-  int rightBinIdx = thisBinIdx + 1;
-  if (rightBinIdx > endIdx) {
-    rightBin = NIL(LegalizeBin*);
-  }
-  if (rightBinIdx <= endIdx) {
-    rightBinIdx = allBins[rightBinIdx];
-  }
-  
-  
-void
 LegalizePlotData(string plotTitle, string plotFileName, Design &thisDesign, 
 		 vector<LegalizeBin*> &DesignBins)
 {

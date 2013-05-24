@@ -3,7 +3,7 @@
 void
 MSKAPI printDesignSolverOutput(void *handle, const char str[])
 {
-  //  printf("%s", str);
+  printf("%s", str);
 }
 
 void
@@ -204,7 +204,7 @@ Design::DesignSolveForAllCellsIter()
 			  &qvalijx, &qvalx, &qvalijy, 
 			  &qvaly, numValuesQuad, numValuesLin, 
 			  constantx, constantx, quadMap, linMap);
-
+  cout << "Number of nonzero elements in the Hessian:" << numValuesQuad << endl;
   /* Get the variable bounds */
   getVarBoundsInMosekFormat((*this), inputCells, &subbx, &blx, &bux, &bkx, 
 			    &subby, &bly, &buy, &bky, numXbounds, numYbounds);
@@ -230,7 +230,7 @@ Design::DesignSolveForAllCellsIter()
   /* MOSEK ENV */
   MSKenv_t envx, envy;
   MSKtask_t taskx, tasky;
-  MSKrescodee r;
+  MSKrescodee r = MSK_RES_OK;
   bool opRes;
   uint itrCount;
   double stopThreshold;
@@ -390,9 +390,6 @@ Design::DesignSolveForAllCellsIter()
 				   qvalijx, qvalijy, qvalx, qvaly,
 				   quadMap, linMap);
     }
-    
-    //    DesignSpreadCellsFast(myGraph, qvalijx, qvalijy, qvalx, qvaly, 
-    //    			  quadMap, linMap);
     _STEP_END("Perform cell spreading");
 
     /**************************************************************/

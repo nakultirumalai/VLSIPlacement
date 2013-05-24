@@ -211,6 +211,7 @@ Design::DesignSolveForAllCellsIter()
 			  &qvaly, numValuesQuad, numValuesLin, 
 			  constantx, constantx, quadMap, linMap);
 
+  cout << "Number of nonzero elements in the Hessian:" << numValuesQuad << endl;
   /* Get the variable bounds */
   getVarBoundsInMosekFormat((*this), inputCells, &subbx, &blx, &bux, &bkx, 
 			    &subby, &bly, &buy, &bky, numXbounds, numYbounds);
@@ -235,7 +236,7 @@ Design::DesignSolveForAllCellsIter()
   /* MOSEK ENV */
   MSKenv_t envx, envy;
   MSKtask_t taskx, tasky;
-  MSKrescodee r;
+  MSKrescodee r = MSK_RES_OK;
   bool opRes;
   uint itrCount;
   double stopThreshold;
