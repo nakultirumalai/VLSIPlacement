@@ -189,6 +189,7 @@ Design::DesignCreatePseudoPort(Cell &thisCell,
     }
     break;
   default: cout << "DEFAULT CASE NOT EXPECTED" << endl;
+    exit(0);
   };
 
   /* Since we are minimizing quadratic wirelength. Model of force for 
@@ -199,18 +200,19 @@ Design::DesignCreatePseudoPort(Cell &thisCell,
   springConstant = magnitude / spreadForce;
   
   coeffX = 2 * springConstant; coeffY = coeffX;
-
   _KEY_EXISTS_WITH_VAL(quadMap, (&thisCell), quadMapItr) {
     quadCellIdx = quadMapItr->second;
   } else {
     cout << "SEVERE ERROR QUAD: ENTRY FOR cell: (PTR: " << &thisCell << ") " 
 	 << thisCell.CellGetName() << " not found in quadMap" << endl;
+    exit(0);
   }
   _KEY_EXISTS_WITH_VAL(linMap, (&thisCell), linMapItr) {
     linCellIdx = linMapItr->second;
   } else {
     cout << "SEVERE ERROR LINEAR: ENTRY FOR cell: (PTR: " << &thisCell << ") " 
 	 << thisCell.CellGetName() << " not found in linMap" << endl;
+    exit(0);
   }
 
   /* Update the diagonals of the quadratic matrix */
@@ -272,14 +274,19 @@ spreadCellInBin(Design &myDesign, HyperGraph &myGraph, Bin *binPtr,
       xjPrime = newBinRight * (xj - binLeft);
       xjPrime += newBinRightPrev * (binRight - xj);
       xjPrime /= (binRight - binLeft);
-      alphaX = 0.5 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+      alphaX = 0.02 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+      //      alphaX = (1 /maxUtil) * (averageCellWidth/cellHeight);
+      //      alphaX = (1/maxUtil);
+      //  alphaX = 1;
       newXPos = xj + alphaX * (xjPrime - xj);
     }
     if (!noYSpread) {
       yjPrime = newBinTop * (yj - binBot);
       yjPrime += newBinTopPrev * (binTop - yj);
       yjPrime /= (binTop - binBot);
-      alphaY = 0.8 + (0.5/maxUtil);
+      //      alphaY = 0.1 + (0.5/maxUtil);
+      //alphaY = (1 /maxUtil);
+      alphaY = 1;
       newYPos = yj + alphaY * (yjPrime - yj);
     }
     //    cout <<"DBG: CELL: " << thisCell.CellGetName() << " OLD: X: " << xj <<" Y: " << yj <<" NEW: X: " << newXPos << " Y: "<< newYPos << " B: OLD R : " << binRight << " OLD T:" << binTop << " NEW R: " << newBinRight << " NEW T: " << newBinTop << endl;
@@ -495,10 +502,11 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
   double xj, yj, xjPrime, yjPrime;
   double totalXForce, totalYForce, magnitude;
   double chipBoundLeft, chipBoundRight, chipBoundTop, chipBoundBot;
-  double maxUtil;
+  double maxUtil, averageCellWidth;
   int binIdx, prevBinIdx;
   uint binLeft, binRight, binBot, binTop;
-  uint cellHeight;
+  uint maxx, maxy;
+  uint cellHeight, cellWidth;
   char forceDir;
   bool stretchInX, stretchInY;
 
@@ -525,24 +533,35 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
     newBinTopPrev = prevBin.BinGetNewTop();
   } 
   
-  cellBin.BinGetBoundingBox(binLeft, binBot, binRight, binTop);
+  cellBin.BinGetBoundingBox(binLeft, binRight, binBot, binTop);
   newBinRight = cellBin.BinGetNewRight();
   newBinTop = cellBin.BinGetNewTop();
   maxUtil = DesignGetPeakUtil();
-  
+  DesignGetBoundingBox(maxx, maxy);
   if (stretchInX) {
     xjPrime = newBinRight * (xj - binLeft);
     xjPrime += newBinRightPrev * (binRight - xj);
     xjPrime /= (binRight - binLeft);
-    alphaX = 0.5 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+    //    alphaX = 0.09 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+    //    alphaX = 0.07 + (1 / maxUtil) * (averageCellWidth/cellHeight);
+    alphaX = 1.0;
     newXPos = xj + alphaX * (xjPrime - xj);
+    cellWidth = thisCell.CellGetWidth();
+    if (newXPos > (maxx - cellWidth)) {
+      newXPos = maxx - cellWidth;
+    }
   }
   if (stretchInY) {
     yjPrime = newBinTop * (yj - binBot);
     yjPrime += newBinTopPrev * (binTop - yj);
     yjPrime /= (binTop - binBot);
-    alphaY = 0.8 + (0.5/maxUtil);
+    //    alphaY = 0.09 + (0.5/maxUtil);
+    //    alphaY = 0.07 + (1 / maxUtil);
+    alphaY = 1.0;
     newYPos = yj + alphaY * (yjPrime - yj);
+    if (newYPos > (maxy - cellHeight)) {
+      newYPos = maxy - cellHeight;
+    }
   }
   
   /* COMPUTE FORCE ON CELL IN NEW POSITION */

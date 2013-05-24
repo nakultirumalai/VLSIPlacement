@@ -148,6 +148,10 @@ class HyperGraph {
   vector<void *> HyperGraphGetConnectedCells(void*);
   long int HyperGraphNodesAreAdjacent(void*, void*);
 
+  /* Special functions in case the graph only has two 
+     edges */
+  void* GraphGetOtherNodeOfEdge(uint edgeIdx, void *);
+
   /* Remove the last edge */
   void RemoveEdge(void);
   void RemoveNode(void);

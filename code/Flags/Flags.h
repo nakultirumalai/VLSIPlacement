@@ -26,6 +26,7 @@ typedef enum {
   CELL_IS_PSEUDO_FLAG,
   CELL_IS_FIXED_FLAG,
   CELL_IS_LOCKED_FLAG,
+  CELL_IS_STAR_NODE_FLAG,
   TOTAL_NUM_INT_FLAGS
 } flagIntType;
 
@@ -130,6 +131,11 @@ extern bool CellIsLocked(Cell *);
 extern void CellSetIsLocked(Cell *);
 extern void CellClearIsLocked(Cell *);
 extern void CellClearAllIsLocked(void);
+
+extern bool CellIsStarNode(Cell *);
+extern void CellSetIsStarNode(Cell *);
+extern void CellClearIsStarNode(Cell *);
+extern void CellClearAllIsStarNode(void);
 
 extern double PhysRowGetSupply(PhysRow *);
 extern void PhysRowSetSupply(PhysRow *, double);

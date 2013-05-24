@@ -62,24 +62,25 @@ int main(int argc, char *argv[])
     HyperGraph &myGraph = convertDesignToGraph(myDesign);
     
     //myDesign.DesignSolveForSeqCells();
-    
-    //    myDesign.DesignSolveForAllCellsIter();
-    //    myDesign.DesignSolveForAllCells(ALL_QO_WL);
-    //    LegalizeDesign(myDesign);
-    
+    //myDesign.DesignSolveForAllCellsIter();
+    LegalizeDesign(myDesign);
     DesignWriteBookShelfOutput(myDesign); 
 
+    //    DesignWriteBookShelfOutput(myDesign); 
+    string plotFileName;
+    plotFileName = "Legal.plt";
+    myDesign.DesignPlotData("Title", plotFileName);
+    return 0;
     /* Plot the stuff in the design */
     //    string plotFileName;
     //    plotFileName = "Itr.plt";
     //    myDesign.DesignPlotData("Title", plotFileName);
-    LegalizeDesign(myDesign);
-    DesignWriteBookShelfOutput(myDesign); 
 
-    /* Plot the stuff in the design */
+    /* Plot the stuff in the design 
     string plotFileName;
     plotFileName = "Legal.plt";
     myDesign.DesignPlotData("Title", plotFileName);
+*/
 
     if (performAnalysis == true) {
       DesignCollectStats(myDesign);

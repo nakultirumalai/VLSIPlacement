@@ -630,6 +630,24 @@ HyperGraph::HyperGraphNodesAreAdjacent(void* cellPtr1, void* cellPtr2)
   return (returnEdgeIdx);
 }
 
+void* 
+HyperGraph::GraphGetOtherNodeOfEdge(uint edgeIdx, void *obj)
+{
+  map<uint, uint> &nodeMap = Edges2Nodes[edgeIdx];
+  uint thisNodeIdx, otherNodeIdx;
+  void *rtv;
+  
+  thisNodeIdx = obj2idx[obj];
+  MAP_FOR_ALL_KEYS(nodeMap, uint, uint, otherNodeIdx) {
+    if (otherNodeIdx == thisNodeIdx) continue;
+    break;
+  } END_FOR;
+  
+  rtv = GetNodeObject(otherNodeIdx);
+  
+  return (rtv);
+}
+
 HyperGraph::~HyperGraph() 
 {
 

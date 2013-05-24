@@ -11,11 +11,11 @@
 # include <Sort.h>
 # include <Flags.h>
 # include <DesignIter.h>
-# include <AnalyticalSolve.h>
+# include <mosek.h>
+# include <TimingModels.h>
 # include <CellSpread.h>
 # include <Bin.h>
 # include <Plot.h>
-# include <mosek.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -119,14 +119,17 @@ class Design {
 
   HyperGraph *DesignGraphPtr;
   unsigned int NumCells;
+  unsigned int NumStdCells;
+  unsigned int NumMacroCells;
+  unsigned int NumFixedCells;
+  unsigned int NumTerminalCells;
   unsigned int NumTopCells;
   unsigned int NumNets;
   unsigned int NumTopNets;
   unsigned int NumPhysRows;
-  unsigned int NumFixedCells;
-  unsigned int NumTerminalCells;
   unsigned int singleRowHeight;
-  unsigned int maxx, maxy;
+  int maxx, maxy;
+  int preShiftLeft, preShiftBot, preShiftRight, preShiftTop;
 
   string Name;
   string DesignPath;
@@ -154,7 +157,9 @@ class Design {
   double peakUtilization;
   
   /* Average cell width */
-  double averageCellWidth;
+  double averageStdCellHeight, averageStdCellWidth;
+
+  void DesignSetVarsPostRead(void);
 
   void DesignInit(void);
   void DesignFileReadHeader(ifstream&);
@@ -187,6 +192,7 @@ class Design {
   void DesignPropagateTerminals(Cell *, Cell *);
 
   void DesignUpdateChipDim(PhysRow *);
+  void DesignShiftChipToZeroZero(void);
 
   /* Bin related set functions */
   void DesignSetPeakUtil(double);
@@ -220,6 +226,7 @@ class Design {
   void DesignReadPinsMapFile();
   void DesignReadCellDelaysFile();
   void DesignCreateBins(uint, uint);
+  void DesignCreateBins(void);
 
   void DesignClearBins(void);
 
@@ -251,8 +258,6 @@ class Design {
   void DesignGetBoundingBox(uint&, uint&);
   
   map<unsigned int, unsigned int> DesignGetRowHeights();
-  void DesignClusterCells(HyperGraph&, clusteringType);
-  void DesignCollapseCluster(Cell& MasterCell);
 
   /* Solver functions */
   void DesignSolveForSeqCells(seqSolverType);
@@ -262,8 +267,11 @@ class Design {
   void DesignSetCellsToSolve(vector<Cell *>);
   void DesignSolveForAllCellsIter(void);
   void DesignSolveForAllCellsIterOld(void);
+  void DesignSolveFastOOQP(void);
 
   /* Clustering functions */
+  void DesignClusterCells(HyperGraph&, clusteringType);
+  void DesignCollapseCluster(Cell& MasterCell);
   bool DesignDoDefaultCluster(HyperGraph&);
   bool DesignDoFCCluster(HyperGraph&);
   bool DesignDoNetCluster(HyperGraph&);
@@ -276,6 +284,9 @@ class Design {
   
   /* Property checking function */
   bool DesignCheckSolvedCellsProperty(vector<Cell*>);
+  double DesignGetAverageStdCellWidth(void);
+  double DesignGetAverageStdCellHeight(void);
+  uint DesignGetNumStdCells(void);
 
   /* Spreading related : pseudo net add / get functions */
   void DesignAddPseudoNet(Net *);
@@ -297,9 +308,9 @@ class Design {
 				    MSKrealt*, MSKrealt*, MSKrealt*, 
 				    std::map<Cell *, unsigned int>&, 
 				    std::map<Cell *, unsigned int>&);
-  void DesignStretchBins(void);
 
   /* Bin related functions */
+  void DesignStretchBins(void);
   double DesignGetPeakUtil(void);
   uint DesignGetPeakUtilBinIdx(void);
   int DesignGetNextRowBinIdx(uint);
@@ -312,7 +323,12 @@ class Design {
 				     vector<Cell *> &, vector<Cell *> &, 
 				     double&, double&);
   void DesignPlotData(string, string);
-  
+
+
+  /* DEFINING AN EXTENSIVE LIST OF DEBUG FUNCTIONS THAT 
+     WILL BE HELPFUL */
+  void DesignPrintPorts(uint);
+  void DesignPrintTerminals(uint);
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);

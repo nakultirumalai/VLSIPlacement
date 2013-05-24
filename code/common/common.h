@@ -47,7 +47,7 @@ extern bool performNetHidingConsistency;
 extern unsigned int traceDepth;
 extern bool performAnalysis;
 extern bool varOption;
-
+extern uint starModelUpgradeNumPins;
 
 # define _STEP_BEGIN(stepName)  {					\
     stepDepth++;							\

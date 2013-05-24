@@ -80,6 +80,11 @@ Design::DesignAddOneCellToDesignDB(Cell *newCell)
 {
   if (!DesignCellIsStdCell((*this),*newCell)) {
     (*newCell).CellSetIsMacro(true);
+    NumMacroCells++;
+  } else {
+    this->averageStdCellWidth += (*newCell).CellGetWidth();
+    this->averageStdCellHeight += (*newCell).CellGetHeight();
+    NumStdCells++;
   }
   DesignCells[(*newCell).CellGetName()] = newCell;
   this->NumCells++;
@@ -148,6 +153,30 @@ Design::DesignSetNumBinCols(uint numCols)
   this->numBinCols = numCols;
 }
 
+void 
+Design::DesignCreateBins(void)
+{
+  uint binHeight, binWidth;
+  
+  binHeight = this->averageStdCellHeight;
+  binWidth = this->averageStdCellWidth;
+  
+  /* Configure bin to accommodate four cells */
+  /* SQUARE BIN */
+  //  binHeight *= 2; binWidth *= 2;
+  /* WIDE BIN */
+  //  binWidth*= 4; 
+  /* TALL BIN */
+  // binHeight = 4 * binHeight; */
+  /* LARGER SQUARE BIN */
+  // binHeight *= 3; binWidth *= 3; */
+  /* LARGER WIDE BIN */
+  binHeight *= 2; binWidth *= 4; 
+  /* LARGER TALL BIN */
+  //  binHeight *=3; binWidth *= 2;
+  DesignCreateBins(binHeight, binWidth);
+}
+
 void
 Design::DesignCreateBins(uint binHeight, uint binWidth)
 {
@@ -180,6 +209,7 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
   createBins = false;
   if (numBins == 0) createBins = true;
   bot = 0; top = binHeight;
+  //  cout << "Creating " << numCols * numRows << " bins" << endl;
   for (i = 0; i < numRows; i++) {
     left = 0; right = binWidth;
     for (j = 0; j < numCols; j++) {
@@ -198,6 +228,7 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
 			    cellsSortedByBot, overlapArea, totalCellWidth);
       utilization = overlapArea / (((double)binHeight) * binWidth);
       numCells = cellsOfBin.size();
+      averageCellWidth = 0.0;
       if (numCells > 0) {
 	averageCellWidth = totalCellWidth / numCells;
       }
@@ -413,8 +444,7 @@ Design::DesignAddCellToPhysRow(Cell* cell, vector<vector<int> > &allRowBounds,
 	  foundPos = true;
 	  break;
       }
-    }
-    else if (rowType == VERTICAL){
+    } else if (rowType == VERTICAL){
       int botX = Obj[0];
       int botY = Obj[1];
       int topX = Obj[2];
@@ -429,9 +459,7 @@ Design::DesignAddCellToPhysRow(Cell* cell, vector<vector<int> > &allRowBounds,
 	break;
       }
     }
-  }END_FOR;
-  //if (!foundPos)
-    //cout<<"No suitable location for cell: "<<(cell->CellGetName())<<endl;
+  } END_FOR;
 }
 
 void
@@ -486,6 +514,16 @@ Design::DesignGetNumCells(void)
   unsigned int rtv;
   
   rtv = this->NumCells;
+  
+  return (rtv);
+}
+
+unsigned int
+Design::DesignGetNumStdCells(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumStdCells;
   
   return (rtv);
 }
@@ -579,20 +617,95 @@ void
 Design::DesignUpdateChipDim(PhysRow *row)
 {
   vector<int> boundingBox;
-  uint left, bottom, right, top;
-  (*row).PhysRowGetBoundingBox(boundingBox);
-  left = boundingBox[0];
-  bottom = boundingBox[1];
-  right = boundingBox[2];
-  top = boundingBox[3];
-  
-  if (right > (*this).maxx) {
-    (*this).maxx = right;
-  } 
+  int &left = this->preShiftLeft;
+  int &right = this->preShiftRight;
+  int &bot = this->preShiftBot;
+  int &top = this->preShiftTop;
+  int rowLeft, rowBot, rowRight, rowTop;
+  (*row).PhysRowGetBoundingBox(rowLeft, rowBot, rowRight, rowTop);
 
-  if (top > (*this).maxy) {
-    (*this).maxy = top;
+  if (rowLeft < left) {
+    left = rowLeft;
+  }
+  if (rowRight > right) {
+    right = rowRight;
+    maxx = right;
   } 
+  if (rowBot < bot) {
+    bot = rowBot;
+  }
+  if (rowTop > top) {
+    top = rowTop;
+    maxy = top;
+  } 
+}
+
+void
+Design::DesignShiftChipToZeroZero(void)
+{
+  PhysRow *PhysRowPtr;
+  Cell *cellPtr;
+  string cellName;
+  uint RowIdx;
+  int rowLeft, rowRight, rowBot, rowTop;
+  int cellLeft, cellBot;
+  int rowCoordinate, rowBegin;
+  uint numSites, siteSpacing;
+  rowOrientation orient;
+
+  DESIGN_FOR_ALL_ROWS((*this), RowIdx, PhysRowPtr) {
+    orient = (*PhysRowPtr).PhysRowGetType();
+    rowCoordinate = (*PhysRowPtr).PhysRowGetCoordinate();
+    rowBegin = (*PhysRowPtr).PhysRowGetRowBegin();
+    siteSpacing = (*PhysRowPtr).PhysRowGetSiteSpacing();
+    numSites = (*PhysRowPtr).PhysRowGetNumSites();
+    if (orient == HORIZONTAL) {
+      rowCoordinate -= (*this).preShiftBot;
+      rowBegin -= (*this).preShiftLeft;
+    } else if (orient == VERTICAL) {
+      rowCoordinate -= (*this).preShiftLeft;
+      rowBegin -= (*this).preShiftBot;
+    } else {
+      cout << "Error: Unknown row type caught. Exiting!!!" << endl;
+      exit(0);
+    }
+    (*PhysRowPtr).PhysRowSetRowBegin(rowBegin);
+    (*PhysRowPtr).PhysRowSetCoordinate(rowCoordinate);
+  } DESIGN_END_FOR;
+  
+  DESIGN_FOR_ALL_CELLS((*this), cellName, cellPtr) {
+    cellLeft = (*cellPtr).CellGetXpos();
+    cellBot = (*cellPtr).CellGetYpos();
+    cellLeft -= preShiftLeft;
+    cellBot -= preShiftBot;
+    (*cellPtr).CellSetXpos(cellLeft);
+    (*cellPtr).CellSetYpos(cellBot);
+  } DESIGN_END_FOR;
+  
+  (*this).maxx -= preShiftLeft;
+  (*this).maxy -= preShiftBot;
+}
+
+void 
+Design::DesignSetVarsPostRead()
+{
+  double &avgStdCellWidth = this->averageStdCellWidth;
+  double &avgStdCellHeight = this->averageStdCellHeight;
+  
+  avgStdCellWidth /= this->NumStdCells;
+  avgStdCellHeight /= this->NumStdCells;
+}
+
+double
+Design::DesignGetAverageStdCellWidth()
+{
+  return (this->averageStdCellWidth);
+}
+
+double
+Design::DesignGetAverageStdCellHeight()
+{
+  return (this->averageStdCellHeight);
 }
 
 void
@@ -604,14 +717,21 @@ Design::DesignInit()
   NumPhysRows = 0;
   NumFixedCells = 0;
   NumTerminalCells = 0;
-  maxx = 0;
-  maxy = 0;
+  NumStdCells = 0;
+  NumMacroCells = 0;
+  maxx = -INT_MAX;
+  maxy = -INT_MAX;
 
   singleRowHeight = -1;
   clockPeriod = 0.0;
   peakUtilization = 0.0;
   peakUtilizationBinIdx = 0;
-
+  
+  preShiftLeft = 0;
+  preShiftBot = 0;
+  preShiftRight = -INT_MAX;
+  preShiftTop = -INT_MAX;
+  
   Name = "";
   DesignPath = "";
   DesignCellFileName = "";

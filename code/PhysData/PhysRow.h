@@ -105,6 +105,7 @@ class PhysRow {
   int PhysRowGetWMax(void);
   map<unsigned int,unsigned int> PhysRowGetSubRows(void);
   void PhysRowGetBoundingBox(vector<int>& );
+  void PhysRowGetBoundingBox(int &, int&, int&, int&);
   void PhysRowGetCellsInRow(vector<Cell*> &); 
   int PhysRowGetRowBegin(void);
   int PhysRowGetIndex(void);

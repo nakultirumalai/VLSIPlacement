@@ -1,97 +1,214 @@
 # include <TimingModels.h>
 
-/*******************************************************************************
-   Builds the objective function to be minimized in three vectors:
-   subi_vec: i of quadratic matrix, subj_vec: j of quadratic matrix
-   val_vec: value of aij of quadratic matrix
-   Builds only the lower left triangle of the objective matrix
-*******************************************************************************/
 void
-getObjectiveStarModel(Design &myDesign, HyperGraph &myGraph,
-		      vector<Cell*> &inputCells, vector<uint> &subi_vec, 
-		      vector<uint> &subj_vec,	vector<double> &valij_vec, 
-		      vector<uint> &sub_vec, vector<double> &val_vec, 
-		      double& constant)
+getObjectiveStarModelXY(Design &myDesign, HyperGraph &myGraph,
+			vector<Cell*> &inputCells, vector<uint> &subi_vecx, 
+			vector<uint> &subj_vecx, vector<double> &valij_vecx, 
+			vector<uint> &sub_vecx, vector<double> &val_vecx, 
+			vector<uint> &subi_vecy, vector<uint> &subj_vecy, 
+			vector<double> &valij_vecy, vector<uint> &sub_vecy, 
+			vector<double> &val_vecy, double& constantx, 
+			double &constanty, map<Cell *, uint> &quadMap,
+			map<Cell *, uint> &linMap)
 {
   Cell *cellPtri, *cellPtrj;
   Pin *pinPtri, *pinPtrj;
-  double edgeWeight, coeffX, coeffY;
-  double xOffi, yOffi, xOffj, yOffj;
-  double celljx, celljy, dOffx, dOffy;
-  uint numCells, numVars, edgeIdx;
-  uint cellIdxi, cellIdxj;
-  uint i, j;
+  double edgeWeight, coeffY, coeffX;
+  double yOffi, yOffj, celljy, dOffy;
+  double xOffi, xOffj, celljx, dOffx;
   map<Cell *, uint> cellLookupMap;
-  map<uint, map<uint, double> > nonSquaredTerms;
+  map<uint, uint> squaredTermsMap;
+  map<uint, uint> linearTermsMap;
+  map<uint, uint>::iterator itrUintUint;
+  long cellIdxi, cellIdxj;
+  uint numCells, edgeIdx;
+  uint numNetPins, starNodeIdx;
+  uint numClique, numStar;
+  uint i, j;
+  bool cellIsTerminal;
 
+  numClique = 0;
+  numStar = 0;
   numCells = inputCells.size();
-  numVars = 2 * numCells;
-
   /* Get the cell lookup map */
   cellLookupMap = getCellLookupMap(inputCells);
-
   /* Initialize the constant to 0 */
-  constant = 0.0;
-
+  constantx = 0.0;
   /* Iterate over all HyperEdges of the graph */
   HYPERGRAPH_FOR_ALL_EDGES(myGraph, edgeIdx, edgeWeight) {
     map<Pin *, bool> visitedPins;
-
-    /* Get the related logical for the hyperedge */
+    /* Get the related logical edge for the hyperedge */
     Net &relatedNet = *(Net *)myGraph.GetEdgeObject(edgeIdx);
-
-    /* Begin iteration over all pins */
-    NET_FOR_ALL_PINS(relatedNet, pinPtri) {
-      Cell &celli = (*pinPtri).PinGetParentCell();
-      cellPtri = &celli;
-      /* Skip terminal cells as they do not have a variable 
-	 associated with them */
-      if (celli.CellIsTerminal()) continue;
-      /* Get the index of the cell */
-      cellIdxi = cellLookupMap[cellPtri];
-
-      /* Mark the pin as visited */
-      visitedPins[pinPtri] = true;
-      NET_FOR_ALL_PINS(relatedNet, pinPtrj) {
-	/* Skip the visited pins for clique type traversal */
-	_KEY_EXISTS(visitedPins, pinPtrj) continue;
-
-	Cell &cellj = (*pinPtrj).PinGetParentCell();
-	cellPtrj = &cellj;
-	cellIdxj = cellLookupMap[cellPtrj];
-
-	unsigned int idxi, idxj;
-	idxi = cellIdxi; idxj = cellIdxj;
-
-	/* If cellIdxi < cellIdxj, swap */
-	if (cellIdxi < cellIdxj) swap(idxi, idxj);
-	
-	/* Insert value for x-variable */
-	subi_vec.push_back(idxj); subj_vec.push_back(idxj); valij_vec.push_back((-0.5 * coeffX));
-	/* Insert value for y-variable */
-	subi_vec.push_back(idxi+numCells); subj_vec.push_back(idxj+numCells); valij_vec.push_back((-0.5 * coeffY));
-	
-	/* Take care of inserting value for the linear terms as well */
-	xOffi = ((double)(*pinPtri).PinGetXOffset()) / GRID_COMPACTION_RATIO; 
-	yOffi = ((double)(*pinPtri).PinGetYOffset()) / GRID_COMPACTION_RATIO;
-	xOffj = ((double)(*pinPtrj).PinGetXOffset()) / GRID_COMPACTION_RATIO; 
-	yOffj = ((double)(*pinPtrj).PinGetYOffset()) / GRID_COMPACTION_RATIO;
-	celljx = ((double)(cellj.CellGetXpos())) / GRID_COMPACTION_RATIO; 
-	celljy = ((double)(cellj.CellGetYpos())) / GRID_COMPACTION_RATIO;
-
-	if (cellj.CellIsTerminal()) {
-	  dOffx = xOffi - celljx;
-	  dOffy = yOffi - celljy;
-	} else {
-	  dOffx = xOffi - xOffj;
-	  dOffy = yOffi - yOffj;
-	  sub_vec.push_back(cellIdxj); val_vec.push_back(-(dOffx * coeffX));
-	  sub_vec.push_back(cellIdxj + numCells); val_vec.push_back(-(dOffy * coeffY));
-	}
-	sub_vec.push_back(cellIdxi); val_vec.push_back(dOffx * coeffX);
-	sub_vec.push_back(cellIdxi + numCells); val_vec.push_back(dOffy * coeffY);
-	constant += (coeffX * dOffx * dOffx) + (coeffY * dOffy * dOffy);
+    edgeWeight = relatedNet.NetGetWeight();
+    /* Set the cell as a star node so that the bounds 
+       can be recognized */
+    numNetPins = relatedNet.NetGetPinCount();
+    if (numNetPins < starModelUpgradeNumPins) {
+      numClique++;
+      /* Get the number of pins on the net */
+      /* Begin iteration over all pins */
+      NET_FOR_ALL_PINS(relatedNet, pinPtri) {
+	Cell &celli = (*pinPtri).PinGetParentCell();
+	cellPtri = &celli;
+	cellIdxi = cellLookupMap[cellPtri];
+	coeffX = edgeWeight;
+	coeffY = edgeWeight;
+	/* Mark the pin as visited */
+	visitedPins[pinPtri] = true;
+	NET_FOR_ALL_PINS(relatedNet, pinPtrj) {
+	  Cell &cellj = (*pinPtrj).PinGetParentCell();
+	  cellPtrj = &cellj;
+	  if (cellPtri == cellPtrj) continue;
+	  /* Skip the visited pins for clique type traversal */
+	  _KEY_EXISTS(visitedPins, pinPtrj) continue;
+	  _KEY_EXISTS(cellLookupMap, cellPtrj) cellIdxj = cellLookupMap[cellPtrj];
+	  else cellIdxj = -1;
+	  _KEY_EXISTS_WITH_VAL(squaredTermsMap, cellIdxi, itrUintUint) {
+	    valij_vecx[itrUintUint->second] += coeffX;
+	    valij_vecy[itrUintUint->second] += coeffY;
+	  } else {
+	    subi_vecx.push_back(cellIdxi); subj_vecx.push_back(cellIdxi); valij_vecx.push_back(coeffX);
+	    subi_vecy.push_back(cellIdxi); subj_vecy.push_back(cellIdxi); valij_vecy.push_back(coeffY);
+	    squaredTermsMap[cellIdxi] = (valij_vecx.size() - 1);
+	    quadMap[cellPtri] = (valij_vecx.size() - 1);
+	  }
+	  if (cellIdxj > 0) {
+	    _KEY_EXISTS_WITH_VAL(squaredTermsMap, cellIdxj, itrUintUint) {
+	      valij_vecx[itrUintUint->second] += coeffX;
+	      valij_vecy[itrUintUint->second] += coeffY;
+	    } else {
+	      subi_vecx.push_back(cellIdxj); subj_vecx.push_back(cellIdxj); valij_vecx.push_back(coeffX);
+	      subi_vecy.push_back(cellIdxj); subj_vecy.push_back(cellIdxj); valij_vecy.push_back(coeffY);
+	      squaredTermsMap[cellIdxj] = (valij_vecx.size() - 1);
+	      quadMap[cellPtrj] = (valij_vecx.size() - 1);
+	    }
+	    unsigned int idxi, idxj;
+	    idxi = cellIdxi; idxj = cellIdxj;
+	    /* If cellIdxi < cellIdxj, swap */
+	    if (cellIdxi < cellIdxj) swap(idxi, idxj);
+	    /* No map handling is required for a pair of movable pins since 
+	       each pair of movable pins is visited only once in the traversal*/
+	    /* Insert value for y-variable */
+	    subi_vecx.push_back(idxi); subj_vecx.push_back(idxj); valij_vecx.push_back(-coeffX);
+	    subi_vecy.push_back(idxi); subj_vecy.push_back(idxj); valij_vecy.push_back(-coeffY);
+	  }
+	  /* Take care of inserting value for the linear terms as well */
+	  xOffi = ((double)(*pinPtri).PinGetXOffset()) / GRID_COMPACTION_RATIO; 
+	  xOffj = ((double)(*pinPtrj).PinGetXOffset()) / GRID_COMPACTION_RATIO; 
+	  yOffi = ((double)(*pinPtri).PinGetYOffset()) / GRID_COMPACTION_RATIO; 
+	  yOffj = ((double)(*pinPtrj).PinGetYOffset()) / GRID_COMPACTION_RATIO; 
+	  
+	  if (cellj.CellIsTerminal()) {
+	    celljx = ((double)(cellj.CellGetXpos())) / GRID_COMPACTION_RATIO; 
+	    celljy = ((double)(cellj.CellGetYpos())) / GRID_COMPACTION_RATIO; 
+	    dOffx = xOffi - (celljx + xOffj);
+	    dOffy = yOffi - (celljy + yOffj);
+	  } else {
+	    dOffy = yOffi - yOffj;
+	    dOffx = xOffi - xOffj;
+	    _KEY_EXISTS_WITH_VAL(linearTermsMap, cellIdxj, itrUintUint) {
+	      val_vecx[itrUintUint->second] += (-(dOffx * coeffX));
+	      val_vecy[itrUintUint->second] += (-(dOffy * coeffY));
+	    } else {
+	      sub_vecx.push_back(cellIdxj); val_vecx.push_back(-(dOffx * coeffX));
+	      sub_vecy.push_back(cellIdxj); val_vecy.push_back(-(dOffy * coeffY));
+	      linearTermsMap[cellIdxj] = val_vecx.size() - 1;
+	      linMap[cellPtrj] = val_vecx.size() - 1;
+	    }
+	  }
+	  _KEY_EXISTS_WITH_VAL(linearTermsMap, cellIdxi, itrUintUint) {
+	    val_vecx[itrUintUint->second] += (dOffx * coeffX);
+	    val_vecy[itrUintUint->second] += (dOffy * coeffY);
+	  } else {
+	    sub_vecx.push_back(cellIdxi); val_vecx.push_back(dOffx * coeffX);
+	    sub_vecy.push_back(cellIdxi); val_vecy.push_back(dOffy * coeffY);
+	    linearTermsMap[cellIdxi] = val_vecx.size() - 1;
+	    linMap[cellPtri] = val_vecx.size() - 1;
+	  }
+	  constantx += (coeffX * dOffx * dOffx);
+	  constanty += (coeffY * dOffy * dOffy);
+	} NET_END_FOR;
       } NET_END_FOR;
-    } NET_END_FOR;
+    } else {
+      /* Create a virtual star node for the net */
+      numStar++;
+      Cell *starNode = new Cell(0,0);
+      CellSetIsStarNode(starNode);
+      starNodeIdx = inputCells.size();
+      inputCells.push_back(starNode);
+      NET_FOR_ALL_PINS(relatedNet, pinPtri) {
+	Cell &celli = (*pinPtri).PinGetParentCell();
+	cellPtri = &celli;
+	coeffX = edgeWeight * numNetPins;
+	coeffY = edgeWeight * numNetPins;
+
+	cellIsTerminal = (*cellPtri).CellIsTerminal();
+	if (!cellIsTerminal) {
+	  cellIdxi = cellLookupMap[cellPtri];
+	} else {
+	  cellIdxi = -1;
+	}
+	/* For normal cells that are movable */
+	if (!cellIsTerminal) {
+	  /* Add term to the Hessian for the regular cell */
+	  _KEY_EXISTS_WITH_VAL(squaredTermsMap, cellIdxi, itrUintUint) {
+	    valij_vecx[itrUintUint->second] += coeffX;
+	    valij_vecy[itrUintUint->second] += coeffY;
+	  } else {
+	    subi_vecx.push_back(cellIdxi); subj_vecx.push_back(cellIdxi); valij_vecx.push_back(coeffX);
+	    subi_vecy.push_back(cellIdxi); subj_vecy.push_back(cellIdxi); valij_vecy.push_back(coeffY);
+	    squaredTermsMap[cellIdxi] = (valij_vecx.size() - 1);
+	    quadMap[cellPtri] = (valij_vecx.size() - 1);
+	  }
+	  subi_vecx.push_back(starNodeIdx); subj_vecx.push_back(cellIdxi); valij_vecx.push_back(-coeffX);
+	  subi_vecy.push_back(starNodeIdx); subj_vecy.push_back(cellIdxi); valij_vecy.push_back(-coeffY);
+	}
+
+	/* Add term to the Hessian for the star node cell unconditionally */
+	_KEY_EXISTS_WITH_VAL(squaredTermsMap, starNodeIdx, itrUintUint) {
+	  valij_vecx[itrUintUint->second] += coeffX;
+	  valij_vecy[itrUintUint->second] += coeffY;
+	} else {
+	  subi_vecx.push_back(starNodeIdx); subj_vecx.push_back(starNodeIdx); valij_vecx.push_back(coeffX);
+	  subi_vecy.push_back(starNodeIdx); subj_vecy.push_back(starNodeIdx); valij_vecy.push_back(coeffY);
+	  squaredTermsMap[starNodeIdx] = (valij_vecx.size() - 1);
+	}
+
+	if (!cellIsTerminal) {
+	  /* Add the linear terms for the regular cell */
+	  xOffi = ((double)(*pinPtri).PinGetXOffset()) / GRID_COMPACTION_RATIO;
+	  yOffi = ((double)(*pinPtri).PinGetYOffset()) / GRID_COMPACTION_RATIO;
+	  _KEY_EXISTS_WITH_VAL(linearTermsMap, cellIdxi, itrUintUint) {
+	    val_vecx[itrUintUint->second] += (xOffi * coeffX);
+	    val_vecy[itrUintUint->second] += (yOffi * coeffY);
+	  } else {
+	    sub_vecx.push_back(cellIdxi); val_vecx.push_back(xOffi * coeffX);
+	    sub_vecy.push_back(cellIdxi); val_vecy.push_back(yOffi * coeffY);
+	    linearTermsMap[cellIdxi] = val_vecx.size() - 1;
+	    linMap[cellPtri] = val_vecx.size() - 1;
+	  }
+	} else {
+	  xOffi = ((*cellPtri).CellGetXpos() + (*pinPtri).PinGetXOffset()) / GRID_COMPACTION_RATIO;
+	  yOffi = ((*cellPtri).CellGetYpos() + (*pinPtri).PinGetYOffset()) / GRID_COMPACTION_RATIO;
+	}
+
+	/* Add the linear terms for the star node */
+	_KEY_EXISTS_WITH_VAL(linearTermsMap, starNodeIdx, itrUintUint) {
+	  val_vecx[itrUintUint->second] += (-(xOffi * coeffX));
+	  val_vecy[itrUintUint->second] += (-(yOffi * coeffY));
+	} else {
+	  sub_vecx.push_back(starNodeIdx); val_vecx.push_back(-(xOffi * coeffX));
+	  sub_vecy.push_back(starNodeIdx); val_vecy.push_back(-(yOffi * coeffY));
+	  linearTermsMap[starNodeIdx] = val_vecx.size() - 1;
+	}
+	  
+	/* Add the constant term */
+	constantx += (coeffX * xOffi) * (coeffX * xOffi);
+	constanty += (coeffY * yOffi) * (coeffY * yOffi);
+      } NET_END_FOR;
+    }
   } HYPERGRAPH_END_FOR;
+  cout << endl;
+  cout << "Net statistics: CLIQUE NETS: " << numClique << " STAR NETS: " << numStar << endl;
+  cout << "% : CLIQUE: " << (numClique * 100)/(numClique + numStar) << " STAR: " << (numStar * 100)/(numClique + numStar) << endl;
 }
