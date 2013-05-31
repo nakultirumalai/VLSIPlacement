@@ -11,8 +11,6 @@
 # define FORCE_DIR_BOT 8
 # define MAX_DBL 1000000000000000
 
-bool debugPrint = false;
-
 void printForceDir(char forceDir) 
 {
   switch(forceDir) {

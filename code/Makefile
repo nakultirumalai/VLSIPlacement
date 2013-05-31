@@ -12,7 +12,7 @@ LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(L
 
 SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData \
 	Flags Legalize TimingModels Bin CellSpread \
-	Plot
+	Plot ConjGrad Env
 
 OBJFILES:= $(SRCDIRS)
 DEBUG = 

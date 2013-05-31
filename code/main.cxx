@@ -5,10 +5,9 @@
 # include <Flags.h>
 # include <Legalize.h>
 # include <lemon/list_graph.h>
+# include <Env.h>
 
 using namespace lemon;
-
-# define MAX_ARGS 7
 
 HyperGraph& convertDesignToGraph(Design& thisDesign)
 {
@@ -20,195 +19,226 @@ HyperGraph& convertDesignToGraph(Design& thisDesign)
   return (*myGraph);
 }
 
+/***********************************************************************
+  FUNCTION: parseArgsAndAddToEnv
+  ABSTRACT:
+    This function is called to update the environment with the options
+    that are passed to the tool. The supported switches are as follows:
+
+    -analyze: Performs an analysis of the benchmark and dumps plenty 
+              of files which are understood by internal scripts to 
+              generate a final PDF which can be used to understand the 
+              nature of the benchmark. 
+              This is a switch and is not followed by any argument.
+              THIS OPTION HAS BEEN DISABLED TEMPORARILY
+
+-trace_depth: Trace depth is used to trace the components of the 
+              tool. Each major step in the tool contains code to 
+              print information about itself. The depth of the functions
+              from the top level caller is selected by the trace_depth
+              switch. It accepts an integer as an argument.
+
+       -mode: The mode in which the tool should run. Usually, when 
+              information about the tool is required, the tool has 
+              the tendency to print out information about everything it 
+              does to help us understand the flow. However, this is not 
+              required as it may affect the speed of the tool. Therefore
+              the mode can be switched from the printing mode to the non
+              printing mode to avoid any writing as in the case of 
+              benchmarking. Values acceptable here are:
+              # Class1:
+                 optimal: Mode in which the tool is pretty quiet
+                 test: Mode in which the tool prints out a lot of stuff 
+                       in its own file in each step
+
+              NOTE: Multiple values which are independent shall be used
+              in conjunction. No checking is done to see if the values
+              are independent. If the value of the same set is mentioned
+              twice, the last value stands.
+
+  -net_model: The net model that needs to be used to consider hyperedges. 
+              There are four options for this:
+              clique : The hypernet is transformed into a 2 terminal nets
+                       where each net connects a unique pair of pins
+              star   : The hypernet is transformed into star model 
+                       where a k-pin net is transformed into k 2-pin connections
+                       each of which is connected to the star node of the 
+                       net
+              hybrid : for k < 4, the hypernet has a clique model and for 
+                       k >= 4, the net hypernet has an equivalent star model
+                       used in the analytical formulation
+              hybrid_controlled: for k < alpha, the hypernet has a clique model 
+                       and for k >= alpha, the hypernet has an equivalent
+                       star model
+
+   -optimize: The cost to which prominence should be given while 
+              optimizing. The options for this are:
+              "wirelength"
+              "timing"
+
+     -design: The design to select and optimize in the bookshelf 
+              format. The complete path to the design's aux file
+              should be specified. Expects an aux file.
+     
+     -solver: The solver to use to solve for the coordinates of 
+              the cells. The options can be:
+              "mosek" or "conjgrad"
+
+ -use_var_bounds: A flag that instructs the solver to use variable
+              bounds. Using this flag enables the use of variable 
+              bounds in the solver. This option is only valid 
+              when the solver used is mosek.
+
+       -help: Prints out information about the tool
+***********************************************************************/
+bool
+parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
+{
+  bool rtv;
+  bool designSpecified;
+  
+  rtv = false;
+  designSpecified = false;
+  if (switchName == "trace_depth") {
+    rtv = true;
+    if (!strIsNumber(switchValue)) {
+      _ERROR("Trace depth specified is not a number. Assuming 1");
+      traceDepth = 1;
+    } else {
+      traceDepth = atoi(switchValue.data());
+    }
+  } else if (switchName == "mode") {
+    rtv = true;
+    if (switchValue == "optimal") {
+      topEnv.EnvSetToolMode(ENV_MODE_OPTIMAL);
+    } else if (switchValue == "test") {
+      topEnv.EnvSetToolMode(ENV_MODE_TEST);
+    } else {
+      rtv = false;
+    }
+  } else if (switchName == "net_model") {
+    rtv = true;
+    if (switchValue == "clique") {
+      topEnv.EnvSetNetModel(ENV_CLIQUE_MODEL);
+    } else if (switchValue == "star") {
+      topEnv.EnvSetNetModel(ENV_STAR_MODEL);
+    } else if (switchValue == "hybrid") {
+      topEnv.EnvSetNetModel(ENV_HYBRID_MODEL);
+    } else if (switchValue == "hybrid_controlled") {
+      topEnv.EnvSetNetModel(ENV_VARIABLE_HYBRID_MODEL);
+    } else {
+      rtv = false;
+    }
+  } else if (switchName == "optimize") {
+    rtv = true;
+    if (switchValue == "wirelength") {
+      topEnv.EnvSetOptType(ENV_OPTIMIZE_WIRELENGTH);
+    } else if (switchValue == "timing") {
+      topEnv.EnvSetOptType(ENV_OPTIMIZE_TIMING);
+    } else {
+      rtv = false;
+    }
+  } else if (switchName == "design" || switchName == "des" || 
+	     switchName == "desi" || switchName == "desig") {
+    rtv = true;
+    /* Extract the design name and the design path 
+       and store it in the env */
+    if (!fileExists(switchValue)) {
+      cout << "Error: Specified design " 
+	   << switchValue
+	   << " does not exist!" << endl;
+      rtv = false;
+    } else {
+      uint slashPos = switchValue.find_last_of("/");
+      uint dotPos = switchValue.find_last_of(".");
+      string DesignPath = switchValue.substr(0, slashPos);
+      string DesignName = switchValue.substr(slashPos+1, (dotPos - (slashPos + 1)));
+      topEnv.EnvSetDesignPath(DesignPath);
+      topEnv.EnvSetDesignName(DesignName);
+      designSpecified = true;
+    }
+  } else if (switchName == "use_var_bounds") {
+    rtv = true;
+    topEnv.EnvSetUseVarBounds(true);
+  } else if (switchName == "solver") {
+    rtv = true;
+    if (switchValue == "mosek") {
+      topEnv.EnvSetSolverType(ENV_SOLVER_QUADRATIC_MOSEK);
+    } else if (switchValue == "conjgrad") {
+      topEnv.EnvSetSolverType(ENV_SOLVER_QUADRATIC_CONJ_GRAD);
+    } else {
+      rtv == false;
+    }
+  } else if (switchName == "help") {
+    cout << "To execute the tool, use the following options:" << endl;
+    cout << endl << "-trace_depth: Given a trace depth, prints cputime and memory for all routines " << endl;
+    cout << "-mode: Optimization mode to be selected. Choose \"test\" or \"optimal\"" << endl;
+    cout << "-optimize: Choose the parameter to be optimized. Choose \"wirelength\" or \"timing\"" << endl;
+    cout << "-design: Compulsory option. Specify the complete path of the design in the designName.aux format" << endl;
+  }
+  return (rtv);
+}
+
+/***********************************************************************
+  FUNCTION: placeMain
+  ABSTRACT:
+            Main function to run the placer. Does the initialization,
+            creation of the design and so on.
+***********************************************************************/
+int placeMain(Env &topEnv)
+{
+  string DesignName, DesignPath;
+  
+  /* Initialize the flags here */
+  FlagsInit();
+  
+  /* Get the design's name and path from the 
+     environment */
+  DesignName = topEnv.EnvGetDesignName();
+  DesignPath = topEnv.EnvGetDesignPath();
+
+  /* Create the design */
+  Design myDesign(DesignPath, DesignName);
+  HyperGraph &myGraph = convertDesignToGraph(myDesign);
+
+  myDesign.DesignSetEnv(topEnv);
+  myDesign.DesignDoGlobalPlacement();
+
+  DesignWriteBookShelfOutput(myDesign); 
+
+  return 0;
+}
+
 int main(int argc, char *argv[])
 {
-  string designName, designPath;
-  string switchName;
+  Env topEnv;
+  string switchName, switchValue;
+  bool proceed;
   int i;
 
-  designName = "";
-  designPath = "";
-
-  if (argc > 1 && argc < MAX_ARGS) {
+  proceed = false;
+  if (argc > 1) {
     i = 1;
     while (i < argc) {
       if (argv[i][0] == '-') {
-	/* Switch to options */
 	switchName = argv[i] + 1;
-	if (switchName == "analyse") {
-	  performAnalysis = true;
-	} else if (switchName == "trace_depth") {
-	  string traceDepthStr = argv[i+1];
-	  if (!strIsNumber(traceDepthStr)) {
-	    _ERROR("Trace depth specified is not a number. Assuming 1");
-	    traceDepth = 1;
-	  } else {
-	    traceDepth = atoi(traceDepthStr.data());
-	    i++;
-	  }
+	if (i + 1 < argc) {
+	  switchValue = argv[i+1];
 	}
-      } else {
-	if (designPath == "") {
-	  designPath = argv[i];
-	} else if (designName == "") {
-	  designName = argv[i]; 
-	}
+	proceed = parseArgsAndAddToEnv(switchName, switchValue, topEnv);
+	if (!proceed) break;
       }
       i++;
     }
-    FlagsInit();
-
-    Design myDesign(designPath, designName);
-    HyperGraph &myGraph = convertDesignToGraph(myDesign);
-    
-    //myDesign.DesignSolveForSeqCells();
-    //myDesign.DesignSolveForAllCellsIter();
-    LegalizeDesign(myDesign);
-    DesignWriteBookShelfOutput(myDesign); 
-
-    //    DesignWriteBookShelfOutput(myDesign); 
-    string plotFileName;
-    plotFileName = "Legal.plt";
-    myDesign.DesignPlotData("Title", plotFileName);
-    return 0;
-    /* Plot the stuff in the design */
-    //    string plotFileName;
-    //    plotFileName = "Itr.plt";
-    //    myDesign.DesignPlotData("Title", plotFileName);
-
-    /* Plot the stuff in the design 
-    string plotFileName;
-    plotFileName = "Legal.plt";
-    myDesign.DesignPlotData("Title", plotFileName);
-*/
-
-    if (performAnalysis == true) {
-      DesignCollectStats(myDesign);
-      DesignWriteStats(myDesign);
+    if (!proceed) {
+      cout << "Exiting!" << endl;
+      exit(0);
     }
-
-    //LegalizeDesign(myDesign);
-    
-    /*
-    
-    string CellName="";
-    Cell* CellPtr;
-    
-    vector<PhysRow*> allPhysRows = myDesign.DesignGetRows();
-    vector<vector<unsigned int> > allRowBounds;
-    LegalizeGetAllBoundingBoxes(allPhysRows, allRowBounds);
-    
-    
-    rowOrientation rowType=((allPhysRows[0])->PhysRowGetType());
-    unsigned int rowHeight=((allPhysRows[0])->PhysRowGetHeight());
-    unsigned int numPhysRows=myDesign.DesignGetNumPhysRows();
-    unsigned int maxY=(rowHeight*numPhysRows - rowHeight);
-    cout<<"Max Y is"<<maxY<<endl;
-    
-    */
-
-    /* Initialize isLegal variable in all cells
-       To be done by the solver in final Design */
-
-    /* Done in Cell constuctor, not required anymore 
-    DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
-      if(!(CellPtr->CellIsTerminal()))	
-	CellPtr->CellSetIsLegal(false);
-    }DESIGN_END_FOR;
-
-    */
-    
-    /* Was used for testing legalize funtion, not required if solver results are read 
-    //Modifying Cell locations for testing 
-    
-    DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
-    if(!(CellPtr->CellIsTerminal())){	
-      int y= CellPtr->CellGetYpos();
-	cout<<"Cell:"<<CellName<<" was at ("<<CellPtr->CellGetXpos()<<","<<
-	CellPtr->CellGetYpos()<<")"<<endl; 
-	int modY= y + (rand() % maxY);
-	CellPtr->CellSetYpos(modY);
-	cout<<"Cell is now at ("<<CellPtr->CellGetXpos()<<","<<
-	CellPtr->CellGetYpos()<<")"<<endl;
-      }
-    }DESIGN_END_FOR;
-
-    */
-
-    /* Checking the Legality of all Cells and setting the variable isLegal
-       for all cells accordingly */
-
-
-    //myDesign.DesignClusterCells(myGraph, DEFAULT_CLUSTER);
-    /* Second param is clustering type. Can take on the following values:
-       FCC_CLUSTER, NET_CLUSTER, ESC_CLUSTER */
-    /* Function moved to LegalizeDesign 
-    DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
-      if(!(CellPtr->CellIsTerminal()))
-	LegalizeCheckLegality(CellPtr, allPhysRows, allRowBounds);
-    }DESIGN_END_FOR;
-
-    */
-    
-    /* Legalizing Design so that all Cells are placed in rows */
-    
-    /* Function moved to LegalizeDesign 
-    DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
-      if(!(CellPtr->CellIsTerminal())){
-	if((CellPtr->CellIsLegal())==true)
-	  cout<<"Cell: "<<CellName<<"is legal"<<endl;
-	else{
-	  cout<<"Cell: "<<CellName<<"is notlegal"<<endl;
-	  cout<<"Legalizing..."<<endl;
-	  LegalizeSnapToNearestRows(CellPtr, allPhysRows, rowType);
-	}
-      }
-    }DESIGN_END_FOR;
-    */
-    /* Will add later after testing SnapToRows 
-
-     //Get the subRow locations and row locations for all Cells
-     //and assign Cells to those locations 
-
-     int cellCount=0;
-     DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
-       if(!(CellPtr->CellIsPort())){
-	 myDesign.DesignAddCellToPhysRow(CellPtr, allRowBounds, allPhysRows);
-	 cellCount++;
-       }
-     }DESIGN_END_FOR;
-     
-     cout<<cellCount<<" cells added to Rows."<<endl;
-    
-
-     // Get Cells in Rows
-     
-     PhysRow* Obj;
-     VECTOR_FOR_ALL_ELEMS(allPhysRows, PhysRow*, Obj){
-       vector<vector<Cell *> > allCells;
-       cout<<"Cells in Row:"<<i<<endl;
-       Obj->PhysRowGetCellsInRow(allCells);
-       vector<Cell*> Obj2;
-       VECTOR_FOR_ALL_ELEMS(allCells, vector<Cell *>, Obj2){
-	 cout<<" and subRow: "<<i<<" are: "<<endl;
-	 Cell* Obj1;
-	 VECTOR_FOR_ALL_ELEMS(Obj2, Cell*, Obj1){
-	   cout<<Obj1->CellGetName()<<", ";
-	 }END_FOR;
-	 cout<<endl;
-       }END_FOR;
-       cout<<endl;
-       int cellArea = (Obj->PhysRowGetTotalCellArea());
-       int boundingBoxArea = (Obj->PhysRowGetBoundingBoxArea());
-       int blockedArea = (Obj->PhysRowGetBlockedArea());
-       cout<<"Total Cell Area: "<<cellArea<<endl;
-       cout<<"Total Bounding box area: "<<boundingBoxArea<<endl;
-       cout<<"Total Blocked area: "<<blockedArea<<endl;
-       cout<<"Wmax = "<<(boundingBoxArea - blockedArea)<<endl;
-     }END_FOR;
-     
-     LegalizeConstructGNFGraph(allPhysRows, g);
-    */
-    //    cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;
+  } else {
+    cout << "Usage: <exec> -design <AuxFilePath>/<DesignName>.aux " << endl;
+    exit(0);
   }
+  
+  
+  return (placeMain(topEnv));
 }

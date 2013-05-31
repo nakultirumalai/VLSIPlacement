@@ -34,6 +34,7 @@ getOrientationFromStr(string orient)
 {
   objOrient retVal;
 
+  retVal = NIL(objOrient);
   if (orient == "N" || orient == "1") retVal = N;
   else if (orient == "E") retVal = E;
   else if (orient == "S") retVal = S;
@@ -199,3 +200,23 @@ void swap(uint &a, uint &b)
   a = a - b;
 }
 
+bool fileExists(const string &filename)
+{
+  ifstream ifile(filename.data());
+  return ifile;
+} 
+
+bool dirExists(const string &dirname)
+{
+  bool rtv;
+
+  rtv = false;
+  const char *myDir = dirname.data();
+  struct stat myStat;
+  if ((stat(myDir, &myStat) == 0) && 
+      (((myStat.st_mode) & S_IFMT) == S_IFDIR)) {
+    rtv = true;
+  }
+  
+  return rtv;
+}

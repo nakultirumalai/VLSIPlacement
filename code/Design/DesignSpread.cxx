@@ -124,20 +124,21 @@ Design::DesignGetForceOnCell(Cell &thisCell,
 }
 
 void
-Design::DesignCreatePseudoPort(Cell &thisCell,
-			       double newXpos, double newYpos,
-			       double chipBoundLeft, double chipBoundRight,
-			       double chipBoundTop, double chipBoundBot,
-			       double magnitude, char forceDir,
-			       MSKrealt *qvalijx, MSKrealt *qvalijy,
-			       MSKrealt *qvalx, MSKrealt *qvaly, 
-			       map<Cell *, uint> &quadMap, map<Cell *, uint> &linMap)
+Design::DesignCreatePseudoPortOld(Cell &thisCell,
+				  double newXpos, double newYpos,
+				  double chipBoundLeft, double chipBoundRight,
+				  double chipBoundTop, double chipBoundBot,
+				  double magnitude, char forceDir,
+				  MSKrealt *qvalijx, MSKrealt *qvalijy,
+				  MSKrealt *qvalx, MSKrealt *qvaly,
+				  map<Cell *, uint> &quadMap, 
+				  map<Cell *, uint> &linMap)
 {
   map<Cell*, uint>::iterator quadMapItr;
   map<Cell*, uint>::iterator linMapItr;
-  double spreadForce, springConstant;
-  double pseudoPinX, pseudoPinY;
+  double spreadForce;
   double cellXpos, cellYpos;
+  double pseudoPinX, pseudoPinY, springConstant;
   double portXForce, portYForce;
   double coeffX, coeffY;
   uint minx, miny, maxx, maxy;
@@ -149,6 +150,9 @@ Design::DesignCreatePseudoPort(Cell &thisCell,
   cellYpos = newYpos;
   minx = 0.0;
   miny = 0.0;
+  pseudoPinX = 0.0;
+  pseudoPinY = 0.0;
+  springConstant = 0.0;
 
   switch (forceDir) {
   case FORCE_DIR_NO_FORCE: return;
@@ -227,6 +231,84 @@ Design::DesignCreatePseudoPort(Cell &thisCell,
 }
 
 void
+Design::DesignCreatePseudoPort(Cell &thisCell,
+			       double newXpos, double newYpos,
+			       double chipBoundLeft, double chipBoundRight,
+			       double chipBoundTop, double chipBoundBot,
+			       double magnitude, char forceDir,
+			       double &pseudoPinX, double &pseudoPinY,
+			       double &springConstant)
+{
+  map<Cell*, uint>::iterator quadMapItr;
+  map<Cell*, uint>::iterator linMapItr;
+  double spreadForce;
+  double cellXpos, cellYpos;
+  double portXForce, portYForce;
+  double coeffX, coeffY;
+  uint minx, miny, maxx, maxy;
+  uint quadCellIdx, linCellIdx;
+  int nodeIdx;
+
+  DesignGetBoundingBox(maxx, maxy);
+  cellXpos = newXpos;
+  cellYpos = newYpos;
+  minx = 0.0;
+  miny = 0.0;
+  pseudoPinX = 0.0;
+  pseudoPinY = 0.0;
+  springConstant = 0.0;
+
+  switch (forceDir) {
+  case FORCE_DIR_NO_FORCE: return;
+  case FORCE_DIR_LEFT: pseudoPinX = maxx;
+    pseudoPinY = chipBoundRight; break;
+  case FORCE_DIR_RIGHT: pseudoPinX = minx;
+    pseudoPinY = chipBoundLeft; break;
+  case FORCE_DIR_TOP: pseudoPinY = miny;
+    pseudoPinX = chipBoundBot; break;
+  case FORCE_DIR_BOT: pseudoPinY = maxy;
+    pseudoPinX = chipBoundTop; break;
+  case FORCE_DIR_FIRST_QUAD:
+    if (chipBoundLeft <= miny) {
+      pseudoPinX = chipBoundBot; pseudoPinY = 0.0;
+    } else if (chipBoundBot <= minx) {
+      pseudoPinX = 0; pseudoPinY = chipBoundLeft;
+    }
+    break;
+  case FORCE_DIR_SECOND_QUAD:
+    if (chipBoundRight <= miny) {
+      pseudoPinX = chipBoundBot; pseudoPinY = miny;
+    } else if (chipBoundBot >= maxx) {
+      pseudoPinX = maxx; pseudoPinY = chipBoundRight;
+    }
+    break;
+  case FORCE_DIR_THIRD_QUAD:
+    if (chipBoundTop >= maxx) {
+      pseudoPinX = maxx; pseudoPinY = chipBoundRight;
+    } else if (chipBoundRight >= maxy) {
+      pseudoPinX = chipBoundTop; pseudoPinY = maxy;
+    }
+    break;
+  case FORCE_DIR_FOURTH_QUAD:
+    if (chipBoundLeft >= maxy) {
+      pseudoPinX = chipBoundTop; pseudoPinY = maxy;
+    } else if (chipBoundTop <= minx) {
+      pseudoPinX = minx; pseudoPinY = chipBoundLeft;
+    }
+    break;
+  default: cout << "DEFAULT CASE NOT EXPECTED" << endl;
+    exit(0);
+  };
+
+  /* Since we are minimizing quadratic wirelength. Model of force for 
+     other objective types is going to change */
+  portXForce = pseudoPinX - cellXpos;
+  portYForce = pseudoPinY - cellYpos;
+  spreadForce = sqrt(portXForce * portXForce + portYForce * portYForce);
+  springConstant = magnitude / spreadForce;
+}
+
+void
 spreadCellInBin(Design &myDesign, HyperGraph &myGraph, Bin *binPtr, 
 		double newBinRight, double newBinTop,
 		double newBinRightPrev, double newBinTopPrev, 
@@ -295,11 +377,11 @@ spreadCellInBin(Design &myDesign, HyperGraph &myGraph, Bin *binPtr,
 				  totalXForce, totalYForce, forceDir, 
 				  chipBoundLeft, chipBoundRight, chipBoundTop, 
 				  chipBoundBot);
-    myDesign.DesignCreatePseudoPort(thisCell, newXPos, newYPos,
-				    chipBoundLeft, chipBoundRight, chipBoundTop,
-				    chipBoundBot, magnitude, forceDir, 
-				    qvalijx, qvalijy, qvalx, qvaly, 
-				    quadMap, linMap);
+    myDesign.DesignCreatePseudoPortOld(thisCell, newXPos, newYPos,
+				       chipBoundLeft, chipBoundRight, chipBoundTop,
+				       chipBoundBot, magnitude, forceDir, 
+				       qvalijx, qvalijy, qvalx, qvaly, 
+				       quadMap, linMap);
   } END_FOR;
 }
 
@@ -490,10 +572,8 @@ Design::DesignStretchBins(void)
 void
 Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin, 
 				     double cellXpos, double cellYpos,
-				     MSKrealt *qvalijx, MSKrealt *qvalijy,
-				     MSKrealt *qvalx, MSKrealt *qvaly,
-				     map<Cell *, uint> &quadMap, 
-				     map<Cell *, uint> &linMap)
+				     double &pseudoPinX, double &pseudoPinY, 
+				     double &springConstant)
 {
   double newBinTop, newBinRight;
   double newBinTopPrev, newBinRightPrev;
@@ -573,6 +653,6 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
   /* COMPUTE THE PSEUDO PIN POSITION AND SPRING CONSTANT */
   DesignCreatePseudoPort(thisCell, newXPos, newYPos, chipBoundLeft, 
 			 chipBoundRight, chipBoundTop, chipBoundBot,
-			 magnitude, forceDir, qvalijx, qvalijy,
-			 qvalx, qvaly, quadMap, linMap);
+			 magnitude, forceDir, pseudoPinX, pseudoPinY,
+			 springConstant);
 }

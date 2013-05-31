@@ -72,7 +72,6 @@ Design::DesignCheckSolvedCellsProperty(vector<Cell*> solvedCells)
   double totalXDiffDist, totalYDiffDist;
   double netWeight;
   bool rtv = true;
-  bool debugPrint = false;
 
   VECTOR_FOR_ALL_ELEMS(solvedCells, Cell*, thisCellPtr) {
     Cell &thisCell = *thisCellPtr;

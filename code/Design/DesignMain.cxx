@@ -708,6 +708,18 @@ Design::DesignGetAverageStdCellHeight()
   return (this->averageStdCellHeight);
 }
 
+void 
+Design::DesignSetEnv(Env &thisEnv)
+{
+  this->DesignEnv = thisEnv;
+}
+
+Env& 
+Design::DesignGetEnv(void)
+{
+  return DesignEnv;
+}
+
 void
 Design::DesignInit()
 {

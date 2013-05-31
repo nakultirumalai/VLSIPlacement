@@ -15,9 +15,12 @@
 # include <Stat.h>
 # include <algorithm>
 # include <stdlib.h>
+# include <string.h>
 # include <ctime>
 # include <iomanip>
-# include <mosek.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <unistd.h>
 
 # define NIL(type) (type)0
 
@@ -125,5 +128,7 @@ bool fileExists(string& filePath, string &fileName);
 string getCurrentTime(void);
 
 void swap(uint& a, uint &b);
+bool fileExists(const string &);
+bool dirExists(const string &);
 
 #endif

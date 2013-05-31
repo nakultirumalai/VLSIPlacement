@@ -1,9 +1,10 @@
 # include <Design.h>
+# include <mosek.h>
 
 void
-MSKAPI printDesignSolverOutput(void *handle, const char str[])
+MSKAPI printDesignSolverOutput(void *handle, char str[])
 {
-  //  printf("%s", str);
+  printf("%s", str);
 }
 
 void
@@ -16,8 +17,7 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
 			uint &numValuesQuad, uint &numValuesLin, 
 			double &constantx, double &constanty,
 			map<Cell *, uint>& quadMap,
-			map<Cell *, uint>& linMap,
-			EnvNetModel netModel)
+			map<Cell *, uint>& linMap)
 {
   vector<uint> subi_vecx, subj_vecx, sub_vecx;
   vector<uint> subi_vecy, subj_vecy, sub_vecy;
@@ -25,38 +25,13 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
   vector<double> valij_vecy, val_vecy;
   uint i;
 
-  if (netModel == ENV_CLIQUE_MODEL) {
-    getObjectiveCliqueModelXY(myDesign, myGraph, inputCells, 
-			      subi_vecx, subj_vecx, valij_vecx, 
-			      sub_vecx, val_vecx, 
-			      subi_vecy, subj_vecy, valij_vecy, 
-			      sub_vecy, val_vecy, 
-			      constantx, constanty, quadMap, linMap);
-  } else if (netModel == ENV_STAR_MODEL) {
-    getObjectiveStarModelXY(myDesign, myGraph, inputCells, 
-			      subi_vecx, subj_vecx, valij_vecx, 
-			      sub_vecx, val_vecx, 
-			      subi_vecy, subj_vecy, valij_vecy, 
-			      sub_vecy, val_vecy, 
-			      constantx, constanty, quadMap, linMap);
-  }    
-  
-  if (0) {
-    cout << "=========================" << endl;
-    cout << "Printing linear matrix X:" << endl;
-    cout << "=========================" << endl;
-    for (i = 0; i < val_vecx.size(); i++) {
-      cout << val_vecx[i] << endl;
-    }
-    cout << "=========================" << endl;
-    cout << "Printing linear matrix Y:" << endl;
-    cout << "=========================" << endl;
-    for (i = 0; i < val_vecy.size(); i++) {
-      cout << val_vecy[i] << endl;
-    }
-    exit(0);
-  }
-    
+  getObjectiveCliqueModelXY(myDesign, myGraph, inputCells, 
+			    subi_vecx, subj_vecx, valij_vecx, 
+			    sub_vecx, val_vecx, 
+			    subi_vecy, subj_vecy, valij_vecy, 
+			    sub_vecy, val_vecy, 
+			    constantx, constanty, quadMap, linMap);
+
   *qsubix = (MSKidxt *) malloc(sizeof(MSKidxt) * subi_vecx.size());
   *qsubiy = (MSKidxt *) malloc(sizeof(MSKidxt) * subi_vecy.size());
   *qsubjx = (MSKidxt *) malloc(sizeof(MSKidxt) * subj_vecx.size());
@@ -68,6 +43,7 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
   *qvalx = (MSKrealt *) malloc(sizeof(MSKrealt) * val_vecx.size());
   *qvaly = (MSKrealt *) malloc(sizeof(MSKrealt) * val_vecy.size());
 
+  //  cout << "subix\tsubjx\tvalijx\tsubiy\tsubjy\tvalijy" << endl;
   for (i = 0; i < subi_vecx.size(); i++) {
     (*qsubix)[i] = subi_vecx[i];
     (*qsubjx)[i] = subj_vecx[i];
@@ -75,89 +51,24 @@ getObjFuncInMosekFormat(Design &myDesign, HyperGraph &myGraph,
     (*qsubiy)[i] = subi_vecy[i];
     (*qsubjy)[i] = subj_vecy[i];
     (*qvalijy)[i] = 2 * valij_vecy[i];
+    //    cout << (*qsubix)[i] << "\t" << (*qsubjx)[i] << "\t" 
+    //	 << (*qvalijx)[i] << "\t" << (*qsubiy)[i] << "\t"
+    //	 << (*qsubjy)[i] << "\t" << (*qvalijy)[i] << endl;
   }
   numValuesQuad = subi_vecx.size();
 
+  //  cout << "subx\tvalx\tsuby\tvaly" << endl;
   for (i = 0; i < sub_vecx.size(); i++) {
     (*qsubx)[i] = sub_vecx[i];
     (*qvalx)[i] = 2 * val_vecx[i];
     (*qsuby)[i] = sub_vecy[i];
     (*qvaly)[i] = 2 * val_vecy[i];
+    //    cout << (*qsubx)[i] << "\t" << (*qvalx)[i] << "\t" 
+    //	 << (*qsuby)[i] << "\t" << (*qvaly)[i] << endl;
   }
-  if (0) {
-    uint numVars = inputCells.size();
-    cout << "=========================" << endl;
-    cout << "Printing linear matrix X:" << endl;
-    cout << "=========================" << endl;
-    for (i = 0; i < numVars; i++) {
-      cout << (*qvalx)[i] << endl;
-    }
-    cout << "=========================" << endl;
-    cout << "Printing linear matrix Y:" << endl;
-    cout << "=========================" << endl;
-    for (i = 0; i < numVars; i++) {
-      cout << (*qvaly)[i] << endl;
-    }
-    exit(0);
-  }
+
   numValuesLin = sub_vecx.size();
 }
-
-void
-getVarBoundsInMosekFormat(Design &myDesign, vector<Cell *>inputCells,
-			  MSKint32t **subbx, MSKrealt **blx, MSKrealt **bux, 
-			  MSKboundkeye **bkx,
-			  MSKint32t **subby, MSKrealt **bly, MSKrealt **buy, 
-			  MSKboundkeye **bky,
-			  MSKint32t &numXbounds, MSKint32t &numYbounds,
-			  bool useVarBounds)
-{
-  uint maxx, maxy;
-  double upperBound, lowerBound, delta;
-  unsigned int numCells;
-
-  myDesign.DesignGetBoundingBox(maxx, maxy);
-  numCells = inputCells.size();
-
-  numXbounds = numCells;
-  numYbounds = numCells;
-  
-  *subbx = (MSKint32t *) malloc(sizeof(MSKint32t) * numCells);
-  *subby = (MSKint32t *) malloc(sizeof(MSKint32t) * numCells);
-  *blx = (MSKrealt *) malloc(sizeof(MSKrealt) * numCells);
-  *bux = (MSKrealt *) malloc(sizeof(MSKrealt) * numCells);
-  *bkx = (MSKboundkeye *) malloc(sizeof(MSKboundkeye) * numCells);
-  *bly = (MSKrealt *) malloc(sizeof(MSKrealt) * numCells);
-  *buy = (MSKrealt *) malloc(sizeof(MSKrealt) * numCells);
-  *bky = (MSKboundkeye *) malloc(sizeof(MSKboundkeye) * numCells);
-
-  delta = 0.001;
-  lowerBound = 0.0 + delta;
-  for (int i = 0; i < numCells; i++) {
-    Cell &thisCell = *(inputCells[i]);
-    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO -
-      ((double)thisCell.CellGetWidth()) / GRID_COMPACTION_RATIO;
-    (*blx)[i] = lowerBound;
-    (*bux)[i] = upperBound;
-    if (useVarBounds == true) {
-      (*bkx)[i] = MSK_BK_RA;
-    } else {
-      (*bkx)[i] = MSK_BK_FR;      
-    }
-    (*subbx)[i] = i;
-    upperBound = ((double)maxx)/GRID_COMPACTION_RATIO -
-      ((double)thisCell.CellGetWidth()) / GRID_COMPACTION_RATIO;
-    (*bly)[i] = lowerBound;
-    (*buy)[i] = upperBound;
-    if (useVarBounds == true) {
-      (*bky)[i] = MSK_BK_RA;
-    } else {
-      (*bky)[i] = MSK_BK_FR;      
-    }
-    (*subby)[i] = i;
-  }
-}
-
 
 bool
 initMosek(MSKenv_t *env, MSKtask_t *task, uint numVars, uint numCstrs)
@@ -167,7 +78,7 @@ initMosek(MSKenv_t *env, MSKtask_t *task, uint numVars, uint numCstrs)
   bool rtv;
 
   rtv = true;
-  r = MSK_makeenv(env, NULL);
+  r = MSK_makeenv(env, NULL, NULL, NULL, NULL);
   if (r == MSK_RES_OK) {
     MSK_linkfunctoenvstream(*env, MSK_STREAM_LOG, NULL, printDesignSolverOutput);
   } else rtv = false;
@@ -180,8 +91,11 @@ initMosek(MSKenv_t *env, MSKtask_t *task, uint numVars, uint numCstrs)
     if (r == MSK_RES_OK) {
       r = MSK_linkfunctotaskstream(*task, MSK_STREAM_LOG, NULL, printDesignSolverOutput);
       /* Provide MOSEK with an estimate of the size of the input data. */
-      if (r == MSK_RES_OK) r = MSK_appendcons(*task, numCstrs);
-      if (r == MSK_RES_OK) r = MSK_appendvars(*task, numVars);
+      if (r == MSK_RES_OK) r = MSK_putmaxnumvar(*task, numVars);
+      if (r == MSK_RES_OK) r = MSK_putmaxnumcon(*task, numCstrs);
+      if (r == MSK_RES_OK) r = MSK_putmaxnumanz(*task, numVars);
+      if (r == MSK_RES_OK) r = MSK_append(*task, MSK_ACC_CON, numCstrs);
+      if (r == MSK_RES_OK) r = MSK_append(*task, MSK_ACC_VAR, numVars);
     } else rtv = false;
   } else rtv = false;
   
@@ -189,15 +103,15 @@ initMosek(MSKenv_t *env, MSKtask_t *task, uint numVars, uint numCstrs)
 }
 
 bool 
-putVarBounds(MSKtask_t *task, MSKint32t numVarBounds,
-	     MSKint32t *subb, MSKrealt *bu, 
+putVarBounds(MSKtask_t *task, uint numVarBounds,
+	     MSKidxt *subb, MSKrealt *bu, 
 	     MSKrealt *bl, MSKboundkeye *bk)
 {
   MSKrescodee r;
   bool rtv;
 
   rtv = true;
-  r = MSK_putvarboundlist(*task, numVarBounds, subb, bk, bl, bu);
+  r = MSK_putboundlist(*task, MSK_ACC_VAR, numVarBounds, subb, bk, bl, bu);
   if (r != MSK_RES_OK) {
     rtv = false;
   }
@@ -206,36 +120,25 @@ putVarBounds(MSKtask_t *task, MSKint32t numVarBounds,
 }
 
 void 
-Design::DesignSolveForAllCellsMosekIter()
+Design::DesignSolveForAllCellsIter()
 {
   void *cellObj;
-  ofstream logFile;
   vector<Cell *> inputCells;
   vector<Cell *> cellsToSolve;
   vector<Cell *> cellsSortedByLeft;
   map<Cell *, uint> quadMap;
   map<Cell *, uint> linMap;
-  map<Cell*, uint>::iterator quadMapItr;
-  map<Cell*, uint>::iterator linMapItr;
   map<uint, double> quadMapX, quadMapY;
   map<uint, double> linMapX, linMapY;
-  string DesignPath, logFileName;
-  string DirName;
   double constantx, constanty;
   double peakUtilization, prevPeakUtil;
   uint numVars, numCstrs;
   uint numValuesQuad, numValuesLin;
   uint peakUtilBinIdx;
-  uint nodeIdx, i;
-  bool useVarBounds;
+  uint nodeIdx;
+  uint i;
 
-  /* All the initilizations */
-  Env &DesignEnv = (*this).DesignEnv;
-  DesignPath = DesignEnv.EnvGetDesignPath();
-  DirName = DesignPath + "/.solverData";
-  useVarBounds = DesignEnv.EnvGetUseVarBounds();
-
-  HyperGraph &myGraph = (*this).DesignGetGraph();
+  HyperGraph &myGraph = DesignGetGraph();
 
   /* Insert cells into a vector in the order of their indices in the 
      hypergraph */ 
@@ -246,16 +149,18 @@ Design::DesignSolveForAllCellsMosekIter()
   } HYPERGRAPH_END_FOR;
 
   DesignSetCellsToSolve(inputCells);
+  numCstrs = 0;
+  numVars = inputCells.size();
 
   /* Define MOSEK variables */
   MSKidxt *qsubix, *qsubjx, *qsubx;
   MSKidxt *qsubiy, *qsubjy, *qsuby;
-  MSKint32t *subbx, *subby;
+  MSKidxt *subbx, *subby;
   MSKrealt *qvalijx, *qvalx;
   MSKrealt *qvalijy, *qvaly;
   MSKrealt *bux, *blx, *buy, *bly;
   MSKboundkeye *bkx, *bky;
-  MSKint32t numXbounds, numYbounds;
+  uint numXbounds, numYbounds;
   
   /* Build the quadratic objective matrix for the cells */
   getObjFuncInMosekFormat((*this), myGraph, inputCells, 
@@ -263,13 +168,26 @@ Design::DesignSolveForAllCellsMosekIter()
 			  &qsubiy, &qsubjy, &qsuby, 
 			  &qvalijx, &qvalx, &qvalijy, 
 			  &qvaly, numValuesQuad, numValuesLin, 
-			  constanty, constantx, quadMap, linMap,
-			  DesignEnv.EnvGetNetModel());
+			  constantx, constantx, quadMap, linMap);
 
   /* Get the variable bounds */
-  getVarBoundsInMosekFormat((*this), inputCells, &subbx, &blx, &bux, &bkx, 
-			    &subby, &bly, &buy, &bky, numXbounds, numYbounds,
-			    useVarBounds);
+  genGetVarBounds((*this), inputCells, &subbx, &bux, &blx, &bkx, 
+		  numXbounds, SOLVE_FOR_X);
+  genGetVarBounds((*this), inputCells, &subby, &buy, &bly, &bky, 
+		  numYbounds, SOLVE_FOR_Y);
+
+  /* Get the bounds for the variables */
+  /* After obtaining the objective, initialize the difference vars */
+  vector<double> diffLinearX(numValuesLin);
+  vector<double> diffLinearY(numValuesLin);
+  vector<double> diffQuadX(numValuesQuad);
+  vector<double> diffQuadY(numValuesQuad);
+  for (i = 0; i < numValuesLin; i++) {
+    diffLinearX[i] = 0.0; diffLinearY[i] = 0.0;
+  }
+  for (i = 0; i < numValuesQuad; i++) {
+    diffQuadX[i] = 0.0; diffQuadX[i] = 0.0;
+  }
 
   /* STORE THE ORIGINAL VALUES OF THE QUADRATIC TERMS IN A MAP */
   /* THIS WOULD BE A KEY-VALUE: INDEX-VALUE PAIR WHICH WOULD   */
@@ -285,13 +203,10 @@ Design::DesignSolveForAllCellsMosekIter()
     linMapY[qvalIdx] = qvaly[qvalIdx];
   } END_FOR;
 
-  numCstrs = 0;
-  numVars = inputCells.size();
-
   /* MOSEK ENV */
-  MSKenv_t envx, envy;
-  MSKtask_t taskx, tasky;
-  MSKrescodee r = MSK_RES_OK;
+  MSKenv_t env;
+  MSKtask_t task;
+  MSKrescodee r;
   bool opRes;
   uint itrCount;
   double stopThreshold;
@@ -301,17 +216,11 @@ Design::DesignSolveForAllCellsMosekIter()
   /**************************************************************/
   /* INITIALIZE MOSEK                                           */
   /**************************************************************/
-  if (!initMosek(&envx, &taskx, numVars, numCstrs)) {
-    cout << "Solver initialization error" << endl;
-    return;
-  }
-  if (!initMosek(&envy, &tasky, numVars, numCstrs)) {
+  if (!initMosek(&env, &task, numVars, numCstrs)) {
     cout << "Solver initialization error" << endl;
     return;
   }
 
-  opRes = putVarBounds(&taskx, numXbounds, subbx, bux, blx, bkx);
-  opRes = putVarBounds(&tasky, numYbounds, subby, buy, bly, bky);
   /**************************************************************/
   /* LOOP OF QUADRATIC SOLVING AND SPREADING BEINGS HERE        */
   /**************************************************************/
@@ -324,21 +233,22 @@ Design::DesignSolveForAllCellsMosekIter()
     /* SOLVER PART BEGINS HERE  :  SOLVE FOR X FIRST AND THEN Y   */
     /**************************************************************/
     _STEP_BEGIN("Adding objective and var bounds for X");
-    if (opRes) r = MSK_putqobj(taskx, numValuesQuad, qsubix, qsubjx, qvalijx);
-    if (r == MSK_RES_OK) r = MSK_putclist(taskx, numValuesLin, qsubx, qvalx);
-    if (r == MSK_RES_OK) r = MSK_putobjsense(taskx , MSK_OBJECTIVE_SENSE_MINIMIZE);
+    opRes = putVarBounds(&task, numXbounds, subbx, bux, blx, bkx);
+    if (opRes) r = MSK_putqobj(task, numValuesQuad, qsubix, qsubjx, qvalijx);
+    if (r == MSK_RES_OK) r = MSK_putclist(task, numValuesLin, qsubx, qvalx);
+    if (r == MSK_RES_OK) r = MSK_putobjsense(task , MSK_OBJECTIVE_SENSE_MINIMIZE);
     _STEP_END("Adding objective and var bounds for X");
     if (r == MSK_RES_OK) {
       MSKrescodee trmcode;
       _STEP_BEGIN("Optimizing in X direction");
-      r = MSK_optimizetrm(taskx, &trmcode);
+      r = MSK_optimizetrm(task, &trmcode);
       _STEP_END("Optimizing in X direction");
-      MSK_solutionsummary(taskx, MSK_STREAM_LOG);
+      MSK_solutionsummary(task, MSK_STREAM_LOG);
       if (r == MSK_RES_OK) {
 	MSKsolstae solsta;
-	MSK_getsolsta(taskx, MSK_SOL_ITR, &solsta);
+	MSK_getsolutionstatus(task, MSK_SOL_ITR, NULL, &solsta);
 	if (solsta == MSK_SOL_STA_NEAR_OPTIMAL || solsta == MSK_SOL_STA_OPTIMAL) {
-	  MSK_getsolutionslice(taskx, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, x);
+	  MSK_getsolutionslice(task, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, x);
 	}
       }
     }
@@ -347,48 +257,24 @@ Design::DesignSolveForAllCellsMosekIter()
     /* SOLVE FOR Y NEXT                                           */
     /**************************************************************/
     _STEP_BEGIN("Adding objective and var bounds for Y");
-    if (opRes) r = MSK_putqobj(tasky, numValuesQuad, qsubiy, qsubjy, qvalijy);
-    if (r == MSK_RES_OK) r = MSK_putclist(tasky, numValuesLin, qsuby, qvaly);
-    if (r == MSK_RES_OK) r = MSK_putobjsense(tasky , MSK_OBJECTIVE_SENSE_MINIMIZE);
+    opRes = putVarBounds(&task, numYbounds, subby, buy, bly, bky);
+    if (opRes) r = MSK_putqobj(task, numValuesQuad, qsubiy, qsubjy, qvalijy);
+    if (r == MSK_RES_OK) r = MSK_putclist(task, numValuesLin, qsuby, qvaly);
+    if (r == MSK_RES_OK) r = MSK_putobjsense(task , MSK_OBJECTIVE_SENSE_MINIMIZE);
     _STEP_END("Adding objective and var bounds for Y");
     if (r == MSK_RES_OK) {
       MSKrescodee trmcode;
       _STEP_BEGIN("Optimizing in Y direction");
-      r = MSK_optimizetrm(tasky, &trmcode);
+      r = MSK_optimizetrm(task, &trmcode);
       _STEP_END("Optimizing in Y direction ");
-      MSK_solutionsummary(tasky, MSK_STREAM_LOG);
+      MSK_solutionsummary(task, MSK_STREAM_LOG);
       if (r == MSK_RES_OK) {
 	MSKsolstae solsta;
-	MSK_getsolsta(tasky, MSK_SOL_ITR, &solsta);
+	MSK_getsolutionstatus(task, MSK_SOL_ITR, NULL, &solsta);
 	if (solsta == MSK_SOL_STA_NEAR_OPTIMAL || solsta == MSK_SOL_STA_OPTIMAL) {
-	  MSK_getsolutionslice(tasky, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, y);
+	  MSK_getsolutionslice(task, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, y);
 	}
       }
-    }
-
-    /**************************************************************/
-    /* WRITE CELL LOCATIONS TO LOG FILE IN EACH ITERATION         */
-    /* IN THE TEST MODE ONLY                                      */
-    /**************************************************************/
-    if (DesignEnv.EnvGetToolMode() == ENV_MODE_TEST) {
-      if (!dirExists(DirName)) {
-        if (!(0 == mkdir(DirName.data(), S_IRWXU | S_IRWXG | S_IRWXO))) {
-          cout << "Error: Directory does not exist. Cannot create directory!!" << endl;
-          exit(0);
-        }
-      }
-      logFileName = DirName + "/MoselSolX_Itr" + getStrFromInt(itrCount) + ".txt";
-      logFile.open(logFileName.data());
-      for (i = 0; i < numVars; i++) {
-	logFile << "X" << i << ": " << x[i] << endl;
-      }
-      logFile.close();
-      logFileName = DirName + "/MoselSolY_Itr" + getStrFromInt(itrCount) + ".txt";
-      logFile.open(logFileName.data());
-      for (i = 0; i < numVars; i++) {
-	logFile << "Y" << i << ": " << y[i] << endl;
-      }
-      logFile.close();
     }
 
     /**************************************************************/
@@ -408,15 +294,11 @@ Design::DesignSolveForAllCellsMosekIter()
     _STEP_END("Assigning locations to cells");
 
     /**************************************************************/
-    /* BIN CREATION AND STRETCHING                                */
+    /* ASSIGN LOCATIONS TO CELLS                                  */
     /**************************************************************/
     _STEP_BEGIN("Creating Bins");
-    DesignCreateBins();
+    DesignCreateBins(8000,4000);
     _STEP_END("Creating Bins");
-
-    _STEP_BEGIN("Stretching Bins");
-    DesignStretchBins();
-    _STEP_END("Stretching Bins");
 
     /**************************************************************/
     /* PRINT THE PEAK UTILIZATION VALUE                           */
@@ -429,8 +311,7 @@ Design::DesignSolveForAllCellsMosekIter()
     cout << "Iteration: " << itrCount++
 	 << " Peak Utilization: " << peakUtilization
 	 << " Bin index: " << peakUtilBinIdx 
-	 << " Mem usage: " << getMemUsage() << MEM_USAGE_UNIT
-	 << " CPU TIME:" << getCPUTime() << CPU_TIME_UNIT << endl;
+	 << " Mem usage: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     /**************************************************************/
     /* STOPPING CONDITION                                         */
@@ -439,7 +320,7 @@ Design::DesignSolveForAllCellsMosekIter()
 	((prevPeakUtil - peakUtilization) < stopThreshold)) {
       cout << "Global placement complete" << endl;
       string plotFileName;
-      plotFileName = DesignEnv.EnvGetDesignName() + ".gp.plt";
+      plotFileName = "gp.plt";
       DesignPlotData("Title", plotFileName);
       break;
     } else {
@@ -464,44 +345,8 @@ Design::DesignSolveForAllCellsMosekIter()
     /* ADD SPREADING FORCES                                       */
     /**************************************************************/
     _STEP_BEGIN("Perform cell spreading");
-    double cellXpos, cellYpos;
-    double pseudoPinX, pseudoPinY;
-    double springConstant;
-    double coeffX, coeffY;
-    uint quadCellIdx, linCellIdx;
-    for (i = 0; i < numVars; i++) {
-      Cell &thisCell = (*(Cell *)(inputCells[i]));
-      Bin &cellBin = *((Bin *)CellGetBin(&thisCell));
-      cellXpos = CellGetDblX(&thisCell);
-      cellYpos = CellGetDblY(&thisCell);
-      DesignSpreadCreatePseudoPort(thisCell, cellBin, cellXpos, cellYpos,
-				   pseudoPinX, pseudoPinY, springConstant);
-      coeffX = 2 * springConstant; coeffY = coeffX;
-      _KEY_EXISTS_WITH_VAL(quadMap, (&thisCell), quadMapItr) {
-	quadCellIdx = quadMapItr->second;
-      } else {
-	cout << "SEVERE ERROR QUAD: ENTRY FOR cell: (PTR: " << &thisCell << ") "
-	     << thisCell.CellGetName() << " not found in quadMap" << endl;
-	exit(0);
-      }
-      _KEY_EXISTS_WITH_VAL(linMap, (&thisCell), linMapItr) {
-	linCellIdx = linMapItr->second;
-      } else {
-	cout << "SEVERE ERROR LINEAR: ENTRY FOR cell: (PTR: " << &thisCell << ") "
-	     << thisCell.CellGetName() << " not found in linMap" << endl;
-	exit(0);
-      }
-
-      /* Update the diagonals of the quadratic matrix */
-      qvalijx[quadCellIdx] += coeffX;
-      qvalijy[quadCellIdx] += coeffY;
-      /* Update the linear matrix */
-      coeffX = coeffX * (-pseudoPinX / GRID_COMPACTION_RATIO);
-      coeffY = coeffY * (-pseudoPinY / GRID_COMPACTION_RATIO);
-
-      qvalx[linCellIdx] += (coeffX);
-      qvaly[linCellIdx] += (coeffY);
-    }
+    DesignSpreadCellsFast(myGraph, qvalijx, qvalijy, qvalx, qvaly, 
+    			  quadMap, linMap);
     _STEP_END("Perform cell spreading");
 
     /**************************************************************/
@@ -512,28 +357,21 @@ Design::DesignSolveForAllCellsMosekIter()
     _STEP_END("Perform bin removal");
   }
   _STEP_END("Analytical solve and spread iterations");
-  MSK_deletetask(&taskx);
-  MSK_deleteenv(&envx);
-  MSK_deletetask(&tasky);
-  MSK_deleteenv(&envy);
+  MSK_deletetask(&task);
+  MSK_deleteenv(&env);
 }
-
-# if 0
+  
 void 
-Design::DesignSolveForAllCellsMosekIterSolveBoth()
+Design::DesignSolveForAllCellsIterOld()
 {
   void *cellObj;
-  ofstream logFile;
   vector<Cell *> inputCells;
   vector<Cell *> cellsToSolve;
   vector<Cell *> cellsSortedByLeft;
   map<Cell *, uint> quadMap;
   map<Cell *, uint> linMap;
-  map<uint, double> quadMap;
-  map<uint, double> linMap;
-  map<Cell *, double>::iterator quadMapItr;
-  map<Cell *, double>::iterator linMapItr;
-  string DesignPath, logFileName;
+  map<uint, double> quadMapX, quadMapY;
+  map<uint, double> linMapX, linMapY;
   double constantx, constanty;
   double peakUtilization, prevPeakUtil;
   uint numVars, numCstrs;
@@ -542,11 +380,7 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
   uint nodeIdx;
   uint i;
 
-  /* All the initilizations */
-  Env &DesignEnv = (*this).DesignEnv;
-  DesignPath = DesignEnv.EnvGetDesignPath();
-
-  HyperGraph &myGraph = (*this).DesignGetGraph();
+  HyperGraph &myGraph = DesignGetGraph();
 
   /* Insert cells into a vector in the order of their indices in the 
      hypergraph */ 
@@ -557,26 +391,45 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
   } HYPERGRAPH_END_FOR;
 
   DesignSetCellsToSolve(inputCells);
+  numCstrs = 0;
+  numVars = inputCells.size();
 
   /* Define MOSEK variables */
-  MSKint32t *qsubi, *qsubj, *qsub;
-  MSKint32t *subb;
-  MSKrealt *qvalij, *qval;
-  MSKrealt *bu, *bl;
-  MSKboundkeye *bk;
-  MSKint32t numBounds;
+  MSKidxt *qsubix, *qsubjx, *qsubx;
+  MSKidxt *qsubiy, *qsubjy, *qsuby;
+  MSKidxt *subbx, *subby;
+  MSKrealt *qvalijx, *qvalx;
+  MSKrealt *qvalijy, *qvaly;
+  MSKrealt *bux, *blx, *buy, *bly;
+  MSKboundkeye *bkx, *bky;
+  uint numXbounds, numYbounds;
   
   /* Build the quadratic objective matrix for the cells */
-  getObjFuncInMosekFormatBoth((*this), myGraph, inputCells, 
-			      qsubi, qsubj, qvalij,
-			      qsub, qval,
-			      numValuesQuad, numValuesLin, 
-			      constantx, constantx, quadMap, linMap,
-			      DesignEnv.EnvGetNetModel());
+  getObjFuncInMosekFormat((*this), myGraph, inputCells, 
+			  &qsubix, &qsubjx, &qsubx, 
+			  &qsubiy, &qsubjy, &qsuby, 
+			  &qvalijx, &qvalx, &qvalijy, 
+			  &qvaly, numValuesQuad, numValuesLin, 
+			  constantx, constantx, quadMap, linMap);
 
   /* Get the variable bounds */
-  getVarBoundsInMosekFormat((*this), inputCells, &subbx, &blx, &bux, &bkx, 
-			    &subby, &bly, &buy, &bky, numXbounds, numYbounds);
+  genGetVarBounds((*this), inputCells, &subbx, &bux, &blx, &bkx, 
+		  numXbounds, SOLVE_FOR_X);
+  genGetVarBounds((*this), inputCells, &subby, &buy, &bly, &bky, 
+		  numYbounds, SOLVE_FOR_Y);
+
+  /* Get the bounds for the variables */
+  /* After obtaining the objective, initialize the difference vars */
+  vector<double> diffLinearX(numValuesLin);
+  vector<double> diffLinearY(numValuesLin);
+  vector<double> diffQuadX(numValuesQuad);
+  vector<double> diffQuadY(numValuesQuad);
+  for (i = 0; i < numValuesLin; i++) {
+    diffLinearX[i] = 0.0; diffLinearY[i] = 0.0;
+  }
+  for (i = 0; i < numValuesQuad; i++) {
+    diffQuadX[i] = 0.0; diffQuadX[i] = 0.0;
+  }
 
   /* STORE THE ORIGINAL VALUES OF THE QUADRATIC TERMS IN A MAP */
   /* THIS WOULD BE A KEY-VALUE: INDEX-VALUE PAIR WHICH WOULD   */
@@ -592,13 +445,10 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
     linMapY[qvalIdx] = qvaly[qvalIdx];
   } END_FOR;
 
-  numCstrs = 0;
-  numVars = inputCells.size();
-
   /* MOSEK ENV */
-  MSKenv_t envx, envy;
-  MSKtask_t taskx, tasky;
-  MSKrescodee r = MSK_RES_OK;
+  MSKenv_t env;
+  MSKtask_t task;
+  MSKrescodee r;
   bool opRes;
   uint itrCount;
   double stopThreshold;
@@ -608,17 +458,11 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
   /**************************************************************/
   /* INITIALIZE MOSEK                                           */
   /**************************************************************/
-  if (!initMosek(&envx, &taskx, numVars, numCstrs)) {
-    cout << "Solver initialization error" << endl;
-    return;
-  }
-  if (!initMosek(&envy, &tasky, numVars, numCstrs)) {
+  if (!initMosek(&env, &task, numVars, numCstrs)) {
     cout << "Solver initialization error" << endl;
     return;
   }
 
-  opRes = putVarBounds(&taskx, numXbounds, subbx, bux, blx, bkx);
-  opRes = putVarBounds(&tasky, numXbounds, subby, buy, bly, bky);
   /**************************************************************/
   /* LOOP OF QUADRATIC SOLVING AND SPREADING BEINGS HERE        */
   /**************************************************************/
@@ -631,21 +475,22 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
     /* SOLVER PART BEGINS HERE  :  SOLVE FOR X FIRST AND THEN Y   */
     /**************************************************************/
     _STEP_BEGIN("Adding objective and var bounds for X");
-    if (opRes) r = MSK_putqobj(taskx, numValuesQuad, qsubix, qsubjx, qvalijx);
-    if (r == MSK_RES_OK) r = MSK_putclist(taskx, numValuesLin, qsubx, qvalx);
-    if (r == MSK_RES_OK) r = MSK_putobjsense(taskx , MSK_OBJECTIVE_SENSE_MINIMIZE);
+    opRes = putVarBounds(&task, numXbounds, subbx, bux, blx, bkx);
+    if (opRes) r = MSK_putqobj(task, numValuesQuad, qsubix, qsubjx, qvalijx);
+    if (r == MSK_RES_OK) r = MSK_putclist(task, numValuesLin, qsubx, qvalx);
+    if (r == MSK_RES_OK) r = MSK_putobjsense(task , MSK_OBJECTIVE_SENSE_MINIMIZE);
     _STEP_END("Adding objective and var bounds for X");
     if (r == MSK_RES_OK) {
       MSKrescodee trmcode;
       _STEP_BEGIN("Optimizing in X direction");
-      r = MSK_optimizetrm(taskx, &trmcode);
+      r = MSK_optimizetrm(task, &trmcode);
       _STEP_END("Optimizing in X direction");
-      MSK_solutionsummary(taskx, MSK_STREAM_LOG);
+      MSK_solutionsummary(task, MSK_STREAM_LOG);
       if (r == MSK_RES_OK) {
 	MSKsolstae solsta;
-	MSK_getsolsta(taskx, MSK_SOL_ITR, &solsta);
+	MSK_getsolutionstatus(task, MSK_SOL_ITR, NULL, &solsta);
 	if (solsta == MSK_SOL_STA_NEAR_OPTIMAL || solsta == MSK_SOL_STA_OPTIMAL) {
-	  MSK_getsolutionslice(taskx, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, x);
+	  MSK_getsolutionslice(task, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, x);
 	}
       }
     }
@@ -654,42 +499,24 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
     /* SOLVE FOR Y NEXT                                           */
     /**************************************************************/
     _STEP_BEGIN("Adding objective and var bounds for Y");
-    if (opRes) r = MSK_putqobj(tasky, numValuesQuad, qsubiy, qsubjy, qvalijy);
-    if (r == MSK_RES_OK) r = MSK_putclist(tasky, numValuesLin, qsuby, qvaly);
-    if (r == MSK_RES_OK) r = MSK_putobjsense(tasky , MSK_OBJECTIVE_SENSE_MINIMIZE);
+    opRes = putVarBounds(&task, numYbounds, subby, buy, bly, bky);
+    if (opRes) r = MSK_putqobj(task, numValuesQuad, qsubiy, qsubjy, qvalijy);
+    if (r == MSK_RES_OK) r = MSK_putclist(task, numValuesLin, qsuby, qvaly);
+    if (r == MSK_RES_OK) r = MSK_putobjsense(task , MSK_OBJECTIVE_SENSE_MINIMIZE);
     _STEP_END("Adding objective and var bounds for Y");
     if (r == MSK_RES_OK) {
       MSKrescodee trmcode;
       _STEP_BEGIN("Optimizing in Y direction");
-      r = MSK_optimizetrm(tasky, &trmcode);
+      r = MSK_optimizetrm(task, &trmcode);
       _STEP_END("Optimizing in Y direction ");
-      MSK_solutionsummary(tasky, MSK_STREAM_LOG);
+      MSK_solutionsummary(task, MSK_STREAM_LOG);
       if (r == MSK_RES_OK) {
 	MSKsolstae solsta;
-	MSK_getsolsta(tasky, MSK_SOL_ITR, &solsta);
+	MSK_getsolutionstatus(task, MSK_SOL_ITR, NULL, &solsta);
 	if (solsta == MSK_SOL_STA_NEAR_OPTIMAL || solsta == MSK_SOL_STA_OPTIMAL) {
-	  MSK_getsolutionslice(tasky, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, y);
+	  MSK_getsolutionslice(task, MSK_SOL_ITR, MSK_SOL_ITEM_XX, 0, numVars, y);
 	}
       }
-    }
-
-    /**************************************************************/
-    /* WRITE CELL LOCATIONS TO LOG FILE IN EACH ITERATION         */
-    /* IN THE TEST MODE ONLY                                      */
-    /**************************************************************/
-    if (DesignEnv.EnvGetToolMode() == ENV_MODE_TEST) {
-      logFileName = DesignPath + ".toolData/MoselSolX_Itr" + getStrFromInt(itrCount) + ".txt";
-      logFile.open(logFileName.data());
-      for (i = 0; i < numVars; i++) {
-	logFile << "X" << i << " :" << x[i] << endl;
-      }
-      logFile.close();
-      logFileName = DesignPath + ".toolData/MoselSolY_Itr" + getStrFromInt(itrCount) + ".txt";
-      logFile.open(logFileName.data());
-      for (i = 0; i < numVars; i++) {
-	logFile << "Y" << i << " :" << y[i] << endl;
-      }
-      logFile.close();
     }
 
     /**************************************************************/
@@ -709,29 +536,21 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
     _STEP_END("Assigning locations to cells");
 
     /**************************************************************/
-    /* BIN CREATION AND STRETCHING                                */
+    /* ASSIGN LOCATIONS TO CELLS                                  */
     /**************************************************************/
     _STEP_BEGIN("Creating Bins");
-    DesignCreateBins();
+    DesignCreateBins(8000,4000);
     _STEP_END("Creating Bins");
-
-    _STEP_BEGIN("Stretching Bins");
-    DesignStretchBins();
-    _STEP_END("Stretching Bins");
-
-    /**************************************************************/
-    /* PRINT THE PEAK UTILIZATION VALUE                           */
-    /**************************************************************/
     peakUtilization = DesignGetPeakUtil();
     peakUtilBinIdx = DesignGetPeakUtilBinIdx();
     if (prevPeakUtil == 0.0) {
        prevPeakUtil = peakUtilization;
     }
+    
     cout << "Iteration: " << itrCount++
 	 << " Peak Utilization: " << peakUtilization
 	 << " Bin index: " << peakUtilBinIdx 
-	 << " Mem usage: " << getMemUsage() << MEM_USAGE_UNIT
-	 << " CPU TIME:" << getCPUTime() << CPU_TIME_UNIT << endl;
+	 << " Mem usage: " << getMemUsage() << MEM_USAGE_UNIT << endl;
 
     /**************************************************************/
     /* STOPPING CONDITION                                         */
@@ -740,11 +559,16 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
 	((prevPeakUtil - peakUtilization) < stopThreshold)) {
       cout << "Global placement complete" << endl;
       string plotFileName;
-      plotFileName = DesignEnv.EnvGetDesignName() + "gp.plt";
+      plotFileName = "gp.plt";
       DesignPlotData("Title", plotFileName);
+      break;
     } else {
       prevPeakUtil = peakUtilization;
     }
+
+    _STEP_BEGIN("Stretching Bins");
+    DesignStretchBins();
+    _STEP_END("Stretching Bins");
 
     /**************************************************************/
     /* RESET LINEAR AND QUADRATIC VALUES                          */
@@ -759,50 +583,17 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
       qvaly[qvalIdx] = linMapY[qvalIdx];
     } END_FOR;
     _STEP_END("Reset quadratic and linear term values");
-
+    
     /**************************************************************/
     /* ADD SPREADING FORCES                                       */
     /**************************************************************/
     _STEP_BEGIN("Perform cell spreading");
-    double cellXpos, cellYpos;
-    double pseudoPinX, pseudoPinY;
-    double springConstant;
-    double coeffX, coeffY;
-    uint quadCellIdx, linCellIdx;
     for (i = 0; i < numVars; i++) {
-      Cell &thisCell = (*(Cell *)(inputCells[i]));
-      if (CellIsStarNode(&thisCell)) break;
-      Bin &cellBin = *((Bin *)CellGetBin(&thisCell));
-      cellXpos = CellGetDblX(&thisCell);
-      cellYpos = CellGetDblY(&thisCell);
-      DesignSpreadCreatePseudoPort(thisCell, cellBin, cellXpos, cellYpos,
-				   pseudoPinX, pseudoPinY, springConstant);
-
-      coeffX = 2 * springConstant; coeffY = coeffX;
-      _KEY_EXISTS_WITH_VAL(quadMap, (&thisCell), quadMapItr) {
-	quadCellIdx = quadMapItr->second;
-      } else {
-	cout << "SEVERE ERROR QUAD: ENTRY FOR cell: (PTR: " << &thisCell << ") "
-	     << thisCell.CellGetName() << " not found in quadMap" << endl;
-	exit(0);
-      }
-      _KEY_EXISTS_WITH_VAL(linMap, (&thisCell), linMapItr) {
-	linCellIdx = linMapItr->second;
-      } else {
-	cout << "SEVERE ERROR LINEAR: ENTRY FOR cell: (PTR: " << &thisCell << ") "
-	     << thisCell.CellGetName() << " not found in linMap" << endl;
-	exit(0);
-      }
-
-      /* Update the diagonals of the quadratic matrix */
-      qvalijx[quadCellIdx] += coeffX;
-      qvalijy[quadCellIdx] += coeffY;
-
-      /* Update the linear matrix */
-      coeffX = coeffX * (-pseudoPinX / GRID_COMPACTION_RATIO);
-      coeffY = coeffY * (-pseudoPinY / GRID_COMPACTION_RATIO);
-      qvalx[linCellIdx] += (coeffX);
-      qvaly[linCellIdx] += (coeffY);
+      Cell &thisCell = (*(inputCells[i]));
+      Bin &thisBin = *((Bin *)CellGetBin(&thisCell));
+      DesignSpreadCreatePseudoPort(thisCell, thisBin,
+				   x[i], y[i], qvalijx, qvalijy, qvalx, 
+				   qvaly, quadMap, linMap);
     }
     _STEP_END("Perform cell spreading");
 
@@ -812,12 +603,9 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
     _STEP_BEGIN("Perform bin removal");
     DesignClearBins();
     _STEP_END("Perform bin removal");
-  }
+  }    
   _STEP_END("Analytical solve and spread iterations");
-  MSK_deletetask(&taskx);
-  MSK_deleteenv(&envx);
-  MSK_deletetask(&tasky);
-  MSK_deleteenv(&envy);
+  MSK_deletetask(&task);
+  MSK_deleteenv(&env);
 }
-
-# endif
+  

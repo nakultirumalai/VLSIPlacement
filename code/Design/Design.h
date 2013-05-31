@@ -16,6 +16,7 @@
 # include <CellSpread.h>
 # include <Bin.h>
 # include <Plot.h>
+# include <Env.h>
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -114,6 +115,8 @@ typedef enum {
 
 class Design {
  private:
+  Env DesignEnv;
+
   map<string, Cell*> DesignClusters;
   map<unsigned int, unsigned int>RowHeights;
 
@@ -254,20 +257,23 @@ class Design {
   void DesignAddCellToPhysRow(Cell*, vector<vector<int> > &, vector<PhysRow*> &);
   void DesignAddAllCellsToPhysRows(void);
 
+  /* Set and get functions for the design environment */
+  void DesignSetEnv(Env &);
+  Env& DesignGetEnv(void);
+
+  /* Top level function for invoking the placer */
+  void DesignDoGlobalPlacement(void);
+
   /* Chip boundary function */
   void DesignGetBoundingBox(uint&, uint&);
   
   map<unsigned int, unsigned int> DesignGetRowHeights();
 
   /* Solver functions */
-  void DesignSolveForSeqCells(seqSolverType);
-  void DesignSolveForAllCells(allSolverType);
-  void DesignSolveForAllCellsTest(allSolverType);
-  void DesignSolveAllCells(seqSolverType, allSolverType);
+  void DesignSolveForAllCellsMosekIter(void);
+  void DesignSolveForAllCellsConjGradIter(void);
+  void DesignSolveForAllCellsConjGradWnLibIter(void);
   void DesignSetCellsToSolve(vector<Cell *>);
-  void DesignSolveForAllCellsIter(void);
-  void DesignSolveForAllCellsIterOld(void);
-  void DesignSolveFastOOQP(void);
 
   /* Clustering functions */
   void DesignClusterCells(HyperGraph&, clusteringType);
@@ -299,15 +305,16 @@ class Design {
 			    double &, double &, double &, 
 			    char &, double&, double &, 
 			    double &, double &);
+  void DesignCreatePseudoPortOld(Cell &, double, double, double, double, 
+				 double, double, double, char, 
+				 MSKrealt *, MSKrealt *,  
+				 MSKrealt *, MSKrealt *, 
+				 map<Cell *, uint>&, map<Cell *, uint>&);
   void DesignCreatePseudoPort(Cell &, double, double, double, double, 
-			      double, double, double, char, 
-			      MSKrealt *, MSKrealt *,  
-			      MSKrealt *, MSKrealt *, 
-			      map<Cell *, uint>&, map<Cell *, uint>&);
-  void DesignSpreadCreatePseudoPort(Cell&, Bin&, double, double, MSKrealt*, 
-				    MSKrealt*, MSKrealt*, MSKrealt*, 
-				    std::map<Cell *, unsigned int>&, 
-				    std::map<Cell *, unsigned int>&);
+			      double, double, double, char, double &,
+			      double &, double &);
+  void DesignSpreadCreatePseudoPort(Cell&, Bin&, double, double, 
+				    double &, double &, double &);
 
   /* Bin related functions */
   void DesignStretchBins(void);

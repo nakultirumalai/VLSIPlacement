@@ -1,5 +1,6 @@
 MODULE = Design
 SRCFILES:=  DesignMain DesignUtils DesignRead DesignGraph  DesignAnalysis DesignCluster DesignWrite \
-	    DesignProperties DesignSolveFastStarMosek7 DesignSolveFastOOQP DesignSpread DesignDebug
+	    DesignProperties DesignSolveFastMosek7 DesignSpread DesignDebug  DesignSolveFastConjGrad DesignPlace \
+	    DesignSolveFastWnlib
 
 HFILES:= Design DesignIter
