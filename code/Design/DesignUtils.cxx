@@ -128,14 +128,22 @@ Design::DesignGetCellsOfBin(Bin *binPtr, uint left, uint right, uint bot, uint t
 void
 Design::DesignPlotData(string plotTitle, string plotFileName)
 {
+  Cell *cellPtr;
   vector<Cell *> cellsToSolve;
+  string cellName;
   Bin *binPtr;
   uint binIdx;
 
   Plot newPlot(plotTitle, plotFileName);
-  newPlot.PlotSetBoundary(*this);
-  cellsToSolve = (*this).DesignGetCellsToSolve();
-  
+    newPlot.PlotSetBoundary(*this);
+
+  DESIGN_FOR_ALL_CELLS((*this), cellName, cellPtr) {
+    if ((*cellPtr).CellIsTerminal()) {
+      continue;
+    }
+    cellsToSolve.push_back(cellPtr);
+  } DESIGN_END_FOR;
+
   newPlot.PlotAddCells(cellsToSolve);
 
   DESIGN_FOR_ALL_BINS((*this), binIdx, binPtr) {

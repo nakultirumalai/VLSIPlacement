@@ -20,7 +20,8 @@ typedef enum {
   BIN_RECT,
   STRETCHED_BIN_RECT,
   SUPPLY_BIN_RECT,
-  DEMAND_BIN_RECT
+  DEMAND_BIN_RECT,
+  BIN_PATH_RECT
 } lineStyle;
 
 typedef enum {
@@ -93,6 +94,7 @@ class Plot
   vector<Rect> stretchedBins;
   vector<Rect> supplyBins;
   vector<Rect> demandBins;
+  vector<Rect> binPathRects;
   ofstream plotOpFile;
   
  public:
@@ -128,6 +130,7 @@ class Plot
   void PlotAddBin(Bin &);
   void PlotAddSupplyBin(LegalizeBin &, int);
   void PlotAddDemandBin(LegalizeBin &, int);
+  void PlotAddBinPathRect(LegalizeBin &, int);
   void PlotAddStretchedBin(Bin &);
 
   /* Write output */

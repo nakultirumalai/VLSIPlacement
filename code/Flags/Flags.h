@@ -7,6 +7,7 @@
 # include <PhysRow.h>
 
 class PhysRow;
+class LegalizeBin;
 
 typedef enum {
   PATH_TOTAL_CELL_DELAY = 0,
@@ -14,6 +15,8 @@ typedef enum {
   CELL_DBLY,
   CELL_MOVE_COST,
   PHYSROW_SUPPLY,
+  LEGALIZE_BIN_L_VALUE,
+  LEGALIZE_BIN_B_VALUE,
   TOTAL_NUM_DOUBLE_FLAGS
 } flagDoubleType;
 
@@ -146,5 +149,16 @@ extern void* CellGetBin(Cell *);
 extern void CellSetBin(Cell *, void *);
 extern void CellClearBin(Cell *);
 extern void CellClearAllBin(void);
+
+extern double LegalizeBinGetLValue(LegalizeBin*);
+extern void LegalizeBinSetLValue(LegalizeBin*, double);
+extern void LegalizeBinClearLValue(LegalizeBin*);
+extern void LegalizeBinClearAllLValue(void);
+
+extern double LegalizeBinGetBValue(LegalizeBin*);
+extern void LegalizeBinSetBValue(LegalizeBin*, double);
+extern void LegalizeBinClearBValue(LegalizeBin*);
+extern void LegalizeBinClearAllBValue(void);
+
 
 # endif

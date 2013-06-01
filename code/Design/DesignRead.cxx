@@ -80,7 +80,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   DesignReadCmdsFile();
   DesignReadPinsMapFile();
   DesignReadCellDelaysFile();
-  DesignShiftChipToZeroZero();
+  //  DesignShiftChipToZeroZero();
   DesignSetVarsPostRead();
   DesignFile.close();
 }
@@ -468,13 +468,6 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
     thisCell = DesignGetNode(cellName);
     if (thisCell == NIL(Cell *)) {
       _ASSERT_TRUE("Cell not found in design database!");
-    }
-
-    if (xPos < preShiftLeft) {
-      preShiftLeft = xPos;
-    }
-    if (yPos < preShiftBot) {
-      preShiftBot = yPos;
     }
     (*thisCell).CellSetXpos(xPos);
     (*thisCell).CellSetYpos(yPos);

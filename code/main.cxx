@@ -203,6 +203,12 @@ int placeMain(Env &topEnv)
 
   myDesign.DesignSetEnv(topEnv);
   myDesign.DesignDoGlobalPlacement();
+  LegalizeDesign(myDesign);
+  DesignWriteBookShelfOutput(myDesign); 
+
+  string plotFileName;
+  plotFileName = "lg.plt";
+  myDesign.DesignPlotData("Title", plotFileName);
 
   DesignWriteBookShelfOutput(myDesign); 
 
@@ -234,11 +240,12 @@ int main(int argc, char *argv[])
       cout << "Exiting!" << endl;
       exit(0);
     }
+    FlagsInit();
   } else {
     cout << "Usage: <exec> -design <AuxFilePath>/<DesignName>.aux " << endl;
     exit(0);
   }
-  
-  
+
   return (placeMain(topEnv));
 }
+

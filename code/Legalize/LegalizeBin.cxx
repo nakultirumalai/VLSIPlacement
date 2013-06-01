@@ -29,7 +29,7 @@ LegalizeBin::BinSetEmpty(bool isEmpty)
 }
 
 void
-LegalizeBin::BinSetSupply(int supply)
+LegalizeBin::BinSetSupply(double supply)
 {
   this->supply = supply;
 }
@@ -83,6 +83,11 @@ LegalizeBin::BinSetBot(int bot)
   this->binBot = bot;
 }
 
+void 
+LegalizeBin::BinSetZone(Zone *thisZone)
+{
+  (this->inZone) = thisZone;
+}
 
 /* Get functions for bin */
 int
@@ -103,7 +108,7 @@ LegalizeBin::BinGetEmpty(void)
   return isEmpty;
 }
 
-int
+double
 LegalizeBin::BinGetSupply(void)
 {
   return supply;
@@ -153,15 +158,59 @@ LegalizeBin::BinGetCellFract(Cell* thisCell)
 {
   return (cellFracts[thisCell]);
 }
-  
+ 
+Zone*
+LegalizeBin::BinGetZone(void)
+{
+  return (this->inZone);
+}
+
 /* Other Functions */
 void
 LegalizeBin::BinAddCellToBin(Cell* thisCell)
 {
-  this->cellsInBin.push_back(thisCell);
+  (this->cellsInBin).push_back(thisCell);
   int cellWidth = (*thisCell).CellGetWidth();
   this->totalCellWidth += cellWidth;
-  cellFracts[thisCell] = 1.0;
+}
+
+void
+LegalizeBin::BinRemoveCellFromBin(Cell* thisCell)
+{
+  int cellWidth, i; 
+  uint numCells;
+  vector<Cell *>::iterator it;
+  Cell *cellPtr;
+  bool found;
+
+  cellWidth = (*thisCell).CellGetWidth();
+  this->totalCellWidth -= cellWidth;
+  found = false;
+  numCells = (this->cellsInBin).size();
+  for (it = (this->cellsInBin).begin(); it != (this->cellsInBin).end(); ++it) {
+    cellPtr = *it;
+    if (cellPtr == thisCell) {
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    (this->cellsInBin).erase(it);
+  }
+
+    //  (this->cellsInBin).erase(remove((this->cellsInBin).begin(), (this->cellsInBin).end(), thisCell), (this->cellsInBin).end());
+}
+
+void
+LegalizeBin::BinRemoveCellFromFract(Cell* thisCell)
+{
+  (this->cellFracts).erase(thisCell); 
+}
+
+void
+LegalizeBin::BinRemoveAllFractCells(void)
+{
+  (this->cellFracts).clear(); 
 }
 
 void
@@ -173,6 +222,17 @@ LegalizeBin::BinCalculateWidth(void)
 int
 LegalizeBin::BinGetTotalCellWidth(void)
 {
+  /*
+  Cell *thisCell;
+  int totalCellWidth;
+  int cellWidth;
+  totalCellWidth = 0;
+  
+  VECTOR_FOR_ALL_ELEMS (this->cellsInBin, Cell*, thisCell){
+    cellWidth = (*thisCell).CellGetWidth();
+    totalCellWidth += cellWidth;
+    } END_FOR;
+  */
   return totalCellWidth;
 }
 

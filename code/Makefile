@@ -5,7 +5,7 @@ OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 
 LIBSOOQP= -looqpgensparse -looqpsparse  -looqpgondzio -looqpmehrotra -looqpbase -lblas /usr/local/lib/libma27.a -lgfortran
-LIBQUADPROG= -lQuadProgpp
+LIBQUADPROG= #-lQuadProgpp
 LIBMOSEK= -lmosek64 -pthread
 
 LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)

@@ -2,12 +2,16 @@
 
 using namespace std;
 
-int rowOfInterest = 29;
-int binOfInterest = 4;
+# define WEIGHT 0.0
+
+int rowOfInterest = 56;
+int binOfInterest = 7;
 int currentRow;
 bool doFractReassign = true;
 bool ascendingX(Cell*, Cell*);
-bool combo = false;
+bool debugMode = true;
+
+
 /* Sorting functions */
 bool
 ascendingX(Cell* cell1, Cell* cell2)
@@ -16,9 +20,21 @@ ascendingX(Cell* cell1, Cell* cell2)
 }
 
 bool
-ascendingBins(pair<int, unsigned int> p1, pair<int, unsigned int> p2)
+maxSupply(LegalizeBin *binOne, LegalizeBin *binTwo)
 {
-  return((p1.first) < (p2.first));
+  int binOneSupp = (*binOne).BinGetSupply();
+  int binTwoSupp = (*binTwo).BinGetSupply();
+  return (binOneSupp < binTwoSupp);
+}
+bool
+ascendingBins(const pair<int, unsigned int> &p1, const pair<int, unsigned int> &p2)
+{
+  return ((p1.first) < (p2.first));
+}
+bool
+cmpZoneFunc(const pair<int, Zone*> &p1, const pair<int, Zone*> &p2)
+{
+  return ((p1.first) < (p2.first));
 }
 
 void 
@@ -123,7 +139,6 @@ LegalizeSnapToNearestRows(Cell* cell, vector<PhysRow*> &allPhysRows, rowOrientat
      findRowCoordinates(RowCoordinates, min, max, key, nearRows);
      
      /* Cell has violated X-bounds */
-     
      if(!(cell->CellXIsLegal())){
        if(cellX < otherCoordinateBegin){
 	 cellX = cellX + (otherCoordinateBegin - cellX);
@@ -250,16 +265,16 @@ LegalizeFindZonesInRow(PhysRow* row, vector<Zone*> &zones,
       int xPos = (*Obj).CellGetXpos();
       if(firstBlockedZone){
 	if (xPos == rowBegin) {
-	  thisZone = new Zone(xPos, false);
+	  thisZone = new Zone(xPos, row, false);
 	  zones.push_back(thisZone);
 	  blockedZones.push_back(thisZone);
 	  blockedZoneEnd = xPos + ((*Obj).CellGetWidth());
 	  prevZone = thisZone;
 	} else if (xPos > rowBegin) {
-	  thisZone = new Zone(rowBegin, true);
+	  thisZone = new Zone(rowBegin, row, true);
 	  zones.push_back(thisZone);
 	  thisZone->ZoneSetEnd(xPos);
-	  thisZone = new Zone(xPos, false);
+	  thisZone = new Zone(xPos, row, false);
 	  zones.push_back(thisZone); 
 	  blockedZones.push_back(thisZone);
 	  prevZone = thisZone;
@@ -282,11 +297,11 @@ LegalizeFindZonesInRow(PhysRow* row, vector<Zone*> &zones,
 	} else if (xPos > prevBlockedZoneEnd){
 	  /* Create the empty zone before the next blocked zone */
 	  prevZone->ZoneSetEnd(prevBlockedZoneEnd);
-	  thisZone = new Zone(prevBlockedZoneEnd, true);
+	  thisZone = new Zone(prevBlockedZoneEnd, row, true);
 	  zones.push_back(thisZone);
 	  thisZone->ZoneSetEnd(xPos);
 	  /* Create the next blocked zone */
-	  thisZone = new Zone(xPos, false);
+	  thisZone = new Zone(xPos, row, false);
 	  prevZone =  thisZone;
 	  zones.push_back(thisZone);
 	  blockedZones.push_back(thisZone);
@@ -298,7 +313,7 @@ LegalizeFindZonesInRow(PhysRow* row, vector<Zone*> &zones,
     /* Indicates last zone is an empty zone */
     if (prevBlockedZoneEnd != rowEnd){
       prevZone->ZoneSetEnd(prevBlockedZoneEnd);
-      thisZone = new Zone(prevBlockedZoneEnd, true);
+      thisZone = new Zone(prevBlockedZoneEnd, row, true);
       thisZone->ZoneSetEnd(rowEnd);
       zones.push_back(thisZone);
     } else if (prevBlockedZoneEnd == rowEnd){
@@ -307,7 +322,7 @@ LegalizeFindZonesInRow(PhysRow* row, vector<Zone*> &zones,
   }
   /* If row does not have any cell(s) that qualfies as fixed */
   if (!(fixedCells.size())){
-    thisZone = new Zone(rowBegin, true);
+    thisZone = new Zone(rowBegin, row, true);
     thisZone->ZoneSetEnd(rowEnd);
     zones.push_back(thisZone);
   }
@@ -363,8 +378,8 @@ LegalizeFindZonesInRow(PhysRow* row, vector<Zone*> &zones,
 
 void
 LegalizeFindBinsInRow(vector<Zone*> &allZones, 
-			 vector<LegalizeBin*> &allBins, PhysRow* &thisRow,
-			 int columnWidth, int rowBegin, int rowEnd)
+		      vector<LegalizeBin*> &allBins, PhysRow* &thisRow,
+		      int columnWidth, int rowBegin, int rowEnd)
 {
   /* Finding the column boundaries */
   vector<pair<int, unsigned int> > bins;
@@ -373,17 +388,21 @@ LegalizeFindBinsInRow(vector<Zone*> &allZones,
   }
   /* Forming a vector of pairs by converting Zone objects */
   vector<pair<int, unsigned int> > zones;
+  vector<pair<int, Zone*> > zoneObjMap;
+
   Zone* zoneObj;
   VECTOR_FOR_ALL_ELEMS(allZones, Zone*, zoneObj){
     int zBegin = zoneObj->ZoneGetBegin();
     unsigned int flag = (unsigned int)(zoneObj->ZoneGetEmpty());
     zones.push_back(make_pair(zBegin, flag));
-  }END_FOR;
+    zoneObjMap.push_back(make_pair(zBegin, zoneObj));
+  } END_FOR;
   
   /* Finding the union of zones and column boundaries
      to give bins */  
   bins.insert(bins.end(), zones.begin(), zones.end());
   sort(bins.begin(),bins.end(), ascendingBins);
+  sort(zoneObjMap.begin(), zoneObjMap.end(), cmpZoneFunc);
   
   /* Creating a map to distinguish between zones and column boundaries */
   pair<int, unsigned int> Obj;
@@ -408,11 +427,12 @@ LegalizeFindBinsInRow(vector<Zone*> &allZones,
     }
     
   }
+
   /* Insert bin objects into a vector */
   LegalizeBin* bin;
   LegalizeBin* prevBin;
   bool firstBin = true;
-
+  uint numZones = zoneObjMap.size();
   VECTOR_FOR_ALL_ELEMS(bins, pair<int MCOMMA unsigned int>, Obj){
     if (firstBin) {
       bin = new LegalizeBin(Obj.first, thisRow, Obj.second);
@@ -445,6 +465,30 @@ LegalizeFindBinsInRow(vector<Zone*> &allZones,
 	}
       }	
       allBins.push_back(bin);
+    }
+    /* Set the zone each bin belongs to */
+    {
+      int xl, xg;
+      uint idxl, idxg;
+      uint xz;
+      uint x = Obj.first;
+      xl = (zoneObjMap[0]).first;
+      xg = 0; idxl = 0; idxg = 0;
+      Zone *binZone = NIL(Zone *);
+      for (int i = 0; i < numZones; i++) {
+	xz = (zoneObjMap[i]).first;
+	if (xz < x) {
+	  idxl = i;
+	} else if (xz > x) {
+	  break;
+	} else if (xz == x) {
+	  binZone = (zoneObjMap[i]).second;
+	}
+      }
+      if (binZone == NIL(Zone *)) {
+	binZone = (zoneObjMap[idxl]).second;
+      }
+      (*bin).BinSetZone(binZone);
     }
     prevBin = bin;
   }END_FOR;
@@ -486,7 +530,9 @@ LegalizeMergeBins(vector<LegalizeBin*> &allBins, int columnWidth)
 	  emptyBins.erase(emptyBins.begin());
 	  allBins.erase(remove(allBins.begin(), allBins.end(), first), allBins.end());
 	  idx--;
-	  cout << "Bin merged " << endl;
+	  if (0) {
+	    cout << "Bin merged " << endl;
+	  }
 	}
 	/* Keeps checking for merges if the number of unblocked bins is more than two */
 	if (emptyBins.size() >= 2){
@@ -502,7 +548,9 @@ LegalizeMergeBins(vector<LegalizeBin*> &allBins, int columnWidth)
 	    emptyBins.erase((emptyBins.begin() + (size - 1)));
 	    allBins.erase(remove(allBins.begin(), allBins.end(), last), allBins.end());
 	    idx--;
-	  cout << "Bin merged " << endl;
+	    if (0) {
+	      cout << "Bin merged " << endl;
+	    }
 	  }
 	}
 	emptyBins.clear();
@@ -532,7 +580,9 @@ LegalizeMergeBins(vector<LegalizeBin*> &allBins, int columnWidth)
       second->BinCalculateWidth();
       emptyBins.erase(emptyBins.begin());
       allBins.erase(remove(allBins.begin(), allBins.end(), first), allBins.end());
-      cout << "Bin merged " <<endl;
+      if (0) {
+	cout << "Bin merged " <<endl;
+      }
     }
     if (emptyBins.size() >= 2){
       int size = emptyBins.size();
@@ -546,7 +596,9 @@ LegalizeMergeBins(vector<LegalizeBin*> &allBins, int columnWidth)
 	secondLast->BinCalculateWidth();
 	emptyBins.erase((emptyBins.begin() + (size - 1)));
 	allBins.erase(remove(allBins.begin(), allBins.end(), last), allBins.end());
-	cout << "Bin merged " << endl;
+	if (0) {
+	  cout << "Bin merged " << endl;
+	}
       }
     }
     emptyBins.clear();
@@ -565,39 +617,91 @@ LegalizeAddCellsToBins(vector<Cell*> &cellsInRow, vector<LegalizeBin*> &allBins)
   int cellBegin, cellEnd;
   Cell* cellObj;
   LegalizeBin* binObj;
+  Zone *thisZone;
   VECTOR_FOR_ALL_ELEMS(cellsInRow, Cell*, cellObj){
     cellBegin = cellObj->CellGetXpos();
     VECTOR_FOR_ALL_ELEMS(allBins, LegalizeBin*, binObj){
       if (binObj->BinGetEmpty()){
+	thisZone = (*binObj).BinGetZone();
 	int begin = binObj->BinGetBegin();
 	int end = binObj->BinGetEnd();
 	if ((cellBegin >= begin) && (cellBegin < end)){
 	    binObj->BinAddCellToBin(cellObj);
+	    (*thisZone).ZoneAddCellToZone(cellObj);
 	}
       }
     } END_FOR;
   } END_FOR;
 }
 
+
 void
-LegalizeCalcSuppForBins(vector<LegalizeBin*> &allBins, 
-			vector<LegalizeBin*> &supplyBins, 
-			vector<LegalizeBin*> &demandBins)
-			
+LegalizeCalcSuppForAllBins(vector<vector<LegalizeBin*> > &designBins, 
+			  vector<LegalizeBin*> &supplyBins)
 {
-  LegalizeBin* bin;
-  VECTOR_FOR_ALL_ELEMS(allBins, LegalizeBin*, bin){
-    if (bin->BinGetEmpty()){
-      int wCells = bin->BinGetTotalCellWidth();
-      int wBin = bin->BinGetWidth();
-      int supply = wCells - wBin;
-      if (supply > 0) {
-	supplyBins.push_back(bin);
-      } else {
-	demandBins.push_back(bin);
+  supplyBins.clear();
+  vector<LegalizeBin*> binsInRow;
+  LegalizeBin *thisBin;
+  int binsInRowSize;
+  double wCells, supply;
+  int wBin;
+  vector<Cell*> cellsInBin;
+  VECTOR_FOR_ALL_ELEMS(designBins, vector<LegalizeBin*>, binsInRow){
+    VECTOR_FOR_ALL_ELEMS(binsInRow, LegalizeBin*, thisBin) {
+      if ((*thisBin).BinGetEmpty()) {
+	cellsInBin = (*thisBin).BinGetCellsInBin();
+	Cell *thisCell;
+	int cellWidth;
+	wCells = 0.0;
+	VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell) {
+	  cellWidth = (*thisCell).CellGetWidth();
+	  wCells += cellWidth;
+	} END_FOR;
+	wBin = (*thisBin).BinGetWidth();
+	supply = wCells - (double)wBin;
+	if (supply > 0.0) {
+	  supplyBins.push_back(thisBin);
+	} 
+	(*thisBin).BinSetSupply(supply);
       }
-      bin->BinSetSupply(supply);
-    }
+    } END_FOR;
+  } END_FOR;
+}
+
+
+void
+LegalizeReCalcSuppForAllBins(vector<vector<LegalizeBin*> > &designBins, 
+			  vector<LegalizeBin*> &supplyBins)
+{
+  map<Cell*, double> fractCells;
+  vector<LegalizeBin*> binsInRow;
+  LegalizeBin *thisBin;
+  Cell *key;
+  double wCells, supply, value;
+  double wBin;
+  double cellFractWidth;
+  int binsInRowSize, wbin;
+  int cellWidth;
+
+  supplyBins.clear();
+  VECTOR_FOR_ALL_ELEMS(designBins, vector<LegalizeBin*>, binsInRow){
+    VECTOR_FOR_ALL_ELEMS(binsInRow, LegalizeBin*, thisBin) {
+      if ((*thisBin).BinGetEmpty()) {
+	fractCells = (*thisBin).BinGetAllFractCells();
+	wCells = 0.0;
+	MAP_FOR_ALL_ELEMS(fractCells, Cell*, double, key, value){
+	  cellWidth = (*key).CellGetWidth();
+	  cellFractWidth = value * (double)cellWidth;
+	  wCells += cellFractWidth;
+	} END_FOR;
+	wBin = (*thisBin).BinGetWidth();
+	supply = wCells - (double)wBin;
+	if (supply > 0.0) {
+	  supplyBins.push_back(thisBin);
+	} 
+	(*thisBin).BinSetSupply(supply);
+      }
+    } END_FOR;
   } END_FOR;
 }
 
@@ -626,277 +730,1237 @@ LegalizeGetNeighbours(LegalizeBin* &binOne, LegalizeBin* &binTwo,
   int idxOne = (*binOne).BinGetIndex();
   int idxTwo = idxOne + 1;
   int idxThree = idxOne + 2;
-  binTwo = allBins[idxTwo];
-  binThree = allBins[idxThree];
+  if (idxTwo < allBins.size()) {
+    binTwo = allBins[idxTwo];
+    if (idxThree < allBins.size()) {
+      binThree = allBins[idxThree];
+    }
+  }
 }
-  
 
-  
 void 
-LegalizeDoFractReassign(vector<LegalizeBin*> &suppBins, 
-			vector<LegalizeBin*> &allBins)
-
+LegalizeDoFractReassign(vector<LegalizeBin*> &binsInRow)
 {
+  Cell* cellObj;
   int binOneBegin, binTwoBegin, binThreeBegin;
   int binOneEnd, binTwoEnd, binThreeEnd;
   int cellBegin, cellEnd, cellWidth;
   int binOneSupply, binTwoSupply;
   double gamma1, gamma2, gamma3;
+  double binSupply;
+  LegalizeBin *tempBin;
   LegalizeBin* binOne;
   LegalizeBin* binTwo = NIL(LegalizeBin*);
   LegalizeBin* binThree = NIL(LegalizeBin*);
   bool dPrint = false;
-  VECTOR_FOR_ALL_ELEMS(suppBins, LegalizeBin*, binOne){
-    int bIndex = (*binOne).BinGetIndex();
-    if ((currentRow == rowOfInterest) && (binOfInterest == bIndex)) {
-      dPrint = false;
-    }
-    binOneBegin = (*binOne).BinGetBegin();
-    binOneEnd = (*binOne).BinGetEnd();
-    binOneSupply = (*binOne).BinGetSupply();
-    int bOneTotalCellWidth = (*binOne).BinGetTotalCellWidth();
-    if (dPrint) {
-      cout << "ROW " << rowOfInterest << " BIN " << binOfInterest << endl;
-      cout << " BEGIN " << binOneBegin << " END " << binOneEnd 
-	   << " SUPPLY " << binOneSupply << " TOTAL CELL WIDTH " 
-	   << bOneTotalCellWidth << endl;
-    }
-    LegalizeGetNeighbours(binOne, binTwo, binThree, allBins);
-    vector<Cell*> cellsInBin = (*binOne).BinGetCellsInBin();
-    bool condBinVar = (binTwo && binThree && varOption);
-    if (dPrint && condBinVar) {
-      cout << " PROCESSING FIRST BLOCK " << endl;
-    } else if (dPrint && !condBinVar) {
-      cout <<  " PROCESSING SECOND BLOCK " << endl;
-    }
-    int cellCount = 0;
-    Cell* cellObj;
-    VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, cellObj){
-      cellBegin = (*cellObj).CellGetXpos();
-      cellWidth = (*cellObj).CellGetWidth();
-      cellEnd = cellBegin + cellWidth;
-      if (dPrint) {
-	cout << "CELL " << cellCount << " BEGINS AT " << cellBegin
-	     << " ENDS AT " << cellEnd << " WIDTH " << cellWidth << endl;
-      }
-      if (condBinVar) {
-	
-	binTwoBegin = (*binTwo).BinGetBegin();
-	binTwoEnd = (*binTwo).BinGetEnd();
+  bool fractAssign;
+  double fract;
+  int newCellWidth;
+  int binWidth;
 
-	binThreeBegin = (*binThree).BinGetBegin();
-	binThreeEnd = (*binThree).BinGetEnd();
+  VECTOR_FOR_ALL_ELEMS(binsInRow, LegalizeBin*, tempBin) {
+    (*tempBin).BinRemoveAllFractCells();
+  } END_FOR;
+# if 0
+  VECTOR_FOR_ALL_ELEMS(binsInRow, LegalizeBin*, tempBin) {
+    map<Cell *, double> &fractCells = (*tempBin).BinGetAllFractCells();
+    cout << "fractional cells after removal: " << fractCells.size();
+  } END_FOR;
+# endif
 
+  VECTOR_FOR_ALL_ELEMS(binsInRow, LegalizeBin*, binOne){
+    binSupply = (*binOne).BinGetSupply();
+    if (binSupply <= 0) {
+      vector<Cell*> cellsInBin;
+      Cell *thisCell;
+      cellsInBin = (*binOne).BinGetCellsInBin();
+      VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell){
+	(*binOne).BinSetCellFract(thisCell, 1.0);
+      } END_FOR;
+    } else {
+      PhysRow *currRow = (*binOne).BinGetRow();
+      int bIndex = (*binOne).BinGetIndex();
+      int bOneTotalCellWidth = (*binOne).BinGetTotalCellWidth();
+      int currentRow = (*currRow).PhysRowGetIndex();
+      vector<Cell*> cellsInBin = (*binOne).BinGetCellsInBin();
+
+      binOneBegin = (*binOne).BinGetBegin();
+      binOneEnd = (*binOne).BinGetEnd();
+      LegalizeGetNeighbours(binOne, binTwo, binThree, binsInRow);
+
+      VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, cellObj){
+	gamma2 = 0; gamma3 = 0; binTwoSupply = 0;
+	cellBegin = (*cellObj).CellGetXpos();
+	cellWidth = (*cellObj).CellGetWidth();
+	cellEnd = cellBegin + cellWidth;
 	gamma1 = LegalizeThetaFunc(binOneBegin, binOneEnd, cellBegin, cellEnd);
-	gamma2 = LegalizeThetaFunc(binTwoBegin, binTwoEnd, cellBegin, cellEnd);
-	gamma3 = LegalizeThetaFunc(binThreeBegin, binThreeEnd, cellBegin, cellEnd);
-	if (gamma3 > 0) {
-	  double fract = gamma3 / cellWidth;
-	  (*binThree).BinSetCellFract(cellObj, fract);
-	  int newCellWidth = (*binThree).BinGetTotalCellWidth() + gamma3;
-	  int binWidth = (*binThree).BinGetWidth();
-	  int supply = newCellWidth - binWidth;
-	  (*binThree).BinSetTotalCellWidth(newCellWidth);
-	  (*binThree).BinSetSupply(supply);
-	}
-	if (gamma2 > 0) {
-	  double fract = gamma2 / cellWidth;
-	  (*binTwo).BinSetCellFract(cellObj, fract);
-	  int newCellWidth = (*binTwo).BinGetTotalCellWidth() + gamma2;
-	  int binWidth = (*binTwo).BinGetWidth();
-	  int supply = newCellWidth- binWidth;
-	  (*binTwo).BinSetTotalCellWidth(newCellWidth);
-	  (*binTwo).BinSetSupply(supply);
-	  
-	}
-	double fract = gamma1 / cellWidth;
-	(*binOne).BinSetCellFract(cellObj, fract);
-	int newCellWidth = (*binOne).BinGetTotalCellWidth() - cellWidth + gamma1;
-	int binWidth = (*binOne).BinGetWidth();
-	int supply = newCellWidth - binWidth;
-	(*binOne).BinSetTotalCellWidth(newCellWidth);
-	(*binOne).BinSetSupply(supply);
-	  
-      } else {
 	if (binTwo) {
+	  binTwoSupply = (*binTwo).BinGetSupply();
 	  binTwoBegin = (*binTwo).BinGetBegin();
 	  binTwoEnd = (*binTwo).BinGetEnd();
-	  binTwoSupply = (*binTwo).BinGetSupply();
-	  gamma1 = LegalizeThetaFunc(binOneBegin, binOneEnd, cellBegin, cellEnd);
 	  gamma2 = LegalizeThetaFunc(binTwoBegin, binTwoEnd, cellBegin, cellEnd);
-	  if (dPrint) {
-	    cout << "BIN TWO BEGIN: " << binTwoBegin << " END: " << binTwoEnd
-		 << " SUPPLY BEFORE REASSIGNMENT " << binTwoSupply << endl;
-	    cout << " GAMMA ONE " << gamma1 << " GAMMA TWO " << gamma2 << endl;
-	  }
 	}
 	if (binThree) {
 	  binThreeBegin = (*binThree).BinGetBegin();
 	  binThreeEnd = (*binThree).BinGetEnd();
-	  int binThreeSupply = (*binThree).BinGetSupply();
+	  /* If cells spans over 3 bins, then do not do any fractional reassignment */
 	  gamma3 = LegalizeThetaFunc(binThreeBegin, binThreeEnd, cellBegin, cellEnd);
-	  if (dPrint) {
-	    cout << "BIN THREE BEGIN: " << binThreeBegin << " END: " << binThreeEnd
-		 << " SUPPLY BEFORE REASSIGNMENT " << binThreeSupply << endl;
-	    cout << " GAMMA THREE " << gamma3 << endl;
-	  }
 	}
 	if (gamma3 > 0) {
-	  continue;
+	  fractAssign = false;
 	}
-	if ((gamma2 > 0) && (binTwoSupply < 0)){
-	  double fract = gamma1 / cellWidth;
-	  int newCellWidth = (*binOne).BinGetTotalCellWidth() - cellWidth + gamma1;
-	  int binWidth = (*binOne).BinGetWidth();
-	  int supply = newCellWidth - binWidth;
-	  (*binOne).BinSetTotalCellWidth(newCellWidth);
-	  (*binOne).BinSetSupply(supply);
-	  (*binOne).BinSetCellFract(cellObj, fract);
-	  if (dPrint) {
-	    cout << "NEW TOTAL CELL WIDTH IN BIN ONE " << newCellWidth << endl;
-	    cout << "BIN WIDTH " << binWidth <<  endl;
-	    cout << "MODIFIED SUPPLY " << supply << endl;
-	    cout << "CELL FRACT IN BIN ONE " << fract << endl;
-	  }
+	if (gamma2 == 0 || binTwoSupply > 0) {
+	  fractAssign = false;
+	}
+
+	/* Assign cell fractionally to bin 1 */
+	fract = gamma1 / cellWidth;
+	if (!fractAssign) {
+	  fract = 1.0;
+	}
+	newCellWidth = (*binOne).BinGetTotalCellWidth() - cellWidth + gamma1;
+	(*binOne).BinSetTotalCellWidth(newCellWidth);
+	(*binOne).BinSetCellFract(cellObj, fract);
+
+	if (fractAssign) {
+	  /* Bin 1 is supply and Bin 2 is demand */
 	  fract = gamma2 / cellWidth;
 	  newCellWidth = (*binTwo).BinGetTotalCellWidth() + gamma2;
-	  binWidth = (*binTwo).BinGetWidth();
-	  supply = newCellWidth - binWidth;
 	  (*binTwo).BinSetTotalCellWidth(newCellWidth);
-	  (*binTwo).BinSetSupply(supply);
 	  (*binTwo).BinSetCellFract(cellObj, fract);
-	  if (dPrint) {
-	    cout << "NEW TOTAL CELL WIDTH IN BIN TWO " << newCellWidth << endl;
-	    cout << "MODIFIED SUPPLY " << supply << endl;
-	    cout << "CELL FRACT IN BIN TWO " << fract << endl;
+	}
+      } END_FOR;
+    }
+  } END_FOR;
+}
+
+void
+LegalizeGetAdjacentBins(LegalizeBin* &thisBin, LegalizeBin* &leftBin, 
+			LegalizeBin* &rightBin, LegalizeBin* &topBin, 
+			LegalizeBin* &botBin, vector<vector<LegalizeBin*> > &designBins)
+{
+  int endRowIdx = designBins.size() - 1;
+  int thisBinIdx = (*thisBin).BinGetIndex();
+  int thisBinBegin = (uint)(*thisBin).BinGetBegin();
+  int thisBinEnd = (uint)(*thisBin).BinGetEnd();
+  int leftBinIdx = thisBinIdx - 1;
+  int rightBinIdx = thisBinIdx + 1;
+  PhysRow *thisRow = (*thisBin).BinGetRow();
+  int rowIdx = (*thisRow).PhysRowGetIndex();
+  int nextRowIdx = rowIdx + 1;
+  int prevRowIdx = rowIdx - 1;
+  vector<LegalizeBin*> thisRowBins = designBins[rowIdx];
+  int endIdx = thisRowBins.size() - 1;  
+  vector<LegalizeBin*> nextRowBins;
+  vector<LegalizeBin*> prevRowBins;
+  
+  if (leftBinIdx < 0) {
+    leftBin = NIL(LegalizeBin*);
+  }
+  if (leftBinIdx >= 0) {
+    bool isEmpty = (*thisRowBins[leftBinIdx]).BinGetEmpty();
+    if (isEmpty) {
+      leftBin = thisRowBins[leftBinIdx];
+    } else {
+      leftBin = NIL(LegalizeBin*);
+    }
+  }
+  
+  if (rightBinIdx > endIdx) {
+    rightBin = NIL(LegalizeBin*);
+  }
+  if (rightBinIdx <= endIdx) {
+    bool isEmpty = (*thisRowBins[rightBinIdx]).BinGetEmpty();
+    if (isEmpty) {
+      rightBin = thisRowBins[rightBinIdx];
+    } else {
+      rightBin = NIL(LegalizeBin*);
+    }    
+  }
+  
+  if (nextRowIdx <= endRowIdx) {
+    nextRowBins = designBins[nextRowIdx];
+  }
+  if (prevRowIdx >= 0) {
+    prevRowBins = designBins[prevRowIdx];
+  }
+  
+  topBin = NIL(LegalizeBin*);
+  botBin = NIL(LegalizeBin*);
+  double maxOverlap = 0.0;
+  if (nextRowBins.size()) {
+    LegalizeBin *binObj;
+    VECTOR_FOR_ALL_ELEMS(nextRowBins, LegalizeBin*, binObj){
+      int binBegin = (uint)(*binObj).BinGetBegin();
+      int binEnd = (uint)(*binObj).BinGetEnd();
+      bool isEmpty = (*binObj).BinGetEmpty();
+      double overlap = LegalizeThetaFunc(thisBinBegin, thisBinEnd, binBegin, binEnd);
+      if ((overlap > maxOverlap) && isEmpty) {
+	maxOverlap = overlap;
+	topBin = binObj;
+      }
+    } END_FOR;
+  } 
+  maxOverlap = 0.0;
+  if (prevRowBins.size()) {
+    LegalizeBin *binObj;
+    VECTOR_FOR_ALL_ELEMS(prevRowBins, LegalizeBin*, binObj){
+      int binBegin = (uint)(*binObj).BinGetBegin();
+      int binEnd = (uint)(*binObj).BinGetEnd();
+      bool isEmpty = (*binObj).BinGetEmpty();
+      double overlap = LegalizeThetaFunc(thisBinBegin, thisBinEnd, binBegin, binEnd);
+      if ((overlap > maxOverlap) && isEmpty) {
+	maxOverlap = overlap;
+	botBin = binObj;
+      }
+    } END_FOR;
+  }
+}
+
+bool
+sortLValues(const pair<LegalizeBin*, double> &i, const pair<LegalizeBin*, double> &j)
+{
+  return (i.second < j.second);
+}
+
+void
+LegalizePrintBinData(LegalizeBin *thisBin)
+{
+  PhysRow *thisRow;
+  int binIdx;
+  int rowIdx;
+  thisRow = (*thisBin).BinGetRow();
+  binIdx = (*thisBin).BinGetIndex();
+  rowIdx = (*thisRow).PhysRowGetIndex();
+  cout << rowIdx << "[" << binIdx << "]" << "\t";
+}
+
+void
+printBin(LegalizeBin *thisBin)
+{
+  PhysRow *thisRow;
+  int binIdx;
+  int rowIdx;
+  thisRow = (*thisBin).BinGetRow();
+  binIdx = (*thisBin).BinGetIndex();
+  rowIdx = (*thisRow).PhysRowGetIndex();
+  cout << rowIdx << "[" << binIdx << "]" << "\t" << endl;
+}
+
+void
+printZone(Zone *thisZone)
+{
+  PhysRow *thisRow;
+  int zoneBegin;
+  int rowIdx;
+  thisRow = (*thisZone).ZoneGetRow();
+  zoneBegin = (*thisZone).ZoneGetBegin();
+  rowIdx = (*thisRow).PhysRowGetIndex();
+  cout << rowIdx << "(" << zoneBegin << ")" << "\t" << endl;
+}
+
+void 
+printCellsInBin(LegalizeBin *thisBin)
+{
+  vector<Cell*> cellsInBin;
+  Cell *thisCell;
+  cellsInBin = (*thisBin).BinGetCellsInBin();
+  
+  VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell){
+    cout << "CELL: " << (*thisCell).CellGetName() << "\tWIDTH: " << (*thisCell).CellGetWidth() << endl;
+  } END_FOR;
+}
+
+void
+LegalizeAugPathAlgo(HyperGraph &myGraph, LegalizeBin *suppNode, vector<LegalizeBin *> &PathBins)
+{
+
+  PathBins.clear();
+  void *NodeObj;
+  uint NodeIdx;
+  LegalizeBin *currentNode;
+  LegalizeBin *destNode;
+  map<LegalizeBin*, bool> usedNodes;
+  map<LegalizeBin*,LegalizeBin*> pathMap;
+  map<Cell*, double> cellsToMove;
+  vector<pair<LegalizeBin* , double> > binsLValues;
+  uint numEdges, numNodes;
+  
+  numEdges = myGraph.GetNumEdges();
+  numNodes = myGraph.HyperGraphGetNumNodes();
+  
+  vector<map<Cell*, double> > chosenCells(numEdges);
+  vector<double> totalFractWidths(numEdges);
+
+  /* Get A(s) = All the fractional cells in source bin suppNode */
+  map<Cell*, double> AofV = (*suppNode).BinGetAllFractCells();
+
+  /* Set the L-value of source node to 0 */
+  LegalizeBinSetLValue(suppNode, 0.0);
+
+  /* Set the b(v) of the supply bin to be 0 */
+  double supply = (*suppNode).BinGetSupply();
+  LegalizeBinSetBValue(suppNode, supply);
+
+  /* Set the b(v) of all other supply bins except the source bin to be 0 */
+  HYPERGRAPH_FOR_ALL_NODES(myGraph, NodeIdx, NodeObj){
+    double supply = (*(LegalizeBin*)NodeObj).BinGetSupply();
+    if ((LegalizeBin*)NodeObj != suppNode) {
+      if (supply <= 0.0) {
+	LegalizeBinSetBValue((LegalizeBin*)NodeObj, supply);
+      } else {
+	LegalizeBinSetBValue((LegalizeBin*)NodeObj, 0.0);
+      }
+    }
+  } HYPERGRAPH_END_FOR;
+  
+  
+  double fractWidthSelected;
+  double currentNodeLVal;
+  uint binCount = 0;
+  uint iteration = 0;
+  LegalizeBin *prevNode;
+
+  /* Set destination node to Null */
+  destNode = NIL(LegalizeBin*);
+  
+  /* Set current node to source node */
+  currentNode = suppNode;
+  /* Get the L(v) of current node and push to the vector of L(v) */
+  currentNodeLVal = LegalizeBinGetLValue(currentNode);
+  binsLValues.push_back(make_pair(currentNode, currentNodeLVal));
+
+  while(1) {
+    if (debugMode) {
+      cout << "########### INNER ITERATION " << iteration << " ######### " << endl;
+      cout << endl;
+      cout << "CURRENT NODE " << endl;
+      LegalizePrintBinData(currentNode);
+      cout << endl;
+    }
+
+    /* If v = s */
+    if (currentNode == suppNode) {
+      if (debugMode) {
+	cout << " V EQUAL S " << endl;
+      }
+    } else if (currentNode != suppNode) {
+      /* If v not equal s */
+      if (debugMode) {
+	cout << " V NOT EQUAL S  " << endl;
+      }
+
+      double bValueCurrent = LegalizeBinGetBValue(currentNode);
+      if (debugMode) {
+	cout << "B(V) OF CURRENT NODE BEFORE UPDATING " << bValueCurrent << endl;
+      }
+
+      prevNode = pathMap[currentNode];
+      
+    
+      /* b(v) = b(v) + width(C(P(v),v)) */
+      int edgeIdx = (int)myGraph.HyperGraphNodesAreAdjacent((void*)prevNode, (void*)currentNode);
+      if (edgeIdx != -1) {
+	fractWidthSelected = totalFractWidths[edgeIdx];
+	if (debugMode) {
+	  cout << " C(P(v),v) = " << fractWidthSelected << endl;
+	  if (fractWidthSelected == 0) {
+	    cout << "BREAK HERE" << endl;
+	    cout << "ERROR!! NO CELLS TO MOVE" << endl;
 	  }
 	}
       }
-      cellCount++;      
+      double modBValue = bValueCurrent + fractWidthSelected;
+      LegalizeBinSetBValue(currentNode, modBValue);
+      if (debugMode) {
+	cout << "B(V) OF CURRENT NODE AFTER UPDATING " << LegalizeBinGetBValue(currentNode) << endl;
+      }
+      
+      map<Cell*, double> moveCells;
+      /* A(v) = GAMMA(v) U C(P(v),v)) */
+      moveCells = chosenCells[edgeIdx];
+      AofV = (*currentNode).BinGetAllFractCells();
+      
+      Cell* Key;
+      double Value;
+      cout << "\nCELLS ALREADY PRESENT IN BIN " << endl;
+      MAP_FOR_ALL_ELEMS(AofV, Cell*, double, Key, Value){
+	cout << (*Key).CellGetName() << ",";
+      } END_FOR;
+      cout << endl;
+      
+      cout << "\nCELLS TO BE MOVED INT0 THE BIN " << endl;
+      MAP_FOR_ALL_ELEMS(moveCells, Cell*, double, Key, Value){
+	_KEY_EXISTS(AofV, Key){
+	  AofV[Key] = AofV[Key] + Value;
+	} else {
+	  AofV[Key] = Value;
+	  cout << (*Key).CellGetName() << ",";
+	}
+      } END_FOR;
+      cout << endl;
+
+      cout << "\nCELLS AFTER MOVING IN THE BIN " << endl;
+      MAP_FOR_ALL_ELEMS(AofV, Cell*, double, Key, Value){
+	cout << (*Key).CellGetName() << ",";
+      } END_FOR;
+      cout << endl;
+    }
+
+    /* If B(v) <= 0, Set t = v. Break */
+    double currentBVal = LegalizeBinGetBValue(currentNode);
+    if (currentBVal <= 0) {
+      if (debugMode) {
+	cout << " B(V) = " << currentBVal << " LESS THAN EQUAL ZERO FOR ITERATION " << iteration << endl;
+      }
+      destNode = currentNode;
+      break;
+    }
+      
+    
+    /* U := U\{v} */
+    _KEY_EXISTS(usedNodes, currentNode) {
+    } else {
+      usedNodes[currentNode] = true;
+      cout << "ADDED TO USED NODES ";
+      LegalizePrintBinData(currentNode);
+    }
+    
+    cout << "NUMNODES USED TILL THIS POINT " << usedNodes.size() << endl;
+    if (usedNodes.size() == numNodes) {
+      break;
+    }
+    
+    NodeObj = (void*)currentNode;
+    uint EdgeIdx;
+    double weight;
+      
+    vector<LegalizeBin*> adjacentBins;
+    int currentNodeY = (*currentNode).BinGetBot();
+    int adjNodeY;
+    double moveCost;
+      
+    //    map<Cell*, double> binCells = (*currentNode).BinGetAllFractCells();
+    map<Cell*, double> binCells;
+    binCells = AofV;
+    double totalFractWidth;
+    double currentLVal, adjLVal, modAdjLVal;
+    currentLVal = LegalizeBinGetLValue(currentNode);
+    cout << " CURRENT NODE L VALUE " << currentLVal << endl;
+    adjacentBins.clear();
+    
+    /* for w belongs to V(G) with (v,w) belongs to E(G) do */ 
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(myGraph, NodeObj, EdgeIdx, weight){
+      LegalizeBin *adjacentNode = (LegalizeBin*)myGraph.GraphGetOtherNodeOfEdge(EdgeIdx, NodeObj);
+      _KEY_EXISTS(usedNodes, adjacentNode) {
+	continue;
+      } else {
+	adjacentBins.push_back(adjacentNode);
+	adjNodeY = (*adjacentNode).BinGetBot();
+	/* Choose the set C(v,w) */
+	if (currentNodeY == adjNodeY) {
+	  moveCost = LegalizeGetCellsToMove((*currentNode), (*adjacentNode), binCells, true,
+					    cellsToMove, totalFractWidth);
+	  chosenCells[EdgeIdx] = cellsToMove;
+	  totalFractWidths[EdgeIdx] = totalFractWidth;
+	} else {
+	  moveCost = LegalizeGetCellsToMove((*currentNode), (*adjacentNode), binCells, false,
+					    cellsToMove, totalFractWidth);
+	  chosenCells[EdgeIdx] = cellsToMove;
+	  totalFractWidths[EdgeIdx] = totalFractWidth;
+	}
+      
+      	if (debugMode) {
+	  if (totalFractWidth == 0) {
+	    PhysRow *thisRow;
+	    int binIdx, rowIdx;
+	    thisRow = (*currentNode).BinGetRow();
+	    rowIdx = (*thisRow).PhysRowGetIndex();
+	    binIdx = (*currentNode).BinGetIndex();
+	    cout << "CELLS TO MOVE SIZE " << cellsToMove.size();
+	    cout << "FRACT WIDTH " << totalFractWidth << endl;
+	    cout << "BIN " << rowIdx << "[" << binIdx << "] ---> " ;
+	    thisRow = (*adjacentNode).BinGetRow();
+	    rowIdx = (*thisRow).PhysRowGetIndex();
+	    binIdx = (*adjacentNode).BinGetIndex();
+	    cout << rowIdx << "[" << binIdx << "]  HAS ZERO CELLS TO MOVE " << endl;
+	  }
+	}
+	/* If L(w) > L(v) + c(v,w), L(w):= L(v) + c(v,w)
+	   P(w) := v */
+	adjLVal = LegalizeBinGetLValue(adjacentNode);
+	modAdjLVal = currentLVal + moveCost;
+	if (modAdjLVal < adjLVal) {
+	  LegalizeBinSetLValue(adjacentNode, modAdjLVal);
+	  /* Push all the L-values calculated in this step to a vector */
+	  /* Sort the vector in ascending order to get the node with least L-value */
+	  binsLValues.push_back(make_pair(adjacentNode, modAdjLVal));
+	  pathMap[adjacentNode] = currentNode;
+	  cout << "ADJACENT BIN L VALUE " << endl;
+	  LegalizePrintBinData(adjacentNode);
+	  cout << modAdjLVal <<  endl;
+	
+	}
+      } 
+    } HYPERGRAPH_END_FOR;
+    
+    /* Stop iterating if a node with no edges is found 
+    if (!adjacentBins.size()) {
+      break;
+      } */
+    sort(binsLValues.begin(), binsLValues.end(), sortLValues);
+    
+    /* Choose bin with minimum L(v) for next iteration */
+    pair<LegalizeBin*, double> binLValObj;
+    cout << " BINS ACTIVE SO FAR " << endl;
+    VECTOR_FOR_ALL_ELEMS(binsLValues, pair<LegalizeBin* MCOMMA double>, binLValObj){
+      _KEY_EXISTS(usedNodes,(binLValObj.first)) {
+	continue;
+      } else {
+	LegalizePrintBinData(binLValObj.first);
+	cout << " L-VAL " << binLValObj.second << endl;
+      }
     } END_FOR;
-    dPrint = false;
+       
+    
+    VECTOR_FOR_ALL_ELEMS(binsLValues, pair<LegalizeBin* MCOMMA double>, binLValObj){
+      _KEY_EXISTS(usedNodes,(binLValObj.first)) {
+	continue;
+      } else {
+	currentNode = binLValObj.first;
+	cout << "BIN WITH LEAST L_VAL " << endl;
+	LegalizePrintBinData(currentNode);
+	cout << binLValObj.second << endl;
+	break;
+      }
+    } END_FOR;
+    
+    iteration ++;
+  }
+
+  /* Found a demand bin */
+  if (destNode != NIL(LegalizeBin*)) {  
+    LegalizeBin *currentBin; 
+    LegalizeBin *prevBin;
+    LegalizeBin *nextBin;
+    vector<LegalizeBin*> reversePath;
+    int binX, binY;
+    bool exitWhile;
+    PhysRow *currentRow;
+    PhysRow *nextRow;
+    currentBin = destNode;
+    reversePath.push_back(currentBin);
+    PathBins.push_back(currentBin);
+    prevBin = pathMap[currentBin];
+    while (1) {
+      currentBin = prevBin;
+      reversePath.push_back(currentBin);
+      PathBins.push_back(currentBin);
+      if (currentBin == suppNode) {
+	break;
+      }
+      prevBin = pathMap[currentBin];
+    } 
+      
+
+    currentBin = reversePath.back();
+    reversePath.pop_back();
+    do {
+      nextBin = reversePath.back();
+      reversePath.pop_back();
+      currentRow = (*currentBin).BinGetRow();
+      nextRow = (*nextBin).BinGetRow();
+
+      binX = (*nextBin).BinGetBegin();
+      binY = (*nextBin).BinGetBot();
+      int edgeIdx = myGraph.HyperGraphNodesAreAdjacent((void*)currentBin, (void*)nextBin);
+      cellsToMove = chosenCells[edgeIdx];
+      vector<Cell*> cellsCurrBin = (*currentBin).BinGetCellsInBin();
+      Cell *thisCell;
+      double cellFract;
+      int thisCellY;
+
+      map<Cell*, double>::iterator itr;
+      int currBinSize = cellsCurrBin.size();
+      for(int cellCount = 0; cellCount < currBinSize; cellCount++) {
+	thisCell = cellsCurrBin[cellCount];
+	thisCellY = (*thisCell).CellGetWidth();
+	_KEY_EXISTS_WITH_VAL (cellsToMove, thisCell, itr) {
+	  cellFract = itr->second;
+	  (*currentBin).BinRemoveCellFromBin(thisCell);
+	  (*currentBin).BinRemoveCellFromFract(thisCell);
+	  (*nextBin).BinAddCellToBin(thisCell);
+	  (*nextBin).BinSetCellFract(thisCell, 1.0);
+	  if (binY != thisCellY) {
+	    (*currentRow).PhysRowRemoveCellFromRow(thisCell);
+	    (*nextRow).PhysRowAddCellToRow(thisCell);
+	  }
+	}
+      }
+	  
+      Cell* Key;
+      double Value;
+      MAP_FOR_ALL_ELEMS(cellsToMove, Cell*, double, Key, Value){
+	(*Key).CellSetXpos(binX);
+	(*Key).CellSetYpos(binY);
+      } END_FOR;
+      currentBin = nextBin;
+    } while(currentBin != destNode);
+    
+  } else {
+    cout << "ERROR! ---> No destination node found" <<endl;
+  }
+  LegalizeBinClearAllLValue();
+  LegalizeBinClearAllBValue();
+}   
+
+void
+LegalizeAugPathAlgoNew(HyperGraph &myGraph, LegalizeBin *suppNode, vector<LegalizeBin *> &PathBins)
+{
+  map<Cell*, double> moveCells;
+  map<Cell*, double> AofV, binCells;
+  map<LegalizeBin*, bool> usedNodes;
+  map<LegalizeBin*,LegalizeBin*> pathMap;
+  map<Cell*, double> cellsToMove;
+  vector<pair<LegalizeBin* , double> > binsLValues;
+  vector<LegalizeBin *> adjacentBins, reversePath;
+  pair<LegalizeBin*, double> binLValObj;
+  LegalizeBin *destBin, *currentNode, *prevNode;
+  LegalizeBin *adjacentNode;
+  LegalizeBin *currentBin, *prevBin, *nextBin;
+  PhysRow *currentRow, *nextRow;
+  Zone *currBinZone, *nextBinZone;
+  void *NodeObj;
+  double bValueCurrent;
+  double currentNodeLValue;
+  double fractWidthSelected;
+  double supply;
+  double currentLVal, adjLVal, modAdjLVal, moveCost;
+  double totalFractWidth;
+  uint numEdges, numNodes;
+  uint NodeIdx;
+  uint iteration;
+  int edgeIdx, binX, binY;
+  bool sameZone;
+
+  numEdges = myGraph.GetNumEdges();
+  numNodes = myGraph.HyperGraphGetNumNodes();
+  iteration = 0;
+
+  vector<map<Cell*, double> > chosenCells(numEdges);
+  vector<double> totalFractWidths(numEdges);
+
+  /* Clear all bins in PathBins */
+  PathBins.clear();
+
+  /* Assign all fractional cells of supply node to AofS */
+  AofV = (*suppNode).BinGetAllFractCells();
+  
+  /* Set L-value of source node to 0 */
+  LegalizeBinSetLValue(suppNode, 0.0);
+  
+  /* Set the b(v) of all supply bins to be 0 */
+  HYPERGRAPH_FOR_ALL_NODES(myGraph, NodeIdx, NodeObj){
+    supply = (*(LegalizeBin*)NodeObj).BinGetSupply();
+    if (supply <= 0.0) {
+      LegalizeBinSetBValue((LegalizeBin*)NodeObj, supply);
+    } else {
+      LegalizeBinSetBValue((LegalizeBin*)NodeObj, 0.0);
+    }
+  } HYPERGRAPH_END_FOR;
+  
+  /* Set the b(S) value to be equal to supply */
+  supply = (*suppNode).BinGetSupply();
+  LegalizeBinSetBValue(suppNode, supply);
+
+  /* Set the dest bin to be NULL */
+  destBin = NIL(LegalizeBin*);
+  
+  currentNode = suppNode;
+  currentNodeLValue = LegalizeBinGetLValue(currentNode);
+  
+  /* Add the supply node to the used nodes map */
+  usedNodes[currentNode] = 1;
+  while (1) {
+      /* Get the b value of the current node */
+    bValueCurrent = LegalizeBinGetBValue(currentNode);
+    if (currentNode != suppNode) {
+      /* Compute the new b(v) */
+      prevNode = pathMap[currentNode];
+      edgeIdx = (int)myGraph.HyperGraphNodesAreAdjacent((void*)prevNode, (void*)currentNode);
+      if (edgeIdx == -1) {
+	cout << "SEVERE ERROR: Previous node";
+	LegalizePrintBinData(prevNode);
+	cout << " stored for current node: ";
+	LegalizePrintBinData(currentNode);
+	cout << " does not have an edge with the current node!!!" << endl;
+      }
+      fractWidthSelected = totalFractWidths[edgeIdx];
+      LegalizeBinSetBValue(currentNode, (bValueCurrent + fractWidthSelected));
+
+      /* Get the cells stored on the edge index */
+      moveCells = chosenCells[edgeIdx];
+
+      /* Find the union of cells from the current bin's 
+	 fractional cells and the cells on the edge to the current
+	 bin from the previous bin obtained from the pathMap */
+      AofV.clear();
+      AofV = (*currentNode).BinGetAllFractCells();
+      Cell *Key;
+      double Value;
+      MAP_FOR_ALL_ELEMS(moveCells, Cell*, double, Key, Value){
+        _KEY_EXISTS(AofV, Key){
+          AofV[Key] = AofV[Key] + Value;
+        } else {
+          AofV[Key] = Value;
+        }
+      } END_FOR;
+    } 
+
+    /* Get the b value of the current node after it was updated */
+    bValueCurrent = LegalizeBinGetBValue(currentNode);
+    if (bValueCurrent <= 0) {
+      destBin = currentNode;
+      break;
+    }
+    
+    /* Add the current node to the set of used nodes */
+    usedNodes[currentNode] = 1;
+    
+    /* Clear the adjacentBins */
+    adjacentBins.clear();
+
+    /* Store the L value of the current node */
+    currentLVal = LegalizeBinGetLValue(currentNode);
+
+    /* Iterate over all the adjacent nodes of the current node */
+    NodeObj = (void *)currentNode;
+    double weight;
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(myGraph, NodeObj, edgeIdx, weight){
+      adjacentNode = (LegalizeBin*)myGraph.GraphGetOtherNodeOfEdge(edgeIdx, NodeObj);
+      /* If the adjacent nodes is one of the used nodes, do not go there */
+      _KEY_EXISTS(usedNodes, adjacentNode) {
+	continue;
+      }
+
+      /* Get the L value of the adjacent node */
+      adjLVal = LegalizeBinGetLValue(adjacentNode);
+
+      /* Get the list of fractional cells to be moved, their widths and the 
+	 total cost */
+      sameZone = true;
+      if ((*adjacentNode).BinGetBot() != (*currentNode).BinGetBot()) {
+	sameZone = false;
+      }
+      binCells = AofV;
+      moveCost = LegalizeGetCellsToMove((*currentNode), (*adjacentNode), binCells, 
+					sameZone, cellsToMove, totalFractWidth);
+      chosenCells[edgeIdx] = cellsToMove;
+      totalFractWidths[edgeIdx] = totalFractWidth;
+      
+      /* Compute the new L value */
+      modAdjLVal = currentLVal + moveCost;
+      
+      /* Update the L value and the path map and the cells to move 
+	 if the new L value is smaller than the old L value */
+      if (modAdjLVal < adjLVal) {
+	LegalizeBinSetLValue(adjacentNode, modAdjLVal);
+	pathMap[adjacentNode] = currentNode;
+	binsLValues.push_back(make_pair(adjacentNode, modAdjLVal));
+      }
+    } HYPERGRAPH_END_FOR;
+
+    /* Sort the bins on the basis of L values */
+    sort(binsLValues.begin(), binsLValues.end(), sortLValues);
+
+    /* Choose the first bin which is not in the map usedNodes.
+       Since the L values are sorted, the bin chosen will have the 
+       least L value */
+    VECTOR_FOR_ALL_ELEMS(binsLValues, pair<LegalizeBin* MCOMMA double>, binLValObj){
+      _KEY_EXISTS(usedNodes,(binLValObj.first)) {
+        continue;
+      } else {
+        currentNode = binLValObj.first;
+        break;
+      }
+    } END_FOR;
+
+    /* Update iteration count */
+    iteration++;
+  }
+  
+  if (destBin == NIL(LegalizeBin *)) {
+    cout << "ERROR: Demand bin not found!!" << endl;
+    return;
+  } else {
+    cout << "Destination bin found: ";
+    LegalizePrintBinData(destBin);
+    cout << endl;
+  }
+
+  currentBin = destBin;
+  reversePath.push_back(currentBin);
+  PathBins.push_back(currentBin);
+
+  prevBin = pathMap[currentBin];
+  while (1) {
+    currentBin = prevBin;
+    reversePath.push_back(currentBin);
+    PathBins.push_back(currentBin);
+    if (currentBin == suppNode) {
+      break;
+    }
+    prevBin = pathMap[currentBin];
+  }
+
+  /* Pop the source node */ 
+  currentBin = reversePath.back();
+  reversePath.pop_back();
+
+  do {
+    nextBin = reversePath.back();
+    reversePath.pop_back();
+    
+    currentRow = (*currentBin).BinGetRow();
+    nextRow = (*nextBin).BinGetRow();
+    
+    currBinZone = (*currentBin).BinGetZone();
+    nextBinZone = (*nextBin).BinGetZone();
+    
+    sameZone = true;
+    if (currBinZone != nextBinZone) {
+      sameZone = false;
+    }
+
+    binX = (*nextBin).BinGetBegin();
+    binY = (*nextBin).BinGetBot();
+
+    edgeIdx = myGraph.HyperGraphNodesAreAdjacent((void*)currentBin, (void*)nextBin);
+    cellsToMove = chosenCells[edgeIdx];
+    vector<Cell*> cellsCurrBin = (*currentBin).BinGetCellsInBin();
+    Cell *thisCell;
+    double cellFract;
+    int thisCellY;
+    int currBinSize = cellsCurrBin.size();
+
+    if (currBinSize) {
+      for(int cellCount = 0; cellCount < currBinSize; cellCount++) {
+	thisCell = cellsCurrBin[cellCount];
+	thisCellY = (*thisCell).CellGetYpos();
+	_KEY_EXISTS(cellsToMove, thisCell) {
+	  (*currentBin).BinRemoveCellFromBin(thisCell);
+	  // (*currentBin).BinRemoveCellFromFract(thisCell);
+	  (*nextBin).BinAddCellToBin(thisCell);
+	  
+	  if (!sameZone) {
+	    (*currBinZone).ZoneRemoveCellFromZone(thisCell);
+	    (*nextBinZone).ZoneAddCellToZone(thisCell);
+	  }
+
+	  // (*nextBin).BinSetCellFract(thisCell, 1.0);
+	  if (thisCellY != binY) {
+	    (*currentRow).PhysRowRemoveCellFromRow(thisCell);
+	    (*nextRow).PhysRowAddCellToRow(thisCell);
+	  }
+	}
+      }
+    } else {
+      cout << "SEVERE ERROR: No cells were moved to current bin " << endl;
+    }
+
+    Cell* Key;
+    double Value;
+    MAP_FOR_ALL_ELEMS(cellsToMove, Cell*, double, Key, Value){
+      (*Key).CellSetXpos(binX);
+      (*Key).CellSetYpos(binY);
+    } END_FOR;
+    currentBin = nextBin;
+
+  } while(currentBin != destBin);
+
+  LegalizeBinClearAllLValue();
+  LegalizeBinClearAllBValue();
+}
+
+void
+LegalizeAssignLValues(vector<vector<LegalizeBin*> > &designBins)
+{
+  vector<LegalizeBin*> binsObj;
+  VECTOR_FOR_ALL_ELEMS(designBins, vector<LegalizeBin*>, binsObj){
+    LegalizeBin *thisBin;
+    VECTOR_FOR_ALL_ELEMS(binsObj, LegalizeBin*, thisBin) {
+      bool isUnblocked = (*thisBin).BinGetEmpty();
+      if (isUnblocked) {
+	LegalizeBinSetLValue(thisBin, DBL_MAX);
+      }
+    } END_FOR;
   } END_FOR;
 }
 
 
 void
 LegalizePlotData(string plotTitle, string plotFileName, Design &thisDesign, 
-		 vector<LegalizeBin*> &DesignBins)
+		 vector<vector<LegalizeBin*> > &DesignBins, vector<LegalizeBin *> &PathBins)
 {
   Plot newPlot(plotTitle, plotFileName);
   newPlot.PlotSetBoundary(thisDesign);
+  vector<LegalizeBin*> bins;
   LegalizeBin *binObj;
-  VECTOR_FOR_ALL_ELEMS(DesignBins, LegalizeBin*, binObj){
-    int supply = binObj->BinGetSupply();
-    if (supply > 0) {
-      newPlot.PlotAddSupplyBin(*binObj, supply);
-    } else {
-      newPlot.PlotAddDemandBin(*binObj, supply);
-    }
+  VECTOR_FOR_ALL_ELEMS(DesignBins, vector<LegalizeBin*>, bins){
+    VECTOR_FOR_ALL_ELEMS (bins, LegalizeBin*, binObj){
+      int supply = (*binObj).BinGetSupply();
+      if (supply > 0) {
+	newPlot.PlotAddSupplyBin(*binObj, supply);
+      } else {
+	newPlot.PlotAddDemandBin(*binObj, supply);
+      }
+    } END_FOR;
   } END_FOR;
+
+  /* DISABLE PATH HERE */
+# if 0
+  VECTOR_FOR_ALL_ELEMS (PathBins, LegalizeBin*, binObj){
+    int supply = (*binObj).BinGetSupply();
+    newPlot.PlotAddBinPathRect((*binObj), supply);
+  } END_FOR;
+# endif
   newPlot.PlotWriteOutput();
+}
+
+void
+LegalizeCreateBins(Design &myDesign, int columnWidth,
+		   vector<vector<LegalizeBin *> > &DesignBins,
+		   vector<vector<Zone *> > &DesignZones) 
+{
+  PhysRow *Obj;
+  vector<PhysRow*> allPhysRows;
+  vector<Cell *> cellsInRow;
+  int rowBegin, rowEnd;
+
+  allPhysRows  = myDesign.DesignGetRows();
+  rowBegin = ((allPhysRows[0])->PhysRowGetRowBegin());
+  rowEnd = ((allPhysRows[0])->PhysRowCalculateRowEnd());
+
+  DesignBins.clear();
+  DesignBins.clear();
+  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
+    (*Obj).PhysRowGetCellsInRow(cellsInRow);
+    /* Find Zones in the row and push all movable cells into free zone */
+    vector<Zone*> zones;
+    LegalizeFindZonesInRow(Obj, zones, rowBegin, rowEnd);
+    DesignZones.push_back(zones);
+    
+    /* Find all the regions in the row */
+    vector<LegalizeBin*> allBins; // denotes all bins in a specific row 
+    LegalizeFindBinsInRow(zones, allBins, Obj, columnWidth, rowBegin, rowEnd);
+    /* Merge bins if they satisfy the condition for merging */
+    LegalizeMergeBins(allBins, columnWidth);
+    /* Add Cell To respective regions */
+    LegalizeAddCellsToBins(cellsInRow, allBins);
+    /* Adding all the bins to the vector<vector> of DesignBins */
+    DesignBins.push_back(allBins); 
+  } END_FOR;
 }
 
 void
 LegalizeDesign(Design &myDesign)
 {
-  _STEP_BEGIN("Legalizing design");
-  /* Get all the physical rows in Design */
+  vector<vector<LegalizeBin*> > DesignBins;
+  vector<vector<Zone*> > DesignZones;
   vector<PhysRow*> allPhysRows;
+  vector<vector<int> > allRowBounds;
+  vector<LegalizeBin*> binsInRow;
+  vector<Cell*> cellsInBin;
+  vector<Cell*> cellsInRow;
+  vector<LegalizeBin*> supplyBins;
+  vector<LegalizeBin *> PathBins;
+  rowOrientation rowType;
+  HyperGraph myGraph;
+  LegalizeBin *thisBin;
+  PhysRow* Obj;				  
+  Cell *thisCell, *CellPtr, *cellObj;
+  int rowBegin, rowEnd, columnWidth;
+  string CellName;
+
+/* Get all the physical rows in Design */
   allPhysRows  = myDesign.DesignGetRows();
   
   /* Get bounding boxes for all subrows in all rows in Design */
-  vector<vector<int> > allRowBounds;
   LegalizeGetAllBoundingBoxes(allPhysRows, allRowBounds);
-  rowOrientation rowType=((allPhysRows[0])->PhysRowGetType());
-  string CellName;
-  Cell* CellPtr;
-  
+  rowType=((allPhysRows[0])->PhysRowGetType());
+
   /* Checking the Legality of all Cells and setting the variable isLegal
      for all cells accordingly */ 
-  
+  int maxCellWidth = 0;
   DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
-    if(!(CellPtr->CellIsTerminal()))
+    if(!(CellPtr->CellIsTerminal())) {
+      int cellWidth = (*CellPtr).CellGetWidth();
+      if (cellWidth > maxCellWidth) {
+	maxCellWidth = cellWidth;
+      }
       LegalizeCheckLegality(CellPtr, allPhysRows, allRowBounds);
-  }DESIGN_END_FOR;
+    }
+  } DESIGN_END_FOR;
+  columnWidth = 2 * maxCellWidth;
+  cout << "COLUMN WIDTH= " << columnWidth << endl;
+  
   
   /* Legalizing design so that every cell is contained completely in some row */
-
-  
-  
   DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
     if(!(CellPtr->CellIsTerminal())){
       if((CellPtr->CellXIsLegal()) && (CellPtr->CellYIsLegal())){
-	// cout<<"LEGALCell: "<<CellName<<"is legal"<<endl;
-      }
-      else{
-	//cout<<"Cell: "<<CellName<< "at ("<< CellPtr->CellGetXpos() 
-	//  <<","<<CellPtr->CellGetYpos()<<" ) is notlegal"<<endl;
-	//cout<<"Legalizing..."<<endl;
+
+      } else{
 	LegalizeSnapToNearestRows(CellPtr, allPhysRows, rowType);
-	//cout<<"Cell: "<<CellName<< "is now at ("<< CellPtr->CellGetXpos() 
-	//  <<","<<CellPtr->CellGetYpos()<<" )"<<endl;
       }
     }
-  }DESIGN_END_FOR;
+  } DESIGN_END_FOR;
   
+  /*  Adding all cells to their respective rows */
   myDesign.DesignAddAllCellsToPhysRows();
 
-  /* Get the zones of each row */
-  int rowBegin = ((allPhysRows[0])->PhysRowGetRowBegin());
-  int rowEnd = ((allPhysRows[0])->PhysRowCalculateRowEnd());
+  rowBegin = ((allPhysRows[0])->PhysRowGetRowBegin());
+  rowEnd = ((allPhysRows[0])->PhysRowCalculateRowEnd());
+
+  /* Create the zones for each row and hence the bins */
+  LegalizeCreateBins(myDesign, columnWidth, DesignBins, DesignZones);
   
-  int columnWidth = 4000;
-  PhysRow* Obj;				  
-  int totNumCells = 0;
-  vector<Zone*> DesignZones;
-  vector<LegalizeBin*> DesignBins;
-  int rowCount = 0;
-  cout << "ROW\tBIN\tSUPPLY" << endl;
-  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
-    currentRow = rowCount;
-    /* Mark the fixed cells in the row */
-    //Obj->PhysRowMarkFixedCellsInRow(columnWidth);
-    vector<Cell*> cellsInRow;
-    Obj->PhysRowGetCellsInRow(cellsInRow);
-    //    cout << "Cells in Row " << i << endl;
-    Cell* cellObj;
-    
-    /* Find Zones in the row and push all movable cells into free zone */
-    vector<Zone*> zones;
-    LegalizeFindZonesInRow(Obj, zones, rowBegin, rowEnd);
-    DesignZones.insert(DesignZones.end(), zones.begin(), zones.end());
+  /* Calculate supply for all bins in design */
+  LegalizeCalcSuppForAllBins(DesignBins, supplyBins);
 
-     /* Find all the regions in the row */
-    vector<LegalizeBin*> allBins;
-    LegalizeFindBinsInRow(zones, allBins, Obj, columnWidth, rowBegin, rowEnd);
-    
-    /* Merge bins if they satisfy the condition for merging */
-    LegalizeMergeBins(allBins, columnWidth);
+  cout << "SUPPLY BINS AFTER CALCSUPP " << supplyBins.size() << endl;
+  /* Assign cells fractionally to reduce the supply of supply nodes */
+  VECTOR_FOR_ALL_ELEMS(DesignBins, vector<LegalizeBin*>, binsInRow){
+    if (doFractReassign)    
+      LegalizeDoFractReassign(binsInRow);
+  } END_FOR;
+  
+  /* RECALCULATING SUPPLY AFTER FRACTIONAL REASSIGNMENT */
+  LegalizeReCalcSuppForAllBins(DesignBins, supplyBins);
+  
+  /* CREATE GRAPH BY ADDING NODES AND EDGES */
+  /* Add nodes to the graph */
+  vector<LegalizeBin*> binsObj;
+  VECTOR_FOR_ALL_ELEMS(DesignBins, vector<LegalizeBin*>, binsObj){
+    LegalizeBin *thisBin;
+    VECTOR_FOR_ALL_ELEMS(binsObj, LegalizeBin*, thisBin) {
+      /* If bin is unblocked add it to the graph */
+      bool isUnblocked = (*thisBin).BinGetEmpty();
+      if (isUnblocked) {
+	myGraph.HyperGraphAddNode((void*)thisBin);
+      }
+    } END_FOR;
+  } END_FOR;
+  
+  /* Assign default L(v) values */
+  LegalizeAssignLValues(DesignBins);
+  
+  /* Add edges to the graph */
+  map<LegalizeBin*, uint> binsInGraph;
+  VECTOR_FOR_ALL_ELEMS(DesignBins, vector<LegalizeBin*>, binsObj){
+    LegalizeBin *thisBin;
+    vector<void*> oneEdge;
+    VECTOR_FOR_ALL_ELEMS(binsObj, LegalizeBin*, thisBin) {
+      bool isUnblocked = (*thisBin).BinGetEmpty();
+      if (isUnblocked) {
+	binsInGraph[thisBin] = 1;       // Add the bin to map to indicate all edges to the bin has been formed
+	LegalizeBin *topBin;
+	LegalizeBin *botBin;
+	LegalizeBin *leftBin;
+	LegalizeBin *rightBin;
+	LegalizeGetAdjacentBins(thisBin, leftBin, rightBin, 
+				topBin, botBin, DesignBins);
+	if (topBin != NIL(LegalizeBin*)) {
+	  _KEY_EXISTS(binsInGraph, topBin) {
+	  } else {
+	    oneEdge.push_back((void*)thisBin);
+	    oneEdge.push_back((void*)topBin);
+	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    oneEdge.clear();
+	  }
+	}
+	if (botBin != NIL(LegalizeBin*)) {
+	  _KEY_EXISTS(binsInGraph, botBin) {
+	  } else {
+	    oneEdge.push_back((void*)thisBin);
+	    oneEdge.push_back((void*)botBin);
+	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    oneEdge.clear();
+	  }
+	}
+	if (leftBin != NIL(LegalizeBin*)) {
+	  _KEY_EXISTS(binsInGraph, leftBin) {
+	  } else {
+	    oneEdge.push_back((void*)thisBin);
+	    oneEdge.push_back((void*)leftBin);
+	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    oneEdge.clear();
+	  }
+	}
+	if (rightBin != NIL(LegalizeBin*)) {
+	  _KEY_EXISTS(binsInGraph, rightBin) {
+	  } else {
+	    oneEdge.push_back((void*)thisBin);
+	    oneEdge.push_back((void*)rightBin);
+	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    oneEdge.clear();
+	  }
+	}
+      }
+    } END_FOR;
+  } END_FOR;
+  
+  /* Making a copy of the initial vector of supply bins */
+  cout << "SUPPLY HEAP " << supplyBins.size() << endl;
+  
+  /* Creating the max heap */
+  make_heap(supplyBins.begin(), supplyBins.end(), maxSupply);
 
-    /* Add Cell To respective regions */
-    LegalizeAddCellsToBins(cellsInRow, allBins);
+  /* Get the first element = max element from the heap */
+  LegalizeBin *maxSuppBin;
+  LegalizeBin *tempBin;
+  uint iteration = 0;
+
+  LegalizePlotData("supply and demand bins", "pre.plt", myDesign, DesignBins, PathBins);
+
+  while (supplyBins.size()) {
+    maxSuppBin = supplyBins.front();
+    vector<LegalizeBin *> supplyBinsCpy = supplyBins;
+    cout << "Supply bin: ";
+    LegalizePrintBinData(maxSuppBin);
+    cout << endl;
+    cout << "Before AUG PATH ALGO: " << supplyBins.size() << endl;
+    /*
+    VECTOR_FOR_ALL_ELEMS(supplyBinsCpy, LegalizeBin *, tempBin) {
+      cout << " Bin: ");
+      LegalizePrintBinData(tempBin);
+      cout << " Supply: " << (*tempBin).BinGetSupply() << endl;
+    } END_FOR;
+    */
+    LegalizeAugPathAlgoNew(myGraph, maxSuppBin, PathBins);
     
-    /* Calculate the supplies of all regions */
-    vector<LegalizeBin*> supplyBins;
-    vector<LegalizeBin*> demandBins;
-    LegalizeCalcSuppForBins(allBins, supplyBins, demandBins);
-    DesignBins.insert(DesignBins.end(), allBins.begin(), allBins.end());
     
-    /* Perform fractional reassignment of cells to neighbouring bins */
-    //LegalizeDoFractReassign(allBins, cellsInRow);
-    if (doFractReassign)    LegalizeDoFractReassign(supplyBins, allBins);
-    vector<int> prevFactCells;
-    LegalizeBin* binObj;
-    int binCount = 0;
-    VECTOR_FOR_ALL_ELEMS (allBins, LegalizeBin*, binObj){
-      int supply = (*binObj).BinGetSupply();
-      cout << rowCount << "\t" << binCount << "\t" << supply << endl;
-      binCount++;
+    LegalizeCalcSuppForAllBins(DesignBins, supplyBins);
+    //    cout << "After moving cells and reassigning to bins:" << supplyBins.size() << endl;
+    cout << "SUPPLY BINS AFTER CALCSUPP " << supplyBins.size() << endl;
+
+    /* Do fract re-assign in this step before the next iteration */
+    vector<LegalizeBin*> binsInRow;
+    VECTOR_FOR_ALL_ELEMS(DesignBins, vector<LegalizeBin*>, binsInRow){
+      if (doFractReassign) {
+	LegalizeDoFractReassign(binsInRow);
+      }
+    } END_FOR;
+    
+    /* ReCalculate Supplies after doing fractional reassignment of cells */
+    LegalizeReCalcSuppForAllBins(DesignBins, supplyBins);
+    cout << "After fractional reassignment:" << supplyBins.size() << endl;
+
+    /*
+    cout << "After AUG PATH ALGO: " << endl;
+    VECTOR_FOR_ALL_ELEMS(supplyBinsCpy, LegalizeBin *, tempBin) {
+      cout << " Bin: ";
+      LegalizePrintBinData(tempBin);
+      cout << " Supply: " << (*tempBin).BinGetSupply() << endl;
+    } END_FOR;
+    */
+    LegalizeAssignLValues(DesignBins);
+
+    make_heap(supplyBins.begin(), supplyBins.end(), maxSupply);
+    
+    iteration++;
+    //    if (iteration > 2) {
+    //      break;
+    //    }
+  }
+
+  int totalCellCount = 0;
+  VECTOR_FOR_ALL_ELEMS(DesignBins, vector<LegalizeBin*>, binsInRow){
+    LegalizeBin *thisBin;
+    map<Cell*, double> cellFracts;
+    vector<Cell*> cellsInBin;
+    double totalFractWidthInRow;
+    int totalCellWidthInRow;
+    totalFractWidthInRow = 0.0;
+    totalCellWidthInRow = 0;
+    VECTOR_FOR_ALL_ELEMS(binsInRow, LegalizeBin*, thisBin){
+      cellFracts = (*thisBin).BinGetAllFractCells();
+      cellsInBin = (*thisBin).BinGetCellsInBin();
+      totalCellCount += (cellsInBin).size();
+      LegalizePrintBinData(thisBin);
+      double totalCellWidth;
+      Cell *thisCell;
+      double value;
+      cout << " BIN WIDTH " << (*thisBin).BinGetWidth() << endl;
+      cout << "CELLS IN BIN ARE " << endl;
+      totalCellWidth = 0.0;
+      MAP_FOR_ALL_ELEMS(cellFracts, Cell*, double, thisCell, value){
+	int cellWidth = (*thisCell).CellGetWidth() ;
+	cout << (*thisCell).CellGetName() << " WIDTH " << cellWidth
+	     << " FRACTION : " << value << endl;
+	totalCellWidth += value * cellWidth;
+	totalCellWidthInRow += cellWidth;
+      } END_FOR;
+      totalFractWidthInRow += totalCellWidth;
+      cout << endl;
+      cout << "TOTAL CELL WIDTH IN BIN " << totalCellWidth << endl;\
+      if (totalCellWidth > ((*thisBin).BinGetWidth())) {
+	cout << "ERROR: EXCESS CELLS NOT REMOVED YET " << endl;
+      }
+    } END_FOR;
+    cout << "TOTAL CELL WIDTH IN ROW : " << totalCellWidthInRow << endl;
+    cout << "TOTAL FRACT CELL WIDTH IN ROW : " << totalFractWidthInRow << endl;
+  } END_FOR;
+  cout << "TOTAL CELLS IN DESIGN " << totalCellCount << endl;
+  
+  
+
+  LegalizePlotData("supply and demand bins", "post.plt", myDesign, DesignBins, PathBins);
+
+  
+  int numRows = allPhysRows.size();
+  vector<Zone*> zonesInRow;
+  vector<Cell*> cellsInZone;
+  Zone *thisZone, *binInZone;
+  int zoneBegin, zoneEnd, zoneBot;
+  int cellWidth;
+  int nextCellBegin;
+  int cellX, cellY;
+  int rowCount, zoneCount; 
+  int numCellsInRow;
+  rowCount = 0;
+  
+
+  VECTOR_FOR_ALL_ELEMS(DesignZones, vector<Zone*>, zonesInRow) {
+    VECTOR_FOR_ALL_ELEMS(zonesInRow, Zone*, thisZone) {
+      cellsInZone = (*thisZone).ZoneGetCellsInZone();
+      sort(cellsInZone.begin(),cellsInZone.end(),ascendingX);
+      nextCellBegin = (*thisZone).ZoneGetBegin();
+      int totalWidth = 0;
+      int zoneWidth = (*thisZone).ZoneGetWidth();
+      vector<Cell*> allCellsInRow;
+      (allPhysRows[rowCount])->PhysRowGetCellsInRow(allCellsInRow);
+      numCellsInRow = allCellsInRow.size();
+      
+      VECTOR_FOR_ALL_ELEMS(cellsInZone, Cell*, thisCell){
+	(*thisCell).CellSetXpos(nextCellBegin);
+	cellWidth = (*thisCell).CellGetWidth();
+	totalWidth += cellWidth;
+	cout << " CELL: " << (*thisCell).CellGetName() <<  "\t"
+	     << "WIDTH: " << cellWidth << endl;
+	nextCellBegin += cellWidth;
+      } END_FOR;
+      cout << "NUMBER OF CELLS IN ZONE : " << rowCount << " " << cellsInZone.size() << endl;
+      cout << "NUMBER OF CELLS IN ROW : " << numCellsInRow << endl;
+      if (totalWidth > zoneWidth) {
+	cout << "TOTAL CELL WIDTH = " << totalWidth << endl;
+	cout << "ZONE WIDTH = " << zoneWidth << endl;
+	cout << "ERROR : Supply not removed " << endl;
+      }
+      cellsInZone.clear();
     } END_FOR;
     rowCount++;
   } END_FOR;
-  LegalizePlotData("supply and demand bins", "supplytest.plt", myDesign, DesignBins);
 }
 
 /*###########################################################################################
@@ -904,248 +1968,3 @@ LegalizeDesign(Design &myDesign)
   ###########################################################################################
 */
 
-
-# if 0
-
-void
-LegalizeDoFractReassign(vector<LegalizeBin*> &allBins, 
-			vector<LegalizeBin*> &supplyBins, 
-			vector<Cell*> &cellsInRow)
-{
-  LegalizeBin* binObj;
-  VECTOR_FOR_ALL_ELEMS (supplyBins, LegalizeBin*, binObj){
-    int binIndex = binObj->BinGetIndex();
-    bool isEmpty = binObj->BinGetEmpty();
-    bool boundLeft = binObj->BinGetLBound();
-    bool boundRight = binObj->BinGetRBound();
-    vector<Cell*> cellsInBin = binObj->BinGetCellsInBin();
-    
-    if (boundLeft && !boundRight) {
-      /* Check only the next bin on right for a possible demand bin */
-	int rightBinIndex = binIndex + 1;
-	LegalizeBin* rightBin = allBins[rightBinIndex];
-	int rBSupply = rightBin->BinGetSupply();
-	if (rBSupply < 0) {
-	  /* Found a neighbouring demand bin */
-	  int rBinBegin = rightBin->BinGetBegin();
-	  int rBinEnd = rightBin->BinGetEnd();
-	  Cell* cellObj;
-	  VECTOR_FOR_ALL_ELEMS (cellsInBin, Cell*, cellObj) {
-	    int cellBegin = cellObj->CellGetXpos();
-	    int cellWidth = cellObj->CellGetWidth();
-	    int cellEnd = cellBegin + cellWidth;
-	    double overlapWidth = LegalizeThetaFunc(rBinBegin, rBinEnd, cellBegin, cellEnd);
-	    double fract = overlapWidth/cellWidth;
-	    if (fract > 0.0) {
-	      double fractThisBin = 1.0 - fract;
-	      /* Modify the fraction of cell in the current bin */
-	      binObj->BinSetCellFraction(cellObj, fractThisBin);
-	      int thisBinSupply = binObj->BinGetSupply();
-	      int modSupply = thisBinSupply - overlapWidth;
-	      binObj->BinSetSupply(modSupply);
-	      /* Add the other fraction to the neighbouring demand bin */
-	      rightBin->BinSetCellFraction(cellObj, fract);
-	      int rightBinSupply = rightBin->BinGetSupply();
-	      modSupply = rightBinSupply + overlapWidth;
-	      rightBin->BinSetSupply(modSupply);
-	    }
-	  } END_FOR;
-	}
-      } else if (!boundLeft && boundRight) {
-	/* Check only the next bin on left for a possible demand bin */
-	int leftBinIndex = binIndex - 1;
-	LegalizeBin* leftBin = allBins[leftBinIndex];
-	int lBSupply = leftBin->BinGetSupply();
-	if (lBSupply < 0) {
-	  /* Found a neighbouring demand bin */
-	  int lBinBegin = leftBin->BinGetBegin();
-	  int lBinEnd = leftBin->BinGetEnd();
-	  Cell* cellObj;
-	  VECTOR_FOR_ALL_ELEMS (cellsInBin, Cell*, cellObj) {
-	    int cellBegin = cellObj->CellGetXpos();
-	    int cellWidth = cellObj->CellGetWidth();
-	    int cellEnd = cellBegin + cellWidth;
-	    double overlapWidth = LegalizeThetaFunc(lBinBegin, lBinEnd, cellBegin, cellEnd);
-	    double fract = overlapWidth/cellWidth;
-	    if (fract > 0.0) {
-	      double fractThisBin = 1.0 - fract;
-	      /* Modify the fraction of cell in the current bin */
-	      binObj->BinSetCellFraction(cellObj, fractThisBin);
-	      int thisBinSupply = binObj->BinGetSupply();
-	      int modSupply = thisBinSupply - overlapWidth;
-	      binObj->BinSetSupply(modSupply);
-	      /* Add the other fraction to the neighbouring demand bin */
-	      leftBin->BinSetCellFraction(cellObj, fract);
-	      int leftBinSupply = leftBin->BinGetSupply();
-	      modSupply = leftBinSupply + overlapWidth;
-	      leftBin->BinSetSupply(modSupply);
-	    }
-	  } END_FOR;
-	}
-      } else if (!boundLeft && !boundRight) {
-	/* Check both left and right bins for a possible demand bin */
-	int leftBinIndex = binIndex - 1;
-	int rightBinIndex = binIndex + 1;
-	LegalizeBin* leftBin = allBins[leftBinIndex];
-	LegalizeBin* rightBin = allBins[rightBinIndex];
-	int lBSupply = leftBin->BinGetSupply();
-	int rBSupply = rightBin->BinGetSupply();
-	if (rBSupply < lBSupply) {
-	  if (rBSupply < 0) {
-	    /* Found a neighbouring demand bin */
-	    int rBinBegin = rightBin->BinGetBegin();
-	    int rBinEnd = rightBin->BinGetEnd();
-	    Cell* cellObj;
-	    VECTOR_FOR_ALL_ELEMS (cellsInBin, Cell*, cellObj) {
-	      int cellBegin = cellObj->CellGetXpos();
-	      int cellWidth = cellObj->CellGetWidth();
-	      int cellEnd = cellBegin + cellWidth;
-	      double overlapWidth = LegalizeThetaFunc(rBinBegin, rBinEnd, cellBegin, cellEnd);
-	      double fract = overlapWidth/cellWidth;
-	      if (fract > 0.0) {
-		double fractThisBin = 1.0 - fract;
-		/* Modify the fraction of cell in the current bin */
-		binObj->BinSetCellFraction(cellObj, fractThisBin);
-		int thisBinSupply = binObj->BinGetSupply();
-		int modSupply = thisBinSupply - overlapWidth;
-		binObj->BinSetSupply(modSupply);
-		/* Add the other fraction to the neighbouring demand bin */
-		rightBin->BinSetCellFraction(cellObj, fract);
-		int rightBinSupply = rightBin->BinGetSupply();
-		modSupply = rightBinSupply + overlapWidth;
-		rightBin->BinSetSupply(modSupply);
-	      }
-	    } END_FOR;
-	  }
-	} else if (rBSupply >= lBSupply) {
-	  if (lBSupply < 0) {
-	    /* Found a neighbouring demand bin */
-	    int lBinBegin = leftBin->BinGetBegin();
-	    int lBinEnd = leftBin->BinGetEnd();
-	    Cell* cellObj;
-	    VECTOR_FOR_ALL_ELEMS (cellsInBin, Cell*, cellObj) {
-	      int cellBegin = cellObj->CellGetXpos();
-	      int cellWidth = cellObj->CellGetWidth();
-	      int cellEnd = cellBegin + cellEnd;
-	      double overlapWidth = LegalizeThetaFunc(lBinBegin, lBinEnd, cellBegin, cellEnd);
-	      double fract = overlapWidth/cellWidth;
-	      if (fract > 0.0) {
-		double fractThisBin = 1.0 - fract;
-		/* Modify the fraction of cell in the current bin */
-		binObj->BinSetCellFraction(cellObj, fractThisBin);
-		int thisBinSupply = binObj->BinGetSupply();
-		int modSupply = thisBinSupply - overlapWidth;
-		binObj->BinSetSupply(modSupply);
-		/* Add the other fraction to the neighbouring demand bin */
-		leftBin->BinSetCellFraction(cellObj, fract);
-		int leftBinSupply = leftBin->BinGetSupply();
-		modSupply = leftBinSupply + overlapWidth;
-		leftBin->BinSetSupply(modSupply);
-	      }
-	    } END_FOR;
-	  }
-	}
-      }
-    }
-  } END_FOR;
-}
-
-# endif
-
-# if 0
-
-    binIdx = binObjn->BinGetIndex();
-    binIdxPlusOne = binIdx + 1;
-    if (binIdxPlusOne <= lastIdx) {
-      rightBin = allBins[binIdxPlusOne];
-      rBinSupp = rightBin->BinGetSupply();
-      /* If combo is not set and right bin not a demand bin */
-      /* Go to the next iteration of the loop */
-      if ((rBinSupp > 0) && !combo){
-	continue;
-      } else if ((rBinSupp > 0) && combo){
-	/* If right bin not a demand bin but combo is set */
-	/* Do fractional reassignment of cells to the supply bin */
-	vector<Cell*> cellsInBin = binObj->BinGetCellsInBin();
-	Cell* thisCell;
-	double overlap;
-	VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell){
-	  int cellBegin = thisCell->CellGetXpos();
-	  int cellWidth = thisCell->CellGetWidth();
-	  int cellEnd = cellBegin + cellWidth;
-	  overlap = LegalizeThetaFunc(rBinBegin, rBinEnd, cellBegin, cellEnd);
-	  if (overlap > 0){
-	    double fractOverlap = overlap / cellWidth;
-	    rightBin->BinSetCellFract(thisCell, fractOverlap);
-	    binObj->Bin
-	  } 
-	} END_FOR;
-      } else if (rBinSupp <= 0) {
-	/* Found a neighbouring demand bin, so irrespective of value of combo do,*/
-	/* Iterate over all cells in the supply bin and find overlap */
-        vector<Cell*> cellsInBin = binObj->BinGetCellsInBin();
-	Cell* thisCell;
-	double overlap;
-	VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell){
-	  int cellBegin = thisCell->CellGetXpos();
-	  int cellWidth = thisCell->CellGetWidth();
-	  int cellEnd = cellBegin + cellWidth;
-	  overlap = LegalizeThetaFunc(rBinBegin, rBinEnd, cellBegin, cellEnd);
-	  if (overlap > 0){
-	    double fractOverlap = overlap / cellWidth;
-	    rightBin->BinSetCellFract(thisCell, fractOverlap);
-	  } 
-	} END_FOR;
-      }
-      binIdxPlusTwo = binIdx + 2;
-      if (binIdxPlusTwo <= lastIdx) {
-	rightMostBin = allBins[binIdxPlusTwo];
-	rMBinSupply = rightMostBin->BinGetSupply();
-	rMBinBegin = rightMostBin->BinGetBegin();
-	rMBinEnd = rightMostBin->BinGetEnd();
-	if((rMBinSupply > 0) && !combo){
-	  continue;
-	} else if ((rMBinSupply > 0) && combo){
-	  /* If right-most bin not a demand bin but combo is set */
-	  /* Do fractional reassignment of cells to the supply bin */
-	  vector<Cell*> cellsInBin = binObj->BinGetCellsInBin();
-	  Cell* thisCell;
-	  double overlap;
-	  VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell){
-	    int cellBegin = thisCell->CellGetXpos();
-	    int cellWidth = thisCell->CellGetWidth();
-	    int cellEnd = cellBegin + cellWidth;
-	    overlap = LegalizeThetaFunc(rMBinBegin, rMBinEnd, cellBegin, cellEnd);
-	    if (overlap > 0){
-	      double fractOverlap = overlap / cellWidth;
-	      rightMostBin->BinSetCellFract(thisCell, fractOverlap);
-	    } 
-	  } END_FOR;
-	} else if (rMBinSupp <= 0) {
-	  /* Found a neighbouring demand bin, so irrespective of value of combo do,*/
-	  /* Iterate over all cells in the supply bin and find overlap */
-	  vector<Cell*> cellsInBin = binObj->BinGetCellsInBin();
-	  Cell* thisCell;
-	  double overlap;
-	  VECTOR_FOR_ALL_ELEMS(cellsInBin, Cell*, thisCell){
-	    int cellBegin = thisCell->CellGetXpos();
-	    int cellWidth = thisCell->CellGetWidth();
-	    int cellEnd = cellBegin + cellWidth;
-	    overlap = LegalizeThetaFunc(rMBinBegin, rMBinEnd, cellBegin, cellEnd);
-	    if (overlap > 0){
-	      double fractOverlap = overlap / cellWidth;
-	      rightMostBin->BinSetCellFract(thisCell, fractOverlap);
-	    } 
-	  } END_FOR;
-	}
-      }
-    }
-
-# endif
-# if 0    
-    Zone* zObj;
-    cout << "zones for row " << i <<" are " << endl;
-    VECTOR_FOR_ALL_ELEMS (zones, Zone*, zObj){
-      cout << "(" << (zObj->ZoneGetBegin()) << "," << (zObj->ZoneGetEnd()) << ")" << (zObj->ZoneGetEmpty()? "EMPTY" : "BLOCKED") << e    } END_FOR;
-
-# endif

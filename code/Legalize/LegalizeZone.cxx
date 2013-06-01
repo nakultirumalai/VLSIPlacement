@@ -53,6 +53,13 @@ Zone::ZoneGetEnd(void)
   return zoneEnd;
 }
 
+int
+Zone::ZoneGetBot(void)
+{
+  int bot = (*(this->presentInRow)).PhysRowGetCoordinate();
+  return bot;
+}
+
 bool
 Zone::ZoneGetEmpty(void)
 {
@@ -79,8 +86,33 @@ Zone::ZoneAddCellToZone(Cell* myCell)
   (this->totalCellWidth) += (myCell->CellGetWidth());
 }
 
+void
+Zone::ZoneRemoveCellFromZone(Cell *thisCell)
+{
+  int cellWidth, i; 
+  uint numCells;
+  vector<Cell *>::iterator it;
+  Cell *cellPtr;
+  bool found;
+  cellWidth = (*thisCell).CellGetWidth();
+  this->totalCellWidth -= cellWidth;
+  found = false;
+  numCells = (this->cellsInZone).size();
+  for (it = (this->cellsInZone).begin(); it != (this->cellsInZone).end(); ++it) {
+    cellPtr = *it;
+    if (cellPtr == thisCell) {
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    (this->cellsInZone).erase(it);
+  }
+
+}
+
 int
-Zone::ZoneFindWidth(void)
+Zone::ZoneGetWidth(void)
 {
   (this->zoneWidth) = (this->zoneEnd) - (this->zoneBegin);
   return zoneWidth;
@@ -137,3 +169,12 @@ Zone::Zone(int zoneBegin, bool isEmpty)
   ZoneSetLRBound(DEFAULT_ZLRBOUND);
 }
 
+Zone::Zone(int zoneBegin, PhysRow *thisRow, bool isEmpty)
+{
+  ZoneSetBegin(zoneBegin);
+  ZoneSetRow(thisRow);
+  ZoneSetEnd(DEFAULT_ZONE_END);
+  ZoneSetEmpty(isEmpty);
+  ZoneSetTotalCellWidth(DEFAULT_ZTOTAL_CELL_WIDTH);
+  ZoneSetLRBound(DEFAULT_ZLRBOUND);
+}

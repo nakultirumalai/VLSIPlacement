@@ -510,3 +510,65 @@ void CellClearAllCellBin(void)
 {
   FlagsDefClearAllObjs(BIN_OF_CELL);
 }
+
+
+double LegalizeBinGetLValue(LegalizeBin *binPtr)
+{
+  double rtv;
+
+  void *obj = (void *)binPtr;
+  
+  rtv = FlagsDefGetDouble(LEGALIZE_BIN_L_VALUE, obj);
+  
+  return (rtv);
+}
+
+void LegalizeBinSetLValue(LegalizeBin *binPtr, double lValue)
+{
+  void *obj = (void *)binPtr;
+  
+  FlagsDefSetDouble(LEGALIZE_BIN_L_VALUE, obj, lValue);
+}
+
+void LegalizeBinClearLValue(LegalizeBin *binPtr)
+{
+  void *obj = (void *)binPtr;
+
+  FlagsDefClearDouble(LEGALIZE_BIN_L_VALUE, obj);
+}
+
+void LegalizeBinClearAllLValue(void)
+{
+  FlagsDefClearAllObjs(LEGALIZE_BIN_L_VALUE);
+}
+
+
+double LegalizeBinGetBValue(LegalizeBin *binPtr)
+{
+  double rtv;
+
+  void *obj = (void *)binPtr;
+  
+  rtv = FlagsDefGetDouble(LEGALIZE_BIN_B_VALUE, obj);
+  
+  return (rtv);
+}
+
+void LegalizeBinSetBValue(LegalizeBin *binPtr, double bValue)
+{
+  void *obj = (void *)binPtr;
+  
+  FlagsDefSetDouble(LEGALIZE_BIN_B_VALUE, obj, bValue);
+}
+
+void LegalizeBinClearBValue(LegalizeBin *binPtr)
+{
+  void *obj = (void *)binPtr;
+
+  FlagsDefClearDouble(LEGALIZE_BIN_B_VALUE, obj);
+}
+
+void LegalizeBinClearAllBValue(void)
+{
+  FlagsDefClearAllObjs(LEGALIZE_BIN_B_VALUE);
+}

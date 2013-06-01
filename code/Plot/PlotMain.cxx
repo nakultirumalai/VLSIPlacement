@@ -1,5 +1,4 @@
 # include <Plot.h>
-
 Plot::Plot()
 {
 }
@@ -216,6 +215,27 @@ Plot::PlotAddDemandBin(LegalizeBin &thisBin, int supplyVal)
 }
 
 void
+Plot::PlotAddBinPathRect(LegalizeBin &thisBin, int supplyVal)
+{
+  double left, bot, right, top;
+  string rectLabel;
+  int height;
+  
+  left = thisBin.BinGetBegin();
+  bot = thisBin.BinGetBot();
+  right = thisBin.BinGetEnd();
+  height = thisBin.BinGetHeight();
+  top = bot + height;
+  
+  Rect BinRect(left, bot, right, top);
+  BinRect.RectSetLabel(getStrFromInt(supplyVal));
+  BinRect.RectSetLabelPos(RIGHT_TOP);
+
+  binPathRects.push_back(BinRect);
+}
+
+
+void
 Plot::PlotAddStretchedBin(Bin &thisBin)
 {
   double left, bot, right, top;
@@ -291,6 +311,11 @@ Plot::PlotWriteOutput(void)
     myRect.RectWriteOutput(plotOpFile);
   } END_FOR;
 
+  VECTOR_FOR_ALL_ELEMS(binPathRects, Rect, myRect) {
+    myRect.RectSetStyle(BIN_PATH_RECT);
+    myRect.RectWriteOutput(plotOpFile);
+  } END_FOR;
+
   Line myLine;
   VECTOR_FOR_ALL_ELEMS(lines, Line, myLine) {
     myLine.LineSetStyle(NORMAL_LINE);
@@ -347,10 +372,16 @@ RectGetStyleString(Rect &thisRect)
     styleString = "fs empty border lc rgb \"green\"";
     break;
   case SUPPLY_BIN_RECT:
-    styleString = "fs empty border lc rgb \"green\"";
+    //    styleString = "fs solid border lc rgb \"green\"";
+    styleString = "fc rgb \"green\"";
     break;
   case DEMAND_BIN_RECT:
-    styleString = "fs empty border lc rgb \"red\"";
+    //    styleString = "fs solid border lc rgb \"red\"";
+    styleString = "fc rgb \"red\"";
+    break;
+  case BIN_PATH_RECT:
+    //    styleString = "fs empty border lc rgb \"magenta\"";
+    styleString = "fc rgb \"magenta\"";
     break;
   default: 
     break;

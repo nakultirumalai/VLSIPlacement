@@ -11,12 +11,13 @@
 # include <lemon/bfs.h>
 # include <lemon/concepts/digraph.h>
 # include <Flags.h>
+# include <HyperGraph.h>
+# include <HyperGraphIter.h>
 
-using namespace lemon;
+using namespace std;
 
 /* Default definitions */
-# define ArcMap ListDigraph::ArcMap
-# define NodeMap ListDigraph::NodeMap
+
 # define DEFAULT_REGION_BEGIN 0
 # define DEFAULT_REGION_END 0
 # define DEFAULT_BIN_BEGIN 0
@@ -38,6 +39,8 @@ using namespace lemon;
 # define DEFAULT_ZLRBOUND 2
 # define debugPrint 0
 
+class Zone;
+
 class LegalizeBin{
  private:
   int binBegin;
@@ -51,9 +54,10 @@ class LegalizeBin{
   PhysRow* presentInRow;
   vector<Cell*> cellsInBin;
   map<Cell*, double> cellFracts;
-  int supply;
+  double supply;
   int totalCellWidth;
   int binIndex;
+  Zone *inZone;
 
  public:
   /* Constructor and Destructor */
@@ -67,7 +71,7 @@ class LegalizeBin{
   void BinSetBegin(int);
   void BinSetEnd(int);
   void BinSetEmpty(bool);
-  void BinSetSupply(int);
+  void BinSetSupply(double);
   void BinSetRow(PhysRow*);
   void BinSetTotalCellWidth(int);
   void BinSetLBound(bool);
@@ -76,12 +80,13 @@ class LegalizeBin{
   void BinSetCellFract(Cell*, double);
   void BinSetHeight(int);
   void BinSetBot(int);
-  
+  void BinSetZone(Zone*);
+
   /* Get functions */
   int BinGetBegin(void);
   int BinGetEnd(void);
   bool BinGetEmpty(void);
-  int BinGetSupply(void);
+  double BinGetSupply(void);
   PhysRow* BinGetRow(void);
   int BinGetWidth(void);
   bool BinGetLBound(void);
@@ -95,13 +100,17 @@ class LegalizeBin{
   void BinGetFractCells(map<Cell*, double> &);
   int BinGetHeight(void);
   int BinGetBot(void);  
+  Zone* BinGetZone(void);
 
   /* Other functions */
   void BinAddCellToBin(Cell*);
+  void BinRemoveCellFromBin(Cell*);
+  void BinRemoveCellFromFract(Cell*);
   void BinCalculateWidth(void);
   void BinFindCellsInBin(vector<Cell*> &);
   void BinAddCellFracts(Cell*, double);
   map<Cell*, double>& BinGetAllFractCells(void);
+  void BinRemoveAllFractCells(void);
 };
 
 
@@ -219,7 +228,7 @@ class Zone {
   /* Constructor and Destructor */
   Zone();
   Zone(int, bool);
-  
+  Zone(int, PhysRow*, bool);
     
   /* Set Functions */
   void ZoneSetBegin(int);
@@ -238,10 +247,12 @@ class Zone {
   unsigned int ZoneGetLRBound(void);
   vector<Cell*>& ZoneGetCellsInZone(void);
   int ZoneGetTotalCellWidth(void);
-  
+  int ZoneGetBot(void);
+
   /* Other functions */
   void ZoneAddCellToZone(Cell*);
-  int ZoneFindWidth(void);
+  void ZoneRemoveCellFromZone(Cell*);
+  int ZoneGetWidth(void);
   //void ZoneFindCellsInZone(vector<Cell*> &);
 
 };
@@ -255,11 +266,11 @@ void LegalizeSnapToNearestRows(Cell* , vector<PhysRow*>& , rowOrientation);
 
 void findRowCoordinates(vector<int>&, int , int , int , int nearRows[]);
 
-void LegalizeConstructGNFGraph(vector<PhysRow*> &, ListDigraph &, ArcMap<int> &, NodeMap<int> &);
+//void LegalizeConstructGNFGraph(vector<PhysRow*> &, ListDigraph &, ArcMap<int> &, NodeMap<int> &);
 
 void LegalizeDesign(Design &);
 
-void LegalizeCalculateMinCostFlow(ListDigraph &, ArcMap<int> &, NodeMap<int> &);
+//void LegalizeCalculateMinCostFlow(ListDigraph &, ArcMap<int> &, NodeMap<int> &);
 
 void LegalizeTestMinCostFlow(void);
 
@@ -287,11 +298,13 @@ PhysRow* LegalizeGetRowByIndex(vector<PhysRow*> &, int);
 
 double LegalizeThetaFunc(uint, uint, uint, uint);
 
-void LegalizeDoFractReassign(vector<LegalizeBin*>&, vector<LegalizeBin*>&);
+void LegalizeDoFractReassign(vector<LegalizeBin*>&);
 
-void LegalizePlotData(string, string, Design&, vector<LegalizeBin*> &);
+void LegalizePlotData(string, string, Design&, vector<vector<LegalizeBin*> > &);
 
-void LegalizeCalcSuppForBins(vector<LegalizeBin*> &, vector<LegalizeBin*> &, vector<LegalizeBin*> &);
+void LegalizeCalcSuppForBins(vector<LegalizeBin*> &, vector<LegalizeBin*> &);
+
+void LegalizeReCalcSuppForBins(vector<LegalizeBin*> &, vector<LegalizeBin*> &);
 
 void
 LegalizeGetNeighbours(LegalizeBin*&, LegalizeBin*&,
@@ -300,7 +313,19 @@ LegalizeGetNeighbours(LegalizeBin*&, LegalizeBin*&,
 /*** FILE LegalizeUtils.cxx ***/
 double 
 LegalizeGetCellsToMove(LegalizeBin &srcBin, LegalizeBin &destBin,
-		       vector<Cell *> &binCells, bool sameZone,
-		       vector<Cell *> &cellsToMove);
+		       map<Cell *, double> &fractionalCells, bool sameZone,
+		       map<Cell *, double> &cellsToMove, double &totalFracWidth);
+
+void LegalizeAugPathAlgo(HyperGraph &, LegalizeBin*, vector<LegalizeBin*> &PathBins);
+
+void
+LegalizeReCalcSuppAllBins(vector<vector<LegalizeBin*> > &, vector<LegalizeBin*> &);
+
+void
+LegalizeAssignLValues(vector<vector<LegalizeBin*> > &);
+
+void 
+LegalizePrintBinData(LegalizeBin *);
+
 # endif
 
