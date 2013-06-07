@@ -177,8 +177,7 @@ LegalizeBin::BinAddCellToBin(Cell* thisCell)
 void
 LegalizeBin::BinRemoveCellFromBin(Cell* thisCell)
 {
-  int cellWidth, i; 
-  uint numCells;
+  int cellWidth; 
   vector<Cell *>::iterator it;
   Cell *cellPtr;
   bool found;
@@ -186,7 +185,6 @@ LegalizeBin::BinRemoveCellFromBin(Cell* thisCell)
   cellWidth = (*thisCell).CellGetWidth();
   this->totalCellWidth -= cellWidth;
   found = false;
-  numCells = (this->cellsInBin).size();
   for (it = (this->cellsInBin).begin(); it != (this->cellsInBin).end(); ++it) {
     cellPtr = *it;
     if (cellPtr == thisCell) {

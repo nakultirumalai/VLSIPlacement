@@ -298,7 +298,7 @@ PhysRow* LegalizeGetRowByIndex(vector<PhysRow*> &, int);
 
 double LegalizeThetaFunc(uint, uint, uint, uint);
 
-void LegalizeDoFractReassign(vector<LegalizeBin*>&);
+void LegalizeDoFractReassign(vector<vector<LegalizeBin*> >&);
 
 void LegalizePlotData(string, string, Design&, vector<vector<LegalizeBin*> > &);
 

@@ -284,23 +284,31 @@ PhysRow::PhysRowGetBoundingBox(int &minx, int &miny, int &maxx, int &maxy)
 void
 PhysRow::PhysRowGetBoundingBox(vector<int> &v)
 {
-  if ((this->rowType) == HORIZONTAL){
+  if ((this->rowType) == HORIZONTAL) {
+    int leftX = (int)(this->rowBegin);
+    int leftY = (int)(this->coordinate);
+    int rightX = (int)((this->numSites) * (this->siteSpacing));
+    int rightY = (int)((this->coordinate) + (this->height));
+    
     /* Left Bottom */
-    v.push_back(this->rowBegin);
-    v.push_back(this->coordinate);
+    v.push_back(leftX);
+    v.push_back(leftY);
     
     /* Right Top */
-    v.push_back((this->numSites)*(this->siteSpacing));
-    v.push_back((this->coordinate)+(this->height));
-  }
-  else if ((this->rowType) == VERTICAL){
+    v.push_back(rightX);
+    v.push_back(rightY);
+  } else if ((this->rowType) == VERTICAL){
+
+    int leftX = (int)(this->coordinate);
+    int leftY = (int)(this->rowBegin);
+    int rightX = (int)((this->coordinate) + (this->height));
+    int rightY = (int)((this->numSites) * (this->siteSpacing));
     /* Left Bottom */
-    v.push_back(this->coordinate);
-    v.push_back(this->rowBegin);
-      
+    v.push_back(leftX);
+    v.push_back(leftY);      
     /* Right Top */
-    v.push_back((this->coordinate) + (this->height));
-    v.push_back((this->numSites) * (this->siteSpacing));
+    v.push_back(rightX);
+    v.push_back(rightY);
   }
 }
 
