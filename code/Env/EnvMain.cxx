@@ -14,7 +14,7 @@ Env::Env()
   EnvSetNumFixedMacros(0);
   EnvSetNumNets(0);
   EnvSetUseVarBounds(false);
-  EnvSetDumpHessian(true);  /* WATCH: Default value is true */
+  EnvSetDumpHessian(false);  /* WATCH: Default value is true */
   EnvSetSolverType(DEFAULT_ENV_SOLVER_TYPE);
   EnvSetNetModel(DEFAULT_ENV_NET_MODEL);
   EnvSetToolMode(DEFAULT_ENV_TOOL_MODE);

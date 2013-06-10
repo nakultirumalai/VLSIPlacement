@@ -89,15 +89,13 @@ Zone::ZoneAddCellToZone(Cell* myCell)
 void
 Zone::ZoneRemoveCellFromZone(Cell *thisCell)
 {
-  int cellWidth, i; 
-  uint numCells;
+  int cellWidth; 
   vector<Cell *>::iterator it;
   Cell *cellPtr;
   bool found;
   cellWidth = (*thisCell).CellGetWidth();
   this->totalCellWidth -= cellWidth;
   found = false;
-  numCells = (this->cellsInZone).size();
   for (it = (this->cellsInZone).begin(); it != (this->cellsInZone).end(); ++it) {
     cellPtr = *it;
     if (cellPtr == thisCell) {
