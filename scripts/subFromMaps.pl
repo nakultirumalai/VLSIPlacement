@@ -30,20 +30,19 @@ close(inmapFile);
 open (targetFileCopy, "$targetFile.copy") || die ("C");
 open (targetFileHndl, ">$targetFile") || die ("C");
 
+my $count = 0;
 while (my $line = <targetFileCopy>) {
     my @cellNames = split(/\s+/, $line);
-    
     if($isPaths eq "true")
     {
         foreach my $cellName (@cellNames) {
 	    #my $cellNameBak = $cellName;
 	    my ($cellNameCpy,$lastCell)  = ($cellName =~ /(.*)\/(.?)/); 
-	   
 	    if ((defined($cellNameCpy)) and (exists $cell2Pseudo{$cellNameCpy})) {
-#	            print "BEFORE: \t$line\n";
-	    
-	        $line =~ s/\Q$cellNameCpy\E/${cell2Pseudo{$cellNameCpy}}/g;
-#	            print "AFTER:\t$line\n";
+#		    print "BEFORE: \t$line\n";
+		my $cellNameWithSlash = "$cellNameCpy"."\/";
+	        $line =~ s/\Q$cellNameWithSlash\E/${cell2Pseudo{$cellNameCpy}}\//g;
+#		    print "AFTER:\t$line\n";
 	    }
 	}
     } else {
@@ -51,15 +50,16 @@ while (my $line = <targetFileCopy>) {
 	    foreach my $cellName (@cellNames) {
 		#my $cellNameBak = $cellName;
 		if (exists $cell2Pseudo{$cellName}) {
-#		        print "BEFORE: \t$line\n";
+#		    print "BEFORE: \t$line\n";
 		    
 		    $line =~ s/\Q$cellName\E/${cell2Pseudo{$cellName}}/g;
-#		        print "AFTER:\t$line\n";
+#		    print "AFTER:\t$line\n";
 		}
 	    }
 	}
     }
     print targetFileHndl $line;
+    $count++;
 }
 
 close(targetFileHndl);
