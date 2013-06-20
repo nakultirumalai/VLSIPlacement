@@ -51,10 +51,15 @@ Rect::RectWriteOutput(ofstream &opStream)
 	   << " to " << right << "," << top
 	   << " " << styleString << endl;
   
-  if ((*this).rectStyle == BIN_PATH_RECT) {
+  /*  if ((*this).rectStyle == BIN_PATH_RECT) {
     opStream << "set label at " << left + ((right - left) / 2) << "," << bot + ((top - bot) / 2) 
 	     << " \"" << label << "\" " << "front left" 
 	     << endl;
-  }
+
+	     } */
+  //    opStream << "set label at " << left << "," << bot 
+  //	     << " \"" << label << "\" " << "front left" 
+  //	     << endl;
+
 }
 

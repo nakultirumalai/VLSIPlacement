@@ -37,6 +37,7 @@ typedef enum {
   PIN_ORIGINAL_PIN_FLAG = 0,
   CELL_PSEUDO_PORT,
   BIN_OF_CELL,
+  CLUSTER_OF_CELL,
   TOTAL_NUM_PTR_FLAGS
 } flagPtrType;
 
@@ -65,10 +66,17 @@ extern void FlagsDefClearAllObjs(flagIntType fType);
 extern void FlagsDefClearAllObjs(flagPtrType fType);
 extern void FlagsDefClearAllObjs(flagDoubleType fType);
 
+/* FLAG: Check if a cell is a cluster */
 extern bool CellIsClustered(Cell *);
 extern void CellSetIsClustered(Cell *);
 extern void CellClearIsClustered(Cell *);
 extern void CellClearAllIsClustered(void);
+
+/* PTR: Set the cluster object of a corresponding cluster cell */
+extern void* CellGetCluster(Cell *);
+extern void CellSetCluster(Cell *, void *);
+extern void CellClearCluster(Cell *);
+extern void CellClearAllCluster(void);
 
 extern unsigned int PortGetNumRelatedCells(Cell *);
 extern void PortSetNumRelatedCells(Cell *, unsigned int);

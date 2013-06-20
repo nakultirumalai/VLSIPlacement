@@ -7,7 +7,8 @@ BEEN READ TO A HYPERGRAPH
 # include <Stat.h>
 
 /**************/
-void DesignCreateGraph(Design& myDesign, HyperGraph& thisGraph)
+void 
+Design::DesignCreateGraph(HyperGraph& thisGraph)
 {
   vector<void*> listOfCells;
   Cell *CellPtr;
@@ -16,18 +17,19 @@ void DesignCreateGraph(Design& myDesign, HyperGraph& thisGraph)
   string Name;
 
   /* First add all the nodes */
-  DESIGN_FOR_ALL_CELLS(myDesign, Name, CellPtr) {
-    thisGraph.HyperGraphAddNode((void *)(CellPtr));
+  DESIGN_FOR_ALL_CELLS((*this), Name, CellPtr) {
+    //    cout << "Cell: " << (*CellPtr).CellGetName() << " being added to the hypergraph" << endl;
+    thisGraph.AddNode((void *)(CellPtr));
   } DESIGN_END_FOR;
 
   /* Iterate over all hyperedges and use them to create
      a hypergraph */
-  DESIGN_FOR_ALL_NETS(myDesign, Name, NetPtr) {
+  DESIGN_FOR_ALL_NETS((*this), Name, NetPtr) {
+    //    cout << "Net: " << Name << " being added to the hypergraph" << endl;
     NET_FOR_ALL_CELLS((*NetPtr), CellPtr) {
       listOfCells.insert(listOfCells.end(), (void *)CellPtr);
     } NET_END_FOR;
-    thisGraph.HyperGraphAddEdge(listOfCells, (void *)NetPtr, 
-		      (*NetPtr).NetGetWeight());
+    thisGraph.AddEdge(listOfCells, (void *)NetPtr, (*NetPtr).NetGetWeight());
     listOfCells.clear();
   } DESIGN_END_FOR;
 }

@@ -9,15 +9,39 @@
 
 using namespace lemon;
 
-HyperGraph& convertDesignToGraph(Design& thisDesign)
+void
+printStartBanner(void)
 {
-  HyperGraph *myGraph = new HyperGraph();
-  
-  DesignCreateGraph(thisDesign, (*myGraph));
-  thisDesign.DesignSetGraph(*myGraph);
 
-  return (*myGraph);
 }
+
+void
+printSystemStat(void)
+{
+
+}
+
+void
+printTimeUsage(Env &topEnv)
+{
+  cout << "***************************************************" << endl;
+  cout << "   NETLIST READ TIME: " << topEnv.EnvGetNetlistReadTime() 
+       << "s" << endl;
+  cout << "   HYPERGRAPH BUILD TIME: " << topEnv.EnvGetHyperGraphBuildTime() 
+       << "s" << endl;
+  cout << "   CLUSTERING TIME: " << topEnv.EnvGetClusteringTime() 
+       << "s" << endl;
+  cout << "   GLOBAL PLACEMENT TIME: " << topEnv.EnvGetGlobalPlacementTime() 
+       << "s" << endl;
+  cout << "   SHAPE SELECTION TIME: " << topEnv.EnvGetShapeSelectionTime() 
+       << "s" << endl;
+  cout << "   LEGALIZATION TIME: " << topEnv.EnvGetLegalizationTime() 
+       << "s" << endl;
+  cout << "   DETAILED PLACEMENT TIME: " << topEnv.EnvGetDetailedPlacementTime() 
+       << "s" << endl;
+  cout << "***************************************************" << endl;
+}
+
 
 /***********************************************************************
   FUNCTION: parseArgsAndAddToEnv
@@ -88,6 +112,28 @@ HyperGraph& convertDesignToGraph(Design& thisDesign)
               bounds. Using this flag enables the use of variable 
               bounds in the solver. This option is only valid 
               when the solver used is mosek.
+
+-global_placer: If this option is specified, an external global placer 
+              is selected to perform global placement
+
+-cluster_strategy: If this option is specified, the appropriate strategy
+              to perform clustering is selected. The options as of now 
+              are : 
+              a) bestchoice
+              b) firstchoice
+              c) netcluster
+              d) tdcluster1
+              e) tdcluster2
+
+-cluster_placement: This option specifies how the cells should be placed
+              inside the cluster. The options as of now are:
+              a) placeboundary
+              b) placecentre
+             
+-uncluster_strategy: This option specifies how the unclustering of cells
+              should be done. 
+              a) placeboundary
+              b) placenone
 
        -help: Prints out information about the tool
 ***********************************************************************/
@@ -167,8 +213,41 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     } else if (switchValue == "conjgrad") {
       topEnv.EnvSetSolverType(ENV_SOLVER_QUADRATIC_CONJ_GRAD);
     } else {
-      rtv == false;
+      rtv = false;
     }
+  } else if (switchName == "global_placer") {
+    rtv = true;
+    if (switchValue == "ntuplace") {
+      topEnv.EnvSetGlobalPlacerType(ENV_NTUPLACE_GP);
+    } else if (switchValue == "fastplace") {
+      topEnv.EnvSetGlobalPlacerType(ENV_FAST_PLACE_GP);
+    } else if (switchValue == "mpl6") {
+      topEnv.EnvSetGlobalPlacerType(ENV_MPL6_GP);
+    } else {
+      rtv = false;
+      cout << "Error: Global placers supported are \"ntuplace\", \"fastplace\" and \"mpl6\""
+	   << endl;
+    }
+  } else if (switchName == "cluster_strategy") {
+    rtv = true;
+    if (switchValue == "bestchoice") {
+      topEnv.EnvSetClusterType(ENV_BEST_CHOICE_CLUSTERING);
+    } else if (switchValue == "firstchoice") {
+      topEnv.EnvSetClusterType(ENV_FIRST_CHOICE_CLUSTERING);
+    } else if (switchValue == "netcluster") {
+      topEnv.EnvSetClusterType(ENV_NET_CLUSTERING);
+    } else if (switchValue == "tdcluster1") {
+      topEnv.EnvSetClusterType(ENV_TIMING_DRIVEN_CLUSTERING1);
+    } else if (switchValue == "tdcluster2") {
+      topEnv.EnvSetClusterType(ENV_TIMING_DRIVEN_CLUSTERING2);
+    } else {
+      rtv = false;
+      cout << "Error: Valid options for cluster_strategy are " 
+	   << "\"bestchoice\", \"firstchoice\", \"netcluster\" "
+	   << "\"tdcluster1\", \"tdcluster2\"" << endl;
+    }
+  } else if (switchName == "cluster_placement") {
+  } else if (switchName == "uncluster_strategy") {
   } else if (switchName == "help") {
     cout << "To execute the tool, use the following options:" << endl;
     cout << endl << "-trace_depth: Given a trace depth, prints cputime and memory for all routines " << endl;
@@ -199,18 +278,16 @@ int placeMain(Env &topEnv)
 
   /* Create the design */
   Design myDesign(DesignPath, DesignName);
-  HyperGraph &myGraph = convertDesignToGraph(myDesign);
-
+  myDesign.DesignBuildGraph();
   myDesign.DesignSetEnv(topEnv);
   myDesign.DesignDoGlobalPlacement();
-  LegalizeDesign(myDesign);
-  DesignWriteBookShelfOutput(myDesign); 
+  //  LegalizeDesign(myDesign);
 
   string plotFileName;
-  plotFileName = "lg.plt";
+  plotFileName = "uncluster.plt";
   myDesign.DesignPlotData("Title", plotFileName);
 
-  DesignWriteBookShelfOutput(myDesign); 
+  DesignWriteOutputPlacement(myDesign); 
 
   return 0;
 }
@@ -220,7 +297,7 @@ int main(int argc, char *argv[])
   Env topEnv;
   string switchName, switchValue;
   bool proceed;
-  int i;
+  int i, rtv;
 
   proceed = false;
   if (argc > 1) {
@@ -246,6 +323,11 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  return (placeMain(topEnv));
+  printStartBanner();
+  printSystemStat();
+  rtv = placeMain(topEnv);
+  printTimeUsage(topEnv);
+
+  return (rtv);
 }
 

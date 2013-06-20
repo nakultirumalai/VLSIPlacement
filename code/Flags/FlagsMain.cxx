@@ -35,6 +35,39 @@ void CellClearAllIsClustered(void)
   FlagsDefClearAllObjs(CELL_IS_CLUSTERED_FLAG);
 }
 
+void *CellGetCluster(Cell *cellPtr)
+{
+  void *rtv;
+  void *obj;
+  
+  obj = (void *)cellPtr;
+  
+  rtv = FlagsDefGetPtr(CLUSTER_OF_CELL, cellPtr);
+  
+  return (rtv);
+}
+
+void CellSetCluster(Cell *cellPtr, void *cluster)
+{
+  void *obj;
+  
+  obj = (void *)cellPtr;
+  
+  FlagsDefSetPtr(CLUSTER_OF_CELL, cellPtr, cluster);
+}
+
+void CellClearCluster(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearPtr(CLUSTER_OF_CELL, cellPtr);
+}
+
+void CellClearAllCluster(Cell *cellPtr)
+{
+  FlagsDefClearAllObjs(CLUSTER_OF_CELL);
+}
+
 unsigned int PortGetNumRelatedCells(Cell *obj)
 {
   unsigned int rtv;
@@ -490,6 +523,8 @@ void* CellGetBin(Cell *cellPtr)
   void *obj = (void *)cellPtr;
   
   rtv = FlagsDefGetPtr(BIN_OF_CELL, obj);
+
+  return (rtv);
 }
 
 void CellSetBin(Cell *cellPtr, void *bin)

@@ -1,0 +1,333 @@
+# include <Design.h>
+
+/*********************************************************************
+   Top level function to perform default clustering 
+   Iterate over the netlist and generate vector     
+   of vector of cells and a cluster is created for  
+   each vector of cells in the top level vector     
+*********************************************************************/
+bool
+Design::DesignDoDefaultCluster(HyperGraph &myGraph)
+{
+  Design& myDesign = (*this);
+  Cell *cellPtr, *thisCellPtr;
+  vector<vector<void * > >cellsToCluster;
+  string cellName;
+  unsigned int numClustered;
+  uint numClusters;
+  bool rtv;
+
+  _STEP_BEGIN("Begin default clustering");
+
+  rtv = true;
+  numClusters = 0;
+  DESIGN_FOR_ALL_STD_CELLS(myDesign, cellName, cellPtr) {
+    if ((*cellPtr).CellIsHidden()) continue;
+    vector<Cell *> connectedCells = DesignGetConnectedCells(myGraph, cellPtr);
+    if (connectedCells.empty()) {
+      continue;
+    }
+    connectedCells.push_back(cellPtr);
+    DesignClusterCells(connectedCells);
+    numClusters++;
+    //    if (numClusters == 1000) break;
+  } DESIGN_END_FOR;
+
+  _STEP_END("End default clustering");
+
+  return rtv;
+}
+
+/***************************************************
+  TOP LEVEL FUNCTION TO DO TIMING DRIVEN CLUSTERING
+***************************************************/
+bool
+Design::DesignDoTimingDrivenCluster(HyperGraph &myGraph)
+{
+  Path *thisPath;
+  Cell *cellPtr;
+  vector<Cell *> clusterList;
+  uint pathIdx;
+
+  _STEP_BEGIN("Path-based clustering");
+
+  DESIGN_FOR_ALL_PATHS((*this), pathIdx, thisPath) {
+    vector<Cell *> &pathCells = (*thisPath).PathGetCells();
+    clusterList.clear();
+    VECTOR_FOR_ALL_ELEMS(pathCells, Cell*, cellPtr) {
+      if ((*cellPtr).CellIsHidden()) continue;
+      if ((*cellPtr).CellIsSequential()) continue;
+      clusterList.push_back(cellPtr);
+    } END_FOR;
+    if (clusterList.empty()) continue;
+    DesignClusterCells(clusterList);
+  } DESIGN_END_FOR;
+
+  _STEP_END("Path-based clustering");
+}
+
+/* Supporting function for best choice clustering */
+/* Computes the score between two cells by using the hypergraph */
+double
+computeScore(HyperGraph &myGraph, Cell *cellObj1, Cell *cellObj2)
+{
+  double score, totalEdgeWeight, edgeWeight;
+  double areaCell1, areaCell2;
+  uint edgeIdx;
+  
+  totalEdgeWeight = 0;
+  HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECTS(myGraph, cellObj1, cellObj2, 
+				      edgeIdx, edgeWeight) {
+    totalEdgeWeight += edgeWeight;
+  } HYPERGRAPH_END_FOR;
+  areaCell1 = (*cellObj1).CellGetArea() / (GRID_COMPACTION_RATIO ^ 2);
+  areaCell2 = (*cellObj2).CellGetArea() / (GRID_COMPACTION_RATIO ^ 2);
+  score = totalEdgeWeight / (areaCell1 + areaCell2);
+  
+  return (score);
+}
+
+bool
+queueIsEmpty(priority_queue<objPairScore<Cell *> , vector<objPairScore<Cell *> >, objPairScoreCompare > pqueue)
+{
+  return (pqueue.empty());
+}
+
+bool 
+printPriorityQueue(const priority_queue<objPairScore<Cell *> , vector<objPairScore<Cell *> >, objPairScoreCompare > pqueue)
+{
+  ofstream opFile("log");
+  Cell *cellObj1, *cellObj2;
+  double score;
+  priority_queue<objPairScore<Cell *> , vector<objPairScore<Cell *> >, objPairScoreCompare > pqueue_copy = pqueue;
+  while (!pqueue_copy.empty()) {
+    objPairScore<Cell *> topPair = pqueue_copy.top(); pqueue_copy.pop();
+    topPair.objPairGetObjs(cellObj1, cellObj2);
+    score = topPair.objPairGetScore();
+    opFile << "Cell1: " << (*cellObj1).CellGetName() 
+	   << " Cell2: " << (*cellObj2).CellGetName()
+	   << " Score " << score << endl;
+  }
+  opFile.close();
+}
+
+/***************************************************
+  TOP LEVEL FUNCTION TO DO BEST CHOICE CLUSTERING
+***************************************************/
+bool
+Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)
+{
+  Cell *clusteredCell;
+  Cell *cellObj1, *cellObj2;
+  void *nodeObj1, *nodeObj2;
+  vector<void *> connectedObjs;
+  vector<pair<Cell *, double > > scoreVect;
+  map<void *, uint> visitedLeftNodes;
+  map<Cell *, double> scoreVectIndices;
+  map<Cell *, double>::iterator itr;
+  double edgeWeight, score, newScore;
+  double areaCell1, areaCell2;
+  uint edgeDegree;
+  uint nodeIdx1, nodeIdx2, edgeIdx;
+  uint allNodes;
+  uint numNonTopNodes, numTopNodes;
+  uint numOrigTopNodes;
+
+  /* Compute the number of top nodes */
+  allNodes = DesignGetNumCells() + DesignGetNumClusters();
+  numNonTopNodes = myGraph.GetNumNonTopNodes();
+  numTopNodes = allNodes - numNonTopNodes;
+  numOrigTopNodes = numTopNodes;
+  //  if (numTopNodes < 3000) return;
+ 
+  /* Create a priority queue. This is essentially */
+  priority_queue<objPairScore<Cell *> , vector<objPairScore<Cell *> >, objPairScoreCompare > pqueue;
+
+  cout << "START: Building priority queue"
+       <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+       <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+
+  HYPERGRAPH_FOR_ALL_NODES(myGraph, nodeIdx1, nodeObj1) {
+    visitedLeftNodes[nodeObj1] = 1;
+    cellObj1 = (Cell *)nodeObj1;
+    areaCell1 = (*cellObj1).CellGetArea();
+    if ((*cellObj1).CellIsTerminal()) continue;
+    map<void *, bool> visitedNodes;
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(myGraph, nodeObj1, edgeIdx, edgeWeight) {
+      HYPERGRAPH_FOR_ALL_NODES_OF_EDGE(myGraph, edgeIdx, nodeObj2) {
+	if (nodeObj1 == nodeObj2) {
+	  continue;
+	}
+	_KEY_EXISTS(visitedLeftNodes, nodeObj2) continue;
+	_KEY_EXISTS(visitedNodes, nodeObj2) continue;
+	visitedNodes[nodeObj2] = true;
+	cellObj2 = (Cell *)nodeObj2;
+	if ((*cellObj2).CellIsTerminal()) continue;
+	score = computeScore(myGraph, cellObj1, cellObj2);
+	objPairScore<Cell *> thisPair(cellObj1, cellObj2, score);
+	pqueue.push(thisPair);
+      } HYPERGRAPH_END_FOR;
+    } HYPERGRAPH_END_FOR;
+  } HYPERGRAPH_END_FOR;
+
+  cout << "END: Building priority queue"
+       <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+       <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+  
+
+  /* Pop items from the top of the queue. Pick up the top 
+     of the queue and cluster pair of cells */
+  uint count = 0;
+  while (numTopNodes > (0.1 * ((double)numOrigTopNodes))) {
+    if (pqueue.empty()) {
+      break;
+    }
+    vector<Cell*> cellVect;
+    cout << "START: Pop and cluster cells "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+    /* Update the score of the elements being popped */
+    objPairScore<Cell *> topPair = pqueue.top(); pqueue.pop();
+    topPair.objPairGetObjs(cellObj1, cellObj2);
+    if ((*cellObj1).CellIsHidden() || (*cellObj2).CellIsHidden()) {
+      continue;
+    }
+    score = topPair.objPairGetScore();
+    newScore = computeScore(myGraph, cellObj1, cellObj2);
+    if (newScore < score) {
+      /* Push the new score into the queue and get the next 
+	 top object */
+      objPairScore<Cell *> thisPair(cellObj1, cellObj2, score);
+      pqueue.push(thisPair);
+      /* Get the top pair of the queue */
+      topPair = pqueue.top(); pqueue.pop();
+      topPair.objPairGetObjs(cellObj1, cellObj2);      
+    }
+
+    cellVect.push_back(cellObj1);
+    cellVect.push_back(cellObj2);
+
+    cout << "CLUSTER: Clustered cells " << (*cellObj1).CellGetName() 
+	 << "  " << (*cellObj2).CellGetName() << endl;
+    
+    /* Create the cluster */
+    clusteredCell = DesignClusterCells(cellVect);
+
+    cout << "END: Pop and cluster cells "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+    
+    /* Find the closest neighbor of u', v' and insert the 
+       pair u', v' into the priority queue */
+    cellObj1 = clusteredCell;
+    nodeObj1 = (void*)clusteredCell;
+    areaCell1 = (*clusteredCell).CellGetArea();
+    map<Cell *, uint> neighborsOfUprime;
+    cout << "START: Find the closest neighbor of u' "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(myGraph, nodeObj1, edgeIdx, edgeWeight) {
+      HYPERGRAPH_FOR_ALL_NODES_OF_EDGE(myGraph, edgeIdx, nodeObj2) {
+	cellObj2 = (Cell *)nodeObj2;
+	if (cellObj1 == cellObj2) {
+	  continue;
+	}
+	_KEY_EXISTS(neighborsOfUprime, cellObj2) continue;
+	neighborsOfUprime[cellObj2] = 1;
+	areaCell2 = (*cellObj2).CellGetArea();
+	score = computeScore(myGraph, cellObj1, cellObj2);
+	scoreVect.push_back(make_pair(cellObj2, score));
+      } HYPERGRAPH_END_FOR;
+    } HYPERGRAPH_END_FOR;
+
+    sort(scoreVect.begin(), scoreVect.end(), cmpScoreFunc);
+    cellObj2 = (scoreVect[0]).first;
+    score = (scoreVect[0]).second;
+    cout << "END: Find the closest neighbor of u' "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+
+    objPairScore<Cell *> newPair(cellObj1, cellObj2, score);
+    pqueue.push(newPair);
+
+    priority_queue<objPairScore<Cell *> , vector<objPairScore<Cell *> >, 
+		   objPairScoreCompare> pqueueCopy;
+    /* Update the clustering scores of neighbors of u' */
+    /*
+    cout << "START: Update the clustering scores of neighbors of u' "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+
+    while (!pqueue.empty()) {
+      objPairScore<Cell *> thisPair = pqueue.top(); pqueue.pop();
+      score = thisPair.objPairGetScore();
+      thisPair.objPairGetObjs(cellObj1, cellObj2);
+      _KEY_EXISTS(neighborsOfUprime, cellObj1) {
+	score = computeScore(myGraph, cellObj1, cellObj2);
+      }
+      _KEY_EXISTS(neighborsOfUprime, cellObj2) {
+	score = computeScore(myGraph, cellObj1, cellObj2);
+      }
+      objPairScore<Cell*> newPair(cellObj1, cellObj2, score);
+      pqueueCopy.push(newPair);
+    }
+    cout << "END: Update the clustering scores of neighbors of u' "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+    */
+
+    /* Copy the copy of the priority queue */
+    cout << "START: Copy priority queue "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+    //    pqueue = pqueueCopy;
+    cout << "END: Copy priority queue "
+	 <<  "   CPU TIME:" << getCPUTime() << CPU_TIME_UNIT          
+	 <<  "   MEM USAGE:" << getMemUsage() << MEM_USAGE_UNIT << endl; 
+
+
+    /* Iterating over the priority queue */
+    allNodes = DesignGetNumCells() + DesignGetNumClusters();
+    numNonTopNodes = myGraph.GetNumNonTopNodes();
+    numTopNodes = allNodes - numNonTopNodes;
+  }
+}
+
+/***************************************************
+  TOP LEVEL FUNCTION TO DO FIRST CHOICE CLUSTERING
+***************************************************/
+bool
+Design::DesignDoFirstChoiceClustering(HyperGraph &myGraph)
+{
+  
+}
+
+/***************************************************
+  FUNCTION TO TEST THE CLUSTER CREATION AND 
+  DESTRUCTION AND PLACEMENT OF CELLS AROUND
+***************************************************/
+bool
+Design::DesignDoClusterTest()
+{
+  vector<Cell *> listOfCells;
+  Cell *clusterCell;
+  Cell *cell1 = DesignGetNode("o90");  listOfCells.push_back(cell1);
+  Cell *cell2 = DesignGetNode("o89");  listOfCells.push_back(cell2);
+  Cell *cell3 = DesignGetNode("o2138");  listOfCells.push_back(cell3);
+  Cell *cell4 = DesignGetNode("o1778");   listOfCells.push_back(cell4);
+  Cell *cell5 = DesignGetNode("o91");   listOfCells.push_back(cell5);
+  Cell *cell6 = DesignGetNode("o0"); listOfCells.push_back(cell6);
+  Cell *cell7 = DesignGetNode("o1986"); listOfCells.push_back(cell7);
+  Cell *cell8 = DesignGetNode("o1987"); listOfCells.push_back(cell8);
+  Cell *cell9 = DesignGetNode("o92"); listOfCells.push_back(cell9);
+
+  DesignClusterCells(listOfCells);
+  
+  clusterCell = DesignGetNode("c1");
+  
+  (*clusterCell).CellSetXpos(100000);
+  (*clusterCell).CellSetYpos(100000);
+
+  /* Dissolve the cluster */
+  DesignUnclusterCell(clusterCell, false);
+}

@@ -31,6 +31,13 @@ map<string,Cell*>& Design::DesignGetCells(void)
   return (retVal);
 }
 
+map<string,Cell*>& Design::DesignGetClusters(void)
+{
+  map<string, Cell*>& retVal = this->DesignClusters;
+
+  return (retVal);
+}
+
 vector<PhysRow*>& Design::DesignGetRows(void)
 {
   vector<PhysRow*>& retVal = this->DesignPhysRows;
@@ -45,13 +52,27 @@ vector<Bin*>& Design::DesignGetBins(void)
   return (retVal);
 }
 
+vector<Path*>& Design::DesignGetPaths(void)
+{
+  vector<Path*>& retVal = this->DesignPaths;
+
+  return (retVal);
+}
 
 Cell *
 Design::DesignGetNode(string nodeName)
 {
   Cell *foundNode;
   
-  foundNode = DesignCells[nodeName];
+  foundNode = NIL(Cell *);
+  _KEY_EXISTS(DesignCells, nodeName) {
+    foundNode = DesignCells[nodeName];
+  }
+  if (foundNode == NIL(Cell *)) {
+    _KEY_EXISTS(DesignClusters, nodeName) {
+      foundNode = DesignClusters[nodeName];
+    }
+  }
   
   return (foundNode);
 }
@@ -91,6 +112,13 @@ Design::DesignAddOneCellToDesignDB(Cell *newCell)
 }
 
 void
+Design::DesignAddOneClusterToDesignDB(Cell *clusterCell)
+{
+  DesignClusters[(*clusterCell).CellGetName()] = clusterCell;
+  this->NumClusters++;
+}
+
+void
 Design::DesignAddOneNetToDesignDB(Net *newNet, double Weight)
 {
   double actualWeight;
@@ -127,6 +155,16 @@ Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)
   } 
   
   this->NumPhysRows++;
+}
+
+void
+Design::DesignRemoveOneClusterFromDesignDB(Cell *clusterCell)
+{
+  string clusterCellName = (*clusterCell).CellGetName();
+  _KEY_EXISTS(DesignClusters, clusterCellName) {
+    DesignClusters.erase(clusterCellName);
+    this->NumClusters--;
+  }
 }
 
 void
@@ -410,6 +448,61 @@ Design::DesignGetDelayArc(string libCell, string outputPin, string inputPin)
 }
 
 void
+Design::DesignAddPath(Path *path)
+{
+  DesignPaths.push_back(path);
+  this->NumPaths++;
+}
+
+void
+Design::DesignHideNet(Net *netPtr)
+{
+  string netName;
+  
+  netName = (*netPtr).NetGetName();
+  (*netPtr).NetSetIsHidden(true);
+  DesignNets.erase(netName);
+  DesignHiddenNets[netName] = netPtr;
+  
+  this->NumNets--;
+}
+
+void
+Design::DesignUnhideNet(Net *netPtr)
+{
+  string netName;
+  
+  netName = (*netPtr).NetGetName();
+  (*netPtr).NetSetIsHidden(false);
+  DesignNets[netName] = netPtr;
+  DesignHiddenNets.erase(netName);
+  
+  this->NumNets++;
+}
+
+void
+Design::DesignHideCell(Cell *thisCell)
+{
+  string cellName;
+  
+  cellName = (*thisCell).CellGetName();
+  (*thisCell).CellSetIsHidden(true);
+  DesignHiddenCells[cellName] = thisCell;
+  this->NumHiddenCells++;
+}
+
+void
+Design::DesignUnhideCell(Cell *thisCell)
+{
+  string cellName;
+  
+  cellName = (*thisCell).CellGetName();
+  (*thisCell).CellSetIsHidden(false);
+  DesignHiddenCells.erase(cellName);
+  this->NumHiddenCells--;
+}
+
+void
 Design::DesignAddCellToPhysRow(Cell* cell, vector<vector<int> > &allRowBounds, 
 			       vector<PhysRow*> &allPhysRows)
 {
@@ -519,21 +612,32 @@ Design::DesignGetNumCells(void)
 }
 
 unsigned int
-Design::DesignGetNumStdCells(void)
+Design::DesignGetNumClusters(void)
 {
   unsigned int rtv;
+  
+  rtv = this->NumClusters;
+  
+  return (rtv);
+}
+
+uint
+Design::DesignGetNumStdCells(void)
+{
+  uint rtv;
   
   rtv = this->NumStdCells;
   
   return (rtv);
 }
 
-unsigned int
+uint
 Design::DesignGetNumTopCells(void)
 {
-  unsigned int rtv;
+  uint rtv;
   
-  rtv = this->NumTopCells;
+  rtv = this->NumCells + this->NumClusters;
+  rtv -= this->NumHiddenCells;
   
   return (rtv);
 }
@@ -544,6 +648,16 @@ Design::DesignGetNumNets(void)
   unsigned int rtv;
   
   rtv = this->NumNets;
+  
+  return (rtv);
+}
+
+unsigned int
+Design::DesignGetNumPaths(void)
+{
+  unsigned int rtv;
+  
+  rtv = this->NumPaths;
   
   return (rtv);
 }
@@ -721,11 +835,39 @@ Design::DesignGetEnv(void)
 }
 
 void
+Design::DesignBuildGraph(void)
+{
+  HyperGraph *myGraph = new HyperGraph();
+
+  DesignCreateGraph(*myGraph);
+  DesignSetGraph(*myGraph);
+}
+
+void
+Design::DesignDeleteGraph(void)
+{
+  HyperGraph &myGraph = DesignGetGraph();
+  
+  delete (&myGraph);
+}
+
+void
+Design::DesignRebuildGraph(void)
+{
+  DesignDeleteGraph();
+  DesignBuildGraph();
+}
+
+void
 Design::DesignInit()
 {
   /* Initialize private variables */
   NumCells = 0;
+  NumHiddenCells = 0;
+  NumClusters = 0;
+  NumClustersSeenSofar = 0;
   NumNets = 0;
+  NumPaths = 0;
   NumPhysRows = 0;
   NumFixedCells = 0;
   NumTerminalCells = 0;

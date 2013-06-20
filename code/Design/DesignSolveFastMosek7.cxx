@@ -211,7 +211,6 @@ Design::DesignSolveForAllCellsMosekIter()
   void *cellObj;
   ofstream logFile;
   vector<Cell *> inputCells;
-  vector<Cell *> cellsToSolve;
   vector<Cell *> cellsSortedByLeft;
   map<Cell *, uint> quadMap;
   map<Cell *, uint> linMap;
@@ -242,7 +241,7 @@ Design::DesignSolveForAllCellsMosekIter()
   HYPERGRAPH_FOR_ALL_NODES(myGraph, nodeIdx, cellObj) {
     if ((*(Cell*)cellObj).CellIsTerminal()) continue;
     inputCells.push_back((Cell *)cellObj);
-    cellsToSolve.push_back((Cell *)cellObj);
+    //    cout << "Cell to solve: " << (*(Cell *)cellObj).CellGetName() << endl;
   } HYPERGRAPH_END_FOR;
 
   DesignSetCellsToSolve(inputCells);
@@ -435,8 +434,8 @@ Design::DesignSolveForAllCellsMosekIter()
     /**************************************************************/
     /* STOPPING CONDITION                                         */
     /**************************************************************/
-    if ((prevPeakUtil > peakUtilization) && 
-	((prevPeakUtil - peakUtilization) < stopThreshold)) {
+    if (1 || ((prevPeakUtil > peakUtilization) && 
+	      ((prevPeakUtil - peakUtilization) < stopThreshold))) {
       cout << "Global placement complete" << endl;
       string plotFileName;
       plotFileName = DesignEnv.EnvGetDesignName() + ".gp.plt";

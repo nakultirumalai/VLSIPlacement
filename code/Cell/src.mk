@@ -1,3 +1,3 @@
 MODULE = Cell
-SRCFILES = CellMain
+SRCFILES = CellMain ClusterMain
 HFILES := Cell CellIter

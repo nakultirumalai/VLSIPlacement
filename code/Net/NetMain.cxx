@@ -8,6 +8,7 @@ Net::Net()
   NetSetDriverCount(0);
   NetSetLoadCount(0);
   NetSetIsUnderCluster(false);
+  NetSetIsHidden(false);
 }
 
 Net::Net(int id)
@@ -18,6 +19,7 @@ Net::Net(int id)
   NetSetDriverCount(0);
   NetSetLoadCount(0);
   NetSetIsUnderCluster(false);
+  NetSetIsHidden(false);
 }
 
 Net::Net(int id, const string& Name)
@@ -29,6 +31,7 @@ Net::Net(int id, const string& Name)
   NetSetDriverCount(0);
   NetSetLoadCount(0);
   NetSetIsUnderCluster(false);
+  NetSetIsHidden(false);
 }
 
 void 
@@ -68,9 +71,15 @@ Net::NetSetLoadCount(unsigned int loadCount)
 }
 
 void
-Net::NetSetIsUnderCluster(const bool & isUnderCluster)
+Net::NetSetIsUnderCluster(const bool &isUnderCluster)
 {
   this->isUnderCluster = isUnderCluster;
+}
+
+void
+Net::NetSetIsHidden(const bool &isHidden)
+{
+  this->isHidden = isHidden;
 }
 
 void
@@ -86,6 +95,40 @@ Net::NetAddPin(const Pin& pinToAdd)
   } else if (pinToAdd.PinGetDirection() == PIN_DIR_OUTPUT) {
     outPins[Name] = (Pin *) &pinToAdd;
     this->driverCount++;
+  }
+}
+
+void
+Net::NetRemovePin(const Pin& pinToRemove)
+{
+  string Name = pinToRemove.PinGetName();
+  
+  _KEY_EXISTS(Pins, Name) {
+    Pins.erase(Name);
+    this->pinCount--;
+  } else {
+    string assertString = "Cannot find pin " + Name 
+      + " on net " + this->name;
+    _ASSERT_TRUE(assertString);
+  }
+  if (pinToRemove.PinGetDirection() == PIN_DIR_INPUT) {
+    _KEY_EXISTS(inPins, Name) {
+      inPins.erase(Name);
+    } else {
+      string assertString = "Cannot find pin " + Name 
+	+ " on net " + this->name;
+      _ASSERT_TRUE(assertString);
+    }
+    this->loadCount--;
+  } else if (pinToRemove.PinGetDirection() == PIN_DIR_OUTPUT) {
+    _KEY_EXISTS(outPins, Name) {
+      outPins.erase(Name);
+    } else {
+      string assertString = "Cannot find output pin " + Name 
+	+ " on net " + this->name;
+      _ASSERT_TRUE(assertString);
+    }
+    this->driverCount--;
   }
 }
 
@@ -129,6 +172,12 @@ bool
 Net::NetIsUnderCluster(void)
 {
   return (this->isUnderCluster);
+}
+
+bool
+Net::NetIsHidden(void)
+{
+  return (this->isHidden);
 }
 
 map<string, Pin*>& Net::NetGetPins(void)

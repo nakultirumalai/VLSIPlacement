@@ -47,3 +47,35 @@ Design::DesignPrintTerminals(uint numTerminals)
     count++;
   } DESIGN_END_FOR;
 }
+
+void
+printCell(Cell *cellPtr)
+{
+  cout << (*cellPtr).CellGetName() << endl;
+}
+
+void
+Design::printNumTopCells(void)
+{
+  uint count;
+  string cellName;
+  Cell *cellPtr;
+  
+  count = 0;
+  DESIGN_FOR_ALL_CELLS((*this), cellName, cellPtr) {
+    count++;
+  } DESIGN_END_FOR;
+  cout << count << endl;
+}
+
+void
+Design::printNumHiddenCells(void)
+{
+  cout << DesignHiddenCells.size() << endl;
+}
+
+void
+Design::printNumClusterCells(void)
+{
+  cout << DesignClusters.size() << endl;
+}

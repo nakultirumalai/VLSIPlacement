@@ -1,4 +1,5 @@
 # include <Plot.h>
+
 Plot::Plot()
 {
 }
@@ -112,7 +113,7 @@ Plot::PlotAddCell(Cell &thisCell)
   top = bot + thisCell.CellGetHeight();
 
   Rect CellRect(left, bot, right, top);
-  
+  CellRect.RectSetLabel(thisCell.CellGetName());
   normalRects.push_back(CellRect);
 }
 
@@ -172,6 +173,34 @@ Plot::PlotAddBin(Bin &thisBin)
   BinRect.RectSetLabelPos(RIGHT_TOP);
 
   bins.push_back(BinRect);
+}
+
+void
+Plot::PlotAddPin(Pin &thisPin)
+{
+  Cell &parentCell = thisPin.PinGetParentCell();
+  double x, y, radius;
+
+  x = parentCell.CellGetXpos() + thisPin.PinGetXOffset();
+  y = parentCell.CellGetYpos() + thisPin.PinGetYOffset();
+  
+  Circle circle(x, y, 1.5);
+  
+  circles.push_back(circle);
+}
+
+void
+Plot::PlotAddHighlightedPin(Pin &thisPin)
+{
+  Cell &parentCell = thisPin.PinGetParentCell();
+  double x, y, radius;
+
+  x = parentCell.CellGetXpos() + thisPin.PinGetXOffset();
+  y = parentCell.CellGetYpos() + thisPin.PinGetYOffset();
+  
+  Circle circle(x, y, 5.0);
+  
+  highlightedCircles.push_back(circle);
 }
 
 void
@@ -327,7 +356,21 @@ Plot::PlotWriteOutput(void)
     myLine.LineWriteOutput(plotOpFile);
   } END_FOR;
 
-  
+  plotOpFile << "########################################################" << endl;
+  plotOpFile << "# CIRCLES WILL BE PLOTTED HERE                         #" << endl;  
+  plotOpFile << "########################################################" << endl;
+
+  Circle myCircle;
+  VECTOR_FOR_ALL_ELEMS(circles, Circle, myCircle) {
+    myCircle.CircleSetStyle(REGULAR_PIN);
+    myCircle.CircleWriteOutput(plotOpFile);
+  } END_FOR;
+
+  VECTOR_FOR_ALL_ELEMS(highlightedCircles, Circle, myCircle) {
+    myCircle.CircleSetStyle(HIGHLIGHTED_PIN);
+    myCircle.CircleWriteOutput(plotOpFile);
+  } END_FOR;
+
   plotOpFile << "plot[" << minx << ":" << maxx << "][" << miny << ":" << maxy << "]" 
 	     << " '-' w l lt 3" << endl;
   plotOpFile << "# draw the outer chip boundary #" << endl;
@@ -345,10 +388,34 @@ Plot::PlotWriteOutput(void)
   plotOpFile.close();
 }
 
+
+
 string 
 LineGetStyleString(Line &thisLine)
 {
   return (" lt 2");
+}
+
+string 
+CircleGetStyleString(Circle &thisCircle)
+{
+  lineStyle circleStyle;
+  string styleString;
+
+  circleStyle = thisCircle.CircleGetStyle();
+  switch (circleStyle) {
+  case REGULAR_PIN: 
+    styleString = "fs empty border lc rgb \"dark-green\"";
+    break;
+  case HIGHLIGHTED_PIN:
+    styleString = "fs solid 1.0 fc rgb \"red\"";
+    break;
+  default: 
+    styleString = "fs empty border lc rgb \"blue\"";
+    break;
+  };
+  
+  return (styleString);
 }
 
 string 
@@ -389,4 +456,3 @@ RectGetStyleString(Rect &thisRect)
   
   return (styleString);
 }
-

@@ -70,17 +70,22 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   if (!fileExists(DesignCellDelaysFileName)) {
     DesignCellDelaysFileName = "";
   }
+  DesignPathDelaysFileName = fullDesignPath + DesignName + DESIGN_PATH_DELAYS_FILE_EXT;
+  if (!fileExists(DesignPathDelaysFileName)) {
+    DesignPathDelaysFileName = "";
+  }
 
   this->Name = DesignName;
   DesignReadRows();
   DesignReadCells();
   DesignReadMapFile();
   DesignReadNets();
-  DesignReadCellPlacement();
+  DesignReadCellPlacement(false);
   DesignReadCmdsFile();
   DesignReadPinsMapFile();
   DesignReadCellDelaysFile();
   //  DesignShiftChipToZeroZero();
+  // DesignReadPathDelays();
   DesignSetVarsPostRead();
   DesignFile.close();
 }
@@ -433,7 +438,7 @@ Design::DesignReadRows()
 }
 
 void
-Design::DesignFileReadOneFixedCell(ifstream &file)
+Design::DesignFileReadOnePlacedCell(ifstream &file, bool skipFixed)
 {
   string line;
   string cellName, orient, fixed;
@@ -452,9 +457,6 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
     stream >> orient;
     stream >> orient;
 
-    if (cellName == "p1" || cellName == "p10") {
-      cout << "break here";
-    }
     cellFixed = false;
     if (stream >> fixed) {
       if (fixed == "/FIXED") {
@@ -477,18 +479,20 @@ Design::DesignFileReadOneFixedCell(ifstream &file)
       orientation = getOrientationFromStr(orient);
     }
     (*thisCell).CellSetOrientation(orientation);
-    (*thisCell).CellSetIsFixed(cellFixed);
-    if ((*thisCell).CellIsTerminal() && !cellFixed) {
-      (*thisCell).CellSetIsPort(true);
-    }
-    if (cellFixed) {
-      NumFixedCells++;
+    if (!skipFixed) {
+      (*thisCell).CellSetIsFixed(cellFixed);
+      if ((*thisCell).CellIsTerminal() && !cellFixed) {
+	(*thisCell).CellSetIsPort(true);
+      }
+      if (cellFixed) {
+	NumFixedCells++;
+      }
     }
   }
 }
 
 void
-Design::DesignFileReadFixedCells(ifstream& file)
+Design::DesignFileReadPlacedCells(ifstream& file, bool skipFixed)
 {
   string Property, Value;
   unsigned int numCells;
@@ -501,12 +505,12 @@ Design::DesignFileReadFixedCells(ifstream& file)
   }
   numCells = (*this).DesignGetNumCells();
   for (idx = 0; idx < numCells; idx++) {
-    DesignFileReadOneFixedCell(file);
+    DesignFileReadOnePlacedCell(file, skipFixed);
   }
 }
 
 void 
-Design::DesignReadCellPlacement()
+Design::DesignReadCellPlacement(bool skipFixed)
 {
   int numFixed;
   string Msg;
@@ -514,7 +518,10 @@ Design::DesignReadCellPlacement()
   _STEP_BEGIN("Read fixed cells");
   DesignOpenFile(DesignPlFileName);
   DesignFileReadHeader(DesignFile);
-  DesignFileReadFixedCells(DesignFile);
+  if (!skipFixed) {
+    NumFixedCells = 0;
+  }
+  DesignFileReadPlacedCells(DesignFile, skipFixed);
   
   Msg += "Loaded " + getStrFromInt(NumFixedCells) + " cells positions";
   _STEP_END("Read fixed cells");
@@ -711,4 +718,70 @@ Design::DesignReadCellDelaysFile()
     DesignFileReadCellDelays(DesignFile);
   }
   _STEP_END("Read Cell Delays file");
+}
+
+void 
+Design::DesignFileReadPathDelays(ifstream &file)
+{
+  Cell *thisCell;
+  string line, inpParam;
+  string cellName, pinName;
+  double slack;
+  char *endPtr;
+  uint slashPos;
+  uint numPaths;
+  std::size_t pos;
+
+  numPaths = 0;
+  while (!file.eof()) {
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    if (line.find('#') == 0) {
+      continue;
+    }
+    if (numPaths == MAX_PATHS) {
+      break;
+    }
+    istringstream stream(line, istringstream::in);
+
+    /* Create a new path */
+    Path *newPath = new Path();
+
+    while (1) {
+      stream >> inpParam;
+      if (isDouble(inpParam)) {
+	slack = strtod(inpParam.data(), &endPtr);
+	(*newPath).PathSetSlack(slack);
+	break;
+      }
+      pos = inpParam.find("/");
+      if (pos == string::npos) {
+	/* Continue with the outer while loop if it is not a cell */
+	continue;
+      }
+      /* Get the position of the "/" in the cellName/pinName */
+      cellName = inpParam.substr(0, pos);
+      pinName = inpParam.substr(pos+1);
+      thisCell = DesignGetNode(cellName);
+      (*newPath).PathAddCellPinPair(thisCell, pinName);
+    }
+    DesignAddPath(newPath);
+    numPaths++;
+  }
+}
+
+void
+Design::DesignReadPathDelays()
+{
+  _STEP_BEGIN("Read Path Delays");
+  if (DesignPathDelaysFileName == "") {
+    cout << "Path Delays file cannot be found.. Skipping" << endl;
+  } else {
+    DesignOpenFile(DesignPathDelaysFileName);
+    DesignFileReadPathDelays(DesignFile);
+    cout << "Read " << DesignGetNumPaths() << " paths" << endl;
+  }
+  _STEP_END("Read Path Delays");
 }

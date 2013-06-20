@@ -8,6 +8,7 @@
 # define NODE_FLAG_IS_TOP 0x1
 # define NODE_FLAG_IS_CLUSTER_CHILD 0x1 << 1
 # define NODE_FLAG_IS_CLUSTER_PARENT 0x1 << 2
+# define NODE_FLAG_IS_INVALID 0x2 << 3
 
 using namespace std;
 
@@ -34,7 +35,8 @@ class Node {
   unsigned int annIdx1;
   unsigned int annIdx2;
   unsigned int annIdx3;
-  
+  /* Boolean corresponding to whether the node is a cluster or not */
+  bool isCluster;
   /* Actual data that corresponds to the given node */
   void *data;
 
@@ -45,6 +47,8 @@ class Node {
   vector<unsigned int>outEdges;
 
   /* Get functions */
+  /* Check if node is a cluster */
+  bool NodeIsCluster(void);
   /* Get the data corresponding to the node */
   void* NodeGetData(void);
   /* Get the index corresponding to the node */
@@ -69,8 +73,12 @@ class Node {
   bool NodeIsClusterChild(void);
   /* Check if node is a parent of a cluster */
   bool NodeIsClusterParent(void);
+  /* Check if node is invalid */
+  bool NodeIsInvalid(void);
 
   /* Set functions */
+  /* Set if a node is a cluster or not */
+  void NodeSetIsCluster(bool);
   /* Set the data field of the node */
   void NodeSetData(void *);
   /* Set the index of the node */
@@ -92,6 +100,11 @@ class Node {
   void NodeSetIsTop(void);
   /* Clear the flag that indicates node is top level */
   void NodeClearIsTop(void);
+
+  /* Set a flag to indicate that the node is invalid: Required for BestChoice clustering */
+  void NodeSetIsInvalid(void);
+  /* Clear the flag that indicates that the node is invalid: Required for BestChoice clustering */
+  void NodeClearIsInvalid(void);
 
   /* Set a flag that the node is a child of a cluster */
   void NodeSetIsClusterChild(void);

@@ -122,16 +122,62 @@ PhysRow::PhysRowGetSiteOrientation(void)
   return (siteOrient);
 }
 
+string
+PhysRow::PhysRowGetSiteOrientationStr(void)
+{
+  string rtv;
+
+  switch (this->siteOrient) {
+  case N: rtv = "N"; break;
+  case E: rtv = "E"; break;
+  case S: rtv = "S"; break;
+  case W: rtv = "W"; break;
+  case FN: rtv = "FN"; break;
+  case FE: rtv = "FE"; break;
+  case FS: rtv = "FS"; break;
+  case FW: rtv = "FW"; break;
+  default: rtv = "Unknown"; break;
+  };
+
+  return (rtv);
+}
+
 siteSymmetry
 PhysRow::PhysRowGetSiteSymmetry(void)
 {
   return siteSym;
 }
 
+string
+PhysRow::PhysRowGetSiteSymmetryStr(void)
+{
+  string rtv;
+
+  switch (siteSym) {
+  case NO_SYMMETRY: rtv = "1"; break;
+  case YES_SYMMETRY: rtv = "Y"; break;
+  default: rtv = "Unknown"; break;
+  };
+  
+  return (rtv);
+}
+
 rowOrientation
 PhysRow::PhysRowGetType(void)
 {
   return rowType;
+}
+
+string
+PhysRow::PhysRowGetTypeStr(void)
+{
+  string rtv;
+  switch (rowType) {
+  case VERTICAL: rtv = "Vertical"; break;
+  case HORIZONTAL: rtv = "Horizontal"; break;
+  };
+
+  return (rtv);
 }
 
 unsigned int

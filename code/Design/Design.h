@@ -14,9 +14,14 @@
 # include <mosek.h>
 # include <TimingModels.h>
 # include <CellSpread.h>
+# include <Path.h>
 # include <Bin.h>
 # include <Plot.h>
 # include <Env.h>
+# include <ConjGradSolver.h>
+# include <PriorityQueue.h>
+
+# define MAX_PATHS 1000000
 
 /*******************************************************************************
   Bookshelf format definitions
@@ -34,6 +39,7 @@
 # define DESIGN_CMDS_FILE_EXT ".cmds"
 # define DESIGN_PINS_MAP_FILE_EXT ".pins.map"
 # define DESIGN_CELL_DELAYS_FILE_EXT ".nodes.delays"
+# define DESIGN_PATH_DELAYS_FILE_EXT ".timing_paths"
 
 /*******************************************************************************
   Number of lines in the header of each type of file
@@ -103,6 +109,25 @@
 # define CLUSTER_NAME_PREFIX "oClust"
 
 /*******************************************************************************
+  Define the reference number to be considered to classify a net as high fanout
+*******************************************************************************/
+# define HIGH_FANOUT 20
+
+/*******************************************************************************
+  DEFINITIONS FOR FORCES
+*******************************************************************************/
+# define FORCE_DIR_NO_FORCE 0
+# define FORCE_DIR_FIRST_QUAD 1
+# define FORCE_DIR_SECOND_QUAD 2
+# define FORCE_DIR_THIRD_QUAD 3
+# define FORCE_DIR_FOURTH_QUAD 4
+# define FORCE_DIR_RIGHT 5
+# define FORCE_DIR_LEFT 6
+# define FORCE_DIR_TOP 7
+# define FORCE_DIR_BOT 8
+# define MAX_DBL 1000000000000000
+
+/*******************************************************************************
   Type definitions for the design class
 *******************************************************************************/
 typedef enum {
@@ -113,21 +138,92 @@ typedef enum {
   TOTAL_CLUSTERING_TECHNIQUES,
 } clusteringType;
 
+/*******************************************************************************
+  A class for storing object pair information for the clustering algorithm
+*******************************************************************************/
+template<class T>
+class objPairScore {
+ private: 
+  double score;
+  T obj1, obj2;
+ public:
+  objPairScore() 
+  {
+  }
+  objPairScore(T obj1,T obj2, double score) 
+  {
+    this->obj1 = obj1;
+    this->obj2 = obj2;
+    this->score = score;
+  }
+  ~objPairScore() {
+  }
+  double GetScore() const
+  {
+    return score;
+  }
+  double GetObjs(T &obj1, T &obj2) 
+  {
+    obj1 = this->obj1;
+    obj2 = this->obj2;
+  }
+};
+
+class objPairScoreCompare {
+ public:
+  bool operator() (const objPairScore<Cell *> &pair1,
+                   const objPairScore<Cell *> &pair2) const
+  {
+    return (pair1.GetScore() < pair2.GetScore());
+  }
+};
+
+class objPairScoreCompareUint {
+ public:
+  bool operator() (const objPairScore<uint> &pair1,
+                   const objPairScore<uint> &pair2) const
+  {
+    return (pair1.GetScore() < pair2.GetScore());
+  }
+};
+
+class scoreCmpType {
+ public:
+  bool operator() (const pair<Cell *, double> &pair1,
+                   const pair<Cell *, double> &pair2) const
+  {
+    double score1 = pair1.second;
+    double score2 = pair2.second;
+
+    return (score1 < score2);
+  }
+};
+
+class scoreCmpTypeUint {
+ public:
+  bool operator() (const pair<uint, double> &pair1,
+                   const pair<uint, double> &pair2) const
+  {
+    return (pair1.second < pair2.second);
+  }
+};
+
 class Design {
  private:
   Env DesignEnv;
-
-  map<string, Cell*> DesignClusters;
   map<unsigned int, unsigned int>RowHeights;
-
   HyperGraph *DesignGraphPtr;
   unsigned int NumCells;
+  unsigned int NumClustersSeenSofar;
+  unsigned int NumClusters;
   unsigned int NumStdCells;
   unsigned int NumMacroCells;
   unsigned int NumFixedCells;
   unsigned int NumTerminalCells;
-  unsigned int NumTopCells;
+  unsigned int NumHiddenCells;
   unsigned int NumNets;
+  unsigned int NumPins;
+  unsigned int NumPaths;
   unsigned int NumTopNets;
   unsigned int NumPhysRows;
   unsigned int singleRowHeight;
@@ -145,6 +241,7 @@ class Design {
   string DesignCmdsFileName;
   string DesignPinsMapFileName;
   string DesignCellDelaysFileName;
+  string DesignPathDelaysFileName;
 
   /* Stores clock period in nanoseconds */
   double clockPeriod;
@@ -164,14 +261,27 @@ class Design {
 
   void DesignSetVarsPostRead(void);
 
+  /* Add functions */
   void DesignInit(void);
   void DesignFileReadHeader(ifstream&);
-  void DesignProcessProperty(ifstream&, string &, 
-			     string &);
+  void DesignProcessProperty(ifstream&, string &, string &);
   void DesignAddOneCellToDesignDB(Cell *);
+  void DesignAddOneClusterToDesignDB(Cell *);
   void DesignAddOneNetToDesignDB(Net *, double);
   void DesignAddOnePhysRowToDesignDB(PhysRow *);
   void DesignAddDelayArc(string, string, string, double);
+  void DesignAddPath(Path *);
+
+  /* Erasing from the design database */
+  void DesignRemoveOneClusterFromDesignDB(Cell *);
+
+  /* Hide-Unhide net functions */
+  void DesignHideNet(Net *);
+  void DesignUnhideNet(Net *);
+
+  /* Hide-Unhide cell functions */
+  void DesignHideCell(Cell *);
+  void DesignUnhideCell(Cell *);
 
   void DesignFileReadOneNode(ifstream &);
   void DesignFileReadNodes(ifstream &);
@@ -180,12 +290,13 @@ class Design {
   void DesignFileReadOneRow(ifstream &);
   void DesignFileReadNets(ifstream &);
   void DesignFileReadRows(ifstream &);
-  void DesignFileReadOneFixedCell(ifstream &file);
-  void DesignFileReadFixedCells(ifstream& file);
+  void DesignFileReadOnePlacedCell(ifstream &file, bool skipFixed);
+  void DesignFileReadPlacedCells(ifstream& file, bool skipFixed);
   void DesignFileReadCellMap(ifstream& file);
   void DesignFileReadCmds(ifstream& file);
   void DesignFileReadPinsMap(ifstream& file);
   void DesignFileReadCellDelays(ifstream& file);
+  void DesignFileReadPathDelays(ifstream& file);
 
   void DesignOpenFile(string);
   void DesignCloseFile(void);
@@ -210,7 +321,11 @@ class Design {
 
  public:
   map<string, Cell*> DesignCells;
+  map<string, Cell*> DesignHiddenCells;
+  map<string, Cell*> DesignClusters;
   map<string, Net*> DesignNets;
+  map<string, Net*> DesignHiddenNets;
+  vector<Path*> DesignPaths;
   vector<PhysRow*> DesignPhysRows;
   vector<Bin *> DesignBins;
   vector<Cell *> cellsToSolve;
@@ -224,10 +339,11 @@ class Design {
   void DesignReadMapFile();
   void DesignReadNets();
   void DesignReadRows();
-  void DesignReadCellPlacement();
+  void DesignReadCellPlacement(bool skipFixed);
   void DesignReadCmdsFile();
   void DesignReadPinsMapFile();
   void DesignReadCellDelaysFile();
+  void DesignReadPathDelays();
   void DesignCreateBins(uint, uint);
   void DesignCreateBins(void);
 
@@ -235,8 +351,10 @@ class Design {
 
   map<string, Net*>& DesignGetNets(void);
   map<string, Cell*>& DesignGetCells(void);
+  map<string, Cell*>& DesignGetClusters(void);
   vector<PhysRow*>& DesignGetRows(void);
   vector<Bin*>& DesignGetBins(void);
+  vector<Path*>& DesignGetPaths(void);
 
   void DesignSetName(string);
   void DesignReadDesign(string, string);
@@ -245,11 +363,18 @@ class Design {
 
   void DesignSetGraph(HyperGraph& thisGraph);
   HyperGraph& DesignGetGraph(void);
+  void DesignCreateGraph(HyperGraph& thisGraph);
+  void DesignBuildGraph(void);
+  void DesignDeleteGraph(void);
+  void DesignRebuildGraph(void);
 
   int DesignGetSingleRowHeight();
   unsigned int DesignGetNumCells(void);
+  unsigned int DesignGetNumClusters(void);
+  unsigned int DesignGetNumClustersSeenSoFar(void);
   unsigned int DesignGetNumTopCells(void);
   unsigned int DesignGetNumNets(void);
+  unsigned int DesignGetNumPaths(void);
   unsigned int DesignGetNumTopNets(void);
   unsigned int DesignGetNumFixedCells(void);
   unsigned int DesignGetNumTerminalCells(void);
@@ -272,17 +397,51 @@ class Design {
   /* Solver functions */
   void DesignSolveForAllCellsMosekIter(void);
   void DesignSolveForAllCellsConjGradIter(void);
+  void DesignSolveForCellsNoHyperGraph(vector<Cell *> &cellsToSolve);
   void DesignSolveForAllCellsConjGradWnLibIter(void);
   void DesignSetCellsToSolve(vector<Cell *>);
 
+  /* Calling internal and external placers */
+  void DesignRunExternalPlacer(EnvGlobalPlacerType);
+  void DesignRunInternalPlacer(EnvSolverType);
+  int DesignRunNTUPlace(string, string);
+  int DesignRunFastPlace(string, string);
+  int DesignRunMPL6(string, string);
+
   /* Clustering functions */
-  void DesignClusterCells(HyperGraph&, clusteringType);
-  void DesignCollapseCluster(Cell& MasterCell);
+  //void DesignClusterCells(HyperGraph&, clusteringType);
+  //  void DesignCollapseCluster(Cell& MasterCell);
   bool DesignDoDefaultCluster(HyperGraph&);
-  bool DesignDoFCCluster(HyperGraph&);
-  bool DesignDoNetCluster(HyperGraph&);
-  bool DesignDoESCCluster(HyperGraph&);
-  
+  bool DesignDoTimingDrivenCluster(HyperGraph&);
+  bool DesignDoBestChoiceClustering(HyperGraph&);
+  bool DesignDoFirstChoiceClustering(HyperGraph&);
+  bool DesignDoClusterTest(void);
+
+  //  bool DesignDoFCCluster(HyperGraph&);
+  //  bool DesignDoNetCluster(HyperGraph&);
+  //  bool DesignDoESCCluster(HyperGraph&);
+  void DesignCoarsenNetlist(void);
+  void DesignPlotCluster(string plotTitle, string plotFileName, Cell *clusterCell, 
+			 vector<Cell *> &boundaryCells, vector<uint> &rowNum, 
+			 vector<uint> &xPosInRow, vector<Pin*> &clusterPins);
+  void DesignGetClusterDimensions(vector<Cell *> &listOfCells, uint &resultWidth, 
+				  uint &resultHeight);
+  void DesignAssignPinOffSets(Cell *clusterCell, map<Cell *, uint> &boundaryCells,
+			      vector<Pin *> &clusterCellPins, map<Pin *, Pin*> &pinMap,
+			      vector<uint> &rowNum, vector<uint> &xPosInRow);
+  void DesignExpandCluster(Cell *clusterCell, uint &resultHeight, uint &resultWidth);
+  bool DesignPlaceCellsInCluster(vector<Cell *> &boundaryCellVec, vector<uint> &, vector<uint> &,
+				 uint resultHeight, uint resultWidth);
+  bool DesignPlaceCellsInClusterNoLegal(vector<Cell*>&, vector<unsigned int>&, vector<unsigned int>&, 
+					uint, uint);
+  void DesignPlaceCellsInClusterInCenter(vector<Cell *> &boundaryCellVec, vector<Pin *> &clusterCellPins,
+					 vector<uint> &rowNum, vector<uint> &xPosInRow,
+					 uint resultHeight, uint resultWidth);
+
+  Cell* DesignClusterCells(vector<Cell *> &listOfCells, bool, bool);
+  void DesignSimpleCollapseCluster(Cell*, vector<Net*>&, vector<Cell*>&);
+  void DesignUnclusterCell(Cell*, bool);
+
   /* Constraint functions */
   void DesignSetClockPeriod(double);
   double DesignGetClockPeriod(void);
@@ -331,17 +490,31 @@ class Design {
 				     double&, double&);
   void DesignPlotData(string, string);
 
+  /* Computation of force on Cell */
+  void DesignComputeForceOnCell(Cell *, double &, double &, double &,
+				char &, double &, double &, double &, double &,
+				uint , uint , uint , uint, map<Net *, uint>&);
+  void DesignGetBoundaryPoints(double, double, double,
+			       double &, double &, char &, double &, double &, double &,
+			       double &, double &, uint, uint , uint , uint ,
+			       double &, double &);
+
 
   /* DEFINING AN EXTENSIVE LIST OF DEBUG FUNCTIONS THAT 
      WILL BE HELPFUL */
   void DesignPrintPorts(uint);
   void DesignPrintTerminals(uint);
+  void printNumTopCells(void);
+  void printNumHiddenCells(void);
+  void printNumClusterCells(void);
 };
 
 extern void DesignCreateGraph(Design&, HyperGraph&);
 extern void DesignCollectStats(Design& myDesign);
 extern void DesignWriteStats(Design& myDesign);
 extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
-extern void DesignWriteNodes(Design &myDesign, string fname);
-extern void DesignWriteBookShelfOutput(Design& myDesign);
+extern void DesignWriteOutputPlacement(Design& myDesign);
+extern void DesignWriteBookShelfOutput(Design& myDesign, string opName);
+extern vector<Cell*> DesignGetConnectedCells(HyperGraph &, Cell *);
+
 #endif

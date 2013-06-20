@@ -4,15 +4,18 @@ MAKEFLAGS += -j1
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 
-LIBSOOQP= -looqpgensparse -looqpsparse  -looqpgondzio -looqpmehrotra -looqpbase -lblas /usr/local/lib/libma27.a -lgfortran
+LIBSOOQP= -lblas /usr/local/lib/libma27.a -lgfortran -lprofiler
+
 LIBQUADPROG= #-lQuadProgpp
 LIBMOSEK= -lmosek64 -pthread
 
 LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
 
 SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData \
-	Flags Legalize TimingModels Bin CellSpread \
-	Plot ConjGrad Env
+	Flags Legalize TimingModels Bin \
+	Plot ConjGrad Env Path 
+# Removed modules 
+# CellSpread AnalyticalSolve		
 
 OBJFILES:= $(SRCDIRS)
 DEBUG = 
@@ -21,7 +24,7 @@ ifeq ($(MAKECMDGOALS), debug)
 	OBJFILES:= $(SRCDIRS:=-g)
 	DEBUG = debug
 else
-	CFLAGS= -Wuninitialized -O3
+	CFLAGS= -Wuninitialized #-pg
 endif
 OBJFILES:= $(OBJFILES:=.o)
 OBJFILES:= $(addprefix $(OBJDIR)/, $(OBJFILES))
@@ -52,7 +55,7 @@ COMPILE_ALL: $(SRCDIRS)
 	done	
 
 GEN_EXEC: main.cxx $(OBJFILES) 
-	$(CC) $(CFLAGS) $(LFLAGS) -pg $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
+	$(CC) $(CFLAGS) $(LFLAGS) $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
 
 GEN_EXEC-g: main.cxx $(OBJFILES) 
 	$(CC) $(CFLAGS) -g $(LFLAGS) $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)

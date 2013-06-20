@@ -128,9 +128,15 @@ Cell::CellSetIsSequential(const bool & isSequential)
 }
 
 void 
-Cell::CellSetIsPort(const bool & isPort)
+Cell::CellSetIsPort(const bool &isPort)
 {
   this->isPort = isPort;
+}
+
+void 
+Cell::CellSetIsHidden(const bool &isHidden)
+{
+  this->isHidden = isHidden;
 }
 
 void
@@ -366,6 +372,12 @@ Cell::CellIsPort(void)
 }
 
 bool
+Cell::CellIsHidden(void)
+{
+  return (isHidden);
+}
+
+bool
 Cell::CellXIsLegal(void)
 {
   return isXLegal;
@@ -458,6 +470,7 @@ Cell::Cell()
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -479,6 +492,7 @@ Cell::Cell(int Height, int Width)
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -501,6 +515,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -524,6 +539,7 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -544,6 +560,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -566,6 +583,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -589,6 +607,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -610,6 +629,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -632,6 +652,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);
@@ -654,6 +675,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
+  CellSetIsHidden(false);
   CellSetNumInPins(0);
   CellSetNumOutPins(0);
   CellSetClusterLevel(0);

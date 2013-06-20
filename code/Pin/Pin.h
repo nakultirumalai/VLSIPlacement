@@ -21,6 +21,7 @@ class Pin {
   Cell *ParentCell;
   Net *ConnectedNet;
   bool isClock;
+  bool isHidden;
   string libPinName;
   string Name;
  public:
@@ -58,6 +59,7 @@ class Pin {
   void PinSetYOffset(int);
   void PinSetDirection(char);
   void PinSetIsClock(const bool&);
+  void PinSetIsHidden(const bool&);
 
   /* Get functions */
   int PinGetId(void);
@@ -69,6 +71,7 @@ class Pin {
   Cell& PinGetParentCell(void);
   Net& PinGetNet(void);
   bool PinIsClock(void);
+  bool PinIsHidden(void);
 
   /* Other functions */
   void Connect(const Net&);

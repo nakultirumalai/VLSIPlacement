@@ -1,7 +1,7 @@
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
 
-CFLAGS_LOCAL = $(CFLAGS) -c -Wall
+CFLAGS_LOCAL = $(CFLAGS) -c 
 
 include src.mk
 

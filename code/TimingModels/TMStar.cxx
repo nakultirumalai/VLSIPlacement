@@ -213,7 +213,4 @@ getObjectiveStarModelXY(Design &myDesign, HyperGraph &myGraph,
       } NET_END_FOR;
     }
   } HYPERGRAPH_END_FOR;
-  cout << endl;
-  cout << "Net statistics: CLIQUE NETS: " << numClique << " STAR NETS: " << numStar << endl;
-  cout << "% : CLIQUE: " << (numClique * 100)/(numClique + numStar) << " STAR: " << (numStar * 100)/(numClique + numStar) << endl;
 }

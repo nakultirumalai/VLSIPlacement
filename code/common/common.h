@@ -20,7 +20,9 @@
 # include <iomanip>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/utsname.h>
 # include <unistd.h>
+# include <google/profiler.h>
 
 # define NIL(type) (type)0
 
@@ -86,6 +88,9 @@ extern uint starModelUpgradeNumPins;
 # define _KEY_EXISTS(mapName, mapKey)	     \
   if (mapName.find(mapKey) != mapName.end()) \
 
+# define _KEY_DOES_NOT_EXIST(mapName, mapKey)	\
+  if (mapName.find(mapKey) == mapName.end())	\
+
 # define _KEY_EXISTS_WITH_VAL(mapName, mapKey, mapItrVal) \
   if ((mapItrVal = mapName.find(mapKey)) != mapName.end()) \
 
@@ -130,5 +135,13 @@ string getCurrentTime(void);
 void swap(uint& a, uint &b);
 bool fileExists(const string &);
 bool dirExists(const string &);
+void displayHeartBeat(void);
+bool isDouble(string);
+
+void makeDir(string dirName);
+
+string getPlatformString(void);
+string getUserName(void);
+string getHostName(void);
 
 #endif

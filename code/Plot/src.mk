@@ -1,3 +1,3 @@
 MODULE = Plot
-SRCFILES = PlotMain Line Rect
+SRCFILES = PlotMain Line Rect Circle
 HFILES := Plot

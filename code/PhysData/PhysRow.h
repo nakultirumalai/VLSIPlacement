@@ -92,8 +92,11 @@ class PhysRow {
   /* Get functions */
   int PhysRowGetCoordinate(void);
   objOrient PhysRowGetSiteOrientation(void);
+  string PhysRowGetSiteOrientationStr(void);
   siteSymmetry PhysRowGetSiteSymmetry(void);
+  string PhysRowGetSiteSymmetryStr(void);
   rowOrientation PhysRowGetType(void);
+  string PhysRowGetTypeStr(void);
   unsigned int PhysRowGetHeight(void);
   unsigned int PhysRowGetSiteWidth(void);
   unsigned int PhysRowGetSiteSpacing(void);

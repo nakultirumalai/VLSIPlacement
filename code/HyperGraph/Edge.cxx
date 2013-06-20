@@ -30,9 +30,19 @@ void Edge::EdgeSetWeight(double weight)
   this->weight = weight;
 }
 
+void Edge::EdgeSetIsHidden(bool hidden)
+{
+  this->isHidden = hidden;
+}
+
 vector<unsigned int>& Edge::EdgeGetNodes(void)
 {
   return nodeSet;
+}
+
+bool Edge::EdgeIsHidden(void)
+{
+  return (this->isHidden);
 }
 
 Edge::Edge() 
@@ -40,6 +50,7 @@ Edge::Edge()
   EdgeSetIdx(0);
   EdgeSetObject(NIL(void*));
   EdgeSetWeight(0.0);
+  EdgeSetIsHidden(false);
 }
 
 Edge::Edge(void *object)
@@ -47,5 +58,10 @@ Edge::Edge(void *object)
   EdgeSetIdx(0);
   EdgeSetObject(object);
   EdgeSetWeight(0.0);
+  EdgeSetIsHidden(false);
 }
 
+Edge::~Edge()
+{
+
+}

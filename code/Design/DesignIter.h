@@ -7,13 +7,29 @@
 
 /* Macros for iteration over elements of the design */
 
-# define DESIGN_FOR_ALL_CELLS(Design, CellName, CellPtr) \
-  { \
-  map<string, Cell*> DesignCells = Design.DesignGetCells(); \
-  map<string, Cell*>::iterator mapIter; \
+/* Use this iterator if you want to see only the cells which are not 
+   hidden in the design */
+# define DESIGN_FOR_ALL_CELLS(Design, CellName, CellPtr)		\
+  {									\
+  map<string, Cell*> DesignCells = Design.DesignGetCells();		\
+  map<string, Cell*> DesignClusters = Design.DesignGetClusters();	\
+  DesignCells.insert(DesignClusters.begin(), DesignClusters.end());	\
+  map<string, Cell*>::iterator mapIter;					\
   for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
-    CellName = mapIter->first; \
-    CellPtr = mapIter->second;
+  CellName = mapIter->first;						\
+  CellPtr = mapIter->second;						\
+  if ((*CellPtr).CellIsHidden()) continue;
+
+/* Use this iterator if you want to see all the cells in the design */
+# define DESIGN_FOR_ALL_CELLS_HIDDEN(Design, CellName, CellPtr)		\
+  {									\
+  map<string, Cell*> DesignCells = Design.DesignGetCells();		\
+  map<string, Cell*> DesignClusters = Design.DesignGetClusters();	\
+  DesignCells.insert(DesignClusters.begin(), DesignClusters.end());	\
+  map<string, Cell*>::iterator mapIter;					\
+  for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) { \
+  CellPtr = mapIter->second;						\
+  if ((*CellPtr).CellIsHidden()) continue;
 
 # define DESIGN_FOR_ALL_CELLS_ON_TOP(Design, CellName, CellPtr) \
   { \
@@ -32,7 +48,8 @@
   map<string, Net*>::iterator mapIter; \
   for (mapIter = DesignNets.begin(); mapIter != DesignNets.end(); mapIter++) { \
     NetName = (string)mapIter->first; \
-    NetPtr = (Net *)mapIter->second;
+    NetPtr = (Net *)mapIter->second;  \
+    if ((*NetPtr).NetIsHidden()) continue; 
 
 /* Cell pointers for which the filterFunc returns a TRUE value are filtered */
 # define DESIGN_FOR_ALL_STD_CELLS_FILT(Design, CellName, CellPtr, filterFunc)	\
@@ -84,6 +101,13 @@
   uint NumBins = DesignBins.size();              \
   for (BinIdx = 0; BinIdx < NumBins; BinIdx++) { \
     BinPtr = DesignBins[BinIdx];
+
+# define DESIGN_FOR_ALL_PATHS(Design, PathIdx, PathPtr)	\
+  {							\
+  vector<Path*> &DesignPaths = Design.DesignGetPaths();	\
+  uint NumPaths = DesignPaths.size();			\
+  for (PathIdx = 0; PathIdx < NumPaths; PathIdx++) {	\
+  PathPtr = DesignPaths[PathIdx];			
 
 # define DESIGN_END_FOR }}
   

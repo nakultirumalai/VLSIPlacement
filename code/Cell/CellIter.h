@@ -5,7 +5,6 @@
 /* Define the iterators here */
 # define CELL_FOR_ALL_PINS(CellObj, Dir, PinPtr) {	\
   vector<Pin*> CellPins = CellObj.CellGetPins();	\
-  Pin* PinPtr;						\
   for (int n=0; n<CellPins.size(); n++) {		\
     PinPtr = CellPins[n];				\
     if (PinIsPseudo(PinPtr)) continue;			\
@@ -16,7 +15,6 @@
 
 # define CELL_FOR_ALL_PINS_NOFILT(CellObj, Dir, PinPtr) {	\
   vector<Pin*> CellPins = CellObj.CellGetPins();	\
-  Pin* PinPtr;						\
   for (int n=0; n<CellPins.size(); n++) {		\
     PinPtr = CellPins[n];				\
     if (Dir != PIN_DIR_ALL &&				\

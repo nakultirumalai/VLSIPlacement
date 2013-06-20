@@ -3,12 +3,16 @@
 
 /* Macros for iteration over pins and cells of the net */
 
+/* Skip hidden pins and cells */
 # define NET_FOR_ALL_CELLS(Net, CellPtr) \
   {						\
+  Pin *pinPtr;					\
   map<string, Pin*> NetPins = Net.NetGetPins();	\
   map<string, Pin*>::iterator mapIter; \
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
-    Cell &ParentCell = (*((Pin *)(mapIter->second))).PinGetParentCell(); \
+    pinPtr = (Pin*)(mapIter->second);					\
+    if ((*pinPtr).PinIsHidden()) continue;                              \
+    Cell &ParentCell = (*pinPtr).PinGetParentCell();			\
     CellPtr = &ParentCell;
 
 # define NET_FOR_ALL_PINS(Net, PinPtr) \
@@ -16,14 +20,17 @@
   map<string, Pin*> NetPins = Net.NetGetPins();	\
   map<string, Pin*>::iterator mapIter; \
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
-    PinPtr = mapIter->second;
+  PinPtr = mapIter->second;						\
+  if ((*PinPtr).PinIsHidden()) continue;                                
+  
 
 # define NET_FOR_ALL_PINS_DIR(Net, direction, PinPtr)	\
   {								\
   map<string, Pin*> NetPins = Net.NetGetPins(direction);	\
   map<string, Pin*>::iterator mapIter;					\
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
-    PinPtr = mapIter->second;
+  PinPtr = mapIter->second;						\
+  if ((*PinPtr).PinIsHidden()) continue;                                
 
 # define NET_END_FOR }}
   

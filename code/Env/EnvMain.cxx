@@ -15,6 +15,9 @@ Env::Env()
   EnvSetNumNets(0);
   EnvSetUseVarBounds(false);
   EnvSetDumpHessian(false);  /* WATCH: Default value is true */
+  EnvSetDiscreteWidth(true); /* WATCH: Default value is true */
+  EnvSetDiscreteHeight(true); /* WATCH: Default value is true */
+  EnvSetGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
   EnvSetSolverType(DEFAULT_ENV_SOLVER_TYPE);
   EnvSetNetModel(DEFAULT_ENV_NET_MODEL);
   EnvSetToolMode(DEFAULT_ENV_TOOL_MODE);
@@ -22,10 +25,138 @@ Env::Env()
   EnvSetOptType(DEFAULT_ENV_OPT_TYPE);
   EnvSetClusterType(DEFAULT_ENV_CLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
+
+  /* Time related variables */
+  StartTime = 0;
+  NetlistReadTime = 0;
+  HyperGraphBuildTime = 0;
+  ClusteringTime = 0;
+  GlobalPlacementTime = 0;
+  LegalizationTime = 0;
+  ShapeSelectionTime = 0;
+  DetailedPlacementTime = 0;
 }
 
 Env::~Env()
 {
+
+}
+
+void
+Env::EnvSetStartTime(void)
+{
+  this->StartTime = getCPUTime();
+}
+
+double
+Env::EnvGetStartTime(void)
+{
+  return (StartTime);
+}
+
+void
+Env::EnvSetNetlistReadTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+ 
+  NetlistReadTime = currTime - startTime;
+}
+
+double
+Env::EnvGetNetlistReadTime(void)
+{
+  return (this->NetlistReadTime);
+}
+
+void
+Env::EnvSetHyperGraphBuildTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+ 
+  HyperGraphBuildTime = currTime - startTime;
+}
+
+double
+Env::EnvGetHyperGraphBuildTime(void)
+{
+  this->HyperGraphBuildTime;
+}
+
+void
+Env::EnvSetClusteringTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+ 
+  ClusteringTime = currTime - startTime;
+}
+
+double 
+Env::EnvGetClusteringTime(void)
+{
+  return (this->ClusteringTime);
+}
+
+void
+Env::EnvSetGlobalPlacementTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+  
+  GlobalPlacementTime = currTime - startTime;
+}
+
+double 
+Env::EnvGetGlobalPlacementTime(void)
+{
+  return (this->GlobalPlacementTime);
+}
+
+void
+Env::EnvSetLegalizationTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+
+  LegalizationTime = currTime - startTime;
+}
+
+double
+Env::EnvGetLegalizationTime(void)
+{
+  return (this->LegalizationTime);
+}
+
+void
+Env::EnvSetShapeSelectionTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+
+  ShapeSelectionTime = currTime - startTime;
+}
+
+double
+Env::EnvGetShapeSelectionTime(void)
+{
+  return (this->ShapeSelectionTime);
+}
+
+void
+Env::EnvSetDetailedPlacementTime(void)
+{
+  double startTime = EnvGetStartTime();
+  double currTime = getCPUTime();
+
+  DetailedPlacementTime = currTime - startTime;
+}
+
+double
+Env::EnvGetDetailedPlacementTime(void)
+{
+  return (DetailedPlacementTime);
 }
 
 void 
@@ -33,6 +164,7 @@ Env::EnvSetDesignName(string DesignName)
 {
   this->DesignName = DesignName;
 }
+
 string
 Env::EnvGetDesignName(void)
 {
@@ -175,6 +307,42 @@ Env::EnvGetDumpHessian(void)
 }
 
 void 
+Env::EnvSetDiscreteHeight(bool DiscreteHeight)
+{
+  this->DiscreteHeight = DiscreteHeight;
+}
+
+bool 
+Env::EnvGetDiscreteHeight(void)
+{
+  return DiscreteHeight;
+}
+
+void 
+Env::EnvSetDiscreteWidth(bool DiscreteWidth)
+{
+  this->DiscreteWidth = DiscreteWidth;
+}
+
+bool 
+Env::EnvGetDiscreteWidth(void)
+{
+  return DiscreteWidth;
+}
+
+void 
+Env::EnvSetGlobalPlacerType(EnvGlobalPlacerType GlobalPlacerType)
+{
+  this->GlobalPlacerType = GlobalPlacerType;
+}
+
+EnvGlobalPlacerType
+Env::EnvGetGlobalPlacerType(void)
+{
+  return GlobalPlacerType;
+}
+
+void 
 Env::EnvSetSolverType(EnvSolverType SolverType)
 {
   this->SolverType = SolverType;
@@ -237,10 +405,35 @@ Env::EnvSetClusterType(EnvClusterType ClusterType)
 {
   this->ClusterType = ClusterType;
 }
+
 EnvClusterType 
 Env::EnvGetClusterType(void)
 {
   return ClusterType;
+}
+
+void 
+Env::EnvSetClusterPlacementType(EnvClusterPlacementType ClusterPlacementType) 
+{
+  this->ClusterPlacementType = ClusterPlacementType;
+}
+
+EnvClusterPlacementType 
+Env::EnvGetClusterPlacementType(void)
+{
+  return ClusterPlacementType;
+}
+
+void 
+Env::EnvSetUnClusterType(EnvUnClusterType UnClusterType)
+{
+  this->UnClusterType = UnClusterType;
+}
+
+EnvUnClusterType 
+Env::EnvGetUnClusterType(void)
+{
+  return UnClusterType;
 }
 
 void 

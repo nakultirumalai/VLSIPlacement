@@ -220,3 +220,79 @@ bool dirExists(const string &dirname)
   
   return rtv;
 }
+
+void 
+displayHeartBeat(void)
+{
+  cout << ".";
+}
+
+/* Returns true if a string is a double */
+bool
+isDouble(string str)
+{
+  double dbl;
+  bool rtv;
+
+  rtv = false;
+  istringstream stream(str, istringstream::in);
+  if (stream >> dbl) {
+    rtv = true;
+  }
+
+  return (rtv);
+}
+
+/* Creates a directory if it does not exist */
+void makeDir(string dirName)
+{
+  if (!dirExists(dirName)) {
+    if (!(0 == mkdir(dirName.data(), S_IRWXU | S_IRWXG | S_IRWXO))) {
+      cout << "Error: Directory does not exist. Cannot create directory!!" << endl;
+      exit(0);
+    }
+  }
+}
+
+/* Gets the host name */
+string getHostName(void)
+{
+  char host[512];
+  gethostname(host, sizeof host);
+
+  string hostName(host);
+  
+  return (hostName);
+}
+
+/* Gets the user name */
+string getUserName(void)
+{
+  char *username; 
+  username = getenv("USER");
+  
+  string userName(username);
+  
+  return (userName);
+}
+
+/* Get platform string */
+string getPlatformString(void)
+{
+  struct utsname buf;
+  uname(&buf);
+
+  string platInfo(buf.sysname);
+  
+  return platInfo;
+}
+
+/* Print an integer map */
+void
+printMap(map<uint,uint> mapToPrint)
+{
+  uint key;
+  MAP_FOR_ALL_KEYS(mapToPrint, uint, uint, key) {
+    cout << key << " " << endl;
+  } END_FOR;
+}

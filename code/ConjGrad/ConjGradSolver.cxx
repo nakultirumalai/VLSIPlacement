@@ -99,7 +99,7 @@ SpMat::AddValue(uint valIdx, double val)
 /* Special multiplication function for the sparse matrix 
    type SpMat to perform w = Av */
 void 
-mult(const SpMat &T, const double *v, double *w) 
+multold(const SpMat &T, const double *v, double *w) 
 {
   uint numNonZero = T.GetNumNonZero();
   uint numDiag = T.GetNumDiagonalElems();
@@ -117,6 +117,32 @@ mult(const SpMat &T, const double *v, double *w)
     else {
       w[idxi] += val * v[idxj];
       w[idxj] += val * v[idxi];
+    }
+  }
+} 
+
+void 
+mult(const SpMat &T, const double *v, double *w) 
+{
+  uint numNonZero = T.GetNumNonZero();
+  uint numDiag = T.GetNumDiagonalElems();
+  uint idx;
+  uint *idxi, *idxj;
+  uint i, j;
+  double *val, value;
+  
+  for (idx = 0; idx < numDiag; idx++) {
+    w[idx] = 0.0;
+  }
+
+  T.GetTriplet(&idxi, &idxj, &val);
+  for (idx = 0; idx < numNonZero; idx++) {
+    i = idxi[idx]; j = idxj[idx];
+    value = val[idx];
+    if (i == j) w[i] += value * v[i];
+    else {
+      w[i] += value * v[j];
+      w[j] += value * v[i];
     }
   }
 } 

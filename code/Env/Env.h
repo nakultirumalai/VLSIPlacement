@@ -14,6 +14,16 @@
 /***************************************************
   SOME TYPE DEFINITIONS FOR THE ENVIRONMENT
 ***************************************************/
+/* Define the global placer type */
+typedef enum {
+  ENV_NO_EXTERNAL_GP,
+  ENV_NTUPLACE_GP,
+  ENV_FAST_PLACE_GP,
+  ENV_MPL6_GP,
+  NUM_ENV_GLOBAL_PLACERS
+} EnvGlobalPlacerType;
+# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
+
 /* Define the solver type to be used in the design */
 typedef enum {
   ENV_SOLVER_QUADRATIC_MOSEK=0,
@@ -66,11 +76,30 @@ typedef enum {
   ENV_BEST_CHOICE_CLUSTERING,
   ENV_NET_CLUSTERING,
   ENV_EDGE_SEPARABILITY_BASED_CLUSTERING,
-  ENV_TIMING_DRIVEN_CLUSTERING,
+  ENV_TIMING_DRIVEN_CLUSTERING1,
+  ENV_TIMING_DRIVEN_CLUSTERING2,
   ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING,
   ENV_NUM_CLUSTERING_TYPES,
 } EnvClusterType;
 # define DEFAULT_ENV_CLUSTER_TYPE ENV_NO_CLUSTERING
+
+/* Define the way in which boundary cells are placed inside 
+   the cluster */
+typedef enum {
+  ENV_CLUSTER_PLACE_BOUNDARY = 0,
+  ENV_CLUSTER_PLACE_CENTRE,
+  ENV_NUM_CLUSTER_PLACE_TYPES
+} EnvClusterPlacementType;
+# define DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE ENV_CLUSTER_PLACE_BOUNDARY
+
+/* Define the way in which the unclustering can be done within the 
+   cluster */
+typedef enum {
+  ENV_UNCLUSTER_PLACE_BOUNDARY = 0,
+  ENV_UNCLUSTER_PLACE_NONE,
+  ENV_NUM_UNCLUSTER_TYPES
+} EnvUnClusterType;
+# define DEFAULT_ENV_UNCLUSTER_TYPE ENV_UNCLUSTER_PLACE_BOUNDARY
 
 /* Define the type of shape selection desired in the placement tool  */
 typedef enum {
@@ -88,6 +117,35 @@ typedef enum {
 ***************************************************/
 class Env {
  private:
+  /***************************************/
+  /* A REFERENCE OF A TIME STAMP         */
+  /***************************************/
+  double StartTime;
+
+  /***************************************/
+  /* VARIABLES FOR RECORDING TIME        */
+  /***************************************/
+  double NetlistReadTime;
+  double HyperGraphBuildTime;
+  double ClusteringTime;
+  double GlobalPlacementTime;
+  double LegalizationTime;
+  double ShapeSelectionTime;
+  double DetailedPlacementTime;
+
+  /***************************************/
+  /* VARIABLES FOR SOME NET STATS        */
+  /***************************************/
+  uint numTwoPinNets;
+  uint numThreePinNets;
+  uint numFourPinNets;
+  uint numFivePinNets;
+  uint numSixPinNets;
+  uint numSevenPinNets;
+  uint numGreaterThanTenPinNets;
+  uint numGreaterThanTwentyPinNets;
+  uint numHighFanoutNets;
+
   /***************************************/
   /* STRING VARIABLES                    */
   /***************************************/
@@ -128,6 +186,14 @@ class Env {
   /* Flag to determine if the tool has to dump the hessian and 
      the linear matrix for testing with solvers */
   bool DumpHessian;
+  /* Flag to determine if the cluster formation algorithm 
+     should consider the cluster height to be an integral 
+     multiple of row height */
+  bool DiscreteHeight;
+  /* Flag to determine if the cluster formation algorithm 
+     should consider the cluster width to be an integral 
+     multiple of site width */
+  bool DiscreteWidth;
 
   /***************************************/
   /* FLOAT/DOUBLE VARIABLES              */
@@ -138,6 +204,8 @@ class Env {
   /* ALL VALUES ARE DEFAULTED TO DEFAULT */
   /* VALUES DEFINED ABOVE                */
   /***************************************/
+  /* Decide what type of global placer to use */
+  EnvGlobalPlacerType GlobalPlacerType;
   /* Decide what the type of the solver to use */
   EnvSolverType SolverType;
   /* Decide what mode the tool has to be used in */
@@ -151,6 +219,10 @@ class Env {
   EnvOptType OptType;
   /* Decide what the clustering algorithm type should be */
   EnvClusterType ClusterType;
+  /* Decide what the cluster placement type should be */
+  EnvClusterPlacementType ClusterPlacementType;
+  /* Decide what the unclustering type should be */
+  EnvUnClusterType UnClusterType;
   /* Decide what the shape selection algorithm type should be */
   EnvShapeSelectionType ShapeSelectionType;
 
@@ -165,6 +237,34 @@ class Env {
   Env();
   /* Destructors */
   ~Env();
+  
+  /* Function to set the time stamp and get the time stamp */
+  void EnvSetStartTime(void);
+  double EnvGetStartTime(void);
+
+  /* Functions to set netlist statistics */
+  void EnvSetNetlistReadTime(void);
+  double EnvGetNetlistReadTime(void);
+  
+  void EnvSetHyperGraphBuildTime(void);
+  double EnvGetHyperGraphBuildTime(void);
+  
+  void EnvSetClusteringTime(void);
+  double EnvGetClusteringTime(void);  
+
+  void EnvSetGlobalPlacementTime(void);
+  double EnvGetGlobalPlacementTime(void);
+
+  void EnvSetLegalizationTime(void);
+  double EnvGetLegalizationTime(void);
+
+  void EnvSetShapeSelectionTime(void);
+  double EnvGetShapeSelectionTime(void);
+
+  void EnvSetDetailedPlacementTime(void);
+  double EnvGetDetailedPlacementTime(void);
+
+  /* Functions to set HyperGraphBuildTime */
   
   /* Set and get functions in pairs since its */
   /* easy to specify it that way              */
@@ -207,6 +307,15 @@ class Env {
   void EnvSetDumpHessian(bool);
   bool EnvGetDumpHessian(void);
 
+  void EnvSetDiscreteHeight(bool);
+  bool EnvGetDiscreteHeight(void);
+
+  void EnvSetDiscreteWidth(bool);
+  bool EnvGetDiscreteWidth(void);
+
+  void EnvSetGlobalPlacerType(EnvGlobalPlacerType);
+  EnvGlobalPlacerType EnvGetGlobalPlacerType(void);
+
   void EnvSetSolverType(EnvSolverType);
   EnvSolverType EnvGetSolverType(void);
 
@@ -224,6 +333,12 @@ class Env {
   
   void EnvSetClusterType(EnvClusterType);
   EnvClusterType EnvGetClusterType(void);
+
+  void EnvSetClusterPlacementType(EnvClusterPlacementType);
+  EnvClusterPlacementType EnvGetClusterPlacementType(void);
+  
+  void EnvSetUnClusterType(EnvUnClusterType);
+  EnvUnClusterType EnvGetUnClusterType(void);
 
   void EnvSetShapeSelectionType(EnvShapeSelectionType);
   EnvShapeSelectionType EnvGetShapeSelectionType(void);

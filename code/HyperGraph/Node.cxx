@@ -24,6 +24,12 @@ Node::NodeGetFlags(void)
   return (this->flags);
 }
 
+bool
+Node::NodeIsCluster(void)
+{
+  return (this->isCluster);
+}
+
 void* 
 Node::NodeGetData(void)
 {
@@ -108,6 +114,18 @@ Node::NodeIsClusterParent(void)
   return (result);
 }
 
+bool
+Node::NodeIsInvalid(void)
+{
+  unsigned int flags;
+  bool result;
+
+  flags = NodeGetFlags();
+  result = (flags & NODE_FLAG_IS_INVALID);
+
+  return (result);
+}
+
 void 
 Node::NodeSetIdx(unsigned int nodeIdx)
 {
@@ -136,6 +154,12 @@ void
 Node::NodeSetAnnIdx3(unsigned int annIdx3)
 {
   this->annIdx3 = annIdx3;
+}
+
+void
+Node::NodeSetIsCluster(bool isCluster)
+{
+  this->isCluster = isCluster;
 }
 
 void
@@ -174,6 +198,27 @@ Node::NodeClearIsTop(void)
   flags = NodeGetFlags();
   flags = flags | NODE_FLAG_IS_TOP;
   flags = flags ^ NODE_FLAG_IS_TOP;
+  NodeSetFlags(flags);
+}
+
+void
+Node::NodeSetIsInvalid(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_INVALID;
+  NodeSetFlags(flags);
+}
+
+void 
+Node::NodeClearIsInvalid(void)
+{
+  unsigned int flags;
+  
+  flags = NodeGetFlags();
+  flags = flags | NODE_FLAG_IS_INVALID;
+  flags = flags ^ NODE_FLAG_IS_INVALID;
   NodeSetFlags(flags);
 }
 
@@ -241,4 +286,9 @@ Node::Node(void *object)
   NodeSetAnnIdx2(0);
   NodeSetAnnIdx3(0);
   NodeSetData(object);
+}
+
+Node::~Node()
+{
+
 }

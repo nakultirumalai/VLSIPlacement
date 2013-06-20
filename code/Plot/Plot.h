@@ -3,6 +3,7 @@
 
 # include <common.h>
 # include <Cell.h>
+# include <Pin.h>
 # include <PhysRow.h>
 # include <CellSpread.h>
 # include <Design.h>
@@ -21,7 +22,9 @@ typedef enum {
   STRETCHED_BIN_RECT,
   SUPPLY_BIN_RECT,
   DEMAND_BIN_RECT,
-  BIN_PATH_RECT
+  BIN_PATH_RECT,
+  REGULAR_PIN,
+  HIGHLIGHTED_PIN,
 } lineStyle;
 
 typedef enum {
@@ -50,6 +53,26 @@ class Line
   
   /* Write output */
   void LineWriteOutput(ofstream &opStream);
+};
+
+class Circle
+{
+ private:
+  double x, y, radius;
+  lineStyle style;
+ public:
+  Circle();
+  Circle(double, double, double);
+  ~Circle();
+  
+  /* Set functions */
+  void CircleSetStyle(lineStyle style);
+  
+  /* Get functions */
+  lineStyle CircleGetStyle(void);
+  
+  /* Write output */
+  void CircleWriteOutput(ofstream &opStream);
 };
 
 class Rect
@@ -95,6 +118,8 @@ class Plot
   vector<Rect> supplyBins;
   vector<Rect> demandBins;
   vector<Rect> binPathRects;
+  vector<Circle> circles;
+  vector<Circle> highlightedCircles;
   ofstream plotOpFile;
   
  public:
@@ -128,6 +153,8 @@ class Plot
   void PlotAddRow(PhysRow &);
   void PlotAddPort(Cell &);
   void PlotAddBin(Bin &);
+  void PlotAddPin(Pin &);
+  void PlotAddHighlightedPin(Pin &);
   void PlotAddSupplyBin(LegalizeBin &, int);
   void PlotAddDemandBin(LegalizeBin &, int);
   void PlotAddBinPathRect(LegalizeBin &, int);
@@ -139,6 +166,7 @@ class Plot
 
 string LineGetStyleString(Line &);
 string RectGetStyleString(Rect &);
+string CircleGetStyleString(Circle &);
 
 # endif
 

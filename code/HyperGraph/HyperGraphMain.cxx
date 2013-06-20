@@ -5,14 +5,14 @@
 # include <Cell.h>
 # include <stdlib.h>
 
-unsigned int 
+uint 
 HyperGraph::AddNodeInt(void *object)
 {
+  uint nodeIdx;
+  map<void *, uint>::iterator itr;
 
-  unsigned int nodeIdx;
-
-  if (nodeExists(object)) {
-    nodeIdx = HyperGraphGetCellIndex(object);
+  _KEY_EXISTS_WITH_VAL(obj2idx, object, itr) {
+    nodeIdx = itr->second;
   } else {
     Node *newNode = new Node();
     nodeIdx = numNodes++;
@@ -21,35 +21,18 @@ HyperGraph::AddNodeInt(void *object)
     idx2Node[nodeIdx] = newNode;
     /* Create an entry in the connectivity table 
        for this object */
-    Nodes2Edges.push_back(vector<unsigned int> ());
-    nodeConnectivity.push_back(0);
-    nodeSetIsTop(nodeIdx);
-
+    Nodes2Edges.push_back(vector<uint> ());
+    NodeSetIsTop(nodeIdx);
     (*newNode).NodeSetData(object);
     obj2idx[object] = nodeIdx;
-
-    setDirty();
   }
   return (nodeIdx);
 }
 
-bool
-HyperGraph::nodeExists(void *object)
-{
-  bool rtv;
-  
-  rtv = false;
-  if (obj2idx.find(object) != obj2idx.end()) {
-    rtv = true;
-  }
-  
-  return (rtv);
-}
-
-unsigned int 
+uint 
 HyperGraph::AddEdgeInt(void *object, double weight)
 {
-  unsigned int edgeIdx;
+  uint edgeIdx;
 
   Edge *newEdge = new Edge(object);
   edgeIdx = numEdges++;
@@ -58,58 +41,126 @@ HyperGraph::AddEdgeInt(void *object, double weight)
 
   /* Create link in the map */
   idx2Edge[edgeIdx] = newEdge;
-  setDirty();
   
   return (edgeIdx);
 }
 
-unsigned int
-HyperGraph::getNodeConnectivity(unsigned int nodeIdx)
+void
+HyperGraph::HideEdge(uint edgeIdx)
+{
+  Edge *thisEdge;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  (*thisEdge).EdgeSetIsHidden(true);
+}
+
+uint 
+HyperGraph::RemoveEdge(uint edgeIdx)
+{
+  void *nodeObj;
+  uint nodeIdx;
+  uint idx;
+  bool edgeFound;
+
+  if (0) {
+    /* Iterate over all the nodes of the edge and remove 
+       it from their respecitive lists in Nodes2Edges */
+    HYPERGRAPH_FOR_ALL_NODES_OF_EDGE((*this), edgeIdx, nodeObj) {
+      nodeIdx = obj2idx[nodeObj];
+      vector<uint> &edgeList = Nodes2Edges[nodeIdx];
+      uint numEdges = edgeList.size();
+      edgeFound = false;
+      for (idx = 0; idx < numEdges; idx++) {
+	if (edgeList[idx] == edgeIdx) 
+	  break;
+      }
+      if (edgeFound) edgeList.erase(edgeList.begin() + idx);
+    } HYPERGRAPH_END_FOR;
+    /* Remove from the Edges2Nodes vector */
+    Edges2Nodes.erase(Edges2Nodes.begin() + edgeIdx);
+    /* Remove from the idx2Edge map */
+    idx2Edge.erase(edgeIdx);
+    /* Reduce the number of edges in the hypergraph */
+    numEdges--;
+  } else {
+    HideEdge(edgeIdx);
+  }
+}
+
+uint 
+HyperGraph::RemoveNode(uint nodeIdx)
 {
   
 }
 
-double 
-HyperGraph::GetEdgeWeight(unsigned int edgeIdx)
+vector<uint> 
+HyperGraph::GetConnectedNodeIndices(uint nodeIdx)
 {
-  Edge *thisEdge;
-  double edgeWeight;
+  vector<uint> returnNodes;
+  vector<uint> Edges;
+  map<uint, uint> EdgeNodeList;
+  uint connectedEdgeIdx;
+  uint connectedNodeIdx;
   
-  thisEdge = idx2Edge[edgeIdx];
-  if (thisEdge != NULL) {
-    edgeWeight = (*thisEdge).EdgeGetWeight();
-  }
+  /* Find the vector of edges that nodeIdx has connections to */
+  Edges = (this->Nodes2Edges)[nodeIdx];
+  /* Iterate over all the edges */
+  VECTOR_FOR_ALL_ELEMS(Edges, uint, connectedEdgeIdx) {
+    /* Get the list of nodes that are connected to edge index 
+       connectedEdgeIdx */
+    EdgeNodeList = (this->Edges2Nodes)[connectedEdgeIdx];
+    /* Iterate over all keys of the EdgeNodeList map 
+       as this would give the list of nodes that are 
+       connected to the edge connectedEdgeIdx */
+    MAP_FOR_ALL_KEYS(EdgeNodeList, uint, uint, connectedNodeIdx) {
+      if (!NodeIsTop(connectedNodeIdx)) {
+	continue;
+      }
+      if (connectedNodeIdx == nodeIdx) {
+	continue;
+      }
+      returnNodes.push_back(connectedNodeIdx);
+    } END_FOR;
+  } END_FOR;
   
-  return edgeWeight;
+  return (returnNodes);
+}
+
+/* Function to check, set and clear if a node index 
+   represents a top node of a cluster */
+void 
+HyperGraph::NodeSetIsTop(uint nodeIdx)
+{
+  Node *node;
+  
+  node = idx2Node[nodeIdx];
+  (*node).NodeSetIsTop();
 }
 
 void 
-HyperGraph::SetEdgeWeight(unsigned int edgeIdx, double newWeight)
+HyperGraph::NodeClearIsTop(uint nodeIdx)
 {
-  Edge *thisEdge;
+  Node *node;
   
-  thisEdge = idx2Edge[edgeIdx];
-  if (thisEdge != NULL) {
-    (*thisEdge).EdgeSetWeight(newWeight);
+  node = idx2Node[nodeIdx];
+  (*node).NodeClearIsTop();
+  
+  _KEY_DOES_NOT_EXIST(nonTopNodes, nodeIdx) {
+    nonTopNodes[nodeIdx] = 1;
   }
 }
 
-void* 
-HyperGraph::GetEdgeObject(unsigned int edgeIdx)
+/*************************************************
+  PUBLIC FUNCTIONS BEGIN
+**************************************************/
+void 
+HyperGraph::AddNode(void *object)
 {
-  Edge *thisEdge;
-  void *edgeObject;
-  
-  thisEdge = idx2Edge[edgeIdx];
-  if (thisEdge != NULL) {
-    edgeObject = (*thisEdge).EdgeGetObject();
-  }
-  
-  return edgeObject;
+  AddNodeInt(object);
 }
 
 void* 
-HyperGraph::GetNodeObject(unsigned int nodeIdx) 
+HyperGraph::GetNodeObject(uint nodeIdx) 
 {
   Node *thisNode;
   void *nodeObject;
@@ -120,239 +171,77 @@ HyperGraph::GetNodeObject(unsigned int nodeIdx)
   return (nodeObject);
 }
 
-map<unsigned int, unsigned int>&
-HyperGraph::getEdgeConnectivity(unsigned int edgeIdx)
+int
+HyperGraph::GetObjIndex(void *nodeObj) 
 {
-  return ((*this).Edges2Nodes[edgeIdx]);
-}
+  int rtv;
+  map<void *, uint>::iterator itr;
 
-unsigned int
-HyperGraph::getNewNodeIdx(void)
-{
-  return (HyperGraphGetNumNodes());
-}
-
-unsigned int
-HyperGraph::getNewEdgeIdx(void)
-{
-  return (GetNumEdges());
+  rtv = -1;
+  _KEY_EXISTS_WITH_VAL(obj2idx, nodeObj, itr) {
+    rtv = itr->second;
+  }
+  
+  return rtv;
 }
 
 bool
-HyperGraph::clusterNodes(vector<unsigned int>& nodeSet, void* object,
-			 vector<void *>& affectedNets)
+HyperGraph::NodeIsTop(uint nodeIdx)
 {
-  map<unsigned int, bool> visitedEdges;
-  vector<unsigned int>& nodeSetCopy = nodeSet;
-  vector<unsigned int> newNodeEdgeList;
-  unsigned int nodeIdx, edgeIdx, newNodeIdx;
+  Node *node;
   bool result;
-  bool debug = false;
-  static int count;
 
-  result = true;
-  if (debug) 
-    cout << "COUNT: " << count++ << " Size of node set is " << nodeSet.size() << endl;
-  VECTOR_FOR_ALL_ELEMS(nodeSet, unsigned int, nodeIdx) {
-    if (!nodeIsTop(nodeIdx)) {
-      result = false;
-      break;
-    }
-  } END_FOR;
-
-  if (result == true) {
-    /* Begin clustering here */
-    newNodeIdx = AddNodeInt(object);
-    clock_t start, finish;
-    start = clock();
-    unsigned int iter = 0;
-    unsigned int added = 0;
-    VECTOR_FOR_ALL_ELEMS(nodeSet, unsigned int, nodeIdx) {
-      /* For each node in the node set, go over the edges of 
-	 each node */
-      if (debug) 
-	cout << "   Node index: " << nodeIdx << " Iterating over its edges. Edge count: " << (Nodes2Edges[nodeIdx]).size() << endl;
-      VECTOR_FOR_ALL_ELEMS((Nodes2Edges[nodeIdx]), unsigned int, edgeIdx) {
-	iter++;
-	if (visitedEdges.find(edgeIdx) == visitedEdges.end()) {
-	  added++;
-	  visitedEdges[edgeIdx] = 1;
-	  newNodeEdgeList.push_back(edgeIdx);
-	  (Edges2Nodes[edgeIdx])[newNodeIdx] = 1;
-	}
-	/* Remove nodeIdx from the map corresponding to edgeIdx */
-	(Edges2Nodes[edgeIdx]).erase(nodeIdx);
-	if ((Edges2Nodes[edgeIdx]).size() == 1) {
-	  Edge &thisEdge = (*idx2Edge[edgeIdx]);
-	  affectedNets.push_back(thisEdge.EdgeGetObject());
-	}
-      } END_FOR;
-      nodeClearIsTop(nodeIdx);
-    } END_FOR;
-
-    finish = clock();
-    //cout << "    SIZE: " << nodeSet.size() << " TIME: " << (finish - start) << " CPU cycles." << endl;
-
-    //   cout << "Memory used: " << getMemUsage() << MEM_USAGE_UNIT << endl;    
-    //ClusterInfo[newNodeIdx] = affectedEdgeList;
-    Nodes2Edges[newNodeIdx] = newNodeEdgeList;
-    nodeSetIsTop(newNodeIdx);
-    nodeClearIsClusterParent(newNodeIdx);
-  }
+  node = idx2Node[nodeIdx];
+  result = (*node).NodeIsTop();
   
   return (result);
 }
 
-bool
-HyperGraph::unclusterNode(unsigned int clusterNodeIdx)
+void 
+HyperGraph::NodeSetIsInvalid(uint nodeIdx)
 {
-  map<unsigned int, vector<unsigned int > > affectedEdgeList;
-  vector<unsigned int> nodeList;
-  unsigned int edgeIdx, nodeIdx;
-  bool result = false;
+  Node *node;
 
-  affectedEdgeList = ClusterInfo[clusterNodeIdx];
-  if (affectedEdgeList.empty()) {
-    return result;
-  }
-  MAP_FOR_ALL_ELEMS(affectedEdgeList, unsigned int, vector<unsigned int>, 
-		   edgeIdx, nodeList) {
-    (Edges2Nodes[edgeIdx]).erase(clusterNodeIdx);
-    VECTOR_FOR_ALL_ELEMS(nodeList, unsigned int, nodeIdx) {
-      (Edges2Nodes[edgeIdx])[nodeIdx] = 1;
-      nodeSetIsTop(nodeIdx);
-    } END_FOR;
-  } END_FOR;
-  (Nodes2Edges[clusterNodeIdx]).clear();
-  ClusterInfo.erase(clusterNodeIdx);
+  node = idx2Node[nodeIdx];
+  (*node).NodeSetIsInvalid();
+}
 
-  nodeClearIsTop(clusterNodeIdx);
-  nodeClearIsClusterParent(clusterNodeIdx);
+void 
+HyperGraph::NodeClearIsInvalid(uint nodeIdx)
+{
+  Node *node;
 
-  result = true;
+  node = idx2Node[nodeIdx];
+  (*node).NodeClearIsInvalid();
+}
 
+bool 
+HyperGraph::NodeIsInvalid(uint nodeIdx)
+{
+  Node *node;
+  bool result;
+
+  node = idx2Node[nodeIdx];
+  result = (*node).NodeIsInvalid();
+  
   return (result);
 }
 
-void 
-HyperGraph::graphUpdate(void)
+uint
+HyperGraph::AddEdge(vector<void *> &cellList, void *EdgeObject, 
+		    double weight)
 {
-  int nodeIdx, numNodes;
-  
-  struct cmpObjStruct {
-    bool operator() (int i,int j) { return (i<j);}
-  } myCmpObj;
-
-# if 0  
-  numNodes = HyperGraphGetNumNodes();  
-  for (nodeIdx = 0; nodeIdx < numNodes; nodeIdx++) {
-    sort((Nodes2Edges[nodeIdx]).begin(), 
-	 (Nodes2Edges[nodeIdx]).end(), 
-	 myobject);
-  }
-# endif
-  clearDirty();
-}
-
-void 
-HyperGraph::setDirty(void)
-{
-  dirtyGraph = true;
-}
-
-void
-HyperGraph::clearDirty(void)
-{
-  dirtyGraph = false;
-}
-
-/* Function to check, set and clear if a node index 
-   represents a top node of a cluster */
-void 
-HyperGraph::nodeSetIsTop(unsigned int nodeIdx)
-{
-  Node *node;
-  
-  node = idx2Node[nodeIdx];
-  (*node).NodeSetIsTop();
-}
-
-void 
-HyperGraph::nodeClearIsTop(unsigned int nodeIdx)
-{
-  Node *node;
-  
-  node = idx2Node[nodeIdx];
-  (*node).NodeClearIsTop();
-}
-
-
-/* Function to check, set and clear if a node index represents a child node of a cluster */
-void 
-HyperGraph::nodeSetIsClusterParent(unsigned int nodeIdx)
-{
-  Node *node;
-  
-  node = idx2Node[nodeIdx];
-  (*node).NodeSetIsClusterParent();
-}
-
-void 
-HyperGraph::nodeClearIsClusterParent(unsigned int nodeIdx)
-{
-  Node *node;
-  
-  node = idx2Node[nodeIdx];
-  (*node).NodeClearIsClusterParent();
-}
-
-/* Function to check, set and clear if a node index represents a child node of a cluster */
-void 
-HyperGraph::nodeSetIsClusterChild(unsigned int nodeIdx)
-{
-  Node *node;
-  
-  node = idx2Node[nodeIdx];
-  (*node).NodeSetIsClusterChild();
-}
-
-void 
-HyperGraph::nodeClearIsClusterChild(unsigned int nodeIdx)
-{
-  Node *node;
-  
-  node = idx2Node[nodeIdx];
-  (*node).NodeClearIsClusterChild();
-}
-
-/* PUBLIC FUNCTIONS BEGIN */
-void 
-HyperGraph::HyperGraphAddNode(void *object)
-{
-  AddNodeInt(object);
-}
-
-bool
-HyperGraph::HyperGraphNodeExists(void *object)
-{
-  return nodeExists(object);
-}
-
-unsigned int
-HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject, 
-			      double weight)
-{
-  vector<unsigned int> nodeIdxArray;
-  vector<unsigned int> nodeIdxArrayCopy;
+  vector<uint> nodeIdxArray;
+  vector<uint> nodeIdxArrayCopy;
   Node *nodePtr;
   Edge *edgePtr;
-  unsigned int nodeIdx, nodeIdxCopy;
-  unsigned int edgeIdx;
+  uint nodeIdx, nodeIdxCopy;
+  uint edgeIdx;
   void *object;
 
   edgeIdx = AddEdgeInt(EdgeObject, weight);
   edgePtr = idx2Edge[edgeIdx];
-  Edges2Nodes.push_back(map<unsigned int, unsigned int> ());
+  Edges2Nodes.push_back(map<uint, uint> ());
   /* Collect the node indices. O(k) where there are k nodes 
      on an edge. */
   VECTOR_FOR_ALL_ELEMS(cellList, void*, object) {
@@ -369,94 +258,277 @@ HyperGraph::HyperGraphAddEdge(vector<void *> &cellList, void *EdgeObject,
   return edgeIdx;
 }
 
-bool 
-HyperGraph::HyperGraphUnclusterNodes(vector<unsigned int> clusteredNodeSet) 
+double 
+HyperGraph::GetEdgeWeight(uint edgeIdx)
 {
-  unsigned int clusterNodeIdx;
-  bool success;
-
-  success = true;
-  VECTOR_FOR_ALL_ELEMS(clusteredNodeSet, unsigned int, clusterNodeIdx) {
-    success &= unclusterNode(clusterNodeIdx);
-    if (success == false) {
-      break;
-    }
-  } END_FOR;
+  Edge *thisEdge;
+  double edgeWeight;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  if (thisEdge != NULL) {
+    edgeWeight = (*thisEdge).EdgeGetWeight();
+  }
+  
+  return edgeWeight;
 }
 
-unsigned int 
-HyperGraph::HyperGraphGetNumNodes(void)
+void 
+HyperGraph::SetEdgeWeight(uint edgeIdx, double newWeight)
+{
+  Edge *thisEdge;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  if (thisEdge != NULL) {
+    (*thisEdge).EdgeSetWeight(newWeight);
+  }
+}
+
+void* 
+HyperGraph::GetEdgeObject(uint edgeIdx)
+{
+  Edge *thisEdge;
+  void *edgeObject;
+  
+  thisEdge = idx2Edge[edgeIdx];
+  if (thisEdge != NULL) {
+    edgeObject = (*thisEdge).EdgeGetObject();
+  }
+  
+  return edgeObject;
+}
+
+bool
+HyperGraph::EdgeIsHidden(uint edgeIdx) 
+{
+  Edge *thisEdge;
+
+  thisEdge = idx2Edge[edgeIdx];
+
+  return ((*thisEdge).EdgeIsHidden());
+}
+
+bool
+HyperGraph::ClusterNodes(vector<void *>& nodeSet, void* object,
+			 map<void *, bool>& externalNets, 
+			 map<void *, bool>& internalNets)
+{
+  void *nodePtr;
+  void *edgeObject;
+  vector<uint> nodeSetCopy;
+  map<uint, bool> newNodeEdgeMap;
+  vector<uint> newNodeEdgeList;
+  uint nodeIdx, edgeIdx, newNodeIdx;
+  uint idx;
+  bool result;
+  bool debug = false;
+
+  result = true;
+  VECTOR_FOR_ALL_ELEMS(nodeSet, void*, nodePtr) {
+    nodeIdx = GetObjIndex(nodePtr);
+    if (!NodeIsTop(nodeIdx)) {
+      result = false;
+      _ASSERT_TRUE("Error: Non-top node sent for input to cluster function");
+    }
+    nodeSetCopy.push_back(nodeIdx);
+  } END_FOR;
+  
+  if (result == false) {
+    return (result);
+  }
+
+  externalNets.clear();
+  internalNets.clear();
+  //  PrintSubGraph(nodeSetCopy);
+  /* Add the new object and get the new edge index */
+  newNodeIdx = AddNodeInt(object);
+  map<uint, bool> visitedEdges;
+  VECTOR_FOR_ALL_ELEMS(nodeSetCopy, uint, nodeIdx) {
+    /* For each node in the node set, go over all the *unique* edges and remove the node
+       index from the map corresponding to the edge index */
+    VECTOR_FOR_ALL_ELEMS((Nodes2Edges[nodeIdx]), uint, edgeIdx) {
+      _KEY_DOES_NOT_EXIST(visitedEdges, edgeIdx) {
+	visitedEdges[edgeIdx] = 1;
+	newNodeEdgeMap[edgeIdx] = 1;
+	/* Add the new node to the list of edges */
+	_KEY_DOES_NOT_EXIST((Edges2Nodes[edgeIdx]), newNodeIdx) {
+	  (Edges2Nodes[edgeIdx])[newNodeIdx] = 1;
+	}
+      }
+
+      /* Remove the node indices from the list of edge index */
+      (Edges2Nodes[edgeIdx]).erase(nodeIdx);
+
+      /* Hide the node index */
+      NodeClearIsTop(nodeIdx);
+    } END_FOR;
+  } END_FOR;
+  
+  MAP_FOR_ALL_KEYS(visitedEdges, uint, bool, edgeIdx) {
+    edgeObject = GetEdgeObject(edgeIdx);
+    if ((Edges2Nodes[edgeIdx]).size() == 1) {
+      RemoveEdge(edgeIdx);
+      internalNets[edgeObject] = 1;
+      newNodeEdgeMap.erase(edgeIdx);
+    } else {
+      externalNets[edgeObject] = 1;
+    }
+  } END_FOR;
+
+  nodeSetCopy.push_back(newNodeIdx);
+  NodeSetIsCluster(newNodeIdx, true);
+  MAP_FOR_ALL_KEYS(newNodeEdgeMap, uint, bool, edgeIdx) {
+    newNodeEdgeList.push_back(edgeIdx);
+  } END_FOR;
+  Nodes2Edges[newNodeIdx] = newNodeEdgeList;
+  NodeSetIsTop(newNodeIdx);
+  //  PrintSubGraph(nodeSetCopy);
+
+  return (result);
+}
+
+  /*
+    if (NodeIsCluster(nodeIdx)) {
+      if ((*this).eraseClusters == true) {
+	numEdges = Edges2Nodes.size();
+	uint origNodeIdx, keyVal;
+	for (uint idx = 0; idx < numEdges; idx++) {
+	  map<uint, uint> nodeMapCopy = Edges2Nodes[idx];
+	  map<uint, uint> modNodeMap;
+	  MAP_FOR_ALL_ELEMS(nodeMapCopy, uint, uint, origNodeIdx, keyVal) {
+	    if (origNodeIdx > nodeIdx) {
+	      modNodeMap[(origNodeIdx - 1)] = 1;
+	    } else {
+	      modNodeMap[origNodeIdx] = 1;
+	    }
+	  } END_FOR;
+	  Edges2Nodes[idx] = modNodeMap;
+	}
+	Nodes2Edges.erase(Nodes2Edges.begin() + nodeIdx);
+      }
+    }
+  */
+
+uint 
+HyperGraph::GetNumNodes(void)
 {
   return (numNodes);
 }
 
-unsigned int 
+uint 
 HyperGraph::GetNumEdges(void)
 {
   return (numEdges);
 }
 
-vector<unsigned int>& 
-HyperGraph::HyperGraphGetNodes(void)
+uint 
+HyperGraph::EdgeGetNumNodes(uint edgeIdx)
 {
+  return ((Edges2Nodes[edgeIdx]).size());
+}
+
+uint 
+HyperGraph::NodeGetNumEdges(uint nodeIdx)
+{
+  return ((Nodes2Edges[nodeIdx]).size());
+}
+
+map<uint, uint>
+HyperGraph::GetNodesOfEdge(uint edgeIdx)
+{
+  return (Edges2Nodes[edgeIdx]);
+}
+
+vector<uint>
+HyperGraph::GetEdgesOfObject(void *object)
+{
+  uint nodeIdx;
+  vector<uint> rtv;
+
+  nodeIdx = obj2idx[object];
+  rtv = Nodes2Edges[nodeIdx];
   
+  return (rtv);
 }
 
-vector<unsigned int>& 
-HyperGraph::HyperGraphGetEdges(void)
+vector<uint>
+HyperGraph::GetEdgesOfNode(uint nodeIdx)
 {
+  vector<uint> rtv;
+
+  rtv = Nodes2Edges[nodeIdx];
   
+  return (rtv);
 }
 
-bool 
-HyperGraph::nodeIsTop(unsigned int nodeIdx)
+vector<uint>
+HyperGraph::GetEdgesOfObjects(void *object1, void *object2)
 {
-  Node *node;
-  bool result;
+  uint nodeIdx1, nodeIdx2;
+  uint edgeIdx;
+  vector<uint> Edges;
+  vector<uint> rtv;
 
-  node = idx2Node[nodeIdx];
-  result = (*node).NodeIsTop();
+  nodeIdx1 = obj2idx[object1];
+  nodeIdx2 = obj2idx[object2];
+  Edges = Nodes2Edges[nodeIdx1];
+
+  VECTOR_FOR_ALL_ELEMS(Edges, uint, edgeIdx) {
+    map<uint, uint>& edges2NodesMap = Edges2Nodes[edgeIdx];
+    if (edges2NodesMap.find(nodeIdx2) != edges2NodesMap.end()) {
+      rtv.push_back(edgeIdx);
+    }
+  } END_FOR;
+
+  return (rtv);
+}
+
+vector<uint>
+HyperGraph::GetEdgesOfNodes(uint nodeIdx1, uint nodeIdx2)
+{
+  uint edgeIdx;
+  vector<uint> Edges;
+  vector<uint> rtv;
+
+  Edges = Nodes2Edges[nodeIdx1];
+  VECTOR_FOR_ALL_ELEMS(Edges, uint, edgeIdx) {
+    map<uint, uint>& edges2NodesMap = Edges2Nodes[edgeIdx];
+    if (edges2NodesMap.find(nodeIdx2) != edges2NodesMap.end()) {
+      rtv.push_back(edgeIdx);
+    }
+  } END_FOR;
+
+  return (rtv);
+}
+
+vector<void *> 
+HyperGraph::GetConnectedNodes(void* nodePtr)
+{
+  uint subjectIdx;
+  uint resultIdx;
+  vector<uint> connectedNodeIndices;
+  vector<void *> rtvCells;
+  Node *resultNode;
   
-  return (result);
-}
+  subjectIdx = obj2idx[nodePtr];
+  connectedNodeIndices = GetConnectedNodeIndices(subjectIdx);
+  vectorRemoveDuplicates(connectedNodeIndices);
+  VECTOR_FOR_ALL_ELEMS(connectedNodeIndices, uint, resultIdx) {
+    _ASSERT("Subject node index matches with the subject node index", 
+	    (resultIdx == subjectIdx));
+    resultNode = idx2Node[resultIdx];
+    rtvCells.push_back((*resultNode).NodeGetData());
+  } END_FOR;
 
-bool 
-HyperGraph::nodeIsClusterParent(unsigned int nodeIdx)
-{
-  Node *node;
-  bool result;
-
-  node = idx2Node[nodeIdx];
-  result = (*node).NodeIsClusterParent();
-
-  return (result);
-}
-
-bool 
-HyperGraph::nodeIsClusterChild(unsigned int nodeIdx)
-{
-  Node *node;
-  bool result;
-
-  node = idx2Node[nodeIdx];
-  result = (*node).NodeIsClusterChild();
-
-  return (result);
-}
-
-HyperGraph::HyperGraph() 
-{
-  numEdges = 0;
-  numNodes = 0;
+  return (rtvCells);
 }
 
 /*** TEST FUNCTIONS ***/
 void
 HyperGraph::testClustering(void)
 {
-  vector<vector<unsigned int > > toBeClustered;
-  vector<unsigned int> listOfNodes;
-  unsigned int nodeIdx;
+  vector<vector<uint > > toBeClustered;
+  vector<uint> listOfNodes;
+  uint nodeIdx;
 
   cout << "Clustering nodes 0 1 and 2" << endl;
   listOfNodes.push_back(0);
@@ -475,144 +547,15 @@ HyperGraph::testClustering(void)
   //  HyperGraphClusterNodes(toBeClustered);
   cout << "Finished clustering" << endl;
 
-  MAP_FOR_ALL_KEYS(ClusterInfo, unsigned int, mapOfVectors, nodeIdx) {
-    listOfNodes.push_back(nodeIdx);
-    cout << "Unclustering " << nodeIdx << endl;
-  } END_FOR;
   //HyperGraphUnclusterNodes(listOfNodes);
   listOfNodes.clear();
 }
 
-vector<unsigned int> 
-HyperGraph::getConnectedIndices(unsigned int nodeIdx)
-{
-  vector<unsigned int> returnNodes;
-  vector<unsigned int> Edges;
-  map<unsigned int, unsigned int> EdgeNodeList;
-  unsigned int connectedEdgeIdx;
-  unsigned int connectedNodeIdx;
-  
-  /* Find the vector of edges that nodeIdx has connections to */
-  Edges = (this->Nodes2Edges)[nodeIdx];
-  /* Iterate over all the edges */
-  VECTOR_FOR_ALL_ELEMS(Edges, unsigned int, connectedEdgeIdx) {
-    /* Get the list of nodes that are connected to edge index 
-       connectedEdgeIdx */
-    EdgeNodeList = (this->Edges2Nodes)[connectedEdgeIdx];
-    /* Iterate over all keys of the EdgeNodeList map 
-       as this would give the list of nodes that are 
-       connected to the edge connectedEdgeIdx */
-    MAP_FOR_ALL_KEYS(EdgeNodeList, unsigned int, unsigned int, connectedNodeIdx) {
-      if (!nodeIsTop(connectedNodeIdx)) {
-	continue;
-      }
-      if (connectedNodeIdx == nodeIdx) {
-	continue;
-      }
-      returnNodes.push_back(connectedNodeIdx);
-    } END_FOR;
-  } END_FOR;
-  
-  return (returnNodes);
-}
-
-unsigned int
-HyperGraph::HyperGraphGetCellIndex(void *cellPtr)
-{
-  unsigned int subjectIdx;
-
-  _ASSERT("Unable to find cell in design database", (cellPtr == NIL(void*)));
-
-  subjectIdx = obj2idx[cellPtr];
-
-  return (subjectIdx);
-}
-
-bool
-HyperGraph::HyperGraphClusterNodes(vector<unsigned int> nodesList,
-				   void *object, 
-				   vector<void*>& affectedNets)
-{
-  bool success;
-  
-  success &= clusterNodes(nodesList, object, affectedNets);
-
-  return success;
-}
-
-vector<void *> 
-HyperGraph::HyperGraphGetConnectedCells(void* cellPtr)
-{
-  unsigned int subjectIdx;
-  unsigned int resultIdx;
-  vector<unsigned int> connectedNodeIndices;
-  vector<void *> rtvCells;
-  Node *resultNode;
-  
-  subjectIdx = obj2idx[cellPtr];
-  connectedNodeIndices = getConnectedIndices(subjectIdx);
-  vectorRemoveDuplicates(connectedNodeIndices);
-  VECTOR_FOR_ALL_ELEMS(connectedNodeIndices, unsigned int, resultIdx) {
-    _ASSERT("Subject node index matches with the subject node index", 
-	    (resultIdx == subjectIdx));
-    resultNode = idx2Node[resultIdx];
-    rtvCells.push_back((*resultNode).NodeGetData());
-  } END_FOR;
-
-  return (rtvCells);
-}
-
-void 
-HyperGraph::RemoveEdge(void)
-{
-
-}
-
-void 
-HyperGraph::RemoveNode(void)
-{
-
-}
-
-vector<unsigned int>
-HyperGraph::GetEdgesOfNode(void *object)
-{
-  unsigned int nodeIdx;
-  vector<unsigned int> rtv;
-
-  nodeIdx = obj2idx[object];
-  rtv = Nodes2Edges[nodeIdx];
-  
-  return (rtv);
-}
-
-vector<unsigned int>
-HyperGraph::GetEdgesOfNodes(void *object1, void *object2)
-{
-  unsigned int nodeIdx1, nodeIdx2;
-  unsigned int edgeIdx;
-  vector<unsigned int> Edges;
-  vector<unsigned int> rtv;
-
-  nodeIdx1 = obj2idx[object1];
-  nodeIdx2 = obj2idx[object2];
-  Edges = Nodes2Edges[nodeIdx1];
-
-  VECTOR_FOR_ALL_ELEMS(Edges, unsigned int, edgeIdx) {
-    map<unsigned int, unsigned int>& edges2NodesMap = Edges2Nodes[edgeIdx];
-    if (edges2NodesMap.find(nodeIdx2) != edges2NodesMap.end()) {
-      rtv.push_back(edgeIdx);
-    }
-  } END_FOR;
-
-  return (rtv);
-}
-
 long int 
-HyperGraph::HyperGraphNodesAreAdjacent(void* cellPtr1, void* cellPtr2) 
+HyperGraph::NodesAreAdjacent(void* cellPtr1, void* cellPtr2) 
 {
-  unsigned int nodeIdx1, nodeIdx2, edgeIdx;
-  vector<unsigned int> connectedEdges;
+  uint nodeIdx1, nodeIdx2, edgeIdx;
+  vector<uint> connectedEdges;
   long int returnEdgeIdx = -1;
   
   nodeIdx1 = obj2idx[cellPtr1]; /* O(logn) */
@@ -620,7 +563,7 @@ HyperGraph::HyperGraphNodesAreAdjacent(void* cellPtr1, void* cellPtr2)
   
   connectedEdges = Nodes2Edges[nodeIdx1];
   
-  VECTOR_FOR_ALL_ELEMS(connectedEdges, unsigned int, edgeIdx) {
+  VECTOR_FOR_ALL_ELEMS(connectedEdges, uint, edgeIdx) {
     if ((Edges2Nodes[edgeIdx]).find(nodeIdx2) != (Edges2Nodes[edgeIdx]).end()) {
       returnEdgeIdx = edgeIdx;
       break;
@@ -631,7 +574,7 @@ HyperGraph::HyperGraphNodesAreAdjacent(void* cellPtr1, void* cellPtr2)
 }
 
 void* 
-HyperGraph::GraphGetOtherNodeOfEdge(uint edgeIdx, void *obj)
+HyperGraph::GetOtherNodeOfEdge(uint edgeIdx, void *obj)
 {
   map<uint, uint> &nodeMap = Edges2Nodes[edgeIdx];
   uint thisNodeIdx, otherNodeIdx;
@@ -648,7 +591,158 @@ HyperGraph::GraphGetOtherNodeOfEdge(uint edgeIdx, void *obj)
   return (rtv);
 }
 
+bool
+HyperGraph::NodeIsCluster(uint nodeIdx)
+{
+  Node *nodeObj;
+  bool rtv;
+  map<uint, Node*>::iterator itr;
+  
+  nodeObj = NIL(Node *);
+  rtv = false;
+  _KEY_EXISTS_WITH_VAL(idx2Node, nodeIdx, itr) {
+    nodeObj = itr->second;
+    rtv = (*nodeObj).NodeIsCluster();
+  } 
+  
+  return (rtv);
+}
+
+void
+HyperGraph::NodeSetIsCluster(uint nodeIdx, bool isCluster)
+{
+  Node *nodeObj;
+  map<uint, Node*>::iterator itr;
+  
+  nodeObj = NIL(Node *);
+  _KEY_EXISTS_WITH_VAL(idx2Node, nodeIdx, itr) {
+    nodeObj = itr->second;
+    (*nodeObj).NodeSetIsCluster(isCluster);
+  } 
+}
+
+void 
+HyperGraph::PrintGraph(void)
+{
+  uint nodeIdx, count;
+  uint edgeIdx, numEdges;
+
+  /* First print the hypergraph details */
+  cout << "***********************************************************" << endl;
+  cout << "  Number of nodes in the hypergraph: " << GetNumNodes() << endl;
+  cout << "  Number of edges in the hypergraph: " << GetNumEdges() << endl;
+  cout << "***********************************************************" << endl;
+
+  /* Print the edges */
+  numEdges = GetNumEdges();
+  for (edgeIdx = 0; edgeIdx < numEdges; edgeIdx++) {
+    cout << "Edge Index: " << endl;
+    cout << "Nodes: " << endl;
+    count = 0;
+    MAP_FOR_ALL_KEYS((Edges2Nodes[edgeIdx]), uint, uint, nodeIdx) {
+      cout << nodeIdx << "    ";
+      if (count > 0 && count % 4 == 0) {
+	cout << endl;
+      }
+      count++;
+    } END_FOR;
+    cout << endl;
+  }
+}
+
+void 
+HyperGraph::PrintSubGraph(vector<uint>& nodeSet) 
+{
+  uint edgeIdx;
+  double edgeWeight;
+  void *nodeObj;
+  uint nodeIdx;
+
+  VECTOR_FOR_ALL_ELEMS(nodeSet, uint, nodeIdx) {
+    PrintNode(nodeIdx);
+    cout << endl;
+    nodeObj = GetNodeObject(nodeIdx);
+    HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT((*this), nodeObj, edgeIdx, edgeWeight) {
+      PrintEdge(edgeIdx);
+    } HYPERGRAPH_END_FOR;
+    cout << endl;
+  } END_FOR;
+}
+
+void 
+HyperGraph::PrintEdge(uint edgeIdx)
+{
+  void *nodeObj;
+  void *netObj;
+  uint maxPrintCount = 20;
+  uint count = 0;
+  netObj = GetEdgeObject(edgeIdx);
+  cout << "Edge: " << edgeIdx << " " << (*((Net*)netObj)).NetGetName() << endl;
+  cout << "Nodes: ";
+  HYPERGRAPH_FOR_ALL_NODES_OF_EDGE((*this), edgeIdx, nodeObj) {
+    if (count > maxPrintCount) break;
+    cout << obj2idx[nodeObj] << "(" << (*((Cell *)nodeObj)).CellGetName() << ")  ";
+    count++;
+  } HYPERGRAPH_END_FOR;
+  cout << endl;
+}
+
+void 
+HyperGraph::PrintNode(uint nodeIdx)
+{
+  uint edgeIdx;
+  double edgeWeight;
+  void *nodeObj;
+  void *netObj;
+
+  nodeObj = GetNodeObject(nodeIdx);
+  cout << "Node: " << nodeIdx << "(" << (*((Cell *)nodeObj)).CellGetName() << ")  " << endl;
+  cout << "Edges: ";
+  
+  HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT((*this), nodeObj, edgeIdx, edgeWeight) {
+    netObj = GetEdgeObject(edgeIdx);
+    cout << edgeIdx << "(" << (*((Net*)netObj)).NetGetName() << ")  ";
+  } HYPERGRAPH_END_FOR;
+  cout << endl;
+}
+
+
+uint
+HyperGraph::GetNumNonTopNodes(void)
+{
+  return (nonTopNodes.size());
+}
+
+HyperGraph::HyperGraph() 
+{
+  numEdges = 0;
+  numNodes = 0;
+  eraseClusters = false;
+}
+
 HyperGraph::~HyperGraph() 
 {
+  Node *thisNode;
+  Edge *thisEdge;
+  uint idx;
 
+  MAP_FOR_ALL_ELEMS(idx2Node, uint, Node*, idx, thisNode) {
+    delete thisNode;
+  } END_FOR;
+
+  MAP_FOR_ALL_ELEMS(idx2Edge, uint, Edge*, idx, thisEdge) {
+    delete thisEdge;
+  } END_FOR;
+}
+
+Edge* 
+HyperGraph::GetEdge(uint edgeIdx)
+{
+  return (idx2Edge[edgeIdx]);
+}
+
+Node* 
+HyperGraph::GetNode(uint nodeIdx)
+{
+  return (idx2Node[nodeIdx]);
 }

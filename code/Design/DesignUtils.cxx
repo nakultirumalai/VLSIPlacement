@@ -56,9 +56,11 @@ Design::DesignFileReadHeader(ifstream& file)
   int i;
 
   i = 0;
-  while (!file.eof() && i < 4) {
+  while (!file.eof()) {
     getline(file, buffer);
-    i++;
+    if (buffer == "") {
+      break;
+    }
   }
 }
 
@@ -135,20 +137,48 @@ Design::DesignPlotData(string plotTitle, string plotFileName)
   uint binIdx;
 
   Plot newPlot(plotTitle, plotFileName);
-    newPlot.PlotSetBoundary(*this);
+  newPlot.PlotSetBoundary(*this);
 
-  DESIGN_FOR_ALL_CELLS((*this), cellName, cellPtr) {
+  /*
+  Cell *cell1 = DesignGetNode("o90");  listOfCells.push_back(cell1);
+  Cell *cell2 = DesignGetNode("o89");  listOfCells.push_back(cell2);
+  Cell *cell3 = DesignGetNode("o2138");  listOfCells.push_back(cell3);
+  Cell *cell4 = DesignGetNode("o1778");   listOfCells.push_back(cell4);
+  Cell *cell5 = DesignGetNode("o91");   listOfCells.push_back(cell5);
+  Cell *cell6 = DesignGetNode("o1986"); listOfCells.push_back(cell6);
+  Cell *cell7 = DesignGetNode("o92"); listOfCells.push_back(cell7);
+  */
+
+  map<string, Cell*> DesignCells = (*this).DesignGetCells();
+  map<string, Cell*> DesignClusters = (*this).DesignGetClusters();
+  DesignCells.insert(DesignClusters.begin(), DesignClusters.end());
+  map<string, Cell*>::iterator mapIter;
+  for (mapIter = DesignCells.begin(); mapIter != DesignCells.end(); mapIter++) {
+    cellName = mapIter->first;
+    cellPtr = mapIter->second;
+    if ((*cellPtr).CellIsHidden()) continue;
     if ((*cellPtr).CellIsTerminal()) {
       continue;
     }
+    /*
+    if (cellName != "o90" && cellName != "o89" &&
+	cellName != "o2138" && cellName != "o1778" &&
+	cellName != "o91" && cellName != "o1986" &&
+	cellName != "o92" && cellName != "o1987" &&
+	cellName != "o0") {
+      continue;
+    }
+    */
     cellsToSolve.push_back(cellPtr);
-  } DESIGN_END_FOR;
+  }  
 
   newPlot.PlotAddCells(cellsToSolve);
-
+  
+  /*
   DESIGN_FOR_ALL_BINS((*this), binIdx, binPtr) {
     newPlot.PlotAddBin(*binPtr);
   } DESIGN_END_FOR;
+  */
 
   
   newPlot.PlotWriteOutput();
@@ -166,4 +196,330 @@ Design::DesignClearPseudoNetWeights(void)
     pseudoNetPtr = PseudoNets[idx];
     (*pseudoNetPtr).NetSetWeight(0.0);
   }
+}
+
+/*********************************************************************
+   Given a cell pointer, uses the hypergraph to get a list of 
+   connected cells.
+*********************************************************************/
+vector<Cell*>
+DesignGetConnectedCells(HyperGraph &myGraph, Cell *cellPtr)
+{
+  uint count;
+  vector<void*> connectedCells;
+  vector<Cell*> returnCells;
+  map<Cell*, bool> addedCells;
+  Cell *connectedCellPtr;
+
+  count = 0;
+  connectedCells = myGraph.GetConnectedNodes((void *)cellPtr);
+  VECTOR_FOR_ALL_ELEMS(connectedCells, Cell*, connectedCellPtr) {
+    Cell &thisCell = *connectedCellPtr;
+    if (addedCells.find(connectedCellPtr) != addedCells.end()) {
+      _ASSERT_TRUE("DUPLICATES FOUND!!!");
+      exit(0);
+      continue;
+    }
+    if (thisCell.CellIsHidden()) {
+      continue;
+    }
+    if (thisCell.CellIsTerminal()) {
+      continue;
+    }
+    returnCells.push_back(connectedCellPtr);
+    count++;
+    if (count == 3) {
+      break;
+    }
+  } END_FOR;
+
+  return (returnCells);
+}
+
+int
+DesignReadGlobalPlacementOutput(Design &myDesign, string plFileName)
+{
+
+}
+
+int 
+Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName)
+{
+  int status;
+  char *placerPath; 
+  string placerCommand;
+  string oldPlFileName;
+
+  placerPath = getenv("NTUPLACE_FULL_PATH");
+  status = chdir(clusterDirName.data());
+  if (status == -1) {
+    cout << "Error: Cannot change directory into clustered design's path" << endl;
+    exit(0);
+  }
+
+  if (placerPath == NIL(char *)) {
+    placerCommand = "~/Downloads/ntuplace/NTUPlace3/ntuplace3";
+  } else {
+    placerCommand = placerPath;
+  }
+  
+  placerCommand += " -aux ./" + clusterDesName + ".aux | tee NTUPlaceGPLog";
+  status = system(placerCommand.data());
+
+  oldPlFileName = this->DesignPlFileName;
+  this->DesignPlFileName = clusterDesName + ".gp.pl";
+  DesignReadCellPlacement(true);
+  this->DesignPlFileName = oldPlFileName;
+
+  chdir("..");
+
+  return (status);
+}
+
+int 
+Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)
+{
+  int status;
+  char *placerPath; 
+  string placerCommand;
+  string oldPlFileName;
+
+  placerPath = getenv("FASTPLACE_GP_FULL_PATH");
+  status = chdir(clusterDirName.data());
+  if (status == -1) {
+    cout << "Error: Cannot change directory into clustered design's path" << endl;
+    exit(0);
+  }
+
+  if (placerPath == NIL(char *)) {
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_GP";
+  } else {
+    placerCommand = placerPath;
+  }
+  
+  placerCommand += " . " + clusterDesName + ".aux . | tee FastPlaceGPLog";
+  status = system(placerCommand.data());
+
+  oldPlFileName = this->DesignPlFileName;
+  this->DesignPlFileName = clusterDesName + "_FP_gp.pl";
+  DesignReadCellPlacement(true);
+  this->DesignPlFileName = oldPlFileName;
+  
+  chdir("..");
+
+  return (status);
+}
+
+int 
+Design::DesignRunMPL6(string clusterDirName, string clusterDesName)
+{
+  int status;
+  char *placerPath; 
+  string placerCommand;
+  string oldPlFileName;
+
+  placerPath = getenv("MPL6_FULL_PATH");
+  status = chdir(clusterDirName.data());
+  if (status == -1) {
+    cout << "Error: Cannot change directory into clustered design's path" << endl;
+    exit(0);
+  }
+
+  if (placerPath == NIL(char *)) {
+    placerCommand = "~/Downloads/mPL6-release/mPL6";
+  } else {
+    placerCommand = placerPath;
+  }
+  
+  placerCommand += " -d ./" + clusterDesName + ".aux . | tee mPL6PlaceGPLog";
+  status = system(placerCommand.data());
+
+  oldPlFileName = this->DesignPlFileName;
+  this->DesignPlFileName = clusterDesName + "-mPL-gp.pl";
+  DesignReadCellPlacement(true);
+  this->DesignPlFileName = oldPlFileName;
+  
+  chdir("..");
+
+  return (status);
+}
+
+/*********************************************************************
+  COMPUTES THE FORCE ON A CELL. THE TOTAL X AND Y FORCE ARE RETURNED.
+  THE TOTAL MAGNITUDE ON THE FORCE IS ALSO RETURNED. 
+
+  IN COMPUTING THE FORCE, NETS AS KEYS IN SKIPNETS ARE SKIPPED.
+*********************************************************************/
+void
+Design::DesignComputeForceOnCell(Cell *thisCell, double &totalXForce, 
+				 double &totalYForce, double &magnitude,
+				 char &forceDir,
+				 double &chipBoundRight, double &chipBoundLeft, 
+				 double &chipBoundTop, double &chipBoundBot,
+				 uint minx, uint miny, uint maxx, uint maxy,
+				 map<Net *, uint>& skipNets)
+{
+  Pin *pini, *pinj;
+  double celliXPos, celliYPos, celljXPos, celljYPos;
+  double piniXOffset, piniYOffset, pinjXOffset, pinjYOffset;
+  double diffCellXPos, diffCellYPos, diffPinXOffPos, diffPinYOffPos;
+  double totalXDiffDist, totalYDiffDist;
+  double netWeight;
+
+  totalXForce = 0.0;
+  totalYForce = 0.0;
+  magnitude = 0.0;
+  forceDir = FORCE_DIR_NO_FORCE;
+  chipBoundLeft = 0;
+  chipBoundRight = 0;
+  chipBoundTop = 0;
+  chipBoundBot = 0;
+  diffCellXPos = 0.0;
+  diffCellYPos = 0.0;
+
+  /* CAN CHANGE WITH NET MODEL */
+  CELL_FOR_ALL_PINS((*thisCell), PIN_DIR_ALL, pini) {
+    Net &connectedNet = (*pini).PinGetNet();
+    netWeight = connectedNet.NetGetWeight();
+    piniXOffset = (*pini).PinGetXOffset();
+    piniYOffset = (*pini).PinGetYOffset();
+    _KEY_EXISTS(skipNets, &connectedNet) {
+      continue;
+    }
+    NET_FOR_ALL_PINS(connectedNet, pinj) {
+      Cell &connectedCell = ((*pinj).PinGetParentCell());
+      if (pinj == pini) continue;
+      pinjXOffset = (*pinj).PinGetXOffset();
+      pinjYOffset = (*pinj).PinGetYOffset();
+      diffCellXPos -= netWeight * (celliXPos + piniXOffset);
+      diffCellYPos -= netWeight * (celliYPos + piniYOffset);
+      if (!connectedCell.CellIsTerminal()) {
+        celljXPos = CellGetDblX(&connectedCell);
+        celljYPos = CellGetDblY(&connectedCell);
+      } else {
+        celljXPos = connectedCell.CellGetXpos();
+        celljYPos = connectedCell.CellGetYpos();
+      }
+      diffCellXPos += netWeight * (celljXPos + pinjXOffset);
+      diffCellYPos += netWeight * (celljYPos + pinjYOffset);
+    } NET_END_FOR;
+  } CELL_END_FOR;
+
+  totalXForce = diffCellXPos;
+  totalYForce = diffCellYPos;
+  int intXForce, intYForce;
+  intXForce = dtoi(totalXForce); intYForce = dtoi(totalYForce);
+  if (intXForce == 0 && intYForce == 0) {
+    totalXForce = intXForce;
+    totalYForce = intYForce;
+    return;
+  }
+  magnitude = sqrt((totalXForce * totalXForce + totalYForce * totalYForce));
+  /* Find the equation of the line y = mx + c and its intersection 
+     with the chip boundaries */
+  double m, c;
+  if (intXForce == 0) {
+    m = 0;
+    chipBoundLeft = -MAX_DBL;
+    chipBoundRight = -MAX_DBL;
+    chipBoundTop = maxx;
+    chipBoundBot = 0.0;
+    if (intYForce > 0) {
+      forceDir = FORCE_DIR_TOP;
+    } else if (intYForce < 0) {
+      forceDir = FORCE_DIR_BOT;
+    }
+  } else if (intYForce == 0)  {
+    chipBoundTop = -MAX_DBL;
+    chipBoundBot = -MAX_DBL;
+    chipBoundLeft = 0.0;
+    chipBoundRight = maxy;
+    if (intXForce > 0) {
+      forceDir = FORCE_DIR_RIGHT;
+    } else if (intXForce < 0) {
+      forceDir = FORCE_DIR_LEFT;
+    }
+  } else {
+    m = ((double)intYForce) / intXForce;
+    c = (celliYPos - m * celliXPos);
+    DesignGetBoundingBox(maxx, maxy);
+    /* x-Coordinate of the top boundary */
+    chipBoundTop = (maxy - c)/m;
+    chipBoundLeft = c;
+    chipBoundRight = (maxx * m) + c;
+    chipBoundBot = -c / m;
+    if (intXForce > 0 && intYForce > 0) {
+      forceDir = FORCE_DIR_FIRST_QUAD;
+    } else if (intXForce < 0 && intYForce > 0) {
+      forceDir = FORCE_DIR_SECOND_QUAD;
+    } else if (intXForce < 0 && intYForce < 0) {
+      forceDir = FORCE_DIR_THIRD_QUAD;
+    } else if (intXForce > 0 && intYForce < 0) {
+      forceDir = FORCE_DIR_FOURTH_QUAD;
+    }
+  }
+}
+
+void
+Design::DesignGetBoundaryPoints(double cellXpos, double cellYpos, double magnitude,
+				double &totalXForce, double &totalYForce, 
+				char &forceDir, double &chipBoundLeft, double &chipBoundRight, 
+				double &chipBoundTop, double &chipBoundBot,
+				double &netWeight, 
+				uint minx, uint miny, uint maxx, uint maxy,
+				double &fpX, double &fpY)
+{
+  double spreadForce;
+  double portXForce, portYForce;
+  double springConstant;
+  fpX = 0.0;
+  fpY = 0.0;
+  springConstant = 0.0;
+
+  switch (forceDir) {
+  case FORCE_DIR_NO_FORCE: return;
+  case FORCE_DIR_LEFT: fpX = maxx;
+    fpY = chipBoundRight; break;
+  case FORCE_DIR_RIGHT: fpX = minx;
+    fpY = chipBoundLeft; break;
+  case FORCE_DIR_TOP: fpY = miny;
+    fpX = chipBoundBot; break;
+  case FORCE_DIR_BOT: fpY = maxy;
+    fpX = chipBoundTop; break;
+  case FORCE_DIR_FIRST_QUAD:
+    if (chipBoundLeft <= miny) {
+      fpX = chipBoundBot; fpY = 0.0;
+    } else if (chipBoundBot <= minx) {
+      fpX = 0; fpY = chipBoundLeft;
+    }
+    break;
+  case FORCE_DIR_SECOND_QUAD:
+    if (chipBoundRight <= miny) {
+      fpX = chipBoundBot; fpY = miny;
+    } else if (chipBoundBot >= maxx) {
+      fpX = maxx; fpY = chipBoundRight;
+    }
+    break;
+  case FORCE_DIR_THIRD_QUAD:
+    if (chipBoundTop >= maxx) {
+      fpX = maxx; fpY = chipBoundRight;
+    } else if (chipBoundRight >= maxy) {
+      fpX = chipBoundTop; fpY = maxy;
+    }
+    break;
+  case FORCE_DIR_FOURTH_QUAD:
+    if (chipBoundLeft >= maxy) {
+      fpX = chipBoundTop; fpY = maxy;
+    } else if (chipBoundTop <= minx) {
+      fpX = minx; fpY = chipBoundLeft;
+    }
+    break;
+  default: cout << "DEFAULT CASE NOT EXPECTED" << endl;
+    exit(0);
+  };
+
+  portXForce = fpX - cellXpos;
+  portYForce = fpY - cellYpos;
+  spreadForce = sqrt(portXForce * portXForce + portYForce * portYForce);
+  springConstant = magnitude / spreadForce;
 }

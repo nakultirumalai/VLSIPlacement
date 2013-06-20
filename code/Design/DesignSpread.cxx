@@ -1,14 +1,4 @@
 # include <Design.h>
-# define FORCE_DIR_NO_FORCE 0
-# define FORCE_DIR_FIRST_QUAD 1
-# define FORCE_DIR_SECOND_QUAD 2
-# define FORCE_DIR_THIRD_QUAD 3
-# define FORCE_DIR_FOURTH_QUAD 4
-# define FORCE_DIR_RIGHT 5
-# define FORCE_DIR_LEFT 6
-# define FORCE_DIR_TOP 7
-# define FORCE_DIR_BOT 8
-# define MAX_DBL 1000000000000000
 
 void
 Design::DesignGetForceOnCell(Cell &thisCell,

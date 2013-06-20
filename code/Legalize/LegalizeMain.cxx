@@ -375,8 +375,8 @@ LegalizeFindZonesInRow(PhysRow* row, vector<Zone*> &zones,
 	    Obj->CellSetXpos(newXpos);
 	  }
 	}	    
-      }END_FOR;
-    }END_FOR;
+      } END_FOR;
+    } END_FOR;
   } else{
     /* Write processing logic for cells which are in a
        completely blocked row */
@@ -1032,7 +1032,7 @@ LegalizeAugPathAlgoNew(HyperGraph &myGraph, LegalizeBin *suppNode, vector<Legali
   bool sameZone;
 
   numEdges = myGraph.GetNumEdges();
-  numNodes = myGraph.HyperGraphGetNumNodes();
+  numNodes = myGraph.GetNumNodes();
   iteration = 0;
 
   vector<map<Cell*, double> > chosenCells(numEdges);
@@ -1075,7 +1075,7 @@ LegalizeAugPathAlgoNew(HyperGraph &myGraph, LegalizeBin *suppNode, vector<Legali
     if (currentNode != suppNode) {
       /* Compute the new b(v) */
       prevNode = pathMap[currentNode];
-      edgeIdx = (int)myGraph.HyperGraphNodesAreAdjacent((void*)prevNode, (void*)currentNode);
+      edgeIdx = (int)myGraph.NodesAreAdjacent((void*)prevNode, (void*)currentNode);
       if (edgeIdx == -1) {
 	cout << "SEVERE ERROR: Previous node";
 	LegalizePrintBinData(prevNode);
@@ -1123,7 +1123,7 @@ LegalizeAugPathAlgoNew(HyperGraph &myGraph, LegalizeBin *suppNode, vector<Legali
     /* Iterate over all the adjacent nodes of the current node */
     NodeObj = (void *)currentNode;
     HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(myGraph, NodeObj, edgeIdx, weight){
-      adjacentNode = (LegalizeBin*)myGraph.GraphGetOtherNodeOfEdge(edgeIdx, NodeObj);
+      adjacentNode = (LegalizeBin*)myGraph.GetOtherNodeOfEdge(edgeIdx, NodeObj);
       /* If the adjacent nodes is one of the used nodes, do not go there */
       _KEY_EXISTS(usedNodes, adjacentNode) {
 	continue;
@@ -1222,7 +1222,7 @@ LegalizeAugPathAlgoNew(HyperGraph &myGraph, LegalizeBin *suppNode, vector<Legali
     binX = (*nextBin).BinGetBegin();
     binY = (*nextBin).BinGetBot();
 
-    edgeIdx = myGraph.HyperGraphNodesAreAdjacent((void*)currentBin, (void*)nextBin);
+    edgeIdx = myGraph.NodesAreAdjacent((void*)currentBin, (void*)nextBin);
     cellsToMove = chosenCells[edgeIdx];
     vector<Cell*> cellsCurrBin = (*currentBin).BinGetCellsInBin();
     Cell *thisCell;
@@ -1462,7 +1462,7 @@ LegalizeDesign(Design &myDesign)
       /* If bin is unblocked add it to the graph */
       isUnblocked = (*thisBin).BinGetEmpty();
       if (isUnblocked) {
-	myGraph.HyperGraphAddNode((void*)thisBin);
+	myGraph.AddNode((void*)thisBin);
       }
     } END_FOR;
   } END_FOR;
@@ -1489,7 +1489,7 @@ LegalizeDesign(Design &myDesign)
 	  } else {
 	    oneEdge.push_back((void*)thisBin);
 	    oneEdge.push_back((void*)topBin);
-	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    myGraph.AddEdge(oneEdge, NIL(void*), WEIGHT);
 	    oneEdge.clear();
 	  }
 	}
@@ -1498,7 +1498,7 @@ LegalizeDesign(Design &myDesign)
 	  } else {
 	    oneEdge.push_back((void*)thisBin);
 	    oneEdge.push_back((void*)botBin);
-	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    myGraph.AddEdge(oneEdge, NIL(void*), WEIGHT);
 	    oneEdge.clear();
 	  }
 	}
@@ -1507,7 +1507,7 @@ LegalizeDesign(Design &myDesign)
 	  } else {
 	    oneEdge.push_back((void*)thisBin);
 	    oneEdge.push_back((void*)leftBin);
-	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    myGraph.AddEdge(oneEdge, NIL(void*), WEIGHT);
 	    oneEdge.clear();
 	  }
 	}
@@ -1516,7 +1516,7 @@ LegalizeDesign(Design &myDesign)
 	  } else {
 	    oneEdge.push_back((void*)thisBin);
 	    oneEdge.push_back((void*)rightBin);
-	    myGraph.HyperGraphAddEdge(oneEdge, NIL(void*), WEIGHT);
+	    myGraph.AddEdge(oneEdge, NIL(void*), WEIGHT);
 	    oneEdge.clear();
 	  }
 	}

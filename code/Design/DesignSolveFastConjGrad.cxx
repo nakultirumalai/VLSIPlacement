@@ -1,5 +1,4 @@
 # include <Design.h>
-# include <ConjGradSolver.h>
 
 void
 getObjFuncInConjGradFormat(Design &myDesign, HyperGraph &myGraph,
@@ -55,7 +54,7 @@ getObjFuncInConjGradFormat(Design &myDesign, HyperGraph &myGraph,
   /* Dump the hessian and the constant matrices into a file */
   if (DesignEnv.EnvGetDumpHessian()) {
     string hessDir, hessFile, bMatFile;
-    hessDir = "/home/nakul/thesis/VLSIPlacement/code/SolverTest/" + DesignEnv.EnvGetDesignName();
+    hessDir = "SolverTest/" + DesignEnv.EnvGetDesignName();
     if (!dirExists(hessDir)) {
       if (!(0 == mkdir(hessDir.data(), S_IRWXU | S_IRWXG | S_IRWXO))) {
 	cout << "Error: Directory does not exist. Cannot create directory!!" << endl;
@@ -194,7 +193,7 @@ Design::DesignSolveForAllCellsConjGradIter(void)
   /**************************************************************/
   prevPeakUtil = 0.0;
   itrCount = 0;
-  stopThreshold = 0.1;
+  stopThreshold = 1;
   _STEP_BEGIN("Analytical solve and spread iterations");
   while (1) {
     /**************************************************************/
@@ -278,12 +277,10 @@ Design::DesignSolveForAllCellsConjGradIter(void)
     /**************************************************************/
     /* STOPPING CONDITION                                         */
     /**************************************************************/
-    if ((itrCount < 0) || 
-	((prevPeakUtil > peakUtilization) && 
-	 ((prevPeakUtil - peakUtilization) < stopThreshold))) {
-      cout << "Global placement complete" << endl;
-      plotFileName = DesignName + ".gp.plt";
-      DesignPlotData("Title", plotFileName);
+    if (itrCount < 0) {
+      break;
+    }
+    if ((prevPeakUtil > peakUtilization) && ((prevPeakUtil - peakUtilization) < stopThreshold)) {
       break;
     } else {
       prevPeakUtil = peakUtilization;
@@ -367,6 +364,10 @@ Design::DesignSolveForAllCellsConjGradIter(void)
       x[i] = 0.0;
       y[i] = 0.0;
     }
-  }
+}
+cout << "Global placement complete" << endl;
+plotFileName = DesignName + ".gp.plt";
+DesignPlotData("Title", plotFileName);
+
   _STEP_END("Analytical solve and spread iterations");
 }
