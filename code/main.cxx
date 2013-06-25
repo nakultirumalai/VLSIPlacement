@@ -4,10 +4,7 @@
 # include <Stat.h>
 # include <Flags.h>
 # include <Legalize.h>
-# include <lemon/list_graph.h>
 # include <Env.h>
-
-using namespace lemon;
 
 void
 printStartBanner(void)
@@ -143,8 +140,12 @@ printTimeUsage(Env &topEnv)
               a) fastplace
               b) ourplacer
 
+        -output : This option specifies the output file into which the 
+              placement solution should be written out. The complete 
+              file path must be given.
+
        -help: Prints out information about the tool
-***********************************************************************/
+**********************************************************************/
 bool
 parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 {
@@ -284,6 +285,9 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 	   << "\"fastplace\", \"ourplacer\"" 
 	   << endl;
     }
+  } else if (switchName == "output") {
+    rtv = true;
+    topEnv.EnvSetOutputPath(ENV_SET_OUTPUT_PATH);
   } else if (switchName == "help") {
     cout << "To execute the tool, use the following options:" << endl;
     cout << endl << "-trace_depth: Given a trace depth, prints cputime and memory for all routines " << endl;
@@ -303,14 +307,13 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 int placeMain(Env &topEnv)
 {
   string DesignName, DesignPath;
-  
   /* Initialize the flags here */
   FlagsInit();
   
   /* Get the design's name and path from the environment */
   DesignName = topEnv.EnvGetDesignName();
   DesignPath = topEnv.EnvGetDesignPath();
-
+  
   /* Create the design */
   Design myDesign(DesignPath, DesignName, topEnv);
 
@@ -358,8 +361,9 @@ int placeMain(Env &topEnv)
   /****************************************************
    *  WRITE THE FINAL PLACEMENT                       *
    ****************************************************/
-  DesignWriteOutputPlacement(myDesign); 
-
+  string outputFileName = topEnv.EnvGetOutputFileName();
+  DesignWriteOutputPlacement(myDesign, outputFileName); 
+  
   topEnv = DesignEnv;
   return 0;
 }
