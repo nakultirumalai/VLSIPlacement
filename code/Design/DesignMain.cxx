@@ -114,8 +114,14 @@ Design::DesignAddOneCellToDesignDB(Cell *newCell)
 void
 Design::DesignAddOneClusterToDesignDB(Cell *clusterCell)
 {
-  DesignClusters[(*clusterCell).CellGetName()] = clusterCell;
-  this->NumClusters++;
+  string cellName;
+  
+  cellName = (*clusterCell).CellGetName();
+
+  _KEY_DOES_NOT_EXIST(DesignClusters, cellName) {
+    DesignClusters[cellName] = clusterCell;
+    this->NumClusters++;
+  }
 }
 
 void
@@ -161,10 +167,25 @@ void
 Design::DesignRemoveOneClusterFromDesignDB(Cell *clusterCell)
 {
   string clusterCellName = (*clusterCell).CellGetName();
+
   _KEY_EXISTS(DesignClusters, clusterCellName) {
     DesignClusters.erase(clusterCellName);
     this->NumClusters--;
   }
+}
+
+void
+Design::DesignDeleteCell(Cell *cellPtr)
+{
+  //  return;
+  delete cellPtr;
+}
+
+void
+Design::DesignDeletePin(Pin *pinPtr)
+{
+  //  return;
+  delete pinPtr;
 }
 
 void
@@ -460,11 +481,12 @@ Design::DesignHideNet(Net *netPtr)
   string netName;
   
   netName = (*netPtr).NetGetName();
-  (*netPtr).NetSetIsHidden(true);
-  DesignNets.erase(netName);
-  DesignHiddenNets[netName] = netPtr;
-  
-  this->NumNets--;
+  _KEY_DOES_NOT_EXIST(DesignHiddenNets, netName) {
+    (*netPtr).NetSetIsHidden(true);
+    DesignNets.erase(netName);
+    DesignHiddenNets[netName] = netPtr;
+    this->NumNets--;
+  }
 }
 
 void
@@ -474,10 +496,11 @@ Design::DesignUnhideNet(Net *netPtr)
   
   netName = (*netPtr).NetGetName();
   (*netPtr).NetSetIsHidden(false);
-  DesignNets[netName] = netPtr;
-  DesignHiddenNets.erase(netName);
-  
-  this->NumNets++;
+  _KEY_EXISTS(DesignHiddenNets, netName) {
+    DesignNets[netName] = netPtr;
+    DesignHiddenNets.erase(netName);
+    this->NumNets++;
+  }
 }
 
 void
@@ -486,9 +509,11 @@ Design::DesignHideCell(Cell *thisCell)
   string cellName;
   
   cellName = (*thisCell).CellGetName();
-  (*thisCell).CellSetIsHidden(true);
-  DesignHiddenCells[cellName] = thisCell;
-  this->NumHiddenCells++;
+  _KEY_DOES_NOT_EXIST(DesignHiddenCells, cellName) {
+    (*thisCell).CellSetIsHidden(true);
+    DesignHiddenCells[cellName] = thisCell;
+    this->NumHiddenCells++;
+  }
 }
 
 void
@@ -677,7 +702,9 @@ Design::DesignGetNumTerminalCells(void)
 {
   unsigned int rtv;
   
-  rtv = this->NumTerminalCells;
+  rtv = NumTerminalCells;
+  
+  return (rtv);
 }
 
 unsigned int
@@ -905,10 +932,11 @@ Design::Design()
   DesignInit();
 }
 
-Design::Design(string DesignPath, string DesignName)
+Design::Design(string DesignPath, string DesignName, Env &designEnv)
 {
   DesignInit();
 
+  DesignSetEnv(designEnv);
   DesignReadDesign(DesignPath, DesignName);
 }
 

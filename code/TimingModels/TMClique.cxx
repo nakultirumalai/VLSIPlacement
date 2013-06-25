@@ -493,6 +493,7 @@ getObjectiveCliqueModelXYForCluster(vector<Net*> &internalNets, vector<Cell*> &i
   double yOffi, yOffj, celljy, dOffy;
   double xOffi, xOffj, celljx, dOffx;
   map<Cell *, uint> cellLookupMap;
+  map<Cell *, uint>::iterator lookupItr;
   map<uint, uint> squaredTermsMap;
   map<uint, uint> linearTermsMap;
   map<uint, uint>::iterator itrUintUint;
@@ -517,7 +518,11 @@ getObjectiveCliqueModelXYForCluster(vector<Net*> &internalNets, vector<Cell*> &i
       Cell &celli = (*pinPtri).PinGetParentCell();
       cellPtri = &celli;
       /* Get the index of the cell */
-      cellIdxi = cellLookupMap[cellPtri];
+      _KEY_EXISTS_WITH_VAL(cellLookupMap, cellPtri, lookupItr) {
+	cellIdxi = lookupItr->second;
+      } else {
+	continue;
+      }
       coeffX = edgeWeight;
       coeffY = edgeWeight;
       /* Mark the pin as visited */
@@ -528,8 +533,12 @@ getObjectiveCliqueModelXYForCluster(vector<Net*> &internalNets, vector<Cell*> &i
 	if (cellPtri == cellPtrj) continue;
 	/* Skip the visited pins for clique type traversal */
 	_KEY_EXISTS(visitedPins, pinPtrj) continue;
-	_KEY_EXISTS(cellLookupMap, cellPtrj) cellIdxj = cellLookupMap[cellPtrj];
-	else cellIdxj = -1;
+	/* Get the index of the cell */
+	_KEY_EXISTS_WITH_VAL(cellLookupMap, cellPtrj, lookupItr) {
+	  cellIdxj = lookupItr->second;
+	} else {
+	  cellIdxj = -1;
+	}
 	_KEY_EXISTS_WITH_VAL(squaredTermsMap, cellIdxi, itrUintUint) {
 	  valij_vecx[itrUintUint->second] += coeffX;
 	  valij_vecy[itrUintUint->second] += coeffY;
@@ -565,13 +574,15 @@ getObjectiveCliqueModelXYForCluster(vector<Net*> &internalNets, vector<Cell*> &i
 
 	dOffy = yOffi - yOffj;
 	dOffx = xOffi - xOffj;
-	_KEY_EXISTS_WITH_VAL(linearTermsMap, cellIdxj, itrUintUint) {
-	  val_vecx[itrUintUint->second] += (-(dOffx * coeffX));
-	  val_vecy[itrUintUint->second] += (-(dOffy * coeffY));
-	} else {
-	  sub_vecx.push_back(cellIdxj); val_vecx.push_back(-(dOffx * coeffX));
-	  sub_vecy.push_back(cellIdxj); val_vecy.push_back(-(dOffy * coeffY));
-	  linearTermsMap[cellIdxj] = val_vecx.size() - 1;
+	if (cellIdxj > 0) {
+	  _KEY_EXISTS_WITH_VAL(linearTermsMap, cellIdxj, itrUintUint) {
+	    val_vecx[itrUintUint->second] += (-(dOffx * coeffX));
+	    val_vecy[itrUintUint->second] += (-(dOffy * coeffY));
+	  } else {
+	    sub_vecx.push_back(cellIdxj); val_vecx.push_back(-(dOffx * coeffX));
+	    sub_vecy.push_back(cellIdxj); val_vecy.push_back(-(dOffy * coeffY));
+	    linearTermsMap[cellIdxj] = val_vecx.size() - 1;
+	  }
 	}
 	_KEY_EXISTS_WITH_VAL(linearTermsMap, cellIdxi, itrUintUint) {
 	  val_vecx[itrUintUint->second] += (dOffx * coeffX);

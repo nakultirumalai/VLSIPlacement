@@ -15,6 +15,7 @@ Design::DesignCreateGraph(HyperGraph& thisGraph)
   Net *NetPtr;
   Pin *PinPtr;
   string Name;
+  Env &DesignEnv = DesignGetEnv();
 
   /* First add all the nodes */
   DESIGN_FOR_ALL_CELLS((*this), Name, CellPtr) {

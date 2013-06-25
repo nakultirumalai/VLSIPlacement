@@ -5,36 +5,60 @@ Design::DesignCoarsenNetlist(void)
 {
   Cell *cellPtr;
   Pin *pinPtr;
-  vector<Cell *> listOfCells;
   Env &DesignEnv = this->DesignEnv;
-  string DesignName, cellName;
-  string clustDir;
   uint numPinsBefore, numPinsAfter;
 
   numPinsBefore = 0; numPinsAfter = 0;
   cout << "Coarsening netlist" << endl;
   HyperGraph &myGraph = DesignGetGraph();
-  //DesignDoClusterTest();
   DesignDoBestChoiceClustering(myGraph);
   cout << "Finished coarsening" << endl;
-  
   /* Rebuild hypergraph after coarsening */
   cout << "Rebuilding hypergraph.." << endl;
-  
   DesignRebuildGraph();
   HyperGraph &myGraph2 = DesignGetGraph();
-  cout << "After clustering:" << endl
-       << " Number of nodes:" << myGraph2.GetNumNodes() << endl
-       << " Number of edges:" << myGraph2.GetNumEdges() 
-       << endl;
-  DesignName = DesignEnv.EnvGetDesignName();
+  //  cout << "After clustering:" << endl
+  //       << " Number of nodes:" << myGraph2.GetNumNodes() << endl
+  //       << " Number of edges:" << myGraph2.GetNumEdges() 
+  //       << endl;
+}
 
-  /* Write out the output of the clustered netlist here */
-  clustDir = "." + DesignName + "_clust";
-  makeDir(clustDir);
-  chdir(clustDir.data());
-  DesignWriteBookShelfOutput((*this), (DesignName + "_clust"));
-  chdir("..");
+void
+Design::DesignCollapseClusters(void)
+{
+  Cell *cellPtr;
+  Cluster *clusterOfCell;
+  vector<Cell*> cellsToSolve;
+  Env &DesignEnv = this->DesignEnv;
+  string DesignName, cellName;
+  string clustDir;
+  HyperGraph &myGraph = DesignGetGraph();
+
+  //  return;
+  if (0) {
+    cellPtr = DesignGetNode("c2405");
+    cellsToSolve.push_back(cellPtr);
+    DesignPlotDataSelected("Before unclustering", "before.plt", cellsToSolve);
+    clusterOfCell = (Cluster *) CellGetCluster(cellPtr);
+    (*clusterOfCell).PrintCluster();
+    cellsToSolve = (*clusterOfCell).ClusterGetCellsOfCluster();
+    DesignUnclusterCell(cellPtr, /* noDissolve = false */false);
+    DesignPlotDataSelected("After unclustering", "after.plt", cellsToSolve);
+    return;
+  } else {
+    map<string, Cell*> DesignClusterMap = DesignGetClusters();
+    map<string, Cell*>::iterator mapIter;
+    for (mapIter = DesignClusterMap.begin(); mapIter != DesignClusterMap.end(); mapIter++) {
+      cellName = mapIter->first;
+      cellPtr = mapIter->second;
+
+      //    cout << "Unclustering cell " << cellName << endl;
+      //    if (cellName == "c205") {
+      //      cout << "Break here" << endl;
+      //    }
+      DesignUnclusterCell(cellPtr, /* noDissolve = false */false);
+    }
+  }
 }
 
 void
@@ -80,14 +104,16 @@ Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType)
   int statusCode;
   string placerPath;
   string DesignName;
-  string clusterDesignName;
+  string clusterDesignName, clustDir;
 
   Env &topEnv = DesignGetEnv();
   DesignName = topEnv.EnvGetDesignName();
   clusterDesignName = DesignName + "_clust";
+  clustDir = "." + DesignName + "_clust";
+  
+  /* Write out the current clustered netlist into the folder .designName_clust */
+  DesignWriteCurrentNetlist(clustDir, clusterDesignName);
 
-  /* assume that the clustered netlist has been created in 
-     .designName_clust folder */
   if (globalPlacerType == ENV_NTUPLACE_GP) {
     /* Run NTUPlace for global placement. The variable 
        NTUPLACE_FULL_PATH has to be set for NTUPlace to 
@@ -131,19 +157,91 @@ Design::DesignDoGlobalPlacement(void)
   /***************************/
   /* Optional: Do clustering */
   /***************************/
-  ProfilerStart("Start profiler");
+  ProfilerStart("Begin clustering");
+  /* Record start time of clustering */
+  DesignEnv.EnvSetClusteringStartTime();
   DesignCoarsenNetlist();
+  /* Record end time of clustering */
+  DesignEnv.EnvRecordClusteringTime();
   ProfilerStop();
-  return;
 
   _STEP_BEGIN("Global placement");
   /* While doing global placement, it might be necessary to run other 
      placers to do global placement since macro spreading is not 
      yet implemented in our placer */
   if (globalPlacerType == ENV_NO_EXTERNAL_GP) {
+    ProfilerStart("Global placement");
+    /* Record start time of global placement */
+    DesignEnv.EnvSetGlobalPlacementStartTime();
     DesignRunInternalPlacer(solverType);
+    /* Record end time of global placement */
+    DesignEnv.EnvRecordGlobalPlacementTime();
+    ProfilerStop();
   } else {
+    clock_t start, end;
+    double cpuTimeSpent;
+    start = clock();
+    cout << "START TIME: " << start << endl;
+    DesignEnv.EnvSetGlobalPlacementStartTime();
     DesignRunExternalPlacer(globalPlacerType);
+    end = clock();
+    cout << "END TIME: " << start << endl;
+    cpuTimeSpent = ((double) (end - start)) / CLOCKS_PER_SEC;
+    DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
   }
+  //  ProfilerStart("Unclustering");
+  DesignCollapseClusters();
+  //  ProfilerStop();
+
   _STEP_END("Global placement");  
+}
+
+/*************************************************
+  TOP LEVEL FUNCTION TO PERFORM LEGALIZATION
+*************************************************/
+void
+Design::DesignDoLegalization(void)
+{
+  Env &DesignEnv = this->DesignEnv;
+  string dirName;
+  string desName = DesignEnv.EnvGetDesignName();
+  EnvLegalizer legalizerType = DesignEnv.EnvGetLegalizer();
+  
+  switch (legalizerType) {
+  case ENV_BIN_BASED_LEGALIZER:
+    LegalizeDesign(*this);
+    break;
+  case ENV_FAST_PLACE_LEGALIZER:
+    desName = desName + "_leg";
+    dirName = "." + desName;
+    DesignWriteCurrentNetlist(dirName, desName);
+    DesignRunFastPlaceLegalizer(dirName, desName);
+    break;
+  }
+}
+
+/*************************************************
+  TOP LEVEL FUNCTION TO PERFORM DETAILED PLACEMENT
+*************************************************/
+void
+Design::DesignDoDetailedPlacement(void)
+{
+  Env &DesignEnv = this->DesignEnv;
+  string dirName;
+  string desName = DesignEnv.EnvGetDesignName();
+  EnvDetailedPlacer detailedPlacerType = DesignEnv.EnvGetDetailedPlacer();
+  
+  switch (detailedPlacerType) {
+  case ENV_NO_DETAIL_PLACEMENT:
+    break;
+  case ENV_FAST_PLACE_DP:
+    desName = desName + "_dp";
+    dirName = "." + desName;
+    DesignWriteCurrentNetlist(dirName, desName);
+    DesignRunFastPlaceDetailedPlacer(dirName, desName);
+    break;
+  case ENV_OURPLACER_DP:
+    break;
+  default: break;
+  }
 }

@@ -18,12 +18,19 @@
   EdgeWeight = HyperGraph.GetEdgeWeight(EdgeIdx);			
   
 
-# define HYPERGRAPH_FOR_ALL_NODES_OF_EDGE(HyperGraph, EdgeIdx, NodeObj) \
+# define HYPERGRAPH_FOR_ALL_OBJS_OF_EDGE(HyperGraph, EdgeIdx, NodeObj) \
   {									\
   map<uint, uint> NodesOfEdge = HyperGraph.GetNodesOfEdge(EdgeIdx);	\
   map<uint, uint>::iterator nodeItr;					\
   for (nodeItr = NodesOfEdge.begin(); nodeItr != NodesOfEdge.end(); nodeItr++) { \
   NodeObj = HyperGraph.GetNodeObject(nodeItr->first);
+
+# define HYPERGRAPH_FOR_ALL_NODES_OF_EDGE(HyperGraph, EdgeIdx, NodeIndex) \
+  {									\
+  map<uint, uint> NodesOfEdge = HyperGraph.GetNodesOfEdge(EdgeIdx);	\
+  map<uint, uint>::iterator nodeItr;					\
+  for (nodeItr = NodesOfEdge.begin(); nodeItr != NodesOfEdge.end(); nodeItr++) { \
+  NodeIndex = nodeItr->first;
 
 # define HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT(HyperGraph, ObjPtr, EdgeIdx, Weight) \
   {									\

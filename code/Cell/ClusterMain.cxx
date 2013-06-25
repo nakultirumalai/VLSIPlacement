@@ -81,6 +81,12 @@ Cluster::ClusterSetBCellsPlaced(bool bCellsPlaced)
   this->bCellsPlaced = bCellsPlaced;
 }
 
+void
+Cluster::ClusterSetClusterLevel(char clusterLevel)
+{
+  this->clusterLevel = clusterLevel;
+}
+
 uint
 Cluster::ClusterGetNumCells(void)
 {
@@ -127,4 +133,62 @@ bool
 Cluster::ClusterGetBCellsPlaced(void)
 {
   return (this->bCellsPlaced);
+}
+
+char
+Cluster::ClusterGetClusterLevel(void)
+{
+  return (this->clusterLevel);
+}
+
+void
+Cluster::PlotCluster(void)
+{
+
+}
+
+  uint ClusterGetNumCells(void);
+  vector<Cell *>& ClusterGetCellsOfCluster(void);
+  vector<Net *>& ClusterGetInternalNets(void);
+  vector<uint>& ClusterGetBCellIndices(void);
+  vector<uint>& ClusterGetRowNums(void);
+  vector<uint>& ClusterGetXPosInRows(void);
+  map<Pin*, Pin*>& ClusterGetPinMap(void);
+  bool ClusterGetBCellsPlaced(void);
+  char ClusterGetClusterLevel(void);
+
+void
+Cluster::PrintCluster(void)
+{
+  uint numCells, numBCells;
+  uint idx;
+
+  vector<Cell *> &cellsOfCluster = (*this).ClusterGetCellsOfCluster();
+  vector<Net *> &internalNets = (*this).ClusterGetInternalNets();
+  vector<uint> &rowNums = (*this).ClusterGetRowNums();
+  vector<uint> &xposInRows = (*this).ClusterGetXPosInRows();
+  vector<uint> &bCells = (*this).ClusterGetBCellIndices();
+
+  numCells = cellsOfCluster.size();
+  numBCells = bCells.size();
+
+  cout << "*********************************************" << endl;
+  cout << "Printing cluster information: " << endl;
+  cout << "Number of cells:" << cellsOfCluster.size() << endl;
+  cout << "Number of internal nets: " << internalNets.size() << endl;
+  cout << "Number of boundary cells: " << bCells.size() << endl;
+  cout << endl;
+  if (xposInRows.size() != bCells.size()) {
+    _ASSERT_TRUE("Error: Size of vector which stores xposition in rows not equal to size of boundary cell indices");
+  } 
+  if (rowNums.size() != bCells.size()) {
+    _ASSERT_TRUE("Error: Size of vector which stores row numbers is not equal to size of boundary cell indices");
+  }
+  cout << "Printing row numbers and xpos of cells: " << endl;
+  for (idx = 0; idx < numBCells; idx++) {
+    cout << "Boundary Cell Name: " << (*cellsOfCluster[idx]).CellGetName()
+	 << "  Row number: " << rowNums[idx] 
+	 << "  X-position in row: " << xposInRows[idx] << endl;
+  }
+  cout << "*********************************************" << endl;
 }

@@ -22,12 +22,23 @@ Env::Env()
   EnvSetNetModel(DEFAULT_ENV_NET_MODEL);
   EnvSetToolMode(DEFAULT_ENV_TOOL_MODE);
   EnvSetLegalizer(DEFAULT_ENV_LEGALIZER);
+  EnvSetDetailedPlacer(DEFAULT_ENV_DETAIL_PLACEMENT);
   EnvSetOptType(DEFAULT_ENV_OPT_TYPE);
   EnvSetClusterType(DEFAULT_ENV_CLUSTER_TYPE);
+  EnvSetClusterPlacementType(DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE);
+  EnvSetUnclusterType(DEFAULT_ENV_UNCLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
 
   /* Time related variables */
-  StartTime = 0;
+  /* Initialize start times to 0 */
+  NetlistReadStartTime = 0;
+  HyperGraphBuildStartTime = 0;
+  ClusteringStartTime = 0;
+  GlobalPlacementStartTime = 0;
+  LegalizationStartTime = 0;
+  ShapeSelectionStartTime = 0;
+  DetailedPlacementStartTime = 0;
+
   NetlistReadTime = 0;
   HyperGraphBuildTime = 0;
   ClusteringTime = 0;
@@ -42,25 +53,96 @@ Env::~Env()
 
 }
 
-void
-Env::EnvSetStartTime(void)
+void 
+Env::EnvSetNetlistReadStartTime(void)
 {
-  this->StartTime = getCPUTime();
+  this->NetlistReadStartTime = getCPUTime();
 }
 
-double
-Env::EnvGetStartTime(void)
+double 
+Env::EnvGetNetlistReadStartTime(void)
 {
-  return (StartTime);
+  return (this->NetlistReadStartTime);
+}
+
+void 
+Env::EnvSetHyperGraphBuildStartTime(void)
+{
+  this->HyperGraphBuildStartTime = getCPUTime();
+}
+double 
+Env::EnvGetHyperGraphBuildStartTime(void)
+{
+  return (this->HyperGraphBuildStartTime);
+}
+  
+void 
+Env::EnvSetClusteringStartTime(void)
+{
+  this->ClusteringStartTime = getCPUTime();
+}
+
+double 
+Env::EnvGetClusteringStartTime(void)
+{
+  return (this->ClusteringStartTime);
+}
+  
+void 
+Env::EnvSetGlobalPlacementStartTime(void)
+{
+  this->GlobalPlacementStartTime = getCPUTime();
+}
+
+double 
+Env::EnvGetGlobalPlacementStartTime(void)
+{
+  return (this->GlobalPlacementStartTime);
+}
+
+void 
+Env::EnvSetLegalizationStartTime(void)
+{
+  this->LegalizationStartTime = getCPUTime();
+}
+
+double 
+Env::EnvGetLegalizationStartTime(void)
+{
+  return (this->LegalizationStartTime);
+}
+  
+void 
+Env::EnvSetShapeSelectionStartTime(void)
+{
+  this->ShapeSelectionStartTime = getCPUTime();
+}
+
+double 
+Env::EnvGetShapeSelectionStartTime(void)
+{
+  return (this->ShapeSelectionStartTime);
+}
+
+void 
+Env::EnvSetDetailedPlacementStartTime(void)
+{
+  this->DetailedPlacementStartTime = getCPUTime();
+}
+
+double 
+Env::EnvGetDetailedPlacementStartTime(void)
+{
+  return (this->DetailedPlacementStartTime);
 }
 
 void
-Env::EnvSetNetlistReadTime(void)
+Env::EnvRecordNetlistReadTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
- 
-  NetlistReadTime = currTime - startTime;
+
+  this->NetlistReadTime = 
+    currTime - this->NetlistReadStartTime;
 }
 
 double
@@ -70,27 +152,27 @@ Env::EnvGetNetlistReadTime(void)
 }
 
 void
-Env::EnvSetHyperGraphBuildTime(void)
+Env::EnvRecordHyperGraphBuildTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
- 
-  HyperGraphBuildTime = currTime - startTime;
+
+  this->HyperGraphBuildTime = 
+    currTime - this->HyperGraphBuildStartTime;
 }
 
 double
 Env::EnvGetHyperGraphBuildTime(void)
 {
-  this->HyperGraphBuildTime;
+  return (this->HyperGraphBuildTime);
 }
 
 void
-Env::EnvSetClusteringTime(void)
+Env::EnvRecordClusteringTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
- 
-  ClusteringTime = currTime - startTime;
+
+  this->ClusteringTime = 
+    currTime - this->ClusteringStartTime;
 }
 
 double 
@@ -99,13 +181,20 @@ Env::EnvGetClusteringTime(void)
   return (this->ClusteringTime);
 }
 
-void
-Env::EnvSetGlobalPlacementTime(void)
+void 
+Env::EnvRecordGlobalPlacementTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
-  
-  GlobalPlacementTime = currTime - startTime;
+
+  this->GlobalPlacementTime += 
+    currTime - this->GlobalPlacementStartTime;
+}
+
+void 
+Env::EnvRecordGlobalPlacementTime(double currTime)
+{
+  this->GlobalPlacementTime += 
+    currTime - this->GlobalPlacementStartTime;
 }
 
 double 
@@ -115,27 +204,27 @@ Env::EnvGetGlobalPlacementTime(void)
 }
 
 void
-Env::EnvSetLegalizationTime(void)
+Env::EnvRecordLegalizationTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
 
-  LegalizationTime = currTime - startTime;
+  this->LegalizationTime = 
+    currTime - this->LegalizationStartTime;
 }
 
 double
 Env::EnvGetLegalizationTime(void)
 {
-  return (this->LegalizationTime);
+  return this->LegalizationTime;
 }
 
 void
-Env::EnvSetShapeSelectionTime(void)
+Env::EnvRecordShapeSelectionTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
 
-  ShapeSelectionTime = currTime - startTime;
+  this->ShapeSelectionTime = 
+    currTime - this->ShapeSelectionStartTime;
 }
 
 double
@@ -145,18 +234,18 @@ Env::EnvGetShapeSelectionTime(void)
 }
 
 void
-Env::EnvSetDetailedPlacementTime(void)
+Env::EnvRecordDetailedPlacementTime(void)
 {
-  double startTime = EnvGetStartTime();
   double currTime = getCPUTime();
 
-  DetailedPlacementTime = currTime - startTime;
+  this->DetailedPlacementTime = 
+    currTime - this->DetailedPlacementStartTime;
 }
 
 double
 Env::EnvGetDetailedPlacementTime(void)
 {
-  return (DetailedPlacementTime);
+  return (this->DetailedPlacementTime);
 }
 
 void 
@@ -382,10 +471,23 @@ Env::EnvSetLegalizer(EnvLegalizer Legalizer)
 {
   this->Legalizer = Legalizer;
 }
+
 EnvLegalizer 
 Env::EnvGetLegalizer(void)
 {
   return Legalizer;
+}
+
+void
+Env::EnvSetDetailedPlacer(EnvDetailedPlacer DetailedPlacer)
+{
+  this->DetailedPlacer = DetailedPlacer;
+}
+
+EnvDetailedPlacer
+Env::EnvGetDetailedPlacer(void)
+{
+  return DetailedPlacer;
 }
 
 void 
@@ -425,15 +527,15 @@ Env::EnvGetClusterPlacementType(void)
 }
 
 void 
-Env::EnvSetUnClusterType(EnvUnClusterType UnClusterType)
+Env::EnvSetUnclusterType(EnvUnclusterType UnclusterType)
 {
-  this->UnClusterType = UnClusterType;
+  this->UnclusterType = UnclusterType;
 }
 
-EnvUnClusterType 
-Env::EnvGetUnClusterType(void)
+EnvUnclusterType 
+Env::EnvGetUnclusterType(void)
 {
-  return UnClusterType;
+  return UnclusterType;
 }
 
 void 

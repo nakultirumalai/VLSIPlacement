@@ -254,6 +254,14 @@ void makeDir(string dirName)
   }
 }
 
+/* Creates a directory if it does not exist */
+void changeDir(string dirName)
+{
+  if (chdir(dirName.data()) != 0) {
+    _ASSERT_TRUE(("Error: Could not change the directory name to " + dirName));
+  }
+}
+
 /* Gets the host name */
 string getHostName(void)
 {

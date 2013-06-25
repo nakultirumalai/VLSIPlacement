@@ -22,7 +22,7 @@ typedef enum {
   ENV_MPL6_GP,
   NUM_ENV_GLOBAL_PLACERS
 } EnvGlobalPlacerType;
-# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
+# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NTUPLACE_GP
 
 /* Define the solver type to be used in the design */
 typedef enum {
@@ -58,9 +58,19 @@ typedef enum {
 typedef enum {
   ENV_SIMPLE_LEGALIZER = 0,
   ENV_BIN_BASED_LEGALIZER,
+  ENV_FAST_PLACE_LEGALIZER,
   NUM_LEGALIZERS
 } EnvLegalizer;
 # define DEFAULT_ENV_LEGALIZER ENV_BIN_BASED_LEGALIZER
+
+/* Define the detailed placer used in the placement tool  */
+typedef enum {
+  ENV_NO_DETAIL_PLACEMENT = 0,
+  ENV_FAST_PLACE_DP,
+  ENV_OURPLACER_DP,
+  NUM_DETAILED_PLACEMENT
+} EnvDetailedPlacer;
+# define DEFAULT_ENV_DETAIL_PLACEMENT ENV_FAST_PLACE_DP
 
 /* Define the type of optimization desired in the placement tool  */
 typedef enum {
@@ -96,10 +106,11 @@ typedef enum {
    cluster */
 typedef enum {
   ENV_UNCLUSTER_PLACE_BOUNDARY = 0,
+  ENV_UNCLUSTER_PLACE_INTERNAL,
   ENV_UNCLUSTER_PLACE_NONE,
   ENV_NUM_UNCLUSTER_TYPES
-} EnvUnClusterType;
-# define DEFAULT_ENV_UNCLUSTER_TYPE ENV_UNCLUSTER_PLACE_BOUNDARY
+} EnvUnclusterType;
+# define DEFAULT_ENV_UNCLUSTER_TYPE ENV_UNCLUSTER_PLACE_INTERNAL
 
 /* Define the type of shape selection desired in the placement tool  */
 typedef enum {
@@ -120,7 +131,13 @@ class Env {
   /***************************************/
   /* A REFERENCE OF A TIME STAMP         */
   /***************************************/
-  double StartTime;
+  double NetlistReadStartTime;
+  double HyperGraphBuildStartTime;
+  double ClusteringStartTime;
+  double GlobalPlacementStartTime;
+  double LegalizationStartTime;
+  double ShapeSelectionStartTime;
+  double DetailedPlacementStartTime;
 
   /***************************************/
   /* VARIABLES FOR RECORDING TIME        */
@@ -214,6 +231,9 @@ class Env {
   EnvToolMode ToolMode;
   /* Decide what type of legalizer has to be used */
   EnvLegalizer Legalizer;
+  /* Decide what type of detailed placement has to be
+     done */
+  EnvDetailedPlacer DetailedPlacer;
   /* Decide what type of optimization cost the tool 
      has to consider */
   EnvOptType OptType;
@@ -222,7 +242,7 @@ class Env {
   /* Decide what the cluster placement type should be */
   EnvClusterPlacementType ClusterPlacementType;
   /* Decide what the unclustering type should be */
-  EnvUnClusterType UnClusterType;
+  EnvUnclusterType UnclusterType;
   /* Decide what the shape selection algorithm type should be */
   EnvShapeSelectionType ShapeSelectionType;
 
@@ -239,33 +259,51 @@ class Env {
   ~Env();
   
   /* Function to set the time stamp and get the time stamp */
-  void EnvSetStartTime(void);
-  double EnvGetStartTime(void);
+  void EnvSetNetlistReadStartTime(void);
+  double EnvGetNetlistReadStartTime(void);
 
-  /* Functions to set netlist statistics */
-  void EnvSetNetlistReadTime(void);
+  void EnvSetHyperGraphBuildStartTime(void);
+  double EnvGetHyperGraphBuildStartTime(void);
+  
+  void EnvSetClusteringStartTime(void);
+  double EnvGetClusteringStartTime(void);
+  
+  void EnvSetGlobalPlacementStartTime(void);
+  double EnvGetGlobalPlacementStartTime(void);
+  
+  void EnvSetLegalizationStartTime(void);
+  double EnvGetLegalizationStartTime(void);
+  
+  void EnvSetShapeSelectionStartTime(void);
+  double EnvGetShapeSelectionStartTime(void);
+
+  void EnvSetDetailedPlacementStartTime(void);
+  double EnvGetDetailedPlacementStartTime(void);
+
+  /* Functions to record times of various  */
+  void EnvRecordNetlistReadTime(void);
   double EnvGetNetlistReadTime(void);
-  
-  void EnvSetHyperGraphBuildTime(void);
-  double EnvGetHyperGraphBuildTime(void);
-  
-  void EnvSetClusteringTime(void);
-  double EnvGetClusteringTime(void);  
 
-  void EnvSetGlobalPlacementTime(void);
+  void EnvRecordHyperGraphBuildTime(void);
+  double EnvGetHyperGraphBuildTime(void);
+
+  void EnvRecordClusteringTime(void);
+  double EnvGetClusteringTime(void);
+
+  void EnvRecordGlobalPlacementTime(void);
+  void EnvRecordGlobalPlacementTime(double);
   double EnvGetGlobalPlacementTime(void);
 
-  void EnvSetLegalizationTime(void);
+  void EnvRecordLegalizationTime(void);
   double EnvGetLegalizationTime(void);
 
-  void EnvSetShapeSelectionTime(void);
+  void EnvRecordShapeSelectionTime(void);
   double EnvGetShapeSelectionTime(void);
 
-  void EnvSetDetailedPlacementTime(void);
+  void EnvRecordDetailedPlacementTime(void);
   double EnvGetDetailedPlacementTime(void);
 
-  /* Functions to set HyperGraphBuildTime */
-  
+  /* Functions to set netlist statistics */
   /* Set and get functions in pairs since its */
   /* easy to specify it that way              */
   void EnvSetDesignName(string);
@@ -328,6 +366,9 @@ class Env {
   void EnvSetLegalizer(EnvLegalizer);
   EnvLegalizer EnvGetLegalizer(void);
 
+  void EnvSetDetailedPlacer(EnvDetailedPlacer);
+  EnvDetailedPlacer EnvGetDetailedPlacer(void);
+
   void EnvSetOptType(EnvOptType);
   EnvOptType EnvGetOptType(void);
   
@@ -337,8 +378,8 @@ class Env {
   void EnvSetClusterPlacementType(EnvClusterPlacementType);
   EnvClusterPlacementType EnvGetClusterPlacementType(void);
   
-  void EnvSetUnClusterType(EnvUnClusterType);
-  EnvUnClusterType EnvGetUnClusterType(void);
+  void EnvSetUnclusterType(EnvUnclusterType);
+  EnvUnclusterType EnvGetUnclusterType(void);
 
   void EnvSetShapeSelectionType(EnvShapeSelectionType);
   EnvShapeSelectionType EnvGetShapeSelectionType(void);

@@ -97,10 +97,13 @@ bool
 getBestNeighbor(HyperGraph &myGraph, uint &nodeIdx1, uint &nodeIdx2, double &score,
 		map<uint, bool> &visitedLeftNodes)
 {
+  map<uint, uint> scoreVectIdxMap;
+  map<uint, uint>::iterator itr;
   map<uint, bool> visitedNodes;
   vector<pair<uint, double> > scoreVect;
   Cell *cellObj1, *cellObj2;
   void *nodeObj1, *nodeObj2, *nodeObj;
+  double areaCellObj1, areaCellObj2;
   double edgeWeight;
   uint edgeIdx;
   bool rtv, scoreComputed;
@@ -109,28 +112,34 @@ getBestNeighbor(HyperGraph &myGraph, uint &nodeIdx1, uint &nodeIdx2, double &sco
   score = 0.0;
   rtv = false;
   scoreComputed = false;
+  cellObj1 = (Cell *)myGraph.GetNodeObject(nodeIdx1);
+  areaCellObj1 = (*cellObj1).CellGetArea();
   HYPERGRAPH_FOR_ALL_EDGES_OF_NODE(myGraph, nodeIdx1, edgeIdx, edgeWeight) {
     rtv = true;
     if (myGraph.EdgeGetNumNodes(edgeIdx) > HIGH_FANOUT) {
       continue;
     }
-    HYPERGRAPH_FOR_ALL_NODES_OF_EDGE(myGraph, edgeIdx, nodeObj) {
-      nodeIdx2 = myGraph.GetObjIndex(nodeObj);
+    visitedNodes[nodeIdx1] = true;
+    HYPERGRAPH_FOR_ALL_NODES_OF_EDGE(myGraph, edgeIdx, nodeIdx2) {
       if (nodeIdx1 == nodeIdx2) {
 	continue;
       }
-      scoreComputed = true;
-      _KEY_EXISTS(visitedLeftNodes, nodeIdx2) continue;
       _KEY_EXISTS(visitedNodes, nodeIdx2) continue;
-      visitedNodes[nodeIdx2] = true;
       cellObj2 = (Cell *)myGraph.GetNodeObject(nodeIdx2);
       if ((*cellObj2).CellIsTerminal()) continue;
-      score = computeScore(myGraph, nodeIdx1, nodeIdx2);
-      scoreVect.push_back(make_pair(nodeIdx2, score));
+      areaCellObj2 = (*cellObj2).CellGetArea();
+      _KEY_EXISTS_WITH_VAL(scoreVectIdxMap, nodeIdx2, itr) {
+	score = edgeWeight / (areaCellObj1 + areaCellObj2);
+	(scoreVect[(itr->second)]).second += score;
+      } else {
+	score = edgeWeight / (areaCellObj1 + areaCellObj2);
+	scoreVectIdxMap[nodeIdx2] = scoreVect.size();
+	scoreVect.push_back(make_pair(nodeIdx2, score));
+      }
     } HYPERGRAPH_END_FOR;
   } HYPERGRAPH_END_FOR;
   if (rtv == false) {
-    _ASSERT_TRUE("No edges of node");
+    _ASSERT_TRUE("Error: (getBestNeighbor): No edges of node");
   }
 
   if (!scoreVect.empty()) {
@@ -138,6 +147,7 @@ getBestNeighbor(HyperGraph &myGraph, uint &nodeIdx1, uint &nodeIdx2, double &sco
     sort(scoreVect.begin(), scoreVect.end(), cmpObjType);
     nodeIdx2 = (scoreVect[0]).first;
     score = (scoreVect[0]).second;
+    scoreComputed = true;
   }
 
   return (scoreComputed);
@@ -201,9 +211,8 @@ Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)
   uint edgeDegree, allNodes;
   bool result;
 
+  _STEP_BEGIN("Best choice clustering");
   /* Compute the number of top nodes */
-  //  allNodes = DesignGetNumTopCells();
-  //  numNonTopNodes = myGraph.GetNumNonTopNodes();
   numTopNodes = DesignGetNumTopCells();
   numOrigTopNodes = numTopNodes;
   numClusters = 0;
@@ -212,6 +221,7 @@ Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)
   priority_queue<objPairScore<uint>, vector<objPairScore<uint> >, objPairScoreCompareUint> pqueue;
   pqueue = buildPriorityQueue(myGraph);
 
+  //  cout << "BEGIN CLUSTERING NUMTOPNODES: " << numTopNodes << " " << getCPUTime() << "   " << getMemUsage() << endl;
   while (numTopNodes > (0.3 * ((double)numOrigTopNodes))) {
     /* Get the top pair u,v, score */
     objPairScore<uint> topPair = pqueue.top(); pqueue.pop();
@@ -231,6 +241,7 @@ Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)
       }
       continue;
     }
+
     //    cout << "SCORE COMPUTATION DONE: " << getCPUTime() << "   " << getMemUsage() << endl;    
     vector<Cell *> cellVect;
     cellObj1 = (Cell *)myGraph.GetNodeObject(nodeIdx1);
@@ -239,8 +250,8 @@ Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)
     cellVect.push_back(cellObj2);
 
     /* Create the cluster */
-    clusteredCell = DesignClusterCells(cellVect, /* collapseClustersInList */ true, true);
     //    cout << "CLUSTER: Clustered cells " << (*cellObj1).CellGetName() << "  " << (*cellObj2).CellGetName() << endl;
+    clusteredCell = DesignClusterCellsSimple(cellVect);
     //    cout << "CLUSTER FORMATION DONE: " << getCPUTime() << "   " << getMemUsage() << endl;    
     numClusters++;
 
@@ -271,7 +282,16 @@ Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)
     //    }
   }
   //  cout << "CLUSTERING DONE" << endl;
+  //  cout << "END CLUSTERING NUMTOPNODES: " << numTopNodes << " " << getCPUTime() << "   " << getMemUsage() << endl;
+  //  cout << "COMMITTING CLUSTERS " << getCPUTime() << "   " << getMemUsage() << endl;
+  Cell *clusterCell;
+  string clusterName;
+  DESIGN_FOR_ALL_CLUSTERS((*this), clusterName, clusterCell) {
+    DesignCommitCluster(clusterCell);
+  } END_FOR;
+  //  cout << "END COMMITTING CLUSTERS " << getCPUTime() << "   " << getMemUsage() << endl;
   //  cout << "CONDITION MET: Number of top nodes: " << numTopNodes << endl;
+  _STEP_END("Best choice clustering");
 }
 
 /***************************************************

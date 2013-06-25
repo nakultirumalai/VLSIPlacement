@@ -9,6 +9,7 @@ Net::Net()
   NetSetLoadCount(0);
   NetSetIsUnderCluster(false);
   NetSetIsHidden(false);
+  NetInitMinMaxPositions();
 }
 
 Net::Net(int id)
@@ -20,6 +21,7 @@ Net::Net(int id)
   NetSetLoadCount(0);
   NetSetIsUnderCluster(false);
   NetSetIsHidden(false);
+  NetInitMinMaxPositions();
 }
 
 Net::Net(int id, const string& Name)
@@ -32,6 +34,7 @@ Net::Net(int id, const string& Name)
   NetSetLoadCount(0);
   NetSetIsUnderCluster(false);
   NetSetIsHidden(false);
+  NetInitMinMaxPositions();
 }
 
 void 
@@ -80,6 +83,30 @@ void
 Net::NetSetIsHidden(const bool &isHidden)
 {
   this->isHidden = isHidden;
+}
+
+void
+Net::NetInitMinMaxPositions(void) 
+{
+  minx = 0;
+  miny = 0;
+  maxx = 0;
+  maxy = 0;
+}
+
+void
+Net::NetSetMinMaxPositions(uint xPos, uint yPos)
+{
+  if (xPos < minx) {
+    minx = xPos;
+  } else if (xPos > maxx) {
+    maxx = xPos;
+  }
+  if (yPos < miny) {
+    miny = yPos;
+  } else if (yPos > maxy) {
+    maxy = yPos;
+  }
 }
 
 void
@@ -172,6 +199,13 @@ bool
 Net::NetIsUnderCluster(void)
 {
   return (this->isUnderCluster);
+}
+
+double
+Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
+{
+  xHPWL = maxx - minx;
+  yHPWL = maxy - miny;
 }
 
 bool

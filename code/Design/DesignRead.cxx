@@ -9,18 +9,20 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   string fullDesignPath;
   bool rowBasedPlacement;
   vector<string> fileList;
-  
+
   fullDesignPath = DesignPath + DIR_SEP;
   fullFileName = fullDesignPath + DesignName + DESIGN_AUX_FILE_EXT;
 
   /* Open the aux fle and read all the other files that need to be
      read */
-  ifstream DesignFile(fullFileName.data(), ios_base::in);
+  ifstream DesignFile;
+  DesignFile.open(fullFileName.data());
   getline(DesignFile, listOfFiles);
   if (listOfFiles == "") {
     return;
   }
 
+  
   /* Collect all files to be read from the aux file */
   istringstream stream(listOfFiles, istringstream::in);
   do {
@@ -76,6 +78,8 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   }
 
   this->Name = DesignName;
+  
+  DesignEnv.EnvSetNetlistReadStartTime();
   DesignReadRows();
   DesignReadCells();
   DesignReadMapFile();
@@ -88,6 +92,7 @@ Design::DesignReadDesign(string DesignPath, string DesignName)
   // DesignReadPathDelays();
   DesignSetVarsPostRead();
   DesignFile.close();
+  DesignEnv.EnvRecordNetlistReadTime();
 }
 
 void

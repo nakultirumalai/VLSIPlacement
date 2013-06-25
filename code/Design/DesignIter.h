@@ -20,6 +20,15 @@
   CellPtr = mapIter->second;						\
   if ((*CellPtr).CellIsHidden()) continue;
 
+/* Use this iterator to iterate over all the clusters of the design */
+# define DESIGN_FOR_ALL_CLUSTERS(Design, CellName, ClusterCellPtr)	\
+  {									\
+  map<string, Cell*> &DesignClusters = Design.DesignGetClusters();	\
+  map<string, Cell*>::iterator mapIter;					\
+  for (mapIter = DesignClusters.begin(); mapIter != DesignClusters.end(); mapIter++) { \
+  CellName = mapIter->first;						\
+  ClusterCellPtr = mapIter->second;					\
+
 /* Use this iterator if you want to see all the cells in the design */
 # define DESIGN_FOR_ALL_CELLS_HIDDEN(Design, CellName, CellPtr)		\
   {									\

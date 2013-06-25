@@ -135,6 +135,14 @@ printTimeUsage(Env &topEnv)
               a) placeboundary
               b) placenone
 
+  -legalizer: This option specifies which legalizer to use.
+              a) binbased
+              b) fastplace
+
+-detailed_placer: This option specifies which detailed placer to use
+              a) fastplace
+              b) ourplacer
+
        -help: Prints out information about the tool
 ***********************************************************************/
 bool
@@ -247,7 +255,35 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 	   << "\"tdcluster1\", \"tdcluster2\"" << endl;
     }
   } else if (switchName == "cluster_placement") {
+    
   } else if (switchName == "uncluster_strategy") {
+
+  } else if (switchName == "legalizer") {
+    rtv = true;
+    if (switchValue == "binbased") {
+      topEnv.EnvSetLegalizer(ENV_BIN_BASED_LEGALIZER);
+    } else if (switchValue == "fastplace") {
+      topEnv.EnvSetLegalizer(ENV_FAST_PLACE_LEGALIZER);
+    } else {
+      rtv = false;
+      cout << "Error: Valid options for legalizer are " 
+	   << "\"binbased\", \"fastplace\"" 
+	   << endl;
+    }
+  } else if (switchName == "detailed_placer") {
+    rtv = true;
+    if (switchValue == "fastplace") {
+      topEnv.EnvSetDetailedPlacer(ENV_FAST_PLACE_DP);
+    } else if (switchValue == "ourplacer") {
+      topEnv.EnvSetDetailedPlacer(ENV_OURPLACER_DP);
+    } else if (switchValue == "none") {
+      topEnv.EnvSetDetailedPlacer(ENV_NO_DETAIL_PLACEMENT);
+    } else {
+      rtv = false;
+      cout << "Error: Valid options for detailed_placer are " 
+	   << "\"fastplace\", \"ourplacer\"" 
+	   << endl;
+    }
   } else if (switchName == "help") {
     cout << "To execute the tool, use the following options:" << endl;
     cout << endl << "-trace_depth: Given a trace depth, prints cputime and memory for all routines " << endl;
@@ -271,24 +307,60 @@ int placeMain(Env &topEnv)
   /* Initialize the flags here */
   FlagsInit();
   
-  /* Get the design's name and path from the 
-     environment */
+  /* Get the design's name and path from the environment */
   DesignName = topEnv.EnvGetDesignName();
   DesignPath = topEnv.EnvGetDesignPath();
 
   /* Create the design */
-  Design myDesign(DesignPath, DesignName);
-  myDesign.DesignBuildGraph();
-  myDesign.DesignSetEnv(topEnv);
-  myDesign.DesignDoGlobalPlacement();
-  //  LegalizeDesign(myDesign);
+  Design myDesign(DesignPath, DesignName, topEnv);
 
+  Env &DesignEnv = myDesign.DesignGetEnv();
+
+  /****************************************************
+   *  BUILD THE HYPERGRAPH                            *
+   ****************************************************/
+  /* Record the start time of building the hypergraph */
+  DesignEnv.EnvSetHyperGraphBuildStartTime();
+  myDesign.DesignBuildGraph();
+  /* Record the hypergraph build time */  
+  DesignEnv.EnvRecordHyperGraphBuildTime();
+
+  /****************************************************
+   *  DO GLOBAL PLACEMENT                             *
+   ****************************************************/
+  myDesign.DesignDoGlobalPlacement();
+  
+  /****************************************************
+   *  DO LEGALIZATION                                 *
+   ****************************************************/
+  /* Record the start time of legalizing the design */
+  DesignEnv.EnvSetLegalizationStartTime();
+  myDesign.DesignDoLegalization();
+  /* Record the end time of the legalization */
+  DesignEnv.EnvRecordLegalizationTime();
+
+  /****************************************************
+   *  DO DETAILED PLACEMENT                           *
+   ****************************************************/
+  /* Record the start time of detailed the design */
+  DesignEnv.EnvSetDetailedPlacementStartTime();
+  myDesign.DesignDoDetailedPlacement();
+  /* Record the end time of the legalization */
+  DesignEnv.EnvRecordDetailedPlacementTime();
+
+  /****************************************************
+   *  PLOT THE FINAL PLACEMENT                        *
+   ****************************************************/
   string plotFileName;
-  plotFileName = "uncluster.plt";
+  plotFileName = "final.plt";
   myDesign.DesignPlotData("Title", plotFileName);
 
+  /****************************************************
+   *  WRITE THE FINAL PLACEMENT                       *
+   ****************************************************/
   DesignWriteOutputPlacement(myDesign); 
 
+  topEnv = DesignEnv;
   return 0;
 }
 

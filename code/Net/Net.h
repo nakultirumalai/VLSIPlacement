@@ -9,13 +9,16 @@ using namespace std;
 
 class Net {
  private:
+  double weight;
+  double hpwl;
+  uint maxx, maxy;
+  uint minx, miny;
+  uint pinCount;
+  uint driverCount;
+  uint loadCount;
   int Id;
-  unsigned int pinCount;
-  unsigned int driverCount;
-  unsigned int loadCount;
   bool isUnderCluster;
   bool isHidden;
-  double weight;
 
  public:
   map<string, Pin*> inPins;
@@ -29,21 +32,25 @@ class Net {
   void NetSetName(const string&);
   void NetSetId(int);
   void NetSetWeight(double);
-  void NetSetPinCount(unsigned int);
-  void NetSetDriverCount(unsigned int);
-  void NetSetLoadCount(unsigned int);
+  void NetSetPinCount(uint);
+  void NetSetDriverCount(uint);
+  void NetSetLoadCount(uint);
   void NetSetIsUnderCluster(const bool&);
   void NetSetIsHidden(const bool &);
+  void NetInitMinMaxPositions(void);
+  void NetSetMinMaxPositions(uint, uint);
+  void NetInitHPWL(void);
   void NetAddPin(const Pin&);
   void NetRemovePin(const Pin&);
 
   int NetGetId(void);
-  unsigned int NetGetPinCount(void);
-  unsigned int NetGetDriverCount(void);
-  unsigned int NetGetLoadCount(void);
+  uint NetGetPinCount(void);
+  uint NetGetDriverCount(void);
+  uint NetGetLoadCount(void);
   double NetGetWeight(void);
   string NetGetName(void);
   bool NetIsUnderCluster(void);
+  double NetComputeHPWL(uint &, uint &);
   bool NetIsHidden(void);
   
   map<string, Pin*>& NetGetPins(void);

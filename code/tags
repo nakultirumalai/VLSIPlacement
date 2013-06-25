@@ -4,13 +4,13 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ALL_QCQO_TD	$CODE_ROOT/common/common.h	/^	      ALL_QCQO_TD} allSolverType;$/;"	e	enum:__anon33
+ALL_QCQO_TD	$CODE_ROOT/common/common.h	/^	      ALL_QCQO_TD} allSolverType;$/;"	e	enum:__anon34
 ALL_QCQO_TD	$CODE_ROOT/include/common.h	/^	      ALL_QCQO_TD} allSolverType;$/;"	e	enum:__anon8
-ALL_QCQO_WL	$CODE_ROOT/common/common.h	/^	      ALL_QCQO_WL, $/;"	e	enum:__anon33
+ALL_QCQO_WL	$CODE_ROOT/common/common.h	/^	      ALL_QCQO_WL, $/;"	e	enum:__anon34
 ALL_QCQO_WL	$CODE_ROOT/include/common.h	/^	      ALL_QCQO_WL, $/;"	e	enum:__anon8
-ALL_QO_TD	$CODE_ROOT/common/common.h	/^	      ALL_QO_TD, $/;"	e	enum:__anon33
+ALL_QO_TD	$CODE_ROOT/common/common.h	/^	      ALL_QO_TD, $/;"	e	enum:__anon34
 ALL_QO_TD	$CODE_ROOT/include/common.h	/^	      ALL_QO_TD, $/;"	e	enum:__anon8
-ALL_QO_WL	$CODE_ROOT/common/common.h	/^typedef enum {ALL_QO_WL, $/;"	e	enum:__anon33
+ALL_QO_WL	$CODE_ROOT/common/common.h	/^typedef enum {ALL_QO_WL, $/;"	e	enum:__anon34
 ALL_QO_WL	$CODE_ROOT/include/common.h	/^typedef enum {ALL_QO_WL, $/;"	e	enum:__anon8
 ANALYTICALSOLVE_H	$CODE_ROOT/AnalyticalSolve/AnalyticalSolve.h	2;"	d
 ANALYTICALSOLVE_H	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolve.h	2;"	d
@@ -46,10 +46,10 @@ BICGSTAB_BLAS_H	$CODE_ROOT/cghs/bicgstab.h	4;"	d
 BIN_H	$CODE_ROOT/Bin/Bin.h	2;"	d
 BIN_H	$CODE_ROOT/include/Bin.h	2;"	d
 BIN_OF_CELL	$CODE_ROOT/Flags/Flags.h	/^  BIN_OF_CELL,$/;"	e	enum:__anon5
-BIN_OF_CELL	$CODE_ROOT/include/Flags.h	/^  BIN_OF_CELL,$/;"	e	enum:__anon24
-BIN_PATH_RECT	$CODE_ROOT/Plot/Plot.h	/^  BIN_PATH_RECT,$/;"	e	enum:__anon27
+BIN_OF_CELL	$CODE_ROOT/include/Flags.h	/^  BIN_OF_CELL,$/;"	e	enum:__anon25
+BIN_PATH_RECT	$CODE_ROOT/Plot/Plot.h	/^  BIN_PATH_RECT,$/;"	e	enum:__anon28
 BIN_PATH_RECT	$CODE_ROOT/include/Plot.h	/^  BIN_PATH_RECT,$/;"	e	enum:__anon9
-BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  BIN_RECT,$/;"	e	enum:__anon27
+BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  BIN_RECT,$/;"	e	enum:__anon28
 BIN_RECT	$CODE_ROOT/include/Plot.h	/^  BIN_RECT,$/;"	e	enum:__anon9
 BLAS	$CODE_ROOT/example/Makefile	/^  BLAS	   = -lblas$/;"	m
 BLAS1_H	$CODE_ROOT/ConjGrad/cblas.h	171;"	d
@@ -131,9 +131,9 @@ CBLAS2_H	$CODE_ROOT/include/cblas.h	453;"	d
 CC	$CODE_ROOT/Makefile	/^CC=g++$/;"	m
 CE	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  input clk, reset, CE;$/;"	p
 CELL_DBLX	$CODE_ROOT/Flags/Flags.h	/^  CELL_DBLX,$/;"	e	enum:__anon3
-CELL_DBLX	$CODE_ROOT/include/Flags.h	/^  CELL_DBLX,$/;"	e	enum:__anon22
+CELL_DBLX	$CODE_ROOT/include/Flags.h	/^  CELL_DBLX,$/;"	e	enum:__anon23
 CELL_DBLY	$CODE_ROOT/Flags/Flags.h	/^  CELL_DBLY,$/;"	e	enum:__anon3
-CELL_DBLY	$CODE_ROOT/include/Flags.h	/^  CELL_DBLY,$/;"	e	enum:__anon22
+CELL_DBLY	$CODE_ROOT/include/Flags.h	/^  CELL_DBLY,$/;"	e	enum:__anon23
 CELL_END_FOR	$CODE_ROOT/Cell/CellIter.h	39;"	d
 CELL_END_FOR	$CODE_ROOT/include/CellIter.h	39;"	d
 CELL_FOR_ALL_NETS	$CODE_ROOT/Cell/CellIter.h	25;"	d
@@ -145,26 +145,26 @@ CELL_FOR_ALL_PINS_NOFILT	$CODE_ROOT/include/CellIter.h	16;"	d
 CELL_H	$CODE_ROOT/Cell/Cell.h	2;"	d
 CELL_H	$CODE_ROOT/include/Cell.h	2;"	d
 CELL_IS_CLUSTERED_FLAG	$CODE_ROOT/Flags/Flags.h	/^  CELL_IS_CLUSTERED_FLAG = 0,$/;"	e	enum:__anon4
-CELL_IS_CLUSTERED_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_CLUSTERED_FLAG = 0,$/;"	e	enum:__anon23
+CELL_IS_CLUSTERED_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_CLUSTERED_FLAG = 0,$/;"	e	enum:__anon24
 CELL_IS_FIXED_FLAG	$CODE_ROOT/Flags/Flags.h	/^  CELL_IS_FIXED_FLAG,$/;"	e	enum:__anon4
-CELL_IS_FIXED_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_FIXED_FLAG,$/;"	e	enum:__anon23
+CELL_IS_FIXED_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_FIXED_FLAG,$/;"	e	enum:__anon24
 CELL_IS_LOCKED_FLAG	$CODE_ROOT/Flags/Flags.h	/^  CELL_IS_LOCKED_FLAG,$/;"	e	enum:__anon4
-CELL_IS_LOCKED_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_LOCKED_FLAG,$/;"	e	enum:__anon23
+CELL_IS_LOCKED_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_LOCKED_FLAG,$/;"	e	enum:__anon24
 CELL_IS_PSEUDO_FLAG	$CODE_ROOT/Flags/Flags.h	/^  CELL_IS_PSEUDO_FLAG,$/;"	e	enum:__anon4
-CELL_IS_PSEUDO_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_PSEUDO_FLAG,$/;"	e	enum:__anon23
+CELL_IS_PSEUDO_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_PSEUDO_FLAG,$/;"	e	enum:__anon24
 CELL_IS_STAR_NODE_FLAG	$CODE_ROOT/Flags/Flags.h	/^  CELL_IS_STAR_NODE_FLAG,$/;"	e	enum:__anon4
-CELL_IS_STAR_NODE_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_STAR_NODE_FLAG,$/;"	e	enum:__anon23
+CELL_IS_STAR_NODE_FLAG	$CODE_ROOT/include/Flags.h	/^  CELL_IS_STAR_NODE_FLAG,$/;"	e	enum:__anon24
 CELL_MACROS_H	$CODE_ROOT/Cell/CellIter.h	2;"	d
 CELL_MACROS_H	$CODE_ROOT/include/CellIter.h	2;"	d
 CELL_MOVE_COST	$CODE_ROOT/Flags/Flags.h	/^  CELL_MOVE_COST,$/;"	e	enum:__anon3
-CELL_MOVE_COST	$CODE_ROOT/include/Flags.h	/^  CELL_MOVE_COST,$/;"	e	enum:__anon22
+CELL_MOVE_COST	$CODE_ROOT/include/Flags.h	/^  CELL_MOVE_COST,$/;"	e	enum:__anon23
 CELL_PSEUDO_PORT	$CODE_ROOT/Flags/Flags.h	/^  CELL_PSEUDO_PORT,$/;"	e	enum:__anon5
-CELL_PSEUDO_PORT	$CODE_ROOT/include/Flags.h	/^  CELL_PSEUDO_PORT,$/;"	e	enum:__anon24
+CELL_PSEUDO_PORT	$CODE_ROOT/include/Flags.h	/^  CELL_PSEUDO_PORT,$/;"	e	enum:__anon25
 CELL_SPREAD_H	$CODE_ROOT/CellSpread/CellSpread.h	2;"	d
 CELL_SPREAD_H	$CODE_ROOT/include/CellSpread.h	2;"	d
 CEO	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  output CEO, Valid_out;$/;"	p
 CEO_0	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   CEO_0, In_mem_RE, S_ready, WE_transport, transport_done, L_ready,$/;"	n
-CFLAGS	$CODE_ROOT/Makefile	/^	CFLAGS= -Wuninitialized$/;"	m
+CFLAGS	$CODE_ROOT/Makefile	/^	CFLAGS= -O3 -Wuninitialized #-pg$/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/AnalyticalSolve/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/AnalyticalSolve/backup/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c$/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/Bin/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
@@ -191,9 +191,9 @@ CLK	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  input RESET, CLK;$/;"	p
 CLUSTER_NAME_PREFIX	$CODE_ROOT/Design/Design.h	109;"	d
 CLUSTER_NAME_PREFIX	$CODE_ROOT/include/Design.h	109;"	d
 CLUSTER_OF_CELL	$CODE_ROOT/Flags/Flags.h	/^  CLUSTER_OF_CELL,$/;"	e	enum:__anon5
-CLUSTER_OF_CELL	$CODE_ROOT/include/Flags.h	/^  CLUSTER_OF_CELL,$/;"	e	enum:__anon24
-COMMON_DEBUG	$CODE_ROOT/common/common.h	28;"	d
-COMMON_DEBUG	$CODE_ROOT/include/common.h	28;"	d
+CLUSTER_OF_CELL	$CODE_ROOT/include/Flags.h	/^  CLUSTER_OF_CELL,$/;"	e	enum:__anon25
+COMMON_DEBUG	$CODE_ROOT/common/common.h	29;"	d
+COMMON_DEBUG	$CODE_ROOT/include/common.h	29;"	d
 COMMON_H	$CODE_ROOT/common/common.h	2;"	d
 COMMON_H	$CODE_ROOT/include/common.h	2;"	d
 COMMON_ITER_H	$CODE_ROOT/common/commonIter.h	2;"	d
@@ -355,6 +355,7 @@ Cluster	$CODE_ROOT/include/Cell.h	/^class Cluster {$/;"	c
 ClusterGetBCellIndices	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetBCellIndices(void)$/;"	f	class:Cluster
 ClusterGetBCellsPlaced	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetBCellsPlaced(void)$/;"	f	class:Cluster
 ClusterGetCellsOfCluster	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetCellsOfCluster(void)$/;"	f	class:Cluster
+ClusterGetClusterLevel	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetClusterLevel(void)$/;"	f	class:Cluster
 ClusterGetInternalNets	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetInternalNets(void) $/;"	f	class:Cluster
 ClusterGetNumCells	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetNumCells(void)$/;"	f	class:Cluster
 ClusterGetPinMap	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterGetPinMap(void)$/;"	f	class:Cluster
@@ -366,6 +367,7 @@ ClusterPlacementType	$CODE_ROOT/include/Env.h	/^  EnvClusterPlacementType Cluste
 ClusterSetBCellIndices	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetBCellIndices(vector<uint> &bCellIndices)$/;"	f	class:Cluster
 ClusterSetBCellsPlaced	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetBCellsPlaced(bool bCellsPlaced)$/;"	f	class:Cluster
 ClusterSetCellsOfCluster	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetCellsOfCluster(vector<Cell *> &cellsOfCluster)$/;"	f	class:Cluster
+ClusterSetClusterLevel	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetClusterLevel(char clusterLevel)$/;"	f	class:Cluster
 ClusterSetInternalNets	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetInternalNets(vector<Net *> &internalNets) $/;"	f	class:Cluster
 ClusterSetNumCells	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetNumCells(uint numCells)$/;"	f	class:Cluster
 ClusterSetPinMap	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetPinMap(map<Pin*, Pin*> &pinMap)$/;"	f	class:Cluster
@@ -373,6 +375,8 @@ ClusterSetRowNums	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetRowNums(v
 ClusterSetXPosInRows	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::ClusterSetXPosInRows(vector<uint> &xPosInRow)$/;"	f	class:Cluster
 ClusterType	$CODE_ROOT/Env/Env.h	/^  EnvClusterType ClusterType;$/;"	m	class:Env
 ClusterType	$CODE_ROOT/include/Env.h	/^  EnvClusterType ClusterType;$/;"	m	class:Env
+ClusteringStartTime	$CODE_ROOT/Env/Env.h	/^  double ClusteringStartTime;$/;"	m	class:Env
+ClusteringStartTime	$CODE_ROOT/include/Env.h	/^  double ClusteringStartTime;$/;"	m	class:Env
 ClusteringTime	$CODE_ROOT/Env/Env.h	/^  double ClusteringTime;$/;"	m	class:Env
 ClusteringTime	$CODE_ROOT/include/Env.h	/^  double ClusteringTime;$/;"	m	class:Env
 ConjugateTranspose	$CODE_ROOT/ConjGrad/cblas.h	/^enum MatrixTranspose { NoTranspose=0, Transpose=1, ConjugateTranspose=2 };$/;"	e	enum:MatrixTranspose
@@ -386,8 +390,8 @@ CosCosCosSolution	$CODE_ROOT/example/laplace3d.cc	/^struct CosCosCosSolution {$/
 DATE	$CODE_ROOT/example/Makefile	/^DATE     = $(shell date +%D | sed 's\/\\\/\/ \/g' | awk '{print $$2$$1$$3}')$/;"	m
 DBGFLAGS	$CODE_ROOT/example/Makefile	/^  DBGFLAGS = -O0$/;"	m
 DBGFLAGS	$CODE_ROOT/example/Makefile	/^  DBGFLAGS = -g$/;"	m
-DBL_MAX	$CODE_ROOT/common/common.h	42;"	d
-DBL_MAX	$CODE_ROOT/include/common.h	42;"	d
+DBL_MAX	$CODE_ROOT/common/common.h	43;"	d
+DBL_MAX	$CODE_ROOT/include/common.h	43;"	d
 DEBUG	$CODE_ROOT/Makefile	/^	DEBUG = debug$/;"	m
 DEBUG	$CODE_ROOT/Makefile	/^DEBUG = $/;"	m
 DEBUG_INST	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  output [11:0] DEBUG_INST;$/;"	p
@@ -401,39 +405,41 @@ DEFAULT_BIN_END	$CODE_ROOT/include/Legalize.h	24;"	d
 DEFAULT_BLOCKED_WIDTH	$CODE_ROOT/PhysData/PhysRow.h	18;"	d
 DEFAULT_BLOCKED_WIDTH	$CODE_ROOT/include/PhysRow.h	18;"	d
 DEFAULT_CLUSTER	$CODE_ROOT/Design/Design.h	/^  DEFAULT_CLUSTER, $/;"	e	enum:__anon2
-DEFAULT_CLUSTER	$CODE_ROOT/include/Design.h	/^  DEFAULT_CLUSTER, $/;"	e	enum:__anon21
+DEFAULT_CLUSTER	$CODE_ROOT/include/Design.h	/^  DEFAULT_CLUSTER, $/;"	e	enum:__anon22
 DEFAULT_COORDINATE	$CODE_ROOT/PhysData/PhysRow.h	8;"	d
 DEFAULT_COORDINATE	$CODE_ROOT/include/PhysRow.h	8;"	d
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/Old2_LegalizeMAin.cxx	8;"	d	file:
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/Old_3LegalizeMain.cxx	8;"	d	file:
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/Old_4LegalizeMain.cxx	8;"	d	file:
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/TestMinCostFlow.cxx	11;"	d	file:
-DEFAULT_DESIGN_NAME	$CODE_ROOT/Env/Env.h	347;"	d
-DEFAULT_DESIGN_NAME	$CODE_ROOT/include/Env.h	347;"	d
-DEFAULT_DESIGN_PATH	$CODE_ROOT/Env/Env.h	348;"	d
-DEFAULT_DESIGN_PATH	$CODE_ROOT/include/Env.h	348;"	d
+DEFAULT_DESIGN_NAME	$CODE_ROOT/Env/Env.h	388;"	d
+DEFAULT_DESIGN_NAME	$CODE_ROOT/include/Env.h	388;"	d
+DEFAULT_DESIGN_PATH	$CODE_ROOT/Env/Env.h	389;"	d
+DEFAULT_DESIGN_PATH	$CODE_ROOT/include/Env.h	389;"	d
 DEFAULT_EMPTY	$CODE_ROOT/Legalize/Legalize.h	36;"	d
 DEFAULT_EMPTY	$CODE_ROOT/include/Legalize.h	36;"	d
-DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE	$CODE_ROOT/Env/Env.h	93;"	d
-DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE	$CODE_ROOT/include/Env.h	93;"	d
-DEFAULT_ENV_CLUSTER_TYPE	$CODE_ROOT/Env/Env.h	84;"	d
-DEFAULT_ENV_CLUSTER_TYPE	$CODE_ROOT/include/Env.h	84;"	d
+DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE	$CODE_ROOT/Env/Env.h	103;"	d
+DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE	$CODE_ROOT/include/Env.h	103;"	d
+DEFAULT_ENV_CLUSTER_TYPE	$CODE_ROOT/Env/Env.h	94;"	d
+DEFAULT_ENV_CLUSTER_TYPE	$CODE_ROOT/include/Env.h	94;"	d
+DEFAULT_ENV_DETAIL_PLACEMENT	$CODE_ROOT/Env/Env.h	73;"	d
+DEFAULT_ENV_DETAIL_PLACEMENT	$CODE_ROOT/include/Env.h	73;"	d
 DEFAULT_ENV_GLOBAL_PLACER_TYPE	$CODE_ROOT/Env/Env.h	25;"	d
 DEFAULT_ENV_GLOBAL_PLACER_TYPE	$CODE_ROOT/include/Env.h	25;"	d
-DEFAULT_ENV_LEGALIZER	$CODE_ROOT/Env/Env.h	63;"	d
-DEFAULT_ENV_LEGALIZER	$CODE_ROOT/include/Env.h	63;"	d
+DEFAULT_ENV_LEGALIZER	$CODE_ROOT/Env/Env.h	64;"	d
+DEFAULT_ENV_LEGALIZER	$CODE_ROOT/include/Env.h	64;"	d
 DEFAULT_ENV_NET_MODEL	$CODE_ROOT/Env/Env.h	47;"	d
 DEFAULT_ENV_NET_MODEL	$CODE_ROOT/include/Env.h	47;"	d
-DEFAULT_ENV_OPT_TYPE	$CODE_ROOT/Env/Env.h	70;"	d
-DEFAULT_ENV_OPT_TYPE	$CODE_ROOT/include/Env.h	70;"	d
-DEFAULT_ENV_SHAPE_SELECTION_TYPE	$CODE_ROOT/Env/Env.h	110;"	d
-DEFAULT_ENV_SHAPE_SELECTION_TYPE	$CODE_ROOT/include/Env.h	110;"	d
+DEFAULT_ENV_OPT_TYPE	$CODE_ROOT/Env/Env.h	80;"	d
+DEFAULT_ENV_OPT_TYPE	$CODE_ROOT/include/Env.h	80;"	d
+DEFAULT_ENV_SHAPE_SELECTION_TYPE	$CODE_ROOT/Env/Env.h	121;"	d
+DEFAULT_ENV_SHAPE_SELECTION_TYPE	$CODE_ROOT/include/Env.h	121;"	d
 DEFAULT_ENV_SOLVER_TYPE	$CODE_ROOT/Env/Env.h	37;"	d
 DEFAULT_ENV_SOLVER_TYPE	$CODE_ROOT/include/Env.h	37;"	d
 DEFAULT_ENV_TOOL_MODE	$CODE_ROOT/Env/Env.h	55;"	d
 DEFAULT_ENV_TOOL_MODE	$CODE_ROOT/include/Env.h	55;"	d
-DEFAULT_ENV_UNCLUSTER_TYPE	$CODE_ROOT/Env/Env.h	102;"	d
-DEFAULT_ENV_UNCLUSTER_TYPE	$CODE_ROOT/include/Env.h	102;"	d
+DEFAULT_ENV_UNCLUSTER_TYPE	$CODE_ROOT/Env/Env.h	113;"	d
+DEFAULT_ENV_UNCLUSTER_TYPE	$CODE_ROOT/include/Env.h	113;"	d
 DEFAULT_INTCELL_WIDTH	$CODE_ROOT/Legalize/Legalize.h	33;"	d
 DEFAULT_INTCELL_WIDTH	$CODE_ROOT/include/Legalize.h	33;"	d
 DEFAULT_INT_SUPPLY	$CODE_ROOT/Legalize/Legalize.h	31;"	d
@@ -488,7 +494,7 @@ DEFAULT_ZROW	$CODE_ROOT/Legalize/Legalize.h	37;"	d
 DEFAULT_ZROW	$CODE_ROOT/include/Legalize.h	37;"	d
 DEFAULT_ZTOTAL_CELL_WIDTH	$CODE_ROOT/Legalize/Legalize.h	38;"	d
 DEFAULT_ZTOTAL_CELL_WIDTH	$CODE_ROOT/include/Legalize.h	38;"	d
-DEMAND_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  DEMAND_BIN_RECT,$/;"	e	enum:__anon27
+DEMAND_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  DEMAND_BIN_RECT,$/;"	e	enum:__anon28
 DEMAND_BIN_RECT	$CODE_ROOT/include/Plot.h	/^  DEMAND_BIN_RECT,$/;"	e	enum:__anon9
 DEPFILE	$CODE_ROOT/example/Makefile	/^DEPFILE	 = Dependfile$/;"	m
 DEPFLAG	$CODE_ROOT/example/Makefile	/^  DEPFLAG  = -M$/;"	m
@@ -501,28 +507,30 @@ DESIGN_CELL_FILE_EXT	$CODE_ROOT/Design/Design.h	33;"	d
 DESIGN_CELL_FILE_EXT	$CODE_ROOT/include/Design.h	33;"	d
 DESIGN_CMDS_FILE_EXT	$CODE_ROOT/Design/Design.h	39;"	d
 DESIGN_CMDS_FILE_EXT	$CODE_ROOT/include/Design.h	39;"	d
-DESIGN_END_FOR	$CODE_ROOT/Design/DesignIter.h	112;"	d
-DESIGN_END_FOR	$CODE_ROOT/include/DesignIter.h	112;"	d
-DESIGN_FOR_ALL_BINS	$CODE_ROOT/Design/DesignIter.h	98;"	d
-DESIGN_FOR_ALL_BINS	$CODE_ROOT/include/DesignIter.h	98;"	d
+DESIGN_END_FOR	$CODE_ROOT/Design/DesignIter.h	121;"	d
+DESIGN_END_FOR	$CODE_ROOT/include/DesignIter.h	121;"	d
+DESIGN_FOR_ALL_BINS	$CODE_ROOT/Design/DesignIter.h	107;"	d
+DESIGN_FOR_ALL_BINS	$CODE_ROOT/include/DesignIter.h	107;"	d
 DESIGN_FOR_ALL_CELLS	$CODE_ROOT/Design/DesignIter.h	12;"	d
 DESIGN_FOR_ALL_CELLS	$CODE_ROOT/include/DesignIter.h	12;"	d
-DESIGN_FOR_ALL_CELLS_HIDDEN	$CODE_ROOT/Design/DesignIter.h	24;"	d
-DESIGN_FOR_ALL_CELLS_HIDDEN	$CODE_ROOT/include/DesignIter.h	24;"	d
-DESIGN_FOR_ALL_CELLS_ON_TOP	$CODE_ROOT/Design/DesignIter.h	34;"	d
-DESIGN_FOR_ALL_CELLS_ON_TOP	$CODE_ROOT/include/DesignIter.h	34;"	d
-DESIGN_FOR_ALL_NETS	$CODE_ROOT/Design/DesignIter.h	45;"	d
-DESIGN_FOR_ALL_NETS	$CODE_ROOT/include/DesignIter.h	45;"	d
-DESIGN_FOR_ALL_PATHS	$CODE_ROOT/Design/DesignIter.h	105;"	d
-DESIGN_FOR_ALL_PATHS	$CODE_ROOT/include/DesignIter.h	105;"	d
-DESIGN_FOR_ALL_ROWS	$CODE_ROOT/Design/DesignIter.h	91;"	d
-DESIGN_FOR_ALL_ROWS	$CODE_ROOT/include/DesignIter.h	91;"	d
-DESIGN_FOR_ALL_SEQ_CELLS	$CODE_ROOT/Design/DesignIter.h	79;"	d
-DESIGN_FOR_ALL_SEQ_CELLS	$CODE_ROOT/include/DesignIter.h	79;"	d
-DESIGN_FOR_ALL_STD_CELLS	$CODE_ROOT/Design/DesignIter.h	67;"	d
-DESIGN_FOR_ALL_STD_CELLS	$CODE_ROOT/include/DesignIter.h	67;"	d
-DESIGN_FOR_ALL_STD_CELLS_FILT	$CODE_ROOT/Design/DesignIter.h	55;"	d
-DESIGN_FOR_ALL_STD_CELLS_FILT	$CODE_ROOT/include/DesignIter.h	55;"	d
+DESIGN_FOR_ALL_CELLS_HIDDEN	$CODE_ROOT/Design/DesignIter.h	33;"	d
+DESIGN_FOR_ALL_CELLS_HIDDEN	$CODE_ROOT/include/DesignIter.h	33;"	d
+DESIGN_FOR_ALL_CELLS_ON_TOP	$CODE_ROOT/Design/DesignIter.h	43;"	d
+DESIGN_FOR_ALL_CELLS_ON_TOP	$CODE_ROOT/include/DesignIter.h	43;"	d
+DESIGN_FOR_ALL_CLUSTERS	$CODE_ROOT/Design/DesignIter.h	24;"	d
+DESIGN_FOR_ALL_CLUSTERS	$CODE_ROOT/include/DesignIter.h	24;"	d
+DESIGN_FOR_ALL_NETS	$CODE_ROOT/Design/DesignIter.h	54;"	d
+DESIGN_FOR_ALL_NETS	$CODE_ROOT/include/DesignIter.h	54;"	d
+DESIGN_FOR_ALL_PATHS	$CODE_ROOT/Design/DesignIter.h	114;"	d
+DESIGN_FOR_ALL_PATHS	$CODE_ROOT/include/DesignIter.h	114;"	d
+DESIGN_FOR_ALL_ROWS	$CODE_ROOT/Design/DesignIter.h	100;"	d
+DESIGN_FOR_ALL_ROWS	$CODE_ROOT/include/DesignIter.h	100;"	d
+DESIGN_FOR_ALL_SEQ_CELLS	$CODE_ROOT/Design/DesignIter.h	88;"	d
+DESIGN_FOR_ALL_SEQ_CELLS	$CODE_ROOT/include/DesignIter.h	88;"	d
+DESIGN_FOR_ALL_STD_CELLS	$CODE_ROOT/Design/DesignIter.h	76;"	d
+DESIGN_FOR_ALL_STD_CELLS	$CODE_ROOT/include/DesignIter.h	76;"	d
+DESIGN_FOR_ALL_STD_CELLS_FILT	$CODE_ROOT/Design/DesignIter.h	64;"	d
+DESIGN_FOR_ALL_STD_CELLS_FILT	$CODE_ROOT/include/DesignIter.h	64;"	d
 DESIGN_H	$CODE_ROOT/Design/Design.h	2;"	d
 DESIGN_H	$CODE_ROOT/include/Design.h	2;"	d
 DESIGN_ITER_H	$CODE_ROOT/Design/DesignIter.h	4;"	d
@@ -547,7 +555,7 @@ DONE	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         roots_ready,
 DONE_ext	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
 Design	$CODE_ROOT/Design/Design.h	/^class Design {$/;"	c
 Design	$CODE_ROOT/Design/DesignMain.cxx	/^Design::Design() $/;"	f	class:Design
-Design	$CODE_ROOT/Design/DesignMain.cxx	/^Design::Design(string DesignPath, string DesignName)$/;"	f	class:Design
+Design	$CODE_ROOT/Design/DesignMain.cxx	/^Design::Design(string DesignPath, string DesignName, Env &designEnv)$/;"	f	class:Design
 Design	$CODE_ROOT/include/Design.h	/^class Design {$/;"	c
 DesignAddAllCellsToPhysRows	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddAllCellsToPhysRows(void)$/;"	f	class:Design
 DesignAddCellToPhysRow	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddCellToPhysRow(Cell* cell, vector<vector<int> > &allRowBounds, $/;"	f	class:Design
@@ -558,7 +566,7 @@ DesignAddOneNetToDesignDB	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddOn
 DesignAddOnePhysRowToDesignDB	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)$/;"	f	class:Design
 DesignAddPath	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddPath(Path *path)$/;"	f	class:Design
 DesignAddPseudoNet	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddPseudoNet(Net *pseudoNet)$/;"	f	class:Design
-DesignAssignPinOffSets	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignAssignPinOffSets(Cell *clusterCell,$/;"	f	class:Design
+DesignAssignPinOffSets	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignAssignPinOffSets(Cell *clusterCell,$/;"	f	class:Design
 DesignBins	$CODE_ROOT/Design/Design.h	/^  vector<Bin *> DesignBins;$/;"	m	class:Design
 DesignBins	$CODE_ROOT/include/Design.h	/^  vector<Bin *> DesignBins;$/;"	m	class:Design
 DesignBuildGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignBuildGraph(void)$/;"	f	class:Design
@@ -573,36 +581,36 @@ DesignCheckSolvedCellsProperty	$CODE_ROOT/Design/DesignProperties.cxx	/^Design::
 DesignClearBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignClearBins(void)$/;"	f	class:Design
 DesignClearPseudoNetWeights	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignClearPseudoNetWeights(void)$/;"	f	class:Design
 DesignCloseFile	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCloseFile(void)$/;"	f	class:Design
-DesignClusterCells	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterCells(HyperGraph& myGraph, clusteringType clustType) $/;"	f	class:Design
-DesignClusterCells	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignClusterCells(vector<Cell *> &listOfCells)$/;"	f	class:Design
-DesignClusterSpecifiedCells	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterSpecifiedCells(vector<vector<void * > >listOfCells, $/;"	f	class:Design
+DesignClusterCells	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterCells(vector<Cell *> &listOfCells, bool collapseClustersInList,$/;"	f	class:Design
+DesignClusterCellsSimple	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignClusterCellsSimple(vector<Cell *> &listOfCells) $/;"	f	class:Design
 DesignClusters	$CODE_ROOT/Design/Design.h	/^  map<string, Cell*> DesignClusters;$/;"	m	class:Design
 DesignClusters	$CODE_ROOT/include/Design.h	/^  map<string, Cell*> DesignClusters;$/;"	m	class:Design
 DesignCmdsFileName	$CODE_ROOT/Design/Design.h	/^  string DesignCmdsFileName;$/;"	m	class:Design
 DesignCmdsFileName	$CODE_ROOT/include/Design.h	/^  string DesignCmdsFileName;$/;"	m	class:Design
 DesignCoarsenNetlist	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignCoarsenNetlist(void)$/;"	f	class:Design
-DesignCollapseCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignCollapseCluster(Cell& MasterCell)$/;"	f	class:Design
+DesignCollapseClusters	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignCollapseClusters(void)$/;"	f	class:Design
 DesignCollectStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^DesignCollectStats(Design& myDesign)$/;"	f
+DesignCommitCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignCommitCluster(Cell *clusterCell)$/;"	f	class:Design
 DesignComputeForceOnCell	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignComputeForceOnCell(Cell *thisCell, double &totalXForce, $/;"	f	class:Design
 DesignCreateBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCreateBins(uint binHeight, uint binWidth)$/;"	f	class:Design
 DesignCreateBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCreateBins(void)$/;"	f	class:Design
 DesignCreateGraph	$CODE_ROOT/Design/DesignGraph.cxx	/^Design::DesignCreateGraph(HyperGraph& thisGraph)$/;"	f	class:Design
 DesignCreatePseudoPort	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignCreatePseudoPort(Cell &thisCell,$/;"	f	class:Design
 DesignCreatePseudoPortOld	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignCreatePseudoPortOld(Cell &thisCell,$/;"	f	class:Design
+DesignDeleteCell	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDeleteCell(Cell *cellPtr)$/;"	f	class:Design
 DesignDeleteGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDeleteGraph(void)$/;"	f	class:Design
+DesignDeletePin	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDeletePin(Pin *pinPtr)$/;"	f	class:Design
 DesignDoBestChoiceClustering	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)$/;"	f	class:Design
 DesignDoClusterTest	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoClusterTest()$/;"	f	class:Design
-DesignDoDefaultCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignDoDefaultCluster(HyperGraph &myGraph) $/;"	f	class:Design
 DesignDoDefaultCluster	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoDefaultCluster(HyperGraph &myGraph)$/;"	f	class:Design
-DesignDoESCCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignDoESCCluster(HyperGraph &myGraph) $/;"	f	class:Design
-DesignDoFCCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignDoFCCluster(HyperGraph &myGraph) $/;"	f	class:Design
+DesignDoDetailedPlacement	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignDoDetailedPlacement(void)$/;"	f	class:Design
 DesignDoFirstChoiceClustering	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoFirstChoiceClustering(HyperGraph &myGraph)$/;"	f	class:Design
 DesignDoGlobalPlacement	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignDoGlobalPlacement(void)$/;"	f	class:Design
-DesignDoNetCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignDoNetCluster(HyperGraph &myGraph) $/;"	f	class:Design
+DesignDoLegalization	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignDoLegalization(void)$/;"	f	class:Design
 DesignDoTimingDrivenCluster	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoTimingDrivenCluster(HyperGraph &myGraph)$/;"	f	class:Design
 DesignEnv	$CODE_ROOT/Design/Design.h	/^  Env DesignEnv;$/;"	m	class:Design
 DesignEnv	$CODE_ROOT/include/Design.h	/^  Env DesignEnv;$/;"	m	class:Design
-DesignExpandCluster	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignExpandCluster(Cell *clusterCell, uint &resultHeight, $/;"	f	class:Design
+DesignExpandCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignExpandCluster(Cell *clusterCell, uint &resultHeight, $/;"	f	class:Design
 DesignFile	$CODE_ROOT/Design/Design.h	/^  ifstream DesignFile;$/;"	m	class:Design
 DesignFile	$CODE_ROOT/include/Design.h	/^  ifstream DesignFile;$/;"	m	class:Design
 DesignFileReadCellDelays	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignFileReadCellDelays(ifstream &file)$/;"	f	class:Design
@@ -631,9 +639,8 @@ DesignGetCellsSortedByBot	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCe
 DesignGetCellsSortedByLeft	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCellsSortedByLeft(void)$/;"	f	class:Design
 DesignGetCellsToSolve	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCellsToSolve(void)$/;"	f	class:Design
 DesignGetClockPeriod	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetClockPeriod(void)$/;"	f	class:Design
-DesignGetClusterDimensions	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignGetClusterDimensions(vector<Cell *> &listOfCells, $/;"	f	class:Design
+DesignGetClusterDimensions	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignGetClusterDimensions(vector<Cell *> &listOfCells, $/;"	f	class:Design
 DesignGetClusters	$CODE_ROOT/Design/DesignMain.cxx	/^map<string,Cell*>& Design::DesignGetClusters(void)$/;"	f	class:Design
-DesignGetConnectedCells	$CODE_ROOT/Design/DesignCluster.cxx	/^DesignGetConnectedCells(HyperGraph &myGraph, Cell *cellPtr) $/;"	f
 DesignGetConnectedCells	$CODE_ROOT/Design/DesignUtils.cxx	/^DesignGetConnectedCells(HyperGraph &myGraph, Cell *cellPtr)$/;"	f
 DesignGetDelayArc	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetDelayArc(string libCell, string outputPin, string inputPin)$/;"	f	class:Design
 DesignGetEnv	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetEnv(void)$/;"	f	class:Design
@@ -666,10 +673,12 @@ DesignGetSingleRowHeight	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetSin
 DesignGetStatData	$CODE_ROOT/Design/DesignAnalysis.cxx	/^DesignGetStatData(map<dataType, unsigned int> table) $/;"	f
 DesignGraphPtr	$CODE_ROOT/Design/Design.h	/^  HyperGraph *DesignGraphPtr;$/;"	m	class:Design
 DesignGraphPtr	$CODE_ROOT/include/Design.h	/^  HyperGraph *DesignGraphPtr;$/;"	m	class:Design
+DesignHiddenCells	$CODE_ROOT/Design/Design.h	/^  map<string, Cell*> DesignHiddenCells;$/;"	m	class:Design
+DesignHiddenCells	$CODE_ROOT/include/Design.h	/^  map<string, Cell*> DesignHiddenCells;$/;"	m	class:Design
 DesignHiddenNets	$CODE_ROOT/Design/Design.h	/^  map<string, Net*> DesignHiddenNets;$/;"	m	class:Design
 DesignHiddenNets	$CODE_ROOT/include/Design.h	/^  map<string, Net*> DesignHiddenNets;$/;"	m	class:Design
+DesignHideCell	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignHideCell(Cell *thisCell)$/;"	f	class:Design
 DesignHideNet	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignHideNet(Net *netPtr)$/;"	f	class:Design
-DesignHideNets	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignHideNets(vector<void *> affectedNets, vector<void *> listOfCells)$/;"	f	class:Design
 DesignInit	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignInit()$/;"	f	class:Design
 DesignMapFileName	$CODE_ROOT/Design/Design.h	/^  string DesignMapFileName;$/;"	m	class:Design
 DesignMapFileName	$CODE_ROOT/include/Design.h	/^  string DesignMapFileName;$/;"	m	class:Design
@@ -696,15 +705,15 @@ DesignPinsMapFileName	$CODE_ROOT/Design/Design.h	/^  string DesignPinsMapFileNam
 DesignPinsMapFileName	$CODE_ROOT/include/Design.h	/^  string DesignPinsMapFileName;$/;"	m	class:Design
 DesignPlFileName	$CODE_ROOT/Design/Design.h	/^  string DesignPlFileName;$/;"	m	class:Design
 DesignPlFileName	$CODE_ROOT/include/Design.h	/^  string DesignPlFileName;$/;"	m	class:Design
-DesignPlaceCellsInCluster	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignPlaceCellsInCluster(vector<Cell *> &boundaryCellVec, $/;"	f	class:Design
-DesignPlaceCellsInClusterInCenter	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignPlaceCellsInClusterInCenter(vector<Cell *> &boundaryCellVec, $/;"	f	class:Design
-DesignPlaceCellsInClusterNoLegal	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignPlaceCellsInClusterNoLegal(vector<Cell *> &boundaryCellVec, $/;"	f	class:Design
-DesignPlotCluster	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignPlotCluster(string plotTitle, string plotFileName,$/;"	f	class:Design
+DesignPlaceCellsInCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignPlaceCellsInCluster(vector<Cell *> &boundaryCellVec, $/;"	f	class:Design
+DesignPlaceCellsInClusterInCenter	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignPlaceCellsInClusterInCenter(vector<Cell *> &boundaryCellVec, $/;"	f	class:Design
+DesignPlaceCellsInClusterNoLegal	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignPlaceCellsInClusterNoLegal(vector<Cell *> &boundaryCellVec, $/;"	f	class:Design
+DesignPlotCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignPlotCluster(string plotTitle, string plotFileName,$/;"	f	class:Design
 DesignPlotData	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignPlotData(string plotTitle, string plotFileName)$/;"	f	class:Design
+DesignPlotDataSelected	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignPlotDataSelected(string plotTitle, string plotFileName,$/;"	f	class:Design
 DesignPrintPorts	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::DesignPrintPorts(uint numPorts)$/;"	f	class:Design
 DesignPrintTerminals	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::DesignPrintTerminals(uint numTerminals)$/;"	f	class:Design
 DesignProcessProperty	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignProcessProperty(ifstream& file, string& Property, $/;"	f	class:Design
-DesignPropagateTerminals	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignPropagateTerminals(Cell* fromCell, Cell* toCell)$/;"	f	class:Design
 DesignReadCellDelaysFile	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadCellDelaysFile()$/;"	f	class:Design
 DesignReadCellPlacement	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadCellPlacement(bool skipFixed)$/;"	f	class:Design
 DesignReadCells	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadCells()$/;"	f	class:Design
@@ -720,6 +729,8 @@ DesignRebuildGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignRebuildGraph
 DesignRemoveOneClusterFromDesignDB	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignRemoveOneClusterFromDesignDB(Cell *clusterCell)$/;"	f	class:Design
 DesignRunExternalPlacer	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType) $/;"	f	class:Design
 DesignRunFastPlace	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)$/;"	f	class:Design
+DesignRunFastPlaceDetailedPlacer	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName)$/;"	f	class:Design
+DesignRunFastPlaceLegalizer	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunFastPlaceLegalizer(string desDirName, string desName)$/;"	f	class:Design
 DesignRunInternalPlacer	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignRunInternalPlacer(EnvSolverType solverType)$/;"	f	class:Design
 DesignRunMPL6	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunMPL6(string clusterDirName, string clusterDesName)$/;"	f	class:Design
 DesignRunNTUPlace	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName)$/;"	f	class:Design
@@ -735,6 +746,7 @@ DesignSetPeakUtil	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetPeakUtil(d
 DesignSetPeakUtilBinIdx	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetPeakUtilBinIdx(uint peakUtilBinIdx)$/;"	f	class:Design
 DesignSetVarsPostRead	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetVarsPostRead()$/;"	f	class:Design
 DesignShiftChipToZeroZero	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignShiftChipToZeroZero(void)$/;"	f	class:Design
+DesignSimpleCollapseCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignSimpleCollapseCluster(Cell *cellToCollapse, $/;"	f	class:Design
 DesignSolveFastOOQP	$CODE_ROOT/Design/.bak/DesignSolveFastOOQP.cxx	/^Design::DesignSolveFastOOQP(void)$/;"	f	class:Design
 DesignSolveFastOOQP	$CODE_ROOT/Design/.bak/DesignSolveFastQuadProg.cxx	/^Design::DesignSolveFastOOQP(void)$/;"	f	class:Design
 DesignSolveForAllCells	$CODE_ROOT/Design/.bak/DesignSolve.cxx	/^Design::DesignSolveForAllCells(allSolverType solverType)$/;"	f	class:Design
@@ -753,10 +765,13 @@ DesignSolveForAllCellsMosekIter	$CODE_ROOT/Design/DesignSolveFastMosek7.cxx	/^De
 DesignSpreadCellsFast	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignSpreadCellsFast(HyperGraph &myGraph, MSKrealt *qvalijx, MSKrealt *qvalijy, $/;"	f	class:Design
 DesignSpreadCreatePseudoPort	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin, $/;"	f	class:Design
 DesignStretchBins	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignStretchBins(void)$/;"	f	class:Design
-DesignUnclusterCell	$CODE_ROOT/Design/DesignClusterNew.cxx	/^Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)$/;"	f	class:Design
+DesignUnclusterCell	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)$/;"	f	class:Design
+DesignUnhideCell	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignUnhideCell(Cell *thisCell)$/;"	f	class:Design
+DesignUnhideNet	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignUnhideNet(Net *netPtr)$/;"	f	class:Design
 DesignUpdateChipDim	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignUpdateChipDim(PhysRow *row)$/;"	f	class:Design
 DesignWriteAuxFile	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWriteAuxFile(Design &myDesign, string fname)$/;"	f
 DesignWriteBookShelfOutput	$CODE_ROOT/Design/DesignWrite.cxx	/^void DesignWriteBookShelfOutput(Design &myDesign, string opBenchName)$/;"	f
+DesignWriteCurrentNetlist	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignWriteCurrentNetlist(string dirName, string desName)$/;"	f	class:Design
 DesignWriteHeaderFile	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWriteHeaderFile(Design &myDesign, ofstream &opFile)$/;"	f
 DesignWriteNets	$CODE_ROOT/Design/DesignWrite.cxx	/^void DesignWriteNets(Design &myDesign, string fname) $/;"	f
 DesignWriteNodes	$CODE_ROOT/Design/DesignWrite.cxx	/^void DesignWriteNodes(Design &myDesign, string fname) $/;"	f
@@ -765,8 +780,12 @@ DesignWritePlacement	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWritePlacement(De
 DesignWriteScl	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWriteScl(Design &myDesign, string fname)$/;"	f
 DesignWriteStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^void DesignWriteStats(Design& myDesign)$/;"	f
 DesignWriteWtsFile	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWriteWtsFile(Design &myDesign, string fname) $/;"	f
+DetailedPlacementStartTime	$CODE_ROOT/Env/Env.h	/^  double DetailedPlacementStartTime;$/;"	m	class:Env
+DetailedPlacementStartTime	$CODE_ROOT/include/Env.h	/^  double DetailedPlacementStartTime;$/;"	m	class:Env
 DetailedPlacementTime	$CODE_ROOT/Env/Env.h	/^  double DetailedPlacementTime;$/;"	m	class:Env
 DetailedPlacementTime	$CODE_ROOT/include/Env.h	/^  double DetailedPlacementTime;$/;"	m	class:Env
+DetailedPlacer	$CODE_ROOT/Env/Env.h	/^  EnvDetailedPlacer DetailedPlacer;$/;"	m	class:Env
+DetailedPlacer	$CODE_ROOT/include/Env.h	/^  EnvDetailedPlacer DetailedPlacer;$/;"	m	class:Env
 Disconnect	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::Disconnect(void)$/;"	f	class:Pin
 DiscreteHeight	$CODE_ROOT/Env/Env.h	/^  bool DiscreteHeight;$/;"	m	class:Env
 DiscreteHeight	$CODE_ROOT/include/Env.h	/^  bool DiscreteHeight;$/;"	m	class:Env
@@ -775,9 +794,11 @@ DiscreteWidth	$CODE_ROOT/include/Env.h	/^  bool DiscreteWidth;$/;"	m	class:Env
 DoMerge	$CODE_ROOT/Sort/SortMain.cxx	/^DoMerge(vector<Type> &thisVector, int Left, int Mid, int Right,	funcPtrType this_func) $/;"	f
 DumpHessian	$CODE_ROOT/Env/Env.h	/^  bool DumpHessian;$/;"	m	class:Env
 DumpHessian	$CODE_ROOT/include/Env.h	/^  bool DumpHessian;$/;"	m	class:Env
-E	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+E	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 E	$CODE_ROOT/example/laplace3d.cc	/^  Element *E;                   \/\/ Elemente$/;"	m	struct:Matrix0bnd	file:
 E	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
+EDGE_FLAG_HIDDEN	$CODE_ROOT/HyperGraph/HyperGraph.h	16;"	d
+EDGE_FLAG_HIDDEN	$CODE_ROOT/include/HyperGraph.h	16;"	d
 EDGE_FOR_ALL_ADJACENT_NODES	$CODE_ROOT/HyperGraph/EdgeIter.h	12;"	d
 EDGE_FOR_ALL_NODES	$CODE_ROOT/HyperGraph/EdgeIter.h	4;"	d
 EDGE_H	$CODE_ROOT/HyperGraph/Edge.h	2;"	d
@@ -785,86 +806,96 @@ EDGE_H	$CODE_ROOT/include/Edge.h	2;"	d
 EDGE_ITER_H	$CODE_ROOT/HyperGraph/EdgeIter.h	2;"	d
 END_FOR	$CODE_ROOT/common/commonIter.h	30;"	d
 END_FOR	$CODE_ROOT/include/commonIter.h	30;"	d
-ENV_BEST_CHOICE_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_BEST_CHOICE_CLUSTERING,$/;"	e	enum:__anon40
-ENV_BEST_CHOICE_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_BEST_CHOICE_CLUSTERING,$/;"	e	enum:__anon17
-ENV_BIN_BASED_LEGALIZER	$CODE_ROOT/Env/Env.h	/^  ENV_BIN_BASED_LEGALIZER,$/;"	e	enum:__anon38
+ENV_BEST_CHOICE_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_BEST_CHOICE_CLUSTERING,$/;"	e	enum:__anon42
+ENV_BEST_CHOICE_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_BEST_CHOICE_CLUSTERING,$/;"	e	enum:__anon18
+ENV_BIN_BASED_LEGALIZER	$CODE_ROOT/Env/Env.h	/^  ENV_BIN_BASED_LEGALIZER,$/;"	e	enum:__anon39
 ENV_BIN_BASED_LEGALIZER	$CODE_ROOT/include/Env.h	/^  ENV_BIN_BASED_LEGALIZER,$/;"	e	enum:__anon15
-ENV_CLIQUE_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_CLIQUE_MODEL = 0,$/;"	e	enum:__anon36
+ENV_CLIQUE_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_CLIQUE_MODEL = 0,$/;"	e	enum:__anon37
 ENV_CLIQUE_MODEL	$CODE_ROOT/include/Env.h	/^  ENV_CLIQUE_MODEL = 0,$/;"	e	enum:__anon13
-ENV_CLUSTER_PLACE_BOUNDARY	$CODE_ROOT/Env/Env.h	/^  ENV_CLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon41
-ENV_CLUSTER_PLACE_BOUNDARY	$CODE_ROOT/include/Env.h	/^  ENV_CLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon18
-ENV_CLUSTER_PLACE_CENTRE	$CODE_ROOT/Env/Env.h	/^  ENV_CLUSTER_PLACE_CENTRE,$/;"	e	enum:__anon41
-ENV_CLUSTER_PLACE_CENTRE	$CODE_ROOT/include/Env.h	/^  ENV_CLUSTER_PLACE_CENTRE,$/;"	e	enum:__anon18
-ENV_EDGE_SEPARABILITY_BASED_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_EDGE_SEPARABILITY_BASED_CLUSTERING,$/;"	e	enum:__anon40
-ENV_EDGE_SEPARABILITY_BASED_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_EDGE_SEPARABILITY_BASED_CLUSTERING,$/;"	e	enum:__anon17
-ENV_FAST_PLACE_GP	$CODE_ROOT/Env/Env.h	/^  ENV_FAST_PLACE_GP,$/;"	e	enum:__anon34
+ENV_CLUSTER_PLACE_BOUNDARY	$CODE_ROOT/Env/Env.h	/^  ENV_CLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon43
+ENV_CLUSTER_PLACE_BOUNDARY	$CODE_ROOT/include/Env.h	/^  ENV_CLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon19
+ENV_CLUSTER_PLACE_CENTRE	$CODE_ROOT/Env/Env.h	/^  ENV_CLUSTER_PLACE_CENTRE,$/;"	e	enum:__anon43
+ENV_CLUSTER_PLACE_CENTRE	$CODE_ROOT/include/Env.h	/^  ENV_CLUSTER_PLACE_CENTRE,$/;"	e	enum:__anon19
+ENV_EDGE_SEPARABILITY_BASED_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_EDGE_SEPARABILITY_BASED_CLUSTERING,$/;"	e	enum:__anon42
+ENV_EDGE_SEPARABILITY_BASED_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_EDGE_SEPARABILITY_BASED_CLUSTERING,$/;"	e	enum:__anon18
+ENV_FAST_PLACE_DP	$CODE_ROOT/Env/Env.h	/^  ENV_FAST_PLACE_DP,$/;"	e	enum:__anon40
+ENV_FAST_PLACE_DP	$CODE_ROOT/include/Env.h	/^  ENV_FAST_PLACE_DP,$/;"	e	enum:__anon16
+ENV_FAST_PLACE_GP	$CODE_ROOT/Env/Env.h	/^  ENV_FAST_PLACE_GP,$/;"	e	enum:__anon35
 ENV_FAST_PLACE_GP	$CODE_ROOT/include/Env.h	/^  ENV_FAST_PLACE_GP,$/;"	e	enum:__anon11
-ENV_FIRST_CHOICE_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_FIRST_CHOICE_CLUSTERING,$/;"	e	enum:__anon40
-ENV_FIRST_CHOICE_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_FIRST_CHOICE_CLUSTERING,$/;"	e	enum:__anon17
-ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING,$/;"	e	enum:__anon40
-ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING,$/;"	e	enum:__anon17
+ENV_FAST_PLACE_LEGALIZER	$CODE_ROOT/Env/Env.h	/^  ENV_FAST_PLACE_LEGALIZER,$/;"	e	enum:__anon39
+ENV_FAST_PLACE_LEGALIZER	$CODE_ROOT/include/Env.h	/^  ENV_FAST_PLACE_LEGALIZER,$/;"	e	enum:__anon15
+ENV_FIRST_CHOICE_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_FIRST_CHOICE_CLUSTERING,$/;"	e	enum:__anon42
+ENV_FIRST_CHOICE_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_FIRST_CHOICE_CLUSTERING,$/;"	e	enum:__anon18
+ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING,$/;"	e	enum:__anon42
+ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING,$/;"	e	enum:__anon18
 ENV_H	$CODE_ROOT/Env/Env.h	4;"	d
 ENV_H	$CODE_ROOT/include/Env.h	4;"	d
-ENV_HYBRID_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_HYBRID_MODEL,$/;"	e	enum:__anon36
+ENV_HYBRID_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_HYBRID_MODEL,$/;"	e	enum:__anon37
 ENV_HYBRID_MODEL	$CODE_ROOT/include/Env.h	/^  ENV_HYBRID_MODEL,$/;"	e	enum:__anon13
-ENV_MODE_OPTIMAL	$CODE_ROOT/Env/Env.h	/^  ENV_MODE_OPTIMAL = 0,$/;"	e	enum:__anon37
+ENV_MODE_OPTIMAL	$CODE_ROOT/Env/Env.h	/^  ENV_MODE_OPTIMAL = 0,$/;"	e	enum:__anon38
 ENV_MODE_OPTIMAL	$CODE_ROOT/include/Env.h	/^  ENV_MODE_OPTIMAL = 0,$/;"	e	enum:__anon14
-ENV_MODE_TEST	$CODE_ROOT/Env/Env.h	/^  ENV_MODE_TEST,$/;"	e	enum:__anon37
+ENV_MODE_TEST	$CODE_ROOT/Env/Env.h	/^  ENV_MODE_TEST,$/;"	e	enum:__anon38
 ENV_MODE_TEST	$CODE_ROOT/include/Env.h	/^  ENV_MODE_TEST,$/;"	e	enum:__anon14
-ENV_MPL6_GP	$CODE_ROOT/Env/Env.h	/^  ENV_MPL6_GP,$/;"	e	enum:__anon34
+ENV_MPL6_GP	$CODE_ROOT/Env/Env.h	/^  ENV_MPL6_GP,$/;"	e	enum:__anon35
 ENV_MPL6_GP	$CODE_ROOT/include/Env.h	/^  ENV_MPL6_GP,$/;"	e	enum:__anon11
-ENV_NET_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_NET_CLUSTERING,$/;"	e	enum:__anon40
-ENV_NET_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_NET_CLUSTERING,$/;"	e	enum:__anon17
-ENV_NO_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_NO_CLUSTERING = 0,$/;"	e	enum:__anon40
-ENV_NO_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_NO_CLUSTERING = 0,$/;"	e	enum:__anon17
-ENV_NO_EXTERNAL_GP	$CODE_ROOT/Env/Env.h	/^  ENV_NO_EXTERNAL_GP,$/;"	e	enum:__anon34
+ENV_NET_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_NET_CLUSTERING,$/;"	e	enum:__anon42
+ENV_NET_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_NET_CLUSTERING,$/;"	e	enum:__anon18
+ENV_NO_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_NO_CLUSTERING = 0,$/;"	e	enum:__anon42
+ENV_NO_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_NO_CLUSTERING = 0,$/;"	e	enum:__anon18
+ENV_NO_DETAIL_PLACEMENT	$CODE_ROOT/Env/Env.h	/^  ENV_NO_DETAIL_PLACEMENT = 0,$/;"	e	enum:__anon40
+ENV_NO_DETAIL_PLACEMENT	$CODE_ROOT/include/Env.h	/^  ENV_NO_DETAIL_PLACEMENT = 0,$/;"	e	enum:__anon16
+ENV_NO_EXTERNAL_GP	$CODE_ROOT/Env/Env.h	/^  ENV_NO_EXTERNAL_GP,$/;"	e	enum:__anon35
 ENV_NO_EXTERNAL_GP	$CODE_ROOT/include/Env.h	/^  ENV_NO_EXTERNAL_GP,$/;"	e	enum:__anon11
-ENV_NO_SHAPE_SELECTION	$CODE_ROOT/Env/Env.h	/^  ENV_NO_SHAPE_SELECTION = 0,$/;"	e	enum:__anon43
-ENV_NO_SHAPE_SELECTION	$CODE_ROOT/include/Env.h	/^  ENV_NO_SHAPE_SELECTION = 0,$/;"	e	enum:__anon20
-ENV_NTUPLACE_GP	$CODE_ROOT/Env/Env.h	/^  ENV_NTUPLACE_GP,$/;"	e	enum:__anon34
+ENV_NO_SHAPE_SELECTION	$CODE_ROOT/Env/Env.h	/^  ENV_NO_SHAPE_SELECTION = 0,$/;"	e	enum:__anon45
+ENV_NO_SHAPE_SELECTION	$CODE_ROOT/include/Env.h	/^  ENV_NO_SHAPE_SELECTION = 0,$/;"	e	enum:__anon21
+ENV_NTUPLACE_GP	$CODE_ROOT/Env/Env.h	/^  ENV_NTUPLACE_GP,$/;"	e	enum:__anon35
 ENV_NTUPLACE_GP	$CODE_ROOT/include/Env.h	/^  ENV_NTUPLACE_GP,$/;"	e	enum:__anon11
-ENV_NUM_CLUSTERING_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_CLUSTERING_TYPES,$/;"	e	enum:__anon40
-ENV_NUM_CLUSTERING_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_CLUSTERING_TYPES,$/;"	e	enum:__anon17
-ENV_NUM_CLUSTER_PLACE_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_CLUSTER_PLACE_TYPES$/;"	e	enum:__anon41
-ENV_NUM_CLUSTER_PLACE_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_CLUSTER_PLACE_TYPES$/;"	e	enum:__anon18
-ENV_NUM_SHAPE_SELECTION_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_SHAPE_SELECTION_TYPES,$/;"	e	enum:__anon43
-ENV_NUM_SHAPE_SELECTION_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_SHAPE_SELECTION_TYPES,$/;"	e	enum:__anon20
-ENV_NUM_UNCLUSTER_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_UNCLUSTER_TYPES$/;"	e	enum:__anon42
-ENV_NUM_UNCLUSTER_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_UNCLUSTER_TYPES$/;"	e	enum:__anon19
-ENV_OPTIMIZE_TIMING	$CODE_ROOT/Env/Env.h	/^  ENV_OPTIMIZE_TIMING = 0,$/;"	e	enum:__anon39
-ENV_OPTIMIZE_TIMING	$CODE_ROOT/include/Env.h	/^  ENV_OPTIMIZE_TIMING = 0,$/;"	e	enum:__anon16
-ENV_OPTIMIZE_WIRELENGTH	$CODE_ROOT/Env/Env.h	/^  ENV_OPTIMIZE_WIRELENGTH$/;"	e	enum:__anon39
-ENV_OPTIMIZE_WIRELENGTH	$CODE_ROOT/include/Env.h	/^  ENV_OPTIMIZE_WIRELENGTH$/;"	e	enum:__anon16
-ENV_SIMPLE_LEGALIZER	$CODE_ROOT/Env/Env.h	/^  ENV_SIMPLE_LEGALIZER = 0,$/;"	e	enum:__anon38
+ENV_NUM_CLUSTERING_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_CLUSTERING_TYPES,$/;"	e	enum:__anon42
+ENV_NUM_CLUSTERING_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_CLUSTERING_TYPES,$/;"	e	enum:__anon18
+ENV_NUM_CLUSTER_PLACE_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_CLUSTER_PLACE_TYPES$/;"	e	enum:__anon43
+ENV_NUM_CLUSTER_PLACE_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_CLUSTER_PLACE_TYPES$/;"	e	enum:__anon19
+ENV_NUM_SHAPE_SELECTION_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_SHAPE_SELECTION_TYPES,$/;"	e	enum:__anon45
+ENV_NUM_SHAPE_SELECTION_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_SHAPE_SELECTION_TYPES,$/;"	e	enum:__anon21
+ENV_NUM_UNCLUSTER_TYPES	$CODE_ROOT/Env/Env.h	/^  ENV_NUM_UNCLUSTER_TYPES$/;"	e	enum:__anon44
+ENV_NUM_UNCLUSTER_TYPES	$CODE_ROOT/include/Env.h	/^  ENV_NUM_UNCLUSTER_TYPES$/;"	e	enum:__anon20
+ENV_OPTIMIZE_TIMING	$CODE_ROOT/Env/Env.h	/^  ENV_OPTIMIZE_TIMING = 0,$/;"	e	enum:__anon41
+ENV_OPTIMIZE_TIMING	$CODE_ROOT/include/Env.h	/^  ENV_OPTIMIZE_TIMING = 0,$/;"	e	enum:__anon17
+ENV_OPTIMIZE_WIRELENGTH	$CODE_ROOT/Env/Env.h	/^  ENV_OPTIMIZE_WIRELENGTH$/;"	e	enum:__anon41
+ENV_OPTIMIZE_WIRELENGTH	$CODE_ROOT/include/Env.h	/^  ENV_OPTIMIZE_WIRELENGTH$/;"	e	enum:__anon17
+ENV_OURPLACER_DP	$CODE_ROOT/Env/Env.h	/^  ENV_OURPLACER_DP,$/;"	e	enum:__anon40
+ENV_OURPLACER_DP	$CODE_ROOT/include/Env.h	/^  ENV_OURPLACER_DP,$/;"	e	enum:__anon16
+ENV_SIMPLE_LEGALIZER	$CODE_ROOT/Env/Env.h	/^  ENV_SIMPLE_LEGALIZER = 0,$/;"	e	enum:__anon39
 ENV_SIMPLE_LEGALIZER	$CODE_ROOT/include/Env.h	/^  ENV_SIMPLE_LEGALIZER = 0,$/;"	e	enum:__anon15
-ENV_SOLVER_NON_LINEAR	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_NON_LINEAR,$/;"	e	enum:__anon35
+ENV_SOLVER_NON_LINEAR	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_NON_LINEAR,$/;"	e	enum:__anon36
 ENV_SOLVER_NON_LINEAR	$CODE_ROOT/include/Env.h	/^  ENV_SOLVER_NON_LINEAR,$/;"	e	enum:__anon12
-ENV_SOLVER_NON_LINEAR_CONJ_GRAD	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_NON_LINEAR_CONJ_GRAD,$/;"	e	enum:__anon35
+ENV_SOLVER_NON_LINEAR_CONJ_GRAD	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_NON_LINEAR_CONJ_GRAD,$/;"	e	enum:__anon36
 ENV_SOLVER_NON_LINEAR_CONJ_GRAD	$CODE_ROOT/include/Env.h	/^  ENV_SOLVER_NON_LINEAR_CONJ_GRAD,$/;"	e	enum:__anon12
-ENV_SOLVER_QUADRATICXY_CONJ_GRAD	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATICXY_CONJ_GRAD,$/;"	e	enum:__anon35
+ENV_SOLVER_QUADRATICXY_CONJ_GRAD	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATICXY_CONJ_GRAD,$/;"	e	enum:__anon36
 ENV_SOLVER_QUADRATICXY_CONJ_GRAD	$CODE_ROOT/include/Env.h	/^  ENV_SOLVER_QUADRATICXY_CONJ_GRAD,$/;"	e	enum:__anon12
-ENV_SOLVER_QUADRATICXY_MOSEK	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATICXY_MOSEK,$/;"	e	enum:__anon35
+ENV_SOLVER_QUADRATICXY_MOSEK	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATICXY_MOSEK,$/;"	e	enum:__anon36
 ENV_SOLVER_QUADRATICXY_MOSEK	$CODE_ROOT/include/Env.h	/^  ENV_SOLVER_QUADRATICXY_MOSEK,$/;"	e	enum:__anon12
-ENV_SOLVER_QUADRATIC_CONJ_GRAD	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATIC_CONJ_GRAD,$/;"	e	enum:__anon35
+ENV_SOLVER_QUADRATIC_CONJ_GRAD	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATIC_CONJ_GRAD,$/;"	e	enum:__anon36
 ENV_SOLVER_QUADRATIC_CONJ_GRAD	$CODE_ROOT/include/Env.h	/^  ENV_SOLVER_QUADRATIC_CONJ_GRAD,$/;"	e	enum:__anon12
-ENV_SOLVER_QUADRATIC_MOSEK	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATIC_MOSEK=0,$/;"	e	enum:__anon35
+ENV_SOLVER_QUADRATIC_MOSEK	$CODE_ROOT/Env/Env.h	/^  ENV_SOLVER_QUADRATIC_MOSEK=0,$/;"	e	enum:__anon36
 ENV_SOLVER_QUADRATIC_MOSEK	$CODE_ROOT/include/Env.h	/^  ENV_SOLVER_QUADRATIC_MOSEK=0,$/;"	e	enum:__anon12
-ENV_STAR_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_STAR_MODEL,$/;"	e	enum:__anon36
+ENV_STAR_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_STAR_MODEL,$/;"	e	enum:__anon37
 ENV_STAR_MODEL	$CODE_ROOT/include/Env.h	/^  ENV_STAR_MODEL,$/;"	e	enum:__anon13
-ENV_STD_SHAPE_SELECTION_ALGORITHM	$CODE_ROOT/Env/Env.h	/^  ENV_STD_SHAPE_SELECTION_ALGORITHM,$/;"	e	enum:__anon43
-ENV_STD_SHAPE_SELECTION_ALGORITHM	$CODE_ROOT/include/Env.h	/^  ENV_STD_SHAPE_SELECTION_ALGORITHM,$/;"	e	enum:__anon20
-ENV_TIMING_DRIVEN_CLUSTERING1	$CODE_ROOT/Env/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING1,$/;"	e	enum:__anon40
-ENV_TIMING_DRIVEN_CLUSTERING1	$CODE_ROOT/include/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING1,$/;"	e	enum:__anon17
-ENV_TIMING_DRIVEN_CLUSTERING2	$CODE_ROOT/Env/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING2,$/;"	e	enum:__anon40
-ENV_TIMING_DRIVEN_CLUSTERING2	$CODE_ROOT/include/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING2,$/;"	e	enum:__anon17
-ENV_UNCLUSTER_PLACE_BOUNDARY	$CODE_ROOT/Env/Env.h	/^  ENV_UNCLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon42
-ENV_UNCLUSTER_PLACE_BOUNDARY	$CODE_ROOT/include/Env.h	/^  ENV_UNCLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon19
-ENV_UNCLUSTER_PLACE_NONE	$CODE_ROOT/Env/Env.h	/^  ENV_UNCLUSTER_PLACE_NONE,$/;"	e	enum:__anon42
-ENV_UNCLUSTER_PLACE_NONE	$CODE_ROOT/include/Env.h	/^  ENV_UNCLUSTER_PLACE_NONE,$/;"	e	enum:__anon19
-ENV_VARIABLE_HYBRID_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_VARIABLE_HYBRID_MODEL,$/;"	e	enum:__anon36
+ENV_STD_SHAPE_SELECTION_ALGORITHM	$CODE_ROOT/Env/Env.h	/^  ENV_STD_SHAPE_SELECTION_ALGORITHM,$/;"	e	enum:__anon45
+ENV_STD_SHAPE_SELECTION_ALGORITHM	$CODE_ROOT/include/Env.h	/^  ENV_STD_SHAPE_SELECTION_ALGORITHM,$/;"	e	enum:__anon21
+ENV_TIMING_DRIVEN_CLUSTERING1	$CODE_ROOT/Env/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING1,$/;"	e	enum:__anon42
+ENV_TIMING_DRIVEN_CLUSTERING1	$CODE_ROOT/include/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING1,$/;"	e	enum:__anon18
+ENV_TIMING_DRIVEN_CLUSTERING2	$CODE_ROOT/Env/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING2,$/;"	e	enum:__anon42
+ENV_TIMING_DRIVEN_CLUSTERING2	$CODE_ROOT/include/Env.h	/^  ENV_TIMING_DRIVEN_CLUSTERING2,$/;"	e	enum:__anon18
+ENV_UNCLUSTER_PLACE_BOUNDARY	$CODE_ROOT/Env/Env.h	/^  ENV_UNCLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon44
+ENV_UNCLUSTER_PLACE_BOUNDARY	$CODE_ROOT/include/Env.h	/^  ENV_UNCLUSTER_PLACE_BOUNDARY = 0,$/;"	e	enum:__anon20
+ENV_UNCLUSTER_PLACE_INTERNAL	$CODE_ROOT/Env/Env.h	/^  ENV_UNCLUSTER_PLACE_INTERNAL,$/;"	e	enum:__anon44
+ENV_UNCLUSTER_PLACE_INTERNAL	$CODE_ROOT/include/Env.h	/^  ENV_UNCLUSTER_PLACE_INTERNAL,$/;"	e	enum:__anon20
+ENV_UNCLUSTER_PLACE_NONE	$CODE_ROOT/Env/Env.h	/^  ENV_UNCLUSTER_PLACE_NONE,$/;"	e	enum:__anon44
+ENV_UNCLUSTER_PLACE_NONE	$CODE_ROOT/include/Env.h	/^  ENV_UNCLUSTER_PLACE_NONE,$/;"	e	enum:__anon20
+ENV_VARIABLE_HYBRID_MODEL	$CODE_ROOT/Env/Env.h	/^  ENV_VARIABLE_HYBRID_MODEL,$/;"	e	enum:__anon37
 ENV_VARIABLE_HYBRID_MODEL	$CODE_ROOT/include/Env.h	/^  ENV_VARIABLE_HYBRID_MODEL,$/;"	e	enum:__anon13
 ESC_CLUSTER	$CODE_ROOT/Design/Design.h	/^  ESC_CLUSTER,$/;"	e	enum:__anon2
-ESC_CLUSTER	$CODE_ROOT/include/Design.h	/^  ESC_CLUSTER,$/;"	e	enum:__anon21
+ESC_CLUSTER	$CODE_ROOT/include/Design.h	/^  ESC_CLUSTER,$/;"	e	enum:__anon22
 Edge	$CODE_ROOT/HyperGraph/Edge.cxx	/^Edge::Edge() $/;"	f	class:Edge
 Edge	$CODE_ROOT/HyperGraph/Edge.cxx	/^Edge::Edge(void *object)$/;"	f	class:Edge
 Edge	$CODE_ROOT/HyperGraph/Edge.h	/^class Edge {$/;"	c
@@ -874,7 +905,10 @@ EdgeGetNodes	$CODE_ROOT/HyperGraph/Edge.cxx	/^vector<unsigned int>& Edge::EdgeGe
 EdgeGetNumNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::EdgeGetNumNodes(uint edgeIdx)$/;"	f	class:HyperGraph
 EdgeGetObject	$CODE_ROOT/HyperGraph/Edge.cxx	/^void* Edge::EdgeGetObject(void)$/;"	f	class:Edge
 EdgeGetWeight	$CODE_ROOT/HyperGraph/Edge.cxx	/^double Edge::EdgeGetWeight(void)$/;"	f	class:Edge
+EdgeIsHidden	$CODE_ROOT/HyperGraph/Edge.cxx	/^bool Edge::EdgeIsHidden(void)$/;"	f	class:Edge
+EdgeIsHidden	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::EdgeIsHidden(uint edgeIdx) $/;"	f	class:HyperGraph
 EdgeSetIdx	$CODE_ROOT/HyperGraph/Edge.cxx	/^void Edge::EdgeSetIdx(unsigned int edgeIdx)$/;"	f	class:Edge
+EdgeSetIsHidden	$CODE_ROOT/HyperGraph/Edge.cxx	/^void Edge::EdgeSetIsHidden(bool hidden)$/;"	f	class:Edge
 EdgeSetObject	$CODE_ROOT/HyperGraph/Edge.cxx	/^void Edge::EdgeSetObject(void *object)$/;"	f	class:Edge
 EdgeSetWeight	$CODE_ROOT/HyperGraph/Edge.cxx	/^void Edge::EdgeSetWeight(double weight)$/;"	f	class:Edge
 Edges2Nodes	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  vector<map<uint, uint > > Edges2Nodes;$/;"	m	class:HyperGraph
@@ -883,25 +917,34 @@ Element	$CODE_ROOT/example/laplace3d.cc	/^struct Element {$/;"	s	file:
 Env	$CODE_ROOT/Env/Env.h	/^class Env {$/;"	c
 Env	$CODE_ROOT/Env/EnvMain.cxx	/^Env::Env() $/;"	f	class:Env
 Env	$CODE_ROOT/include/Env.h	/^class Env {$/;"	c
-EnvClusterPlacementType	$CODE_ROOT/Env/Env.h	/^} EnvClusterPlacementType;$/;"	t	typeref:enum:__anon41
-EnvClusterPlacementType	$CODE_ROOT/include/Env.h	/^} EnvClusterPlacementType;$/;"	t	typeref:enum:__anon18
-EnvClusterType	$CODE_ROOT/Env/Env.h	/^} EnvClusterType;$/;"	t	typeref:enum:__anon40
-EnvClusterType	$CODE_ROOT/include/Env.h	/^} EnvClusterType;$/;"	t	typeref:enum:__anon17
+EnvClusterPlacementType	$CODE_ROOT/Env/Env.h	/^} EnvClusterPlacementType;$/;"	t	typeref:enum:__anon43
+EnvClusterPlacementType	$CODE_ROOT/include/Env.h	/^} EnvClusterPlacementType;$/;"	t	typeref:enum:__anon19
+EnvClusterType	$CODE_ROOT/Env/Env.h	/^} EnvClusterType;$/;"	t	typeref:enum:__anon42
+EnvClusterType	$CODE_ROOT/include/Env.h	/^} EnvClusterType;$/;"	t	typeref:enum:__anon18
+EnvDetailedPlacer	$CODE_ROOT/Env/Env.h	/^} EnvDetailedPlacer;$/;"	t	typeref:enum:__anon40
+EnvDetailedPlacer	$CODE_ROOT/include/Env.h	/^} EnvDetailedPlacer;$/;"	t	typeref:enum:__anon16
 EnvGetClusterPlacementType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetClusterPlacementType(void)$/;"	f	class:Env
 EnvGetClusterType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetClusterType(void)$/;"	f	class:Env
+EnvGetClusteringStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetClusteringStartTime(void)$/;"	f	class:Env
 EnvGetClusteringTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetClusteringTime(void)$/;"	f	class:Env
 EnvGetDesignName	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDesignName(void)$/;"	f	class:Env
 EnvGetDesignPath	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDesignPath(void)$/;"	f	class:Env
+EnvGetDetailedPlacementStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDetailedPlacementStartTime(void)$/;"	f	class:Env
 EnvGetDetailedPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDetailedPlacementTime(void)$/;"	f	class:Env
+EnvGetDetailedPlacer	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDetailedPlacer(void)$/;"	f	class:Env
 EnvGetDiscreteHeight	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDiscreteHeight(void)$/;"	f	class:Env
 EnvGetDiscreteWidth	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDiscreteWidth(void)$/;"	f	class:Env
 EnvGetDumpHessian	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetDumpHessian(void)$/;"	f	class:Env
+EnvGetGlobalPlacementStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetGlobalPlacementStartTime(void)$/;"	f	class:Env
 EnvGetGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetGlobalPlacementTime(void)$/;"	f	class:Env
 EnvGetGlobalPlacerType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetGlobalPlacerType(void)$/;"	f	class:Env
+EnvGetHyperGraphBuildStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetHyperGraphBuildStartTime(void)$/;"	f	class:Env
 EnvGetHyperGraphBuildTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetHyperGraphBuildTime(void)$/;"	f	class:Env
+EnvGetLegalizationStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetLegalizationStartTime(void)$/;"	f	class:Env
 EnvGetLegalizationTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetLegalizationTime(void)$/;"	f	class:Env
 EnvGetLegalizer	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetLegalizer(void)$/;"	f	class:Env
 EnvGetNetModel	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNetModel(void)$/;"	f	class:Env
+EnvGetNetlistReadStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNetlistReadStartTime(void)$/;"	f	class:Env
 EnvGetNetlistReadTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNetlistReadTime(void)$/;"	f	class:Env
 EnvGetNumCellsFromFile	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNumCellsFromFile(void)$/;"	f	class:Env
 EnvGetNumFixedCells	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNumFixedCells(void)$/;"	f	class:Env
@@ -913,37 +956,46 @@ EnvGetNumPorts	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNumPorts(void)$/;"	f	clas
 EnvGetNumStdCells	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNumStdCells(void)$/;"	f	class:Env
 EnvGetNumTerminals	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNumTerminals(void)$/;"	f	class:Env
 EnvGetOptType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetOptType(void)$/;"	f	class:Env
+EnvGetShapeSelectionStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetShapeSelectionStartTime(void)$/;"	f	class:Env
 EnvGetShapeSelectionTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetShapeSelectionTime(void)$/;"	f	class:Env
 EnvGetShapeSelectionType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetShapeSelectionType(void)$/;"	f	class:Env
 EnvGetSolverType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetSolverType(void)$/;"	f	class:Env
-EnvGetStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetStartTime(void)$/;"	f	class:Env
 EnvGetToolMode	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetToolMode(void)$/;"	f	class:Env
-EnvGetUnClusterType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetUnClusterType(void)$/;"	f	class:Env
+EnvGetUnclusterType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetUnclusterType(void)$/;"	f	class:Env
 EnvGetUseVarBounds	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetUseVarBounds(void)$/;"	f	class:Env
-EnvGlobalPlacerType	$CODE_ROOT/Env/Env.h	/^} EnvGlobalPlacerType;$/;"	t	typeref:enum:__anon34
+EnvGlobalPlacerType	$CODE_ROOT/Env/Env.h	/^} EnvGlobalPlacerType;$/;"	t	typeref:enum:__anon35
 EnvGlobalPlacerType	$CODE_ROOT/include/Env.h	/^} EnvGlobalPlacerType;$/;"	t	typeref:enum:__anon11
-EnvLegalizer	$CODE_ROOT/Env/Env.h	/^} EnvLegalizer;$/;"	t	typeref:enum:__anon38
+EnvLegalizer	$CODE_ROOT/Env/Env.h	/^} EnvLegalizer;$/;"	t	typeref:enum:__anon39
 EnvLegalizer	$CODE_ROOT/include/Env.h	/^} EnvLegalizer;$/;"	t	typeref:enum:__anon15
-EnvNetModel	$CODE_ROOT/Env/Env.h	/^} EnvNetModel;$/;"	t	typeref:enum:__anon36
+EnvNetModel	$CODE_ROOT/Env/Env.h	/^} EnvNetModel;$/;"	t	typeref:enum:__anon37
 EnvNetModel	$CODE_ROOT/include/Env.h	/^} EnvNetModel;$/;"	t	typeref:enum:__anon13
-EnvOptType	$CODE_ROOT/Env/Env.h	/^} EnvOptType;$/;"	t	typeref:enum:__anon39
-EnvOptType	$CODE_ROOT/include/Env.h	/^} EnvOptType;$/;"	t	typeref:enum:__anon16
+EnvOptType	$CODE_ROOT/Env/Env.h	/^} EnvOptType;$/;"	t	typeref:enum:__anon41
+EnvOptType	$CODE_ROOT/include/Env.h	/^} EnvOptType;$/;"	t	typeref:enum:__anon17
+EnvRecordClusteringTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordClusteringTime(void)$/;"	f	class:Env
+EnvRecordDetailedPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordDetailedPlacementTime(void)$/;"	f	class:Env
+EnvRecordGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordGlobalPlacementTime(double currTime)$/;"	f	class:Env
+EnvRecordGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordGlobalPlacementTime(void)$/;"	f	class:Env
+EnvRecordHyperGraphBuildTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordHyperGraphBuildTime(void)$/;"	f	class:Env
+EnvRecordLegalizationTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordLegalizationTime(void)$/;"	f	class:Env
+EnvRecordNetlistReadTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordNetlistReadTime(void)$/;"	f	class:Env
+EnvRecordShapeSelectionTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordShapeSelectionTime(void)$/;"	f	class:Env
 EnvSetClusterPlacementType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetClusterPlacementType(EnvClusterPlacementType ClusterPlacementType) $/;"	f	class:Env
 EnvSetClusterType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetClusterType(EnvClusterType ClusterType)$/;"	f	class:Env
-EnvSetClusteringTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetClusteringTime(void)$/;"	f	class:Env
+EnvSetClusteringStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetClusteringStartTime(void)$/;"	f	class:Env
 EnvSetDesignName	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDesignName(string DesignName)$/;"	f	class:Env
 EnvSetDesignPath	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDesignPath(string DesignPath)$/;"	f	class:Env
-EnvSetDetailedPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDetailedPlacementTime(void)$/;"	f	class:Env
+EnvSetDetailedPlacementStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDetailedPlacementStartTime(void)$/;"	f	class:Env
+EnvSetDetailedPlacer	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDetailedPlacer(EnvDetailedPlacer DetailedPlacer)$/;"	f	class:Env
 EnvSetDiscreteHeight	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDiscreteHeight(bool DiscreteHeight)$/;"	f	class:Env
 EnvSetDiscreteWidth	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDiscreteWidth(bool DiscreteWidth)$/;"	f	class:Env
 EnvSetDumpHessian	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetDumpHessian(bool DumpHessian)$/;"	f	class:Env
-EnvSetGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetGlobalPlacementTime(void)$/;"	f	class:Env
+EnvSetGlobalPlacementStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetGlobalPlacementStartTime(void)$/;"	f	class:Env
 EnvSetGlobalPlacerType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetGlobalPlacerType(EnvGlobalPlacerType GlobalPlacerType)$/;"	f	class:Env
-EnvSetHyperGraphBuildTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetHyperGraphBuildTime(void)$/;"	f	class:Env
-EnvSetLegalizationTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetLegalizationTime(void)$/;"	f	class:Env
+EnvSetHyperGraphBuildStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetHyperGraphBuildStartTime(void)$/;"	f	class:Env
+EnvSetLegalizationStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetLegalizationStartTime(void)$/;"	f	class:Env
 EnvSetLegalizer	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetLegalizer(EnvLegalizer Legalizer)$/;"	f	class:Env
 EnvSetNetModel	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNetModel(EnvNetModel NetModel)$/;"	f	class:Env
-EnvSetNetlistReadTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNetlistReadTime(void)$/;"	f	class:Env
+EnvSetNetlistReadStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNetlistReadStartTime(void)$/;"	f	class:Env
 EnvSetNumCellsFromFile	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumCellsFromFile(uint NumCellsFromFile)$/;"	f	class:Env
 EnvSetNumFixedCells	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumFixedCells(uint NumFixedCells)$/;"	f	class:Env
 EnvSetNumFixedMacros	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumFixedMacros(uint NumFixedMacros)$/;"	f	class:Env
@@ -954,31 +1006,30 @@ EnvSetNumPorts	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumPorts(uint NumPorts)$/
 EnvSetNumStdCells	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumStdCells(uint NumStdCells)$/;"	f	class:Env
 EnvSetNumTerminals	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumTerminals(uint NumTerminals)$/;"	f	class:Env
 EnvSetOptType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetOptType(EnvOptType OptType)$/;"	f	class:Env
-EnvSetShapeSelectionTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetShapeSelectionTime(void)$/;"	f	class:Env
+EnvSetShapeSelectionStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetShapeSelectionStartTime(void)$/;"	f	class:Env
 EnvSetShapeSelectionType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetShapeSelectionType(EnvShapeSelectionType ShapeSelectionType)$/;"	f	class:Env
 EnvSetSolverType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetSolverType(EnvSolverType SolverType)$/;"	f	class:Env
-EnvSetStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetStartTime(void)$/;"	f	class:Env
 EnvSetToolMode	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetToolMode(EnvToolMode ToolMode)$/;"	f	class:Env
-EnvSetUnClusterType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetUnClusterType(EnvUnClusterType UnClusterType)$/;"	f	class:Env
+EnvSetUnclusterType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetUnclusterType(EnvUnclusterType UnclusterType)$/;"	f	class:Env
 EnvSetUseVarBounds	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetUseVarBounds(bool UseVarBounds)$/;"	f	class:Env
-EnvShapeSelectionType	$CODE_ROOT/Env/Env.h	/^} EnvShapeSelectionType;$/;"	t	typeref:enum:__anon43
-EnvShapeSelectionType	$CODE_ROOT/include/Env.h	/^} EnvShapeSelectionType;$/;"	t	typeref:enum:__anon20
-EnvSolverType	$CODE_ROOT/Env/Env.h	/^} EnvSolverType;$/;"	t	typeref:enum:__anon35
+EnvShapeSelectionType	$CODE_ROOT/Env/Env.h	/^} EnvShapeSelectionType;$/;"	t	typeref:enum:__anon45
+EnvShapeSelectionType	$CODE_ROOT/include/Env.h	/^} EnvShapeSelectionType;$/;"	t	typeref:enum:__anon21
+EnvSolverType	$CODE_ROOT/Env/Env.h	/^} EnvSolverType;$/;"	t	typeref:enum:__anon36
 EnvSolverType	$CODE_ROOT/include/Env.h	/^} EnvSolverType;$/;"	t	typeref:enum:__anon12
-EnvToolMode	$CODE_ROOT/Env/Env.h	/^} EnvToolMode;$/;"	t	typeref:enum:__anon37
+EnvToolMode	$CODE_ROOT/Env/Env.h	/^} EnvToolMode;$/;"	t	typeref:enum:__anon38
 EnvToolMode	$CODE_ROOT/include/Env.h	/^} EnvToolMode;$/;"	t	typeref:enum:__anon14
-EnvUnClusterType	$CODE_ROOT/Env/Env.h	/^} EnvUnClusterType;$/;"	t	typeref:enum:__anon42
-EnvUnClusterType	$CODE_ROOT/include/Env.h	/^} EnvUnClusterType;$/;"	t	typeref:enum:__anon19
+EnvUnclusterType	$CODE_ROOT/Env/Env.h	/^} EnvUnclusterType;$/;"	t	typeref:enum:__anon44
+EnvUnclusterType	$CODE_ROOT/include/Env.h	/^} EnvUnclusterType;$/;"	t	typeref:enum:__anon20
 FC_CLUSTER	$CODE_ROOT/Design/Design.h	/^  FC_CLUSTER,$/;"	e	enum:__anon2
-FC_CLUSTER	$CODE_ROOT/include/Design.h	/^  FC_CLUSTER,$/;"	e	enum:__anon21
-FE	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+FC_CLUSTER	$CODE_ROOT/include/Design.h	/^  FC_CLUSTER,$/;"	e	enum:__anon22
+FE	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 FE	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
 FLAGS_H	$CODE_ROOT/Flags/Flags.h	2;"	d
 FLAGS_H	$CODE_ROOT/include/Flags.h	2;"	d
 FLAGTYPE	$CODE_ROOT/example/Makefile	/^FLAGTYPE = DEBUG$/;"	m
 FLIB	$CODE_ROOT/example/Makefile	/^  FLIB     = -lf2c$/;"	m
 FLIB	$CODE_ROOT/example/Makefile	/^  FLIB     = -lftn$/;"	m
-FN	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+FN	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 FN	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
 FORCE_DIR_BOT	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	11;"	d	file:
 FORCE_DIR_BOT	$CODE_ROOT/Design/Design.h	127;"	d
@@ -1007,9 +1058,9 @@ FORCE_DIR_THIRD_QUAD	$CODE_ROOT/include/Design.h	122;"	d
 FORCE_DIR_TOP	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	10;"	d	file:
 FORCE_DIR_TOP	$CODE_ROOT/Design/Design.h	126;"	d
 FORCE_DIR_TOP	$CODE_ROOT/include/Design.h	126;"	d
-FS	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+FS	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 FS	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
-FW	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+FW	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 FW	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
 FlagsDefClearAllObjs	$CODE_ROOT/Flags/FlagsDef.cxx	/^void FlagsDefClearAllObjs(flagDoubleType fType)$/;"	f
 FlagsDefClearAllObjs	$CODE_ROOT/Flags/FlagsDef.cxx	/^void FlagsDefClearAllObjs(flagIntType fType)$/;"	f
@@ -1035,18 +1086,24 @@ GRID_COMPACTION_RATIO	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolve.h	14;"	d
 GRID_COMPACTION_RATIO	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveMain.cxx	5;"	d	file:
 GRID_COMPACTION_RATIO	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveDist.cxx	7;"	d	file:
 GRID_COMPACTION_RATIO	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveOldWorking.cxx	10;"	d	file:
-GRID_COMPACTION_RATIO	$CODE_ROOT/common/common.h	43;"	d
-GRID_COMPACTION_RATIO	$CODE_ROOT/include/common.h	43;"	d
+GRID_COMPACTION_RATIO	$CODE_ROOT/common/common.h	44;"	d
+GRID_COMPACTION_RATIO	$CODE_ROOT/include/common.h	44;"	d
 GRID_COMPACTION_RATION	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolve_old.h	13;"	d
+GRID_COMPACTION_RATIO_SQUARED	$CODE_ROOT/common/common.h	45;"	d
+GRID_COMPACTION_RATIO_SQUARED	$CODE_ROOT/include/common.h	45;"	d
 GetConnectedNodeIndices	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetConnectedNodeIndices(uint nodeIdx)$/;"	f	class:HyperGraph
 GetConnectedNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetConnectedNodes(void* nodePtr)$/;"	f	class:HyperGraph
+GetEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdge(uint edgeIdx)$/;"	f	class:HyperGraph
 GetEdgeObject	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgeObject(uint edgeIdx)$/;"	f	class:HyperGraph
 GetEdgeWeight	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgeWeight(uint edgeIdx)$/;"	f	class:HyperGraph
-GetEdgesOfNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfNode(void *object)$/;"	f	class:HyperGraph
-GetEdgesOfNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfNodes(void *object1, void *object2)$/;"	f	class:HyperGraph
+GetEdgesOfNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfNode(uint nodeIdx)$/;"	f	class:HyperGraph
+GetEdgesOfNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfNodes(uint nodeIdx1, uint nodeIdx2)$/;"	f	class:HyperGraph
+GetEdgesOfObject	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfObject(void *object)$/;"	f	class:HyperGraph
+GetEdgesOfObjects	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfObjects(void *object1, void *object2)$/;"	f	class:HyperGraph
 GetItems	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::GetItems(void)$/;"	f	class:PriorityQueue
 GetItems	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::GetItems(void)$/;"	f	class:PriorityQueue
 GetItems	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::GetItems(void)$/;"	f	class:PriorityQueue
+GetNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNode(uint nodeIdx)$/;"	f	class:HyperGraph
 GetNodeObject	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNodeObject(uint nodeIdx) $/;"	f	class:HyperGraph
 GetNodesOfEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNodesOfEdge(uint edgeIdx)$/;"	f	class:HyperGraph
 GetNumDiagonalElems	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::GetNumDiagonalElems(void) const$/;"	f	class:SpMat
@@ -1054,7 +1111,7 @@ GetNumEdges	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNumEdges(v
 GetNumNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNumNodes(void)$/;"	f	class:HyperGraph
 GetNumNonTopNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNumNonTopNodes(void)$/;"	f	class:HyperGraph
 GetNumNonZero	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::GetNumNonZero(void) const$/;"	f	class:SpMat
-GetObjIndex	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetObjIndex(void *cellPtr)$/;"	f	class:HyperGraph
+GetObjIndex	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetObjIndex(void *nodeObj) $/;"	f	class:HyperGraph
 GetObjs	$CODE_ROOT/Design/Design.h	/^  double GetObjs(T &obj1, T &obj2) $/;"	f	class:objPairScore
 GetObjs	$CODE_ROOT/include/Design.h	/^  double GetObjs(T &obj1, T &obj2) $/;"	f	class:objPairScore
 GetOtherNodeOfEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetOtherNodeOfEdge(uint edgeIdx, void *obj)$/;"	f	class:HyperGraph
@@ -1066,6 +1123,8 @@ GetSize	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::GetSize(void) 
 GetTriplet	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::GetTriplet(uint **idxi, uint **idxj, double **val) const$/;"	f	class:SpMat
 GetTriplet	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::GetTriplet(uint num, uint &idxi, uint &idxj, double &value) const$/;"	f	class:SpMat
 GetValue	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::GetValue(uint valIdx) $/;"	f	class:SpMat
+GlobalPlacementStartTime	$CODE_ROOT/Env/Env.h	/^  double GlobalPlacementStartTime;$/;"	m	class:Env
+GlobalPlacementStartTime	$CODE_ROOT/include/Env.h	/^  double GlobalPlacementStartTime;$/;"	m	class:Env
 GlobalPlacementTime	$CODE_ROOT/Env/Env.h	/^  double GlobalPlacementTime;$/;"	m	class:Env
 GlobalPlacementTime	$CODE_ROOT/include/Env.h	/^  double GlobalPlacementTime;$/;"	m	class:Env
 GlobalPlacerType	$CODE_ROOT/Env/Env.h	/^  EnvGlobalPlacerType GlobalPlacerType;$/;"	m	class:Env
@@ -1090,7 +1149,7 @@ HFILES	$CODE_ROOT/ConjGrad/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
 HFILES	$CODE_ROOT/ConjGrad/src.mk	/^HFILES := ConjGradSolver$/;"	m
 HFILES	$CODE_ROOT/Design/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
 HFILES	$CODE_ROOT/Design/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
-HFILES	$CODE_ROOT/Design/src.mk	/^HFILES:= Design DesignIter PriorityQueue HyperGraph Cell Pin Net $/;"	m
+HFILES	$CODE_ROOT/Design/src.mk	/^HFILES:= Design DesignIter PriorityQueue HyperGraph Cell Pin Net Env$/;"	m
 HFILES	$CODE_ROOT/Env/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
 HFILES	$CODE_ROOT/Env/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
 HFILES	$CODE_ROOT/Env/src.mk	/^HFILES := Env$/;"	m
@@ -1134,36 +1193,47 @@ HFILES	$CODE_ROOT/TimingModels/src.mk	/^HFILES := TimingModels$/;"	m
 HFILES	$CODE_ROOT/common/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
 HFILES	$CODE_ROOT/common/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
 HFILES	$CODE_ROOT/common/src.mk	/^HFILES := common commonIter$/;"	m
-HIGHLIGHTED_LINE	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_LINE,$/;"	e	enum:__anon27
+HIGHLIGHTED_LINE	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_LINE,$/;"	e	enum:__anon28
 HIGHLIGHTED_LINE	$CODE_ROOT/include/Plot.h	/^  HIGHLIGHTED_LINE,$/;"	e	enum:__anon9
-HIGHLIGHTED_PIN	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_PIN,$/;"	e	enum:__anon27
+HIGHLIGHTED_PIN	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_PIN,$/;"	e	enum:__anon28
 HIGHLIGHTED_PIN	$CODE_ROOT/include/Plot.h	/^  HIGHLIGHTED_PIN,$/;"	e	enum:__anon9
-HIGHLIGHTED_RECT	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_RECT,$/;"	e	enum:__anon27
+HIGHLIGHTED_RECT	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_RECT,$/;"	e	enum:__anon28
 HIGHLIGHTED_RECT	$CODE_ROOT/include/Plot.h	/^  HIGHLIGHTED_RECT,$/;"	e	enum:__anon9
 HIGH_FANOUT	$CODE_ROOT/Design/Design.h	114;"	d
 HIGH_FANOUT	$CODE_ROOT/include/Design.h	114;"	d
-HORIZONTAL	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon29
-HORIZONTAL	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon25
-HYPERGRAPH_END_FOR	$CODE_ROOT/HyperGraph/HyperGraphIter.h	42;"	d
-HYPERGRAPH_END_FOR	$CODE_ROOT/include/HyperGraphIter.h	42;"	d
+HORIZONTAL	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon30
+HORIZONTAL	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon26
+HYPERGRAPH_END_FOR	$CODE_ROOT/HyperGraph/HyperGraphIter.h	85;"	d
+HYPERGRAPH_END_FOR	$CODE_ROOT/include/HyperGraphIter.h	85;"	d
 HYPERGRAPH_FOR_ALL_EDGES	$CODE_ROOT/HyperGraph/HyperGraphIter.h	13;"	d
 HYPERGRAPH_FOR_ALL_EDGES	$CODE_ROOT/include/HyperGraphIter.h	13;"	d
-HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT	$CODE_ROOT/HyperGraph/HyperGraphIter.h	26;"	d
-HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT	$CODE_ROOT/include/HyperGraphIter.h	26;"	d
-HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECTS	$CODE_ROOT/HyperGraph/HyperGraphIter.h	34;"	d
-HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECTS	$CODE_ROOT/include/HyperGraphIter.h	34;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_NODE	$CODE_ROOT/HyperGraph/HyperGraphIter.h	45;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_NODE	$CODE_ROOT/include/HyperGraphIter.h	45;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_NODES	$CODE_ROOT/HyperGraph/HyperGraphIter.h	74;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_NODES	$CODE_ROOT/include/HyperGraphIter.h	74;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT	$CODE_ROOT/HyperGraph/HyperGraphIter.h	35;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT	$CODE_ROOT/include/HyperGraphIter.h	35;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECTS	$CODE_ROOT/HyperGraph/HyperGraphIter.h	64;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECTS	$CODE_ROOT/include/HyperGraphIter.h	64;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT_NO_FILT	$CODE_ROOT/HyperGraph/HyperGraphIter.h	55;"	d
+HYPERGRAPH_FOR_ALL_EDGES_OF_OBJECT_NO_FILT	$CODE_ROOT/include/HyperGraphIter.h	55;"	d
 HYPERGRAPH_FOR_ALL_NODES	$CODE_ROOT/HyperGraph/HyperGraphIter.h	6;"	d
 HYPERGRAPH_FOR_ALL_NODES	$CODE_ROOT/include/HyperGraphIter.h	6;"	d
-HYPERGRAPH_FOR_ALL_NODES_OF_EDGE	$CODE_ROOT/HyperGraph/HyperGraphIter.h	19;"	d
-HYPERGRAPH_FOR_ALL_NODES_OF_EDGE	$CODE_ROOT/include/HyperGraphIter.h	19;"	d
+HYPERGRAPH_FOR_ALL_NODES_OF_EDGE	$CODE_ROOT/HyperGraph/HyperGraphIter.h	28;"	d
+HYPERGRAPH_FOR_ALL_NODES_OF_EDGE	$CODE_ROOT/include/HyperGraphIter.h	28;"	d
+HYPERGRAPH_FOR_ALL_OBJS_OF_EDGE	$CODE_ROOT/HyperGraph/HyperGraphIter.h	21;"	d
+HYPERGRAPH_FOR_ALL_OBJS_OF_EDGE	$CODE_ROOT/include/HyperGraphIter.h	21;"	d
 HYPERGRAPH_H	$CODE_ROOT/HyperGraph/HyperGraph.h	2;"	d
 HYPERGRAPH_H	$CODE_ROOT/include/HyperGraph.h	2;"	d
 HYPERGRAPH_ITER_H	$CODE_ROOT/HyperGraph/HyperGraphIter.h	2;"	d
 HYPERGRAPH_ITER_H	$CODE_ROOT/include/HyperGraphIter.h	2;"	d
 HYPERGRAPH_MACROS_H	$CODE_ROOT/HyperGraph/HyperGraphMacros.h	2;"	d
+HideEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::HideEdge(uint edgeIdx)$/;"	f	class:HyperGraph
 HyperGraph	$CODE_ROOT/HyperGraph/HyperGraph.h	/^class HyperGraph {$/;"	c
 HyperGraph	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::HyperGraph() $/;"	f	class:HyperGraph
 HyperGraph	$CODE_ROOT/include/HyperGraph.h	/^class HyperGraph {$/;"	c
+HyperGraphBuildStartTime	$CODE_ROOT/Env/Env.h	/^  double HyperGraphBuildStartTime;$/;"	m	class:Env
+HyperGraphBuildStartTime	$CODE_ROOT/include/Env.h	/^  double HyperGraphBuildStartTime;$/;"	m	class:Env
 HyperGraphBuildTime	$CODE_ROOT/Env/Env.h	/^  double HyperGraphBuildTime;$/;"	m	class:Env
 HyperGraphBuildTime	$CODE_ROOT/include/Env.h	/^  double HyperGraphBuildTime;$/;"	m	class:Env
 INCLUDE_DIR	$CODE_ROOT/AnalyticalSolve/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
@@ -1223,20 +1293,22 @@ IntervalSetEnd	$CODE_ROOT/Legalize/LegalizeInterval.cxx	/^Interval::IntervalSetE
 IntervalSetLBound	$CODE_ROOT/Legalize/LegalizeInterval.cxx	/^Interval::IntervalSetLBound(void)$/;"	f	class:Interval
 IntervalSetRBound	$CODE_ROOT/Legalize/LegalizeInterval.cxx	/^Interval::IntervalSetRBound(void)$/;"	f	class:Interval
 IntervalSetWidth	$CODE_ROOT/Legalize/LegalizeInterval.cxx	/^Interval::IntervalSetWidth(int width)$/;"	f	class:Interval
-LEFT_BOTTOM	$CODE_ROOT/Plot/Plot.h	/^  LEFT_BOTTOM,$/;"	e	enum:__anon28
+LEFT_BOTTOM	$CODE_ROOT/Plot/Plot.h	/^  LEFT_BOTTOM,$/;"	e	enum:__anon29
 LEFT_BOTTOM	$CODE_ROOT/include/Plot.h	/^  LEFT_BOTTOM,$/;"	e	enum:__anon10
 LEGALIZE_BIN_B_VALUE	$CODE_ROOT/Flags/Flags.h	/^  LEGALIZE_BIN_B_VALUE,$/;"	e	enum:__anon3
-LEGALIZE_BIN_B_VALUE	$CODE_ROOT/include/Flags.h	/^  LEGALIZE_BIN_B_VALUE,$/;"	e	enum:__anon22
+LEGALIZE_BIN_B_VALUE	$CODE_ROOT/include/Flags.h	/^  LEGALIZE_BIN_B_VALUE,$/;"	e	enum:__anon23
 LEGALIZE_BIN_L_VALUE	$CODE_ROOT/Flags/Flags.h	/^  LEGALIZE_BIN_L_VALUE,$/;"	e	enum:__anon3
-LEGALIZE_BIN_L_VALUE	$CODE_ROOT/include/Flags.h	/^  LEGALIZE_BIN_L_VALUE,$/;"	e	enum:__anon22
+LEGALIZE_BIN_L_VALUE	$CODE_ROOT/include/Flags.h	/^  LEGALIZE_BIN_L_VALUE,$/;"	e	enum:__anon23
 LEGALIZE_H	$CODE_ROOT/Legalize/Legalize.h	2;"	d
 LEGALIZE_H	$CODE_ROOT/include/Legalize.h	2;"	d
 LFLAGS	$CODE_ROOT/Makefile	/^LFLAGS= $/;"	m
 LIBMOSEK	$CODE_ROOT/Makefile	/^LIBMOSEK= -lmosek64 -pthread$/;"	m
 LIBQUADPROG	$CODE_ROOT/Makefile	/^LIBQUADPROG= #-lQuadProgpp$/;"	m
 LIBS	$CODE_ROOT/Makefile	/^LIBS= .\/libs\/text.a -L\/usr\/local\/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)$/;"	m
-LIBSOOQP	$CODE_ROOT/Makefile	/^LIBSOOQP= -looqpgensparse -looqpsparse  -looqpgondzio -looqpmehrotra -looqpbase -lblas \/usr\/local\/lib\/libma27.a -lgfortran$/;"	m
+LIBSOOQP	$CODE_ROOT/Makefile	/^LIBSOOQP= -lblas \/usr\/local\/lib\/libma27.a -lgfortran -lprofiler$/;"	m
 L_ready	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   CEO_0, In_mem_RE, S_ready, WE_transport, transport_done, L_ready,$/;"	n
+LegalizationStartTime	$CODE_ROOT/Env/Env.h	/^  double LegalizationStartTime;$/;"	m	class:Env
+LegalizationStartTime	$CODE_ROOT/include/Env.h	/^  double LegalizationStartTime;$/;"	m	class:Env
 LegalizationTime	$CODE_ROOT/Env/Env.h	/^  double LegalizationTime;$/;"	m	class:Env
 LegalizationTime	$CODE_ROOT/include/Env.h	/^  double LegalizationTime;$/;"	m	class:Env
 LegalizeAddCellsToBins	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^LegalizeAddCellsToBins(vector<Cell*> &cellsInRow, vector<LegalizeBin*> &allBins)$/;"	f
@@ -1338,8 +1410,8 @@ MAX_DBL	$CODE_ROOT/include/Design.h	128;"	d
 MAX_OUTPUTS	$CODE_ROOT/Design/DesignAnalysis.cxx	12;"	d	file:
 MAX_PATHS	$CODE_ROOT/Design/Design.h	24;"	d
 MAX_PATHS	$CODE_ROOT/include/Design.h	24;"	d
-MCOMMA	$CODE_ROOT/common/common.h	85;"	d
-MCOMMA	$CODE_ROOT/include/common.h	85;"	d
+MCOMMA	$CODE_ROOT/common/common.h	87;"	d
+MCOMMA	$CODE_ROOT/include/common.h	87;"	d
 MEM_USAGE_UNIT	$CODE_ROOT/Stat/Stat.h	4;"	d
 MEM_USAGE_UNIT	$CODE_ROOT/include/Stat.h	4;"	d
 MKDEP	$CODE_ROOT/example/Makefile	/^MKDEP = $(CXX) $(DEPFLAG)$/;"	m
@@ -1383,7 +1455,7 @@ MatrixUnitTriangular	$CODE_ROOT/ConjGrad/cblas.h	/^enum MatrixUnitTriangular { U
 MatrixUnitTriangular	$CODE_ROOT/cghs/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	g
 MatrixUnitTriangular	$CODE_ROOT/include/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	g
 MergeSortVector	$CODE_ROOT/Sort/SortMain.cxx	/^MergeSortVector(Type Left, Type Right, cmp_func this_func)$/;"	f
-N	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+N	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 N	$CODE_ROOT/example/laplace2d.cc	/^  int N;$/;"	m	struct:MassMat	file:
 N	$CODE_ROOT/example/laplace2d.cc	/^  int N;$/;"	m	struct:StiffMat	file:
 N	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
@@ -1429,7 +1501,7 @@ N338	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^         N329, N330, N3
 NB	$CODE_ROOT/example/laplace3d.cc	/^  int NE, NV, NB;               \/\/ #Elementen, #Vertices, #Randvertices$/;"	m	struct:Matrix0bnd	file:
 NE	$CODE_ROOT/example/laplace3d.cc	/^  int NE, NV, NB;               \/\/ #Elementen, #Vertices, #Randvertices$/;"	m	struct:Matrix0bnd	file:
 NET_CLUSTER	$CODE_ROOT/Design/Design.h	/^  NET_CLUSTER,$/;"	e	enum:__anon2
-NET_CLUSTER	$CODE_ROOT/include/Design.h	/^  NET_CLUSTER,$/;"	e	enum:__anon21
+NET_CLUSTER	$CODE_ROOT/include/Design.h	/^  NET_CLUSTER,$/;"	e	enum:__anon22
 NET_DEGREE_PROPERTY	$CODE_ROOT/Design/Design.h	77;"	d
 NET_DEGREE_PROPERTY	$CODE_ROOT/include/Design.h	77;"	d
 NET_END_FOR	$CODE_ROOT/Net/NetIter.h	35;"	d
@@ -1443,23 +1515,29 @@ NET_FOR_ALL_PINS_DIR	$CODE_ROOT/include/NetIter.h	27;"	d
 NET_H	$CODE_ROOT/Net/Net.h	6;"	d
 NET_H	$CODE_ROOT/include/Net.h	6;"	d
 NET_IS_HIDDEN_FLAG	$CODE_ROOT/Flags/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:__anon4
-NET_IS_HIDDEN_FLAG	$CODE_ROOT/include/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:__anon23
+NET_IS_HIDDEN_FLAG	$CODE_ROOT/include/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:__anon24
 NET_IS_PSEUDO_FLAG	$CODE_ROOT/Flags/Flags.h	/^  NET_IS_PSEUDO_FLAG,$/;"	e	enum:__anon4
-NET_IS_PSEUDO_FLAG	$CODE_ROOT/include/Flags.h	/^  NET_IS_PSEUDO_FLAG,$/;"	e	enum:__anon23
+NET_IS_PSEUDO_FLAG	$CODE_ROOT/include/Flags.h	/^  NET_IS_PSEUDO_FLAG,$/;"	e	enum:__anon24
 NET_ITER_H	$CODE_ROOT/Net/NetIter.h	2;"	d
 NET_ITER_H	$CODE_ROOT/include/NetIter.h	2;"	d
-NIL	$CODE_ROOT/common/common.h	26;"	d
-NIL	$CODE_ROOT/include/common.h	26;"	d
+NIL	$CODE_ROOT/common/common.h	27;"	d
+NIL	$CODE_ROOT/include/common.h	27;"	d
 NINE	$CODE_ROOT/Design/Design.h	104;"	d
 NINE	$CODE_ROOT/include/Design.h	104;"	d
 NODE_ADJACENT_NODE_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	25;"	d	file:
 NODE_FLAG_CLEAR	$CODE_ROOT/HyperGraph/Node.h	7;"	d
 NODE_FLAG_CLEAR	$CODE_ROOT/include/Node.h	7;"	d
+NODE_FLAG_IS_CLUSTER	$CODE_ROOT/HyperGraph/HyperGraph.h	20;"	d
+NODE_FLAG_IS_CLUSTER	$CODE_ROOT/include/HyperGraph.h	20;"	d
 NODE_FLAG_IS_CLUSTER_CHILD	$CODE_ROOT/HyperGraph/Node.h	9;"	d
 NODE_FLAG_IS_CLUSTER_CHILD	$CODE_ROOT/include/Node.h	9;"	d
 NODE_FLAG_IS_CLUSTER_PARENT	$CODE_ROOT/HyperGraph/Node.h	10;"	d
 NODE_FLAG_IS_CLUSTER_PARENT	$CODE_ROOT/include/Node.h	10;"	d
+NODE_FLAG_IS_INVALID	$CODE_ROOT/HyperGraph/Node.h	11;"	d
+NODE_FLAG_IS_INVALID	$CODE_ROOT/include/Node.h	11;"	d
+NODE_FLAG_IS_TOP	$CODE_ROOT/HyperGraph/HyperGraph.h	19;"	d
 NODE_FLAG_IS_TOP	$CODE_ROOT/HyperGraph/Node.h	8;"	d
+NODE_FLAG_IS_TOP	$CODE_ROOT/include/HyperGraph.h	19;"	d
 NODE_FLAG_IS_TOP	$CODE_ROOT/include/Node.h	8;"	d
 NODE_FOR_ALL_ADJACENT_NODES	$CODE_ROOT/HyperGraph/NodeIter.h	12;"	d
 NODE_FOR_ALL_EDGES	$CODE_ROOT/HyperGraph/NodeIter.h	4;"	d
@@ -1470,33 +1548,35 @@ NODE_ITER_H	$CODE_ROOT/HyperGraph/NodeIter.h	2;"	d
 NODE_OUTPUT_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	23;"	d	file:
 NODE_TERMINAL_KEYWORD	$CODE_ROOT/Design/Design.h	70;"	d
 NODE_TERMINAL_KEYWORD	$CODE_ROOT/include/Design.h	70;"	d
-NORMAL_LINE	$CODE_ROOT/Plot/Plot.h	/^  NORMAL_LINE = 0, $/;"	e	enum:__anon27
+NORMAL_LINE	$CODE_ROOT/Plot/Plot.h	/^  NORMAL_LINE = 0, $/;"	e	enum:__anon28
 NORMAL_LINE	$CODE_ROOT/include/Plot.h	/^  NORMAL_LINE = 0, $/;"	e	enum:__anon9
-NORMAL_RECT	$CODE_ROOT/Plot/Plot.h	/^  NORMAL_RECT,$/;"	e	enum:__anon27
+NORMAL_RECT	$CODE_ROOT/Plot/Plot.h	/^  NORMAL_RECT,$/;"	e	enum:__anon28
 NORMAL_RECT	$CODE_ROOT/include/Plot.h	/^  NORMAL_RECT,$/;"	e	enum:__anon9
-NO_SEQ_SOLVE	$CODE_ROOT/common/common.h	/^typedef enum {NO_SEQ_SOLVE, $/;"	e	enum:__anon32
+NO_SEQ_SOLVE	$CODE_ROOT/common/common.h	/^typedef enum {NO_SEQ_SOLVE, $/;"	e	enum:__anon33
 NO_SEQ_SOLVE	$CODE_ROOT/include/common.h	/^typedef enum {NO_SEQ_SOLVE, $/;"	e	enum:__anon7
-NO_SYMMETRY	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon30
-NO_SYMMETRY	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon26
+NO_SYMMETRY	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon31
+NO_SYMMETRY	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon27
 NUMANZ	$CODE_ROOT/AnalyticalSolve/backup/MosekSolve1.cxx	16;"	d	file:
 NUMCON	$CODE_ROOT/AnalyticalSolve/backup/MosekSolve1.cxx	14;"	d	file:
 NUMQNZ	$CODE_ROOT/AnalyticalSolve/backup/MosekSolve1.cxx	17;"	d	file:
 NUMVAR	$CODE_ROOT/AnalyticalSolve/backup/MosekSolve1.cxx	15;"	d	file:
-NUM_ENV_GLOBAL_PLACERS	$CODE_ROOT/Env/Env.h	/^  NUM_ENV_GLOBAL_PLACERS$/;"	e	enum:__anon34
+NUM_DETAILED_PLACEMENT	$CODE_ROOT/Env/Env.h	/^  NUM_DETAILED_PLACEMENT$/;"	e	enum:__anon40
+NUM_DETAILED_PLACEMENT	$CODE_ROOT/include/Env.h	/^  NUM_DETAILED_PLACEMENT$/;"	e	enum:__anon16
+NUM_ENV_GLOBAL_PLACERS	$CODE_ROOT/Env/Env.h	/^  NUM_ENV_GLOBAL_PLACERS$/;"	e	enum:__anon35
 NUM_ENV_GLOBAL_PLACERS	$CODE_ROOT/include/Env.h	/^  NUM_ENV_GLOBAL_PLACERS$/;"	e	enum:__anon11
-NUM_ENV_SOLVERS	$CODE_ROOT/Env/Env.h	/^  NUM_ENV_SOLVERS$/;"	e	enum:__anon35
+NUM_ENV_SOLVERS	$CODE_ROOT/Env/Env.h	/^  NUM_ENV_SOLVERS$/;"	e	enum:__anon36
 NUM_ENV_SOLVERS	$CODE_ROOT/include/Env.h	/^  NUM_ENV_SOLVERS$/;"	e	enum:__anon12
 NUM_FIXED_CELL_PROPERTIES	$CODE_ROOT/Design/Design.h	57;"	d
 NUM_FIXED_CELL_PROPERTIES	$CODE_ROOT/include/Design.h	57;"	d
-NUM_LEGALIZERS	$CODE_ROOT/Env/Env.h	/^  NUM_LEGALIZERS$/;"	e	enum:__anon38
+NUM_LEGALIZERS	$CODE_ROOT/Env/Env.h	/^  NUM_LEGALIZERS$/;"	e	enum:__anon39
 NUM_LEGALIZERS	$CODE_ROOT/include/Env.h	/^  NUM_LEGALIZERS$/;"	e	enum:__anon15
-NUM_MODES	$CODE_ROOT/Env/Env.h	/^  NUM_MODES$/;"	e	enum:__anon37
+NUM_MODES	$CODE_ROOT/Env/Env.h	/^  NUM_MODES$/;"	e	enum:__anon38
 NUM_MODES	$CODE_ROOT/include/Env.h	/^  NUM_MODES$/;"	e	enum:__anon14
 NUM_NETFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	48;"	d
 NUM_NETFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	48;"	d
 NUM_NETS_PROPERTY	$CODE_ROOT/Design/Design.h	75;"	d
 NUM_NETS_PROPERTY	$CODE_ROOT/include/Design.h	75;"	d
-NUM_NET_MODELS	$CODE_ROOT/Env/Env.h	/^  NUM_NET_MODELS$/;"	e	enum:__anon36
+NUM_NET_MODELS	$CODE_ROOT/Env/Env.h	/^  NUM_NET_MODELS$/;"	e	enum:__anon37
 NUM_NET_MODELS	$CODE_ROOT/include/Env.h	/^  NUM_NET_MODELS$/;"	e	enum:__anon13
 NUM_NET_PROPERTIES	$CODE_ROOT/Design/Design.h	55;"	d
 NUM_NET_PROPERTIES	$CODE_ROOT/include/Design.h	55;"	d
@@ -1532,6 +1612,7 @@ NetClearAllIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearAllIsHidden(Ne
 NetClearAllIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearAllIsPseudo(void)$/;"	f
 NetClearIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearIsHidden(Net *netPtr)$/;"	f
 NetClearIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearIsPseudo(Net *netPtr)$/;"	f
+NetComputeHPWL	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)$/;"	f	class:Net
 NetGetDriverCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetDriverCount(void)$/;"	f	class:Net
 NetGetId	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetId(void)$/;"	f	class:Net
 NetGetLoadCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetLoadCount(void)$/;"	f	class:Net
@@ -1540,6 +1621,7 @@ NetGetPinCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetPinCount(void)$/;"	f	clas
 NetGetPins	$CODE_ROOT/Net/NetMain.cxx	/^map<string, Pin*>& Net::NetGetPins(char direction)$/;"	f	class:Net
 NetGetPins	$CODE_ROOT/Net/NetMain.cxx	/^map<string, Pin*>& Net::NetGetPins(void)$/;"	f	class:Net
 NetGetWeight	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetWeight(void)$/;"	f	class:Net
+NetInitMinMaxPositions	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetInitMinMaxPositions(void) $/;"	f	class:Net
 NetIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^bool NetIsHidden(Net *netPtr)$/;"	f
 NetIsHidden	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetIsHidden(void)$/;"	f	class:Net
 NetIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^bool NetIsPseudo(Net *netPtr)$/;"	f
@@ -1547,6 +1629,7 @@ NetIsUnderCluster	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetIsUnderCluster(void)$/;"	
 NetModel	$CODE_ROOT/Env/Env.h	/^  EnvNetModel NetModel;$/;"	m	class:Env
 NetModel	$CODE_ROOT/include/Env.h	/^  EnvNetModel NetModel;$/;"	m	class:Env
 NetPtr	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  Net *NetPtr;$/;"	m	struct:NetStatsStruct	file:
+NetRemovePin	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetRemovePin(const Pin& pinToRemove)$/;"	f	class:Net
 NetSetDriverCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetDriverCount(unsigned int driverCount)$/;"	f	class:Net
 NetSetId	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetId(int id)$/;"	f	class:Net
 NetSetIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetSetIsHidden(Net *netPtr)$/;"	f
@@ -1554,6 +1637,7 @@ NetSetIsHidden	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetIsHidden(const bool &isHi
 NetSetIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetSetIsPseudo(Net *netPtr)$/;"	f
 NetSetIsUnderCluster	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetIsUnderCluster(const bool &isUnderCluster)$/;"	f	class:Net
 NetSetLoadCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetLoadCount(unsigned int loadCount)$/;"	f	class:Net
+NetSetMinMaxPositions	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetMinMaxPositions(uint xPos, uint yPos)$/;"	f	class:Net
 NetSetName	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetName(const string& Name)$/;"	f	class:Net
 NetSetPinCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetPinCount(unsigned int pinCount)$/;"	f	class:Net
 NetSetWeight	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetWeight(double weight)$/;"	f	class:Net
@@ -1561,6 +1645,8 @@ NetStat	$CODE_ROOT/Design/DesignAnalysis.cxx	/^typedef struct NetStatsStruct * N
 NetStatsStruct	$CODE_ROOT/Design/DesignAnalysis.cxx	/^typedef struct NetStatsStruct NetStatsStruct;$/;"	t	typeref:struct:NetStatsStruct	file:
 NetStatsStruct	$CODE_ROOT/Design/DesignAnalysis.cxx	/^typedef struct NetStatsStruct {$/;"	s	file:
 NetStatsStruct	$CODE_ROOT/Design/DesignAnalysis.cxx	/^} NetStatsStruct;$/;"	t	typeref:struct:NetStatsStruct	file:
+NetlistReadStartTime	$CODE_ROOT/Env/Env.h	/^  double NetlistReadStartTime;$/;"	m	class:Env
+NetlistReadStartTime	$CODE_ROOT/include/Env.h	/^  double NetlistReadStartTime;$/;"	m	class:Env
 NetlistReadTime	$CODE_ROOT/Env/Env.h	/^  double NetlistReadTime;$/;"	m	class:Env
 NetlistReadTime	$CODE_ROOT/include/Env.h	/^  double NetlistReadTime;$/;"	m	class:Env
 NoTranspose	$CODE_ROOT/ConjGrad/cblas.h	/^enum MatrixTranspose { NoTranspose=0, Transpose=1, ConjugateTranspose=2 };$/;"	e	enum:MatrixTranspose
@@ -1574,6 +1660,8 @@ NodeAddEdge	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeAddEdge(unsigned int edge
 NodeAddEdge	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeAddEdge(unsigned int edgeIdx, edgeType type)$/;"	f	class:Node
 NodeClearIsClusterChild	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeClearIsClusterChild(void)$/;"	f	class:Node
 NodeClearIsClusterParent	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeClearIsClusterParent(void)$/;"	f	class:Node
+NodeClearIsInvalid	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeClearIsInvalid(uint nodeIdx)$/;"	f	class:HyperGraph
+NodeClearIsInvalid	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeClearIsInvalid(void)$/;"	f	class:Node
 NodeClearIsTop	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeClearIsTop(uint nodeIdx)$/;"	f	class:HyperGraph
 NodeClearIsTop	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeClearIsTop(void)$/;"	f	class:Node
 NodeGetAnnIdx1	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeGetAnnIdx1(void)$/;"	f	class:Node
@@ -1590,6 +1678,8 @@ NodeIsCluster	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeIsClust
 NodeIsCluster	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeIsCluster(void)$/;"	f	class:Node
 NodeIsClusterChild	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeIsClusterChild(void)$/;"	f	class:Node
 NodeIsClusterParent	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeIsClusterParent(void)$/;"	f	class:Node
+NodeIsInvalid	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeIsInvalid(uint nodeIdx)$/;"	f	class:HyperGraph
+NodeIsInvalid	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeIsInvalid(void)$/;"	f	class:Node
 NodeIsTop	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeIsTop(uint nodeIdx)$/;"	f	class:HyperGraph
 NodeIsTop	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeIsTop(void)$/;"	f	class:Node
 NodeIt	$CODE_ROOT/Legalize/bak/Old2_LegalizeMAin.cxx	/^typedef ListDigraph::NodeIt NodeIt;$/;"	t	file:
@@ -1608,6 +1698,8 @@ NodeSetIsCluster	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeSetI
 NodeSetIsCluster	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeSetIsCluster(bool isCluster)$/;"	f	class:Node
 NodeSetIsClusterChild	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeSetIsClusterChild(void)$/;"	f	class:Node
 NodeSetIsClusterParent	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeSetIsClusterParent(void)$/;"	f	class:Node
+NodeSetIsInvalid	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeSetIsInvalid(uint nodeIdx)$/;"	f	class:HyperGraph
+NodeSetIsInvalid	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeSetIsInvalid(void)$/;"	f	class:Node
 NodeSetIsTop	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodeSetIsTop(uint nodeIdx)$/;"	f	class:HyperGraph
 NodeSetIsTop	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeSetIsTop(void)$/;"	f	class:Node
 NodeSetNumInEdges	$CODE_ROOT/HyperGraph/Node.cxx	/^Node::NodeSetNumInEdges(unsigned int numInEdges)$/;"	f	class:Node
@@ -1618,48 +1710,50 @@ NodesAreAdjacent	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::NodesAre
 NotUnitTriangular	$CODE_ROOT/ConjGrad/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	e	enum:MatrixUnitTriangular
 NotUnitTriangular	$CODE_ROOT/cghs/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	e	enum:MatrixUnitTriangular
 NotUnitTriangular	$CODE_ROOT/include/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	e	enum:MatrixUnitTriangular
-NumCells	$CODE_ROOT/Design/Design.h	/^  unsigned int NumCells;$/;"	m	class:Design
-NumCells	$CODE_ROOT/include/Design.h	/^  unsigned int NumCells;$/;"	m	class:Design
+NumCells	$CODE_ROOT/Design/Design.h	/^  uint NumCells;$/;"	m	class:Design
+NumCells	$CODE_ROOT/include/Design.h	/^  uint NumCells;$/;"	m	class:Design
 NumCellsFromFile	$CODE_ROOT/Env/Env.h	/^  uint NumCellsFromFile;$/;"	m	class:Env
 NumCellsFromFile	$CODE_ROOT/include/Env.h	/^  uint NumCellsFromFile;$/;"	m	class:Env
-NumClusters	$CODE_ROOT/Design/Design.h	/^  unsigned int NumClusters;$/;"	m	class:Design
-NumClusters	$CODE_ROOT/include/Design.h	/^  unsigned int NumClusters;$/;"	m	class:Design
-NumFixedCells	$CODE_ROOT/Design/Design.h	/^  unsigned int NumFixedCells;$/;"	m	class:Design
+NumClusters	$CODE_ROOT/Design/Design.h	/^  uint NumClusters;$/;"	m	class:Design
+NumClusters	$CODE_ROOT/include/Design.h	/^  uint NumClusters;$/;"	m	class:Design
+NumClustersSeenSofar	$CODE_ROOT/Design/Design.h	/^  uint NumClustersSeenSofar;$/;"	m	class:Design
+NumClustersSeenSofar	$CODE_ROOT/include/Design.h	/^  uint NumClustersSeenSofar;$/;"	m	class:Design
+NumFixedCells	$CODE_ROOT/Design/Design.h	/^  uint NumFixedCells;$/;"	m	class:Design
 NumFixedCells	$CODE_ROOT/Env/Env.h	/^  uint NumFixedCells;$/;"	m	class:Env
-NumFixedCells	$CODE_ROOT/include/Design.h	/^  unsigned int NumFixedCells;$/;"	m	class:Design
+NumFixedCells	$CODE_ROOT/include/Design.h	/^  uint NumFixedCells;$/;"	m	class:Design
 NumFixedCells	$CODE_ROOT/include/Env.h	/^  uint NumFixedCells;$/;"	m	class:Env
 NumFixedMacros	$CODE_ROOT/Env/Env.h	/^  uint NumFixedMacros;$/;"	m	class:Env
 NumFixedMacros	$CODE_ROOT/include/Env.h	/^  uint NumFixedMacros;$/;"	m	class:Env
-NumMacroCells	$CODE_ROOT/Design/Design.h	/^  unsigned int NumMacroCells;$/;"	m	class:Design
+NumHiddenCells	$CODE_ROOT/Design/Design.h	/^  uint NumHiddenCells;$/;"	m	class:Design
+NumHiddenCells	$CODE_ROOT/include/Design.h	/^  uint NumHiddenCells;$/;"	m	class:Design
+NumMacroCells	$CODE_ROOT/Design/Design.h	/^  uint NumMacroCells;$/;"	m	class:Design
 NumMacroCells	$CODE_ROOT/Env/Env.h	/^  uint NumMacroCells;$/;"	m	class:Env
-NumMacroCells	$CODE_ROOT/include/Design.h	/^  unsigned int NumMacroCells;$/;"	m	class:Design
+NumMacroCells	$CODE_ROOT/include/Design.h	/^  uint NumMacroCells;$/;"	m	class:Design
 NumMacroCells	$CODE_ROOT/include/Env.h	/^  uint NumMacroCells;$/;"	m	class:Env
 NumMovableCells	$CODE_ROOT/Env/Env.h	/^  uint NumMovableCells;$/;"	m	class:Env
 NumMovableCells	$CODE_ROOT/include/Env.h	/^  uint NumMovableCells;$/;"	m	class:Env
-NumNets	$CODE_ROOT/Design/Design.h	/^  unsigned int NumNets;$/;"	m	class:Design
+NumNets	$CODE_ROOT/Design/Design.h	/^  uint NumNets;$/;"	m	class:Design
 NumNets	$CODE_ROOT/Env/Env.h	/^  uint NumNets;$/;"	m	class:Env
-NumNets	$CODE_ROOT/include/Design.h	/^  unsigned int NumNets;$/;"	m	class:Design
+NumNets	$CODE_ROOT/include/Design.h	/^  uint NumNets;$/;"	m	class:Design
 NumNets	$CODE_ROOT/include/Env.h	/^  uint NumNets;$/;"	m	class:Env
-NumPaths	$CODE_ROOT/Design/Design.h	/^  unsigned int NumPaths;$/;"	m	class:Design
-NumPaths	$CODE_ROOT/include/Design.h	/^  unsigned int NumPaths;$/;"	m	class:Design
-NumPhysRows	$CODE_ROOT/Design/Design.h	/^  unsigned int NumPhysRows;$/;"	m	class:Design
-NumPhysRows	$CODE_ROOT/include/Design.h	/^  unsigned int NumPhysRows;$/;"	m	class:Design
-NumPins	$CODE_ROOT/Design/Design.h	/^  unsigned int NumPins;$/;"	m	class:Design
-NumPins	$CODE_ROOT/include/Design.h	/^  unsigned int NumPins;$/;"	m	class:Design
+NumPaths	$CODE_ROOT/Design/Design.h	/^  uint NumPaths;$/;"	m	class:Design
+NumPaths	$CODE_ROOT/include/Design.h	/^  uint NumPaths;$/;"	m	class:Design
+NumPhysRows	$CODE_ROOT/Design/Design.h	/^  uint NumPhysRows;$/;"	m	class:Design
+NumPhysRows	$CODE_ROOT/include/Design.h	/^  uint NumPhysRows;$/;"	m	class:Design
+NumPins	$CODE_ROOT/Design/Design.h	/^  uint NumPins;$/;"	m	class:Design
+NumPins	$CODE_ROOT/include/Design.h	/^  uint NumPins;$/;"	m	class:Design
 NumPorts	$CODE_ROOT/Env/Env.h	/^  uint NumPorts;$/;"	m	class:Env
 NumPorts	$CODE_ROOT/include/Env.h	/^  uint NumPorts;$/;"	m	class:Env
-NumStdCells	$CODE_ROOT/Design/Design.h	/^  unsigned int NumStdCells;$/;"	m	class:Design
+NumStdCells	$CODE_ROOT/Design/Design.h	/^  uint NumStdCells;$/;"	m	class:Design
 NumStdCells	$CODE_ROOT/Env/Env.h	/^  uint NumStdCells;$/;"	m	class:Env
-NumStdCells	$CODE_ROOT/include/Design.h	/^  unsigned int NumStdCells;$/;"	m	class:Design
+NumStdCells	$CODE_ROOT/include/Design.h	/^  uint NumStdCells;$/;"	m	class:Design
 NumStdCells	$CODE_ROOT/include/Env.h	/^  uint NumStdCells;$/;"	m	class:Env
-NumTerminalCells	$CODE_ROOT/Design/Design.h	/^  unsigned int NumTerminalCells;$/;"	m	class:Design
-NumTerminalCells	$CODE_ROOT/include/Design.h	/^  unsigned int NumTerminalCells;$/;"	m	class:Design
+NumTerminalCells	$CODE_ROOT/Design/Design.h	/^  uint NumTerminalCells;$/;"	m	class:Design
+NumTerminalCells	$CODE_ROOT/include/Design.h	/^  uint NumTerminalCells;$/;"	m	class:Design
 NumTerminals	$CODE_ROOT/Env/Env.h	/^  uint NumTerminals;$/;"	m	class:Env
 NumTerminals	$CODE_ROOT/include/Env.h	/^  uint NumTerminals;$/;"	m	class:Env
-NumTopCells	$CODE_ROOT/Design/Design.h	/^  unsigned int NumTopCells;$/;"	m	class:Design
-NumTopCells	$CODE_ROOT/include/Design.h	/^  unsigned int NumTopCells;$/;"	m	class:Design
-NumTopNets	$CODE_ROOT/Design/Design.h	/^  unsigned int NumTopNets;$/;"	m	class:Design
-NumTopNets	$CODE_ROOT/include/Design.h	/^  unsigned int NumTopNets;$/;"	m	class:Design
+NumTopNets	$CODE_ROOT/Design/Design.h	/^  uint NumTopNets;$/;"	m	class:Design
+NumTopNets	$CODE_ROOT/include/Design.h	/^  uint NumTopNets;$/;"	m	class:Design
 OBJDIR	$CODE_ROOT/AnalyticalSolve/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/AnalyticalSolve/backup/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/Bin/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
@@ -1786,13 +1880,13 @@ PADDR	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  output [10:0] PADDR;$/;"	p
 PATH_H	$CODE_ROOT/Path/Path.h	5;"	d
 PATH_H	$CODE_ROOT/include/Path.h	5;"	d
 PATH_TOTAL_CELL_DELAY	$CODE_ROOT/Flags/Flags.h	/^  PATH_TOTAL_CELL_DELAY = 0,$/;"	e	enum:__anon3
-PATH_TOTAL_CELL_DELAY	$CODE_ROOT/include/Flags.h	/^  PATH_TOTAL_CELL_DELAY = 0,$/;"	e	enum:__anon22
+PATH_TOTAL_CELL_DELAY	$CODE_ROOT/include/Flags.h	/^  PATH_TOTAL_CELL_DELAY = 0,$/;"	e	enum:__anon23
 PCKNAME	$CODE_ROOT/example/Makefile	/^PCKNAME  = ls$/;"	m
 PDATA	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  input [11:0] PDATA;$/;"	p
 PHYSROW_H	$CODE_ROOT/PhysData/PhysRow.h	2;"	d
 PHYSROW_H	$CODE_ROOT/include/PhysRow.h	2;"	d
 PHYSROW_SUPPLY	$CODE_ROOT/Flags/Flags.h	/^  PHYSROW_SUPPLY,$/;"	e	enum:__anon3
-PHYSROW_SUPPLY	$CODE_ROOT/include/Flags.h	/^  PHYSROW_SUPPLY,$/;"	e	enum:__anon22
+PHYSROW_SUPPLY	$CODE_ROOT/include/Flags.h	/^  PHYSROW_SUPPLY,$/;"	e	enum:__anon23
 PIN_DIR_ALL	$CODE_ROOT/Pin/Pin.h	10;"	d
 PIN_DIR_ALL	$CODE_ROOT/include/Pin.h	10;"	d
 PIN_DIR_INOUT	$CODE_ROOT/Pin/Pin.h	9;"	d
@@ -1808,9 +1902,9 @@ PIN_DIR_OUTPUT_STRING	$CODE_ROOT/include/Design.h	99;"	d
 PIN_H	$CODE_ROOT/Pin/Pin.h	4;"	d
 PIN_H	$CODE_ROOT/include/Pin.h	4;"	d
 PIN_IS_PSEUDO_FLAG	$CODE_ROOT/Flags/Flags.h	/^  PIN_IS_PSEUDO_FLAG,$/;"	e	enum:__anon4
-PIN_IS_PSEUDO_FLAG	$CODE_ROOT/include/Flags.h	/^  PIN_IS_PSEUDO_FLAG,$/;"	e	enum:__anon23
+PIN_IS_PSEUDO_FLAG	$CODE_ROOT/include/Flags.h	/^  PIN_IS_PSEUDO_FLAG,$/;"	e	enum:__anon24
 PIN_ORIGINAL_PIN_FLAG	$CODE_ROOT/Flags/Flags.h	/^  PIN_ORIGINAL_PIN_FLAG = 0,$/;"	e	enum:__anon5
-PIN_ORIGINAL_PIN_FLAG	$CODE_ROOT/include/Flags.h	/^  PIN_ORIGINAL_PIN_FLAG = 0,$/;"	e	enum:__anon24
+PIN_ORIGINAL_PIN_FLAG	$CODE_ROOT/include/Flags.h	/^  PIN_ORIGINAL_PIN_FLAG = 0,$/;"	e	enum:__anon25
 PLOT_H	$CODE_ROOT/Plot/Plot.h	2;"	d
 PLOT_H	$CODE_ROOT/include/Plot.h	2;"	d
 PORTA_IN	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  input [7:0] PORTA_IN;$/;"	p
@@ -1823,8 +1917,8 @@ PORTC_IN	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  input [7:0] PORTC_IN;$/;"	p
 PORTC_OE_L	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  output [7:0] PORTC_OE_L;$/;"	p
 PORTC_OUT	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  output [7:0] PORTC_OUT;$/;"	p
 PORT_NUM_RELATED_CELLS	$CODE_ROOT/Flags/Flags.h	/^  PORT_NUM_RELATED_CELLS,$/;"	e	enum:__anon4
-PORT_NUM_RELATED_CELLS	$CODE_ROOT/include/Flags.h	/^  PORT_NUM_RELATED_CELLS,$/;"	e	enum:__anon23
-PORT_RECT	$CODE_ROOT/Plot/Plot.h	/^  PORT_RECT,$/;"	e	enum:__anon27
+PORT_NUM_RELATED_CELLS	$CODE_ROOT/include/Flags.h	/^  PORT_NUM_RELATED_CELLS,$/;"	e	enum:__anon24
+PORT_RECT	$CODE_ROOT/Plot/Plot.h	/^  PORT_RECT,$/;"	e	enum:__anon28
 PORT_RECT	$CODE_ROOT/include/Plot.h	/^  PORT_RECT,$/;"	e	enum:__anon9
 PRIORITY_QUEUE_H	$CODE_ROOT/PriorityQueue/PriorityQueue.h	2;"	d
 PRIORITY_QUEUE_H	$CODE_ROOT/include/PriorityQueue.h	2;"	d
@@ -1971,6 +2065,7 @@ PlotAddPort	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotAddPort(Cell &thisCell)$/;"
 PlotAddRow	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotAddRow(PhysRow &thisRow)$/;"	f	class:Plot
 PlotAddStretchedBin	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotAddStretchedBin(Bin &thisBin)$/;"	f	class:Plot
 PlotAddSupplyBin	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotAddSupplyBin(LegalizeBin &thisBin, int supplyVal)$/;"	f	class:Plot
+PlotCluster	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::PlotCluster(void)$/;"	f	class:Cluster
 PlotGetBoundary	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotGetBoundary(double &minx, double &miny, double &maxx,$/;"	f	class:Plot
 PlotGetFileName	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotGetFileName(void)$/;"	f	class:Plot
 PlotGetTitle	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::PlotGetTitle(void)$/;"	f	class:Plot
@@ -1984,6 +2079,7 @@ PortClearAllNumRelatedCells	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PortClearAllNu
 PortClearNumRelatedCells	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PortClearNumRelatedCells(Cell *portPtr)$/;"	f
 PortGetNumRelatedCells	$CODE_ROOT/Flags/FlagsMain.cxx	/^unsigned int PortGetNumRelatedCells(Cell *obj)$/;"	f
 PortSetNumRelatedCells	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PortSetNumRelatedCells(Cell *portPtr, unsigned int numCells)$/;"	f
+PrintCluster	$CODE_ROOT/Cell/ClusterMain.cxx	/^Cluster::PrintCluster(void)$/;"	f	class:Cluster
 PrintEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintEdge(uint edgeIdx)$/;"	f	class:HyperGraph
 PrintGraph	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintGraph(void)$/;"	f	class:HyperGraph
 PrintNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintNode(uint nodeIdx)$/;"	f	class:HyperGraph
@@ -1999,12 +2095,12 @@ Q	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  wire   [2:0] Q;$/;"	n
 Q2	$CODE_ROOT/results/sap/sap_compiled.v	/^  wire   [3:0] Q2;$/;"	n
 RE1	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
 RE2	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
-REGULAR_PIN	$CODE_ROOT/Plot/Plot.h	/^  REGULAR_PIN,$/;"	e	enum:__anon27
+REGULAR_PIN	$CODE_ROOT/Plot/Plot.h	/^  REGULAR_PIN,$/;"	e	enum:__anon28
 REGULAR_PIN	$CODE_ROOT/include/Plot.h	/^  REGULAR_PIN,$/;"	e	enum:__anon9
 RESET	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  input RESET, CLK;$/;"	p
 RE_error_correction	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         roots_ready, RE_error_correction, WE_error_correction, DONE,$/;"	n
 RE_out_stage	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
-RIGHT_TOP	$CODE_ROOT/Plot/Plot.h	/^  RIGHT_TOP = 0,$/;"	e	enum:__anon28
+RIGHT_TOP	$CODE_ROOT/Plot/Plot.h	/^  RIGHT_TOP = 0,$/;"	e	enum:__anon29
 RIGHT_TOP	$CODE_ROOT/include/Plot.h	/^  RIGHT_TOP = 0,$/;"	e	enum:__anon10
 ROW_BASED_PLACEMENT	$CODE_ROOT/Design/Design.h	62;"	d
 ROW_BASED_PLACEMENT	$CODE_ROOT/include/Design.h	62;"	d
@@ -2073,11 +2169,13 @@ RegionSetRBound	$CODE_ROOT/Legalize/LegalizeRegion.cxx	/^Region::RegionSetRBound
 RegionSetRow	$CODE_ROOT/Legalize/LegalizeRegion.cxx	/^Region::RegionSetRow(PhysRow* row)$/;"	f	class:Region
 RegionSetSupply	$CODE_ROOT/Legalize/LegalizeRegion.cxx	/^Region::RegionSetSupply(int supply)$/;"	f	class:Region
 RegionSetTotalCellWidth	$CODE_ROOT/Legalize/LegalizeRegion.cxx	/^Region::RegionSetTotalCellWidth(int totalCellWidth)$/;"	f	class:Region
+RemoveEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::RemoveEdge(uint edgeIdx)$/;"	f	class:HyperGraph
+RemoveNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::RemoveNode(uint nodeIdx)$/;"	f	class:HyperGraph
 Rout	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  output [19:0] Rout;$/;"	p
 RowBasedPlacement	$CODE_ROOT/Design/Design.h	/^  bool RowBasedPlacement;$/;"	m	class:Design
 RowBasedPlacement	$CODE_ROOT/include/Design.h	/^  bool RowBasedPlacement;$/;"	m	class:Design
-RowHeights	$CODE_ROOT/Design/Design.h	/^  map<unsigned int, unsigned int>RowHeights;$/;"	m	class:Design
-RowHeights	$CODE_ROOT/include/Design.h	/^  map<unsigned int, unsigned int>RowHeights;$/;"	m	class:Design
+RowHeights	$CODE_ROOT/Design/Design.h	/^  map<uint, uint>RowHeights;$/;"	m	class:Design
+RowHeights	$CODE_ROOT/include/Design.h	/^  map<uint, uint>RowHeights;$/;"	m	class:Design
 RxCRC16En	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         RxWireActive, RxCRC16En, RxCRC5En, RxCRC5_8Bit, RxRstCRC, TxCRC16En,$/;"	n
 RxCRC16Result	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  wire   [15:0] RxCRC16Result;$/;"	n
 RxCRC5En	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         RxWireActive, RxCRC16En, RxCRC5En, RxCRC5_8Bit, RxRstCRC, TxCRC16En,$/;"	n
@@ -2093,15 +2191,15 @@ RxRstCRC	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         RxWireActive, 
 RxWireActive	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         RxWireActive, RxCRC16En, RxCRC5En, RxCRC5_8Bit, RxRstCRC, TxCRC16En,$/;"	n
 RxWireDataFromWireRx	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  wire   [1:0] RxWireDataFromWireRx;$/;"	n
 RxWireDataWEn	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  wire   RxWireDataWEn, processRxBitRdy, processRxByteWEn, processRxByteRdy,$/;"	n
-S	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+S	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 S	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
-SEQSOLVE_QCQO_TD	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QCQO_TD} seqSolverType;$/;"	e	enum:__anon32
+SEQSOLVE_QCQO_TD	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QCQO_TD} seqSolverType;$/;"	e	enum:__anon33
 SEQSOLVE_QCQO_TD	$CODE_ROOT/include/common.h	/^	      SEQSOLVE_QCQO_TD} seqSolverType;$/;"	e	enum:__anon7
-SEQSOLVE_QCQO_WL	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QCQO_WL, $/;"	e	enum:__anon32
+SEQSOLVE_QCQO_WL	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QCQO_WL, $/;"	e	enum:__anon33
 SEQSOLVE_QCQO_WL	$CODE_ROOT/include/common.h	/^	      SEQSOLVE_QCQO_WL, $/;"	e	enum:__anon7
-SEQSOLVE_QO_TD	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QO_TD, $/;"	e	enum:__anon32
+SEQSOLVE_QO_TD	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QO_TD, $/;"	e	enum:__anon33
 SEQSOLVE_QO_TD	$CODE_ROOT/include/common.h	/^	      SEQSOLVE_QO_TD, $/;"	e	enum:__anon7
-SEQSOLVE_QO_WL	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QO_WL, $/;"	e	enum:__anon32
+SEQSOLVE_QO_WL	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QO_WL, $/;"	e	enum:__anon33
 SEQSOLVE_QO_WL	$CODE_ROOT/include/common.h	/^	      SEQSOLVE_QO_WL, $/;"	e	enum:__anon7
 SIEFsRate	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         processTxByteWEn, TxRstCRC, SIEFsRate, TxFSRateFromSIETxToPrcTxByte,$/;"	n
 SIEPortCtrlIn	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  input [7:0] SIEPortCtrlIn;$/;"	p
@@ -2182,17 +2280,19 @@ STD_CELL_BASED_PLACEMENT	$CODE_ROOT/Design/Design.h	63;"	d
 STD_CELL_BASED_PLACEMENT	$CODE_ROOT/include/Design.h	63;"	d
 STD_CELL_HEIGHT	$CODE_ROOT/Design/DesignIter.h	6;"	d
 STD_CELL_HEIGHT	$CODE_ROOT/include/DesignIter.h	6;"	d
-STRETCHED_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  STRETCHED_BIN_RECT,$/;"	e	enum:__anon27
+STRETCHED_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  STRETCHED_BIN_RECT,$/;"	e	enum:__anon28
 STRETCHED_BIN_RECT	$CODE_ROOT/include/Plot.h	/^  STRETCHED_BIN_RECT,$/;"	e	enum:__anon9
 SUBROW_NUM_SITES	$CODE_ROOT/Design/Design.h	95;"	d
 SUBROW_NUM_SITES	$CODE_ROOT/include/Design.h	95;"	d
 SUBROW_ORIGIN	$CODE_ROOT/Design/Design.h	94;"	d
 SUBROW_ORIGIN	$CODE_ROOT/include/Design.h	94;"	d
-SUPPLY_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  SUPPLY_BIN_RECT,$/;"	e	enum:__anon27
+SUPPLY_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  SUPPLY_BIN_RECT,$/;"	e	enum:__anon28
 SUPPLY_BIN_RECT	$CODE_ROOT/include/Plot.h	/^  SUPPLY_BIN_RECT,$/;"	e	enum:__anon9
 S_ready	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   CEO_0, In_mem_RE, S_ready, WE_transport, transport_done, L_ready,$/;"	n
 SetEdgeWeight	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::SetEdgeWeight(uint edgeIdx, double newWeight)$/;"	f	class:HyperGraph
 SetValue	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::SetValue(uint valIdx, double val) $/;"	f	class:SpMat
+ShapeSelectionStartTime	$CODE_ROOT/Env/Env.h	/^  double ShapeSelectionStartTime;$/;"	m	class:Env
+ShapeSelectionStartTime	$CODE_ROOT/include/Env.h	/^  double ShapeSelectionStartTime;$/;"	m	class:Env
 ShapeSelectionTime	$CODE_ROOT/Env/Env.h	/^  double ShapeSelectionTime;$/;"	m	class:Env
 ShapeSelectionTime	$CODE_ROOT/include/Env.h	/^  double ShapeSelectionTime;$/;"	m	class:Env
 ShapeSelectionType	$CODE_ROOT/Env/Env.h	/^  EnvShapeSelectionType ShapeSelectionType;$/;"	m	class:Env
@@ -2204,8 +2304,6 @@ SpMat	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::SpMat(uint numNonZero, uin
 SpMat	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::SpMat(vector<uint> &idxi_vec, vector<uint> &idxj_vec, vector<double> &val_vec) $/;"	f	class:SpMat
 SpMat	$CODE_ROOT/ConjGrad/ConjGradSolver.h	/^class SpMat {$/;"	c
 SpMat	$CODE_ROOT/include/ConjGradSolver.h	/^class SpMat {$/;"	c
-StartTime	$CODE_ROOT/Env/Env.h	/^  double StartTime;$/;"	m	class:Env
-StartTime	$CODE_ROOT/include/Env.h	/^  double StartTime;$/;"	m	class:Env
 StiffMat	$CODE_ROOT/example/laplace2d.cc	/^  StiffMat( int N, double h ) : N(N), h(h) { }$/;"	f	struct:StiffMat
 StiffMat	$CODE_ROOT/example/laplace2d.cc	/^struct StiffMat {$/;"	s	file:
 StiffMatrix	$CODE_ROOT/example/laplace3d.cc	/^  StiffMatrix( double h, int NV, int NE, Element *E, int NB, int *B )$/;"	f	struct:StiffMatrix
@@ -2219,13 +2317,13 @@ TIMING_MODELS_H	$CODE_ROOT/TimingModels/TimingModels.h	2;"	d
 TIMING_MODELS_H	$CODE_ROOT/include/TimingModels.h	2;"	d
 TOP_LEVEL_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	22;"	d	file:
 TOTAL_CLUSTERING_TECHNIQUES	$CODE_ROOT/Design/Design.h	/^  TOTAL_CLUSTERING_TECHNIQUES,$/;"	e	enum:__anon2
-TOTAL_CLUSTERING_TECHNIQUES	$CODE_ROOT/include/Design.h	/^  TOTAL_CLUSTERING_TECHNIQUES,$/;"	e	enum:__anon21
+TOTAL_CLUSTERING_TECHNIQUES	$CODE_ROOT/include/Design.h	/^  TOTAL_CLUSTERING_TECHNIQUES,$/;"	e	enum:__anon22
 TOTAL_NUM_DOUBLE_FLAGS	$CODE_ROOT/Flags/Flags.h	/^  TOTAL_NUM_DOUBLE_FLAGS$/;"	e	enum:__anon3
-TOTAL_NUM_DOUBLE_FLAGS	$CODE_ROOT/include/Flags.h	/^  TOTAL_NUM_DOUBLE_FLAGS$/;"	e	enum:__anon22
+TOTAL_NUM_DOUBLE_FLAGS	$CODE_ROOT/include/Flags.h	/^  TOTAL_NUM_DOUBLE_FLAGS$/;"	e	enum:__anon23
 TOTAL_NUM_INT_FLAGS	$CODE_ROOT/Flags/Flags.h	/^  TOTAL_NUM_INT_FLAGS$/;"	e	enum:__anon4
-TOTAL_NUM_INT_FLAGS	$CODE_ROOT/include/Flags.h	/^  TOTAL_NUM_INT_FLAGS$/;"	e	enum:__anon23
+TOTAL_NUM_INT_FLAGS	$CODE_ROOT/include/Flags.h	/^  TOTAL_NUM_INT_FLAGS$/;"	e	enum:__anon24
 TOTAL_NUM_PTR_FLAGS	$CODE_ROOT/Flags/Flags.h	/^  TOTAL_NUM_PTR_FLAGS$/;"	e	enum:__anon5
-TOTAL_NUM_PTR_FLAGS	$CODE_ROOT/include/Flags.h	/^  TOTAL_NUM_PTR_FLAGS$/;"	e	enum:__anon24
+TOTAL_NUM_PTR_FLAGS	$CODE_ROOT/include/Flags.h	/^  TOTAL_NUM_PTR_FLAGS$/;"	e	enum:__anon25
 T_flag	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
 ToolMode	$CODE_ROOT/Env/Env.h	/^  EnvToolMode ToolMode;$/;"	m	class:Env
 ToolMode	$CODE_ROOT/include/Env.h	/^  EnvToolMode ToolMode;$/;"	m	class:Env
@@ -2254,8 +2352,8 @@ USBWireDataOut	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  output [1:0] US
 USBWireDataOutTick	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  output USBWireDataInTick, USBWireCtrlOut, USBWireDataOutTick, resumeDetected,$/;"	p
 USBWireReadyFromTxArb	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         USBWireReadyFromTxArb, SIETxReq, SIETxWEn, processTxByteRdy,$/;"	n
 USE_COMPILER	$CODE_ROOT/example/Makefile	/^USE_COMPILER = SGI$/;"	m
-UnClusterType	$CODE_ROOT/Env/Env.h	/^  EnvUnClusterType UnClusterType;$/;"	m	class:Env
-UnClusterType	$CODE_ROOT/include/Env.h	/^  EnvUnClusterType UnClusterType;$/;"	m	class:Env
+UnclusterType	$CODE_ROOT/Env/Env.h	/^  EnvUnclusterType UnclusterType;$/;"	m	class:Env
+UnclusterType	$CODE_ROOT/include/Env.h	/^  EnvUnclusterType UnclusterType;$/;"	m	class:Env
 UnitTriangular	$CODE_ROOT/ConjGrad/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	e	enum:MatrixUnitTriangular
 UnitTriangular	$CODE_ROOT/cghs/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	e	enum:MatrixUnitTriangular
 UnitTriangular	$CODE_ROOT/include/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	e	enum:MatrixUnitTriangular
@@ -2269,10 +2367,10 @@ VECTOR_FOR_ALL_ELEMS	$CODE_ROOT/common/commonIter.h	6;"	d
 VECTOR_FOR_ALL_ELEMS	$CODE_ROOT/include/commonIter.h	6;"	d
 VECTOR_FOR_ALL_ELEMS_DOUBLE	$CODE_ROOT/common/commonIter.h	11;"	d
 VECTOR_FOR_ALL_ELEMS_DOUBLE	$CODE_ROOT/include/commonIter.h	11;"	d
-VERTICAL	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon29
-VERTICAL	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon25
+VERTICAL	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon30
+VERTICAL	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon26
 Valid_out	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  output CEO, Valid_out;$/;"	p
-W	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon31
+W	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 W	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
 W	$CODE_ROOT/results/sap/sap_compiled.v	/^  tri   [7:0] W;$/;"	n
 WE1	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
@@ -2285,8 +2383,8 @@ W_Add2	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   [7:0] W_Ad
 WrAdd_transport	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   [7:0] WrAdd_transport;$/;"	n
 Xin	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  input [15:0] Xin;$/;"	p
 Xpre	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  wire   [14:0] Xpre;$/;"	n
-YES_SYMMETRY	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon30
-YES_SYMMETRY	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon26
+YES_SYMMETRY	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon31
+YES_SYMMETRY	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon27
 Yin	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  input [15:0] Yin;$/;"	p
 Ypre	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  wire   [14:0] Ypre;$/;"	n
 ZERO	$CODE_ROOT/Design/Design.h	103;"	d
@@ -2313,34 +2411,34 @@ ZoneSetEnd	$CODE_ROOT/Legalize/LegalizeZone.cxx	/^Zone::ZoneSetEnd(int zoneEnd)$
 ZoneSetLRBound	$CODE_ROOT/Legalize/LegalizeZone.cxx	/^Zone::ZoneSetLRBound(unsigned int LRBound)$/;"	f	class:Zone
 ZoneSetRow	$CODE_ROOT/Legalize/LegalizeZone.cxx	/^Zone::ZoneSetRow(PhysRow* row)$/;"	f	class:Zone
 ZoneSetTotalCellWidth	$CODE_ROOT/Legalize/LegalizeZone.cxx	/^Zone::ZoneSetTotalCellWidth(int totalCellWidth)$/;"	f	class:Zone
-_ASSERT	$CODE_ROOT/common/common.h	33;"	d
-_ASSERT	$CODE_ROOT/include/common.h	33;"	d
-_ASSERT_TRUE	$CODE_ROOT/common/common.h	38;"	d
-_ASSERT_TRUE	$CODE_ROOT/include/common.h	38;"	d
-_DEBUG_MSG	$CODE_ROOT/common/common.h	78;"	d
-_DEBUG_MSG	$CODE_ROOT/include/common.h	78;"	d
-_ERROR	$CODE_ROOT/common/common.h	81;"	d
-_ERROR	$CODE_ROOT/include/common.h	81;"	d
-_KEY_DOES_NOT_EXIST	$CODE_ROOT/common/common.h	90;"	d
-_KEY_DOES_NOT_EXIST	$CODE_ROOT/include/common.h	90;"	d
-_KEY_EXISTS	$CODE_ROOT/common/common.h	87;"	d
-_KEY_EXISTS	$CODE_ROOT/include/common.h	87;"	d
-_KEY_EXISTS_WITH_VAL	$CODE_ROOT/common/common.h	93;"	d
-_KEY_EXISTS_WITH_VAL	$CODE_ROOT/include/common.h	93;"	d
-_STEP_BEGIN	$CODE_ROOT/common/common.h	56;"	d
-_STEP_BEGIN	$CODE_ROOT/include/common.h	56;"	d
-_STEP_END	$CODE_ROOT/common/common.h	67;"	d
-_STEP_END	$CODE_ROOT/include/common.h	67;"	d
+_ASSERT	$CODE_ROOT/common/common.h	34;"	d
+_ASSERT	$CODE_ROOT/include/common.h	34;"	d
+_ASSERT_TRUE	$CODE_ROOT/common/common.h	39;"	d
+_ASSERT_TRUE	$CODE_ROOT/include/common.h	39;"	d
+_DEBUG_MSG	$CODE_ROOT/common/common.h	80;"	d
+_DEBUG_MSG	$CODE_ROOT/include/common.h	80;"	d
+_ERROR	$CODE_ROOT/common/common.h	83;"	d
+_ERROR	$CODE_ROOT/include/common.h	83;"	d
+_KEY_DOES_NOT_EXIST	$CODE_ROOT/common/common.h	92;"	d
+_KEY_DOES_NOT_EXIST	$CODE_ROOT/include/common.h	92;"	d
+_KEY_EXISTS	$CODE_ROOT/common/common.h	89;"	d
+_KEY_EXISTS	$CODE_ROOT/include/common.h	89;"	d
+_KEY_EXISTS_WITH_VAL	$CODE_ROOT/common/common.h	95;"	d
+_KEY_EXISTS_WITH_VAL	$CODE_ROOT/include/common.h	95;"	d
+_STEP_BEGIN	$CODE_ROOT/common/common.h	58;"	d
+_STEP_BEGIN	$CODE_ROOT/include/common.h	58;"	d
+_STEP_END	$CODE_ROOT/common/common.h	69;"	d
+_STEP_END	$CODE_ROOT/include/common.h	69;"	d
 _WRITE_TABLE	$CODE_ROOT/Design/DesignAnalysis.cxx	30;"	d	file:
-_setNULL	$CODE_ROOT/common/common.h	30;"	d
-_setNULL	$CODE_ROOT/include/common.h	30;"	d
+_setNULL	$CODE_ROOT/common/common.h	31;"	d
+_setNULL	$CODE_ROOT/include/common.h	31;"	d
 a	$CODE_ROOT/example/antisym.cc	/^double a=1.2;$/;"	v
 add	$CODE_ROOT/results/sap/sap_compiled.v	/^  wire   add, lda, \\output , sub, \\AddSub\/N17 , \\AddSub\/N16 , \\AddSub\/N15 ,$/;"	n
 add_escapes	$CODE_ROOT/gprof2html.py	/^def add_escapes(input):$/;"	f
 address	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  input [4:0] address;$/;"	p
 adiw_st	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         idc_sbc, idc_sbci, idc_sbiw, adiw_st, sbiw_st, idc_and, idc_andi,$/;"	n
 adr	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  output [5:0] adr;$/;"	p
-allSolverType	$CODE_ROOT/common/common.h	/^	      ALL_QCQO_TD} allSolverType;$/;"	t	typeref:enum:__anon33
+allSolverType	$CODE_ROOT/common/common.h	/^	      ALL_QCQO_TD} allSolverType;$/;"	t	typeref:enum:__anon34
 allSolverType	$CODE_ROOT/include/common.h	/^	      ALL_QCQO_TD} allSolverType;$/;"	t	typeref:enum:__anon8
 alu_c_flag_out	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         alu_c_flag_out, alu_z_flag_out, alu_v_flag_out, alu_s_flag_out,$/;"	n
 alu_data_out	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  wire   [7:0] alu_data_out;$/;"	n
@@ -2451,6 +2549,7 @@ cghs	$CODE_ROOT/cghs/cghs.h	/^cghs( unsigned N, const MATRIX &A, const PC_MATRIX
 cghs	$CODE_ROOT/cghs/cghs.h	/^cghs( unsigned N, const MATRIX &A, const double *b, double *x, double eps ) {$/;"	f
 cghs	$CODE_ROOT/cghs/cghs.h	/^cghs( unsigned N, const MATRIX &A, const double *b, double *x, double eps,$/;"	f
 cghsSolve	$CODE_ROOT/SolverTest/SolverTest.cxx	/^cghsSolve(vector<uint> &subi_vec, vector<uint> &subj_vec, vector<double> &valij_vec, $/;"	f
+changeDir	$CODE_ROOT/common/common_utils.cxx	/^void changeDir(string dirName)$/;"	f
 change_flow	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  output valid_instr, change_flow, iore, iowe, ramre, ramwe, irqack, sleepi,$/;"	p
 childCells	$CODE_ROOT/Cell/Cell.h	/^  vector<Cell*> childCells;$/;"	m	class:Cell
 childCells	$CODE_ROOT/include/Cell.h	/^  vector<Cell*> childCells;$/;"	m	class:Cell
@@ -2466,11 +2565,12 @@ clk	$CODE_ROOT/results/vit_enc_dec/vit_enc_dec_compiled.v	/^  input clk, rst, en
 clockPeriod	$CODE_ROOT/Design/Design.h	/^  double clockPeriod;$/;"	m	class:Design
 clockPeriod	$CODE_ROOT/include/Design.h	/^  double clockPeriod;$/;"	m	class:Design
 clr	$CODE_ROOT/results/sap/sap_compiled.v	/^  input clk, clr;$/;"	p
+clusterLevel	$CODE_ROOT/Cell/Cell.h	/^  char clusterLevel;$/;"	m	class:Cluster
 clusterLevel	$CODE_ROOT/Cell/Cell.h	/^  unsigned int clusterLevel;$/;"	m	class:Cell
+clusterLevel	$CODE_ROOT/include/Cell.h	/^  char clusterLevel;$/;"	m	class:Cluster
 clusterLevel	$CODE_ROOT/include/Cell.h	/^  unsigned int clusterLevel;$/;"	m	class:Cell
-clusterNumber	$CODE_ROOT/Design/DesignCluster.cxx	/^static unsigned int clusterNumber;$/;"	v	file:
 clusteringType	$CODE_ROOT/Design/Design.h	/^} clusteringType;$/;"	t	typeref:enum:__anon2
-clusteringType	$CODE_ROOT/include/Design.h	/^} clusteringType;$/;"	t	typeref:enum:__anon21
+clusteringType	$CODE_ROOT/include/Design.h	/^} clusteringType;$/;"	t	typeref:enum:__anon22
 cmp	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^  C cmp;$/;"	m	class:PriorityQueue
 cmp	$CODE_ROOT/include/PriorityQueue.h	/^  C cmp;$/;"	m	class:PriorityQueue
 cmpCellBotPos	$CODE_ROOT/Design/DesignMain.cxx	/^bool cmpCellBotPos(Cell *cellPtri, Cell *cellPtrj)$/;"	f
@@ -2480,9 +2580,9 @@ cnt3	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   [1:0] cnt3;$
 common_error	$CODE_ROOT/common/common_utils.cxx	/^common_error(std::string ErrorString)$/;"	f
 common_message	$CODE_ROOT/common/common_utils.cxx	/^common_message(std::string MessageString)$/;"	f
 compareCostFunc	$CODE_ROOT/Legalize/LegalizeUtils.cxx	/^compareCostFunc(const pair<Cell *, double> &cell1, const pair<Cell *, double> &cell2) $/;"	f
-computeForceOnCellOfCluster	$CODE_ROOT/Design/DesignClusterNew.cxx	/^computeForceOnCellOfCluster(Cell *clusterCell, map<Cell *, uint> cellLookupMap,$/;"	f
-computeForceUpdateHessianForBCells	$CODE_ROOT/Design/DesignClusterNew.cxx	/^computeForceUpdateHessianForBCells(Design &myDesign, Cell *clusterCell, $/;"	f
-computeScore	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^computeScore(HyperGraph &myGraph, Cell *cellObj1, Cell *cellObj2)$/;"	f
+computeForceOnCellOfCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^computeForceOnCellOfCluster(Cell *clusterCell, map<Cell *, uint> cellLookupMap,$/;"	f
+computeForceUpdateHessianForBCells	$CODE_ROOT/Design/DesignCluster.cxx	/^computeForceUpdateHessianForBCells(Design &myDesign, Cell *clusterCell, $/;"	f
+computeScore	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^computeScore(HyperGraph &myGraph, uint nodeIdx1, uint nodeIdx2)$/;"	f
 connectState	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  output [1:0] connectState;$/;"	p
 container	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^  vector<T> container;$/;"	m	class:PriorityQueue
 container	$CODE_ROOT/include/PriorityQueue.h	/^  vector<T> container;$/;"	m	class:PriorityQueue
@@ -2561,8 +2661,8 @@ dnrm2	$CODE_ROOT/include/cblas.h	/^double dnrm2( int n, const double *x, int inc
 doFractReassign	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^bool doFractReassign = true;$/;"	v
 double3	$CODE_ROOT/example/laplace3d.cc	/^typedef double double3[3];$/;"	t	file:
 driverCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int driverCount;$/;"	m	struct:NetStatsStruct	file:
-driverCount	$CODE_ROOT/Net/Net.h	/^  unsigned int driverCount;$/;"	m	class:Net
-driverCount	$CODE_ROOT/include/Net.h	/^  unsigned int driverCount;$/;"	m	class:Net
+driverCount	$CODE_ROOT/Net/Net.h	/^  uint driverCount;$/;"	m	class:Net
+driverCount	$CODE_ROOT/include/Net.h	/^  uint driverCount;$/;"	m	class:Net
 drot	$CODE_ROOT/ConjGrad/cblas.h	/^void drot( int n, double *x, int incx, double *y, int incy, double c,$/;"	f
 drot	$CODE_ROOT/cghs/cblas.h	/^void drot( int n, double *x, int incx, double *y, int incy, double c,$/;"	f
 drot	$CODE_ROOT/include/cblas.h	/^void drot( int n, double *x, int incx, double *y, int incy, double c,$/;"	f
@@ -2616,6 +2716,8 @@ dtrmv	$CODE_ROOT/include/cblas.h	/^void dtrmv( MatrixTriangle uplo, MatrixTransp
 dtrsv	$CODE_ROOT/ConjGrad/cblas.h	/^void dtrsv( MatrixTriangle uplo, MatrixTranspose trans,$/;"	f
 dtrsv	$CODE_ROOT/cghs/cblas.h	/^void dtrsv( MatrixTriangle uplo, MatrixTranspose trans,$/;"	f
 dtrsv	$CODE_ROOT/include/cblas.h	/^void dtrsv( MatrixTriangle uplo, MatrixTranspose trans,$/;"	f
+edgeFlags	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  vector<char> edgeFlags;$/;"	m	class:HyperGraph
+edgeFlags	$CODE_ROOT/include/HyperGraph.h	/^  vector<char> edgeFlags;$/;"	m	class:HyperGraph
 edgeIdx	$CODE_ROOT/HyperGraph/Edge.h	/^  unsigned int edgeIdx;$/;"	m	class:Edge
 edgeIdx	$CODE_ROOT/include/Edge.h	/^  unsigned int edgeIdx;$/;"	m	class:Edge
 edgeType	$CODE_ROOT/HyperGraph/Node.h	/^typedef enum edgeType {$/;"	g
@@ -2645,17 +2747,17 @@ fileExists	$CODE_ROOT/common/common_utils.cxx	/^bool fileExists(string& fileName
 fileExists	$CODE_ROOT/common/common_utils.cxx	/^bool fileExists(string& fullFileName) $/;"	f
 fileaddr	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  wire   [6:0] fileaddr;$/;"	n
 fileaddr_mux1	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  wire   [6:0] fileaddr_mux1;$/;"	n
-findFeasibleRowAndXPosition	$CODE_ROOT/Design/DesignClusterNew.cxx	/^findFeasibleRowAndXPosition(vector<uint>& rowCapacities, vector<uint>& leftLast,$/;"	f
+findFeasibleRowAndXPosition	$CODE_ROOT/Design/DesignCluster.cxx	/^findFeasibleRowAndXPosition(vector<uint>& rowCapacities, vector<uint>& leftLast,$/;"	f
 findRowCoordinates	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^findRowCoordinates(vector<int> &RowCoordinates, int min, int max,$/;"	f
 findRowCoordinates	$CODE_ROOT/Legalize/bak/Old_3LegalizeMain.cxx	/^findRowCoordinates(vector<int> &RowCoordinates, int min, int max, int key, int nearRows[])$/;"	f
 findRowCoordinates	$CODE_ROOT/Legalize/bak/Old_4LegalizeMain.cxx	/^findRowCoordinates(vector<int> &RowCoordinates, int min, int max, int key, int nearRows[])$/;"	f
 findRowCoordinates	$CODE_ROOT/Legalize/bak/TestMinCostFlow.cxx	/^findRowCoordinates(vector<int> &RowCoordinates, int min, int max, int key, int nearRows[])$/;"	f
 flagDoubleType	$CODE_ROOT/Flags/Flags.h	/^} flagDoubleType;$/;"	t	typeref:enum:__anon3
-flagDoubleType	$CODE_ROOT/include/Flags.h	/^} flagDoubleType;$/;"	t	typeref:enum:__anon22
+flagDoubleType	$CODE_ROOT/include/Flags.h	/^} flagDoubleType;$/;"	t	typeref:enum:__anon23
 flagIntType	$CODE_ROOT/Flags/Flags.h	/^} flagIntType;$/;"	t	typeref:enum:__anon4
-flagIntType	$CODE_ROOT/include/Flags.h	/^} flagIntType;$/;"	t	typeref:enum:__anon23
+flagIntType	$CODE_ROOT/include/Flags.h	/^} flagIntType;$/;"	t	typeref:enum:__anon24
 flagPtrType	$CODE_ROOT/Flags/Flags.h	/^} flagPtrType;$/;"	t	typeref:enum:__anon5
-flagPtrType	$CODE_ROOT/include/Flags.h	/^} flagPtrType;$/;"	t	typeref:enum:__anon24
+flagPtrType	$CODE_ROOT/include/Flags.h	/^} flagPtrType;$/;"	t	typeref:enum:__anon25
 flags	$CODE_ROOT/Cell/Cell.h	/^  unsigned long flags;$/;"	m	class:Cell
 flags	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned char flags;$/;"	m	class:Node
 flags	$CODE_ROOT/include/Cell.h	/^  unsigned long flags;$/;"	m	class:Cell
@@ -2696,6 +2798,8 @@ genSolveX	$CODE_ROOT/AnalyticalSolve/GenSolveWL.cxx	/^genSolveX(Design& myDesign
 genSolveY	$CODE_ROOT/AnalyticalSolve/GenSolveWL.cxx	/^genSolveY(Design& myDesign, HyperGraph& myGraph, vector<Cell *>& inputCells)$/;"	f
 generateSolutionUsingQuadProg	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveOldWorking.cxx	/^generateSolutionUsingQuadProg(vector<Cell *> listOfCells, $/;"	f
 geom	$CODE_ROOT/example/antisym.cc	/^double geom( int n ) {$/;"	f
+getBestNeighbor	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^getBestNeighbor(HyperGraph &myGraph, uint &nodeIdx1, uint &nodeIdx2, double &score)$/;"	f
+getBestNeighbor	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^getBestNeighbor(HyperGraph &myGraph, uint &nodeIdx1, uint &nodeIdx2, double &score,$/;"	f
 getCPUTime	$CODE_ROOT/Stat/StatMain.cxx	/^double getCPUTime() {$/;"	f
 getCellLookupMap	$CODE_ROOT/TimingModels/TMCommon.cxx	/^getCellLookupMap(vector<Cell *>inputCells)$/;"	f
 getCurrentTime	$CODE_ROOT/common/common_utils.cxx	/^string getCurrentTime(void)$/;"	f
@@ -2732,7 +2836,6 @@ getTimingParams	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveTD.cxx	/^getTimingPara
 getUserName	$CODE_ROOT/common/common_utils.cxx	/^string getUserName(void)$/;"	f
 getVarBoundsInMosekFormat	$CODE_ROOT/Design/.bak/DesignSolveFastStarMosek7.cxx	/^getVarBoundsInMosekFormat(Design &myDesign, vector<Cell *>inputCells,$/;"	f
 getVarBoundsInMosekFormat	$CODE_ROOT/Design/DesignSolveFastMosek7.cxx	/^getVarBoundsInMosekFormat(Design &myDesign, vector<Cell *>inputCells,$/;"	f
-getWidthAndHeight	$CODE_ROOT/Design/DesignCluster.cxx	/^getWidthAndHeight(vector<void*>listOfCells, double aspectRatio,$/;"	f
 get_double_argument	$CODE_ROOT/example/argument.cc	/^get_double_argument( const char *argname, double default_value ) const {$/;"	f	class:Arguments
 get_int_argument	$CODE_ROOT/example/argument.cc	/^get_int_argument( const char *argname, int default_value ) const {$/;"	f	class:Arguments
 get_long_argument	$CODE_ROOT/example/argument.cc	/^get_long_argument( const char *argname, long default_value ) const {$/;"	f	class:Arguments
@@ -2763,6 +2866,10 @@ highlightedLines	$CODE_ROOT/include/Plot.h	/^  vector<Line> highlightedLines;$/;
 highlightedRects	$CODE_ROOT/Plot/Plot.h	/^  vector<Rect> highlightedRects;$/;"	m	class:Plot
 highlightedRects	$CODE_ROOT/include/Plot.h	/^  vector<Rect> highlightedRects;$/;"	m	class:Plot
 hlt	$CODE_ROOT/results/sap/sap_compiled.v	/^  output hlt;$/;"	p
+hpwl	$CODE_ROOT/Design/Design.h	/^  double hpwl;$/;"	m	class:Design
+hpwl	$CODE_ROOT/Net/Net.h	/^  double hpwl;$/;"	m	class:Net
+hpwl	$CODE_ROOT/include/Design.h	/^  double hpwl;$/;"	m	class:Design
+hpwl	$CODE_ROOT/include/Net.h	/^  double hpwl;$/;"	m	class:Net
 i_data	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input [1:0] i_data;$/;"	p
 i_local	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input clk, rst, i_local, i_vld;$/;"	p
 i_query_length	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input [5:0] i_query_length;$/;"	p
@@ -2805,10 +2912,10 @@ idc_sbrs	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         idc_sbic, id
 idc_sub	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  wire   n957, n958, n959, n960, idc_add, idc_adc, idc_adiw, idc_sub, idc_subi,$/;"	n
 idc_subi	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  wire   n957, n958, n959, n960, idc_add, idc_adc, idc_adiw, idc_sub, idc_subi,$/;"	n
 idc_swap	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         idc_cpc, idc_cpi, idc_cpse, idc_lsr, idc_ror, idc_asr, idc_swap,$/;"	n
-idx2Edge	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  map<uint, Edge *> idx2Edge;$/;"	m	class:HyperGraph
-idx2Edge	$CODE_ROOT/include/HyperGraph.h	/^  map<uint, Edge *> idx2Edge;$/;"	m	class:HyperGraph
-idx2Node	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  map<uint, Node *> idx2Node;$/;"	m	class:HyperGraph
-idx2Node	$CODE_ROOT/include/HyperGraph.h	/^  map<uint, Node *> idx2Node;$/;"	m	class:HyperGraph
+idx2Edge	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  vector<Edge *> idx2Edge;$/;"	m	class:HyperGraph
+idx2Edge	$CODE_ROOT/include/HyperGraph.h	/^  vector<Edge *> idx2Edge;$/;"	m	class:HyperGraph
+idx2Node	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  vector<Node *> idx2Node;$/;"	m	class:HyperGraph
+idx2Node	$CODE_ROOT/include/HyperGraph.h	/^  vector<Node *> idx2Node;$/;"	m	class:HyperGraph
 idxi	$CODE_ROOT/ConjGrad/ConjGradSolver.h	/^  uint *idxi;$/;"	m	class:SpMat
 idxi	$CODE_ROOT/include/ConjGradSolver.h	/^  uint *idxi;$/;"	m	class:SpMat
 idxj	$CODE_ROOT/ConjGrad/ConjGradSolver.h	/^  uint *idxj;$/;"	m	class:SpMat
@@ -2873,9 +2980,11 @@ isEmpty	$CODE_ROOT/include/Legalize.h	/^  bool isEmpty;$/;"	m	class:Zone
 isFixed	$CODE_ROOT/Cell/Cell.h	/^  bool isFixed;$/;"	m	class:Cell
 isFixed	$CODE_ROOT/include/Cell.h	/^  bool isFixed;$/;"	m	class:Cell
 isHidden	$CODE_ROOT/Cell/Cell.h	/^  bool isHidden;$/;"	m	class:Cell
+isHidden	$CODE_ROOT/HyperGraph/Edge.h	/^  bool isHidden;$/;"	m	class:Edge
 isHidden	$CODE_ROOT/Net/Net.h	/^  bool isHidden;$/;"	m	class:Net
 isHidden	$CODE_ROOT/Pin/Pin.h	/^  bool isHidden;$/;"	m	class:Pin
 isHidden	$CODE_ROOT/include/Cell.h	/^  bool isHidden;$/;"	m	class:Cell
+isHidden	$CODE_ROOT/include/Edge.h	/^  bool isHidden;$/;"	m	class:Edge
 isHidden	$CODE_ROOT/include/Net.h	/^  bool isHidden;$/;"	m	class:Net
 isHidden	$CODE_ROOT/include/Pin.h	/^  bool isHidden;$/;"	m	class:Pin
 isMacro	$CODE_ROOT/Cell/Cell.h	/^  bool isMacro;$/;"	m	class:Cell
@@ -2895,7 +3004,7 @@ label	$CODE_ROOT/Plot/Plot.h	/^  string label;$/;"	m	class:Rect
 label	$CODE_ROOT/include/Plot.h	/^  string label;$/;"	m	class:Rect
 labelPos	$CODE_ROOT/Plot/Plot.h	/^  labelPosition labelPos;$/;"	m	class:Rect
 labelPos	$CODE_ROOT/include/Plot.h	/^  labelPosition labelPos;$/;"	m	class:Rect
-labelPosition	$CODE_ROOT/Plot/Plot.h	/^} labelPosition;$/;"	t	typeref:enum:__anon28
+labelPosition	$CODE_ROOT/Plot/Plot.h	/^} labelPosition;$/;"	t	typeref:enum:__anon29
 labelPosition	$CODE_ROOT/include/Plot.h	/^} labelPosition;$/;"	t	typeref:enum:__anon10
 lda	$CODE_ROOT/results/sap/sap_compiled.v	/^  wire   add, lda, \\output , sub, \\AddSub\/N17 , \\AddSub\/N16 , \\AddSub\/N15 ,$/;"	n
 left	$CODE_ROOT/Bin/Bin.h	/^  uint left, right, bot, top;$/;"	m	class:Bin
@@ -2912,7 +3021,7 @@ libPinName	$CODE_ROOT/Pin/Pin.h	/^  string libPinName;$/;"	m	class:Pin
 libPinName	$CODE_ROOT/include/Pin.h	/^  string libPinName;$/;"	m	class:Pin
 linCstrFunc	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolve_old.h	/^typedef void (*linCstrFunc)(Design& myDesign, HyperGraph& myGraph,$/;"	t
 linObjFunc	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolve_old.h	/^typedef void (*linObjFunc)(Design& myDesign, HyperGraph& myGraph, $/;"	t
-lineStyle	$CODE_ROOT/Plot/Plot.h	/^} lineStyle;$/;"	t	typeref:enum:__anon27
+lineStyle	$CODE_ROOT/Plot/Plot.h	/^} lineStyle;$/;"	t	typeref:enum:__anon28
 lineStyle	$CODE_ROOT/include/Plot.h	/^} lineStyle;$/;"	t	typeref:enum:__anon9
 lines	$CODE_ROOT/Plot/Plot.h	/^  vector<Line> lines;$/;"	m	class:Plot
 lines	$CODE_ROOT/include/Plot.h	/^  vector<Line> lines;$/;"	m	class:Plot
@@ -2921,8 +3030,8 @@ listOfCells	$CODE_ROOT/include/Path.h	/^  vector<Cell *> listOfCells;$/;"	m	clas
 listOfPins	$CODE_ROOT/Path/Path.h	/^  vector<Pin *> listOfPins;$/;"	m	class:Path
 listOfPins	$CODE_ROOT/include/Path.h	/^  vector<Pin *> listOfPins;$/;"	m	class:Path
 loadCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int loadCount;$/;"	m	struct:NetStatsStruct	file:
-loadCount	$CODE_ROOT/Net/Net.h	/^  unsigned int loadCount;$/;"	m	class:Net
-loadCount	$CODE_ROOT/include/Net.h	/^  unsigned int loadCount;$/;"	m	class:Net
+loadCount	$CODE_ROOT/Net/Net.h	/^  uint loadCount;$/;"	m	class:Net
+loadCount	$CODE_ROOT/include/Net.h	/^  uint loadCount;$/;"	m	class:Net
 m_result	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  output [10:0] m_result;$/;"	p
 macroCellEps	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int macroCellEps;$/;"	m	struct:NetStatsStruct	file:
 main	$CODE_ROOT/AnalyticalSolve/NonLinearSolve.cxx	/^int main()$/;"	f
@@ -2943,16 +3052,24 @@ mapOfVectors	$CODE_ROOT/include/HyperGraph.h	/^typedef std::map<uint, std::vecto
 max	$CODE_ROOT/example/laplace3d.cc	/^template< class t > inline t max( t a, t b ) { return (a>b) ? a : b; }$/;"	f
 maxSupply	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^maxSupply(LegalizeBin *binOne, LegalizeBin *binTwo)$/;"	f
 maxx	$CODE_ROOT/Design/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
+maxx	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
 maxx	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 maxx	$CODE_ROOT/include/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
+maxx	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
 maxx	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 maxy	$CODE_ROOT/Design/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
+maxy	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
 maxy	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 maxy	$CODE_ROOT/include/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
+maxy	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
 maxy	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
+minx	$CODE_ROOT/Net/Net.h	/^  uint minx, miny;$/;"	m	class:Net
 minx	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
+minx	$CODE_ROOT/include/Net.h	/^  uint minx, miny;$/;"	m	class:Net
 minx	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
+miny	$CODE_ROOT/Net/Net.h	/^  uint minx, miny;$/;"	m	class:Net
 miny	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
+miny	$CODE_ROOT/include/Net.h	/^  uint minx, miny;$/;"	m	class:Net
 miny	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 mode_1	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   sign_a, sign_b, sign_res_1, mode_1, cs_1, valid_1, sign_res_2,$/;"	n
 mosekSolve	$CODE_ROOT/SolverTest/SolverTest.cxx	/^mosekSolve(vector<uint> &subi_vec, vector<uint> &subj_vec, vector<double> &valij_vec, $/;"	f
@@ -5453,7 +5570,6 @@ name	$CODE_ROOT/Cell/Cell.h	/^  string name;$/;"	m	class:Cell
 name	$CODE_ROOT/Net/Net.h	/^  string name;$/;"	m	class:Net
 name	$CODE_ROOT/include/Cell.h	/^  string name;$/;"	m	class:Cell
 name	$CODE_ROOT/include/Net.h	/^  string name;$/;"	m	class:Net
-netHidingConsistencyCheck	$CODE_ROOT/Design/DesignCluster.cxx	/^netHidingConsistencyCheck(vector<void *>affectedNets, $/;"	f
 netStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^vector<NetStat> netStats;$/;"	v
 newRight	$CODE_ROOT/Bin/Bin.h	/^  double newRight, newTop;$/;"	m	class:Bin
 newRight	$CODE_ROOT/include/Bin.h	/^  double newRight, newTop;$/;"	m	class:Bin
@@ -5462,6 +5578,8 @@ newTop	$CODE_ROOT/include/Bin.h	/^  double newRight, newTop;$/;"	m	class:Bin
 noActivityTimeOut	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         RxDataOutWEn, SIEPortTxRdy, noActivityTimeOut;$/;"	p
 noActivityTimeOutEnable	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         noActivityTimeOutEnable;$/;"	p
 no_more_args	$CODE_ROOT/example/argument.cc	/^no_more_args( void ) const {$/;"	f	class:Arguments
+nodeFlags	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  vector<char> nodeFlags;$/;"	m	class:HyperGraph
+nodeFlags	$CODE_ROOT/include/HyperGraph.h	/^  vector<char> nodeFlags;$/;"	m	class:HyperGraph
 nodeIdx	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned int nodeIdx;$/;"	m	class:Node
 nodeIdx	$CODE_ROOT/include/Node.h	/^  unsigned int nodeIdx;$/;"	m	class:Node
 nodeSet	$CODE_ROOT/HyperGraph/Edge.h	/^  vector<unsigned int> nodeSet;$/;"	m	class:Edge
@@ -5535,7 +5653,7 @@ obj2idx	$CODE_ROOT/HyperGraph/HyperGraph.h	/^  map<void *, uint> obj2idx;$/;"	m	
 obj2idx	$CODE_ROOT/include/HyperGraph.h	/^  map<void *, uint> obj2idx;$/;"	m	class:HyperGraph
 objFuncX	$CODE_ROOT/Design/DesignSolveFastWnlib.cxx	/^double objFuncX(double *x)$/;"	f
 objFuncY	$CODE_ROOT/Design/DesignSolveFastWnlib.cxx	/^double objFuncY(double *y)$/;"	f
-objOrient	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	t	typeref:enum:__anon31
+objOrient	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	t	typeref:enum:__anon32
 objOrient	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	t	typeref:enum:__anon6
 objPairScore	$CODE_ROOT/Design/Design.h	/^  objPairScore() $/;"	f	class:objPairScore
 objPairScore	$CODE_ROOT/Design/Design.h	/^  objPairScore(T obj1,T obj2, double score) $/;"	f	class:objPairScore
@@ -5545,16 +5663,22 @@ objPairScore	$CODE_ROOT/include/Design.h	/^  objPairScore(T obj1,T obj2, double 
 objPairScore	$CODE_ROOT/include/Design.h	/^class objPairScore {$/;"	c
 objPairScoreCompare	$CODE_ROOT/Design/Design.h	/^class objPairScoreCompare {$/;"	c
 objPairScoreCompare	$CODE_ROOT/include/Design.h	/^class objPairScoreCompare {$/;"	c
+objPairScoreCompareUint	$CODE_ROOT/Design/Design.h	/^class objPairScoreCompareUint {$/;"	c
+objPairScoreCompareUint	$CODE_ROOT/include/Design.h	/^class objPairScoreCompareUint {$/;"	c
 object	$CODE_ROOT/HyperGraph/Edge.h	/^  void *object;$/;"	m	class:Edge
 object	$CODE_ROOT/include/Edge.h	/^  void *object;$/;"	m	class:Edge
 openFPU64	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^module openFPU64 ( reset_n, read, write, address, readdata, writedata, $/;"	m
 operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const objPairScore<Cell *> &pair1,$/;"	f	class:objPairScoreCompare
+operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const objPairScore<uint> &pair1,$/;"	f	class:objPairScoreCompareUint
 operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const pair<Cell *, double> &pair1,$/;"	f	class:scoreCmpType
+operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const pair<uint, double> &pair1,$/;"	f	class:scoreCmpTypeUint
 operator ()	$CODE_ROOT/example/argument.cc	/^  bool operator()( string t ) const { return t!=0 && 0==strcmp(s,t); }$/;"	f	struct:string_eq
 operator ()	$CODE_ROOT/example/laplace3d.cc	/^  double operator()( double x, double y, double z ) const {$/;"	f	struct:CosCosCos
 operator ()	$CODE_ROOT/example/laplace3d.cc	/^  double operator()( double x, double y, double z ) const {$/;"	f	struct:CosCosCosSolution
 operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const objPairScore<Cell *> &pair1,$/;"	f	class:objPairScoreCompare
+operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const objPairScore<uint> &pair1,$/;"	f	class:objPairScoreCompareUint
 operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const pair<Cell *, double> &pair1,$/;"	f	class:scoreCmpType
+operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const pair<uint, double> &pair1,$/;"	f	class:scoreCmpTypeUint
 opmode	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   [2:0] opmode;$/;"	n
 option	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  wire   [3:0] option;$/;"	n
 orient	$CODE_ROOT/Cell/Cell.h	/^  objOrient orient;$/;"	m	class:Cell
@@ -5587,8 +5711,8 @@ phi2	$CODE_ROOT/results/fast_crc/fast_crc_compiled.v	/^  input phi1, phi2, reset
 pi	$CODE_ROOT/example/laplace2d.cc	/^const double pi = 3.14159265358979323846;$/;"	v
 pi	$CODE_ROOT/example/laplace3d.cc	/^const double pi = 3.14159265358979323846;$/;"	v
 pinCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int pinCount;$/;"	m	struct:NetStatsStruct	file:
-pinCount	$CODE_ROOT/Net/Net.h	/^  unsigned int pinCount;$/;"	m	class:Net
-pinCount	$CODE_ROOT/include/Net.h	/^  unsigned int pinCount;$/;"	m	class:Net
+pinCount	$CODE_ROOT/Net/Net.h	/^  uint pinCount;$/;"	m	class:Net
+pinCount	$CODE_ROOT/include/Net.h	/^  uint pinCount;$/;"	m	class:Net
 pinMap	$CODE_ROOT/Cell/Cell.h	/^  map<Pin *, Pin *> pinMap;$/;"	m	class:Cluster
 pinMap	$CODE_ROOT/include/Cell.h	/^  map<Pin *, Pin *> pinMap;$/;"	m	class:Cluster
 placeMain	$CODE_ROOT/main.cxx	/^int placeMain(Env &topEnv)$/;"	f
@@ -5647,7 +5771,10 @@ printDesignSolverOutput	$CODE_ROOT/Design/DesignSolveFastMosek7.cxx	/^MSKAPI pri
 printDesignSolverOutput	$CODE_ROOT/SolverTest/SolverTest.cxx	/^MSKAPI printDesignSolverOutput(void *handle, const char str[])$/;"	f
 printForceDir	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	/^void printForceDir(char forceDir) $/;"	f
 printLinMatrix	$CODE_ROOT/AnalyticalSolve/GenSolveWL.cxx	/^printLinMatrix(vector<uint> &sub_vec, vector<double> &val_vec)$/;"	f
-printPriorityQueue	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^printPriorityQueue(PriorityQueue<objPairScore<Cell *>, objPairScoreCompare> pqueue)$/;"	f
+printMap	$CODE_ROOT/common/common_utils.cxx	/^printMap(map<uint,uint> mapToPrint)$/;"	f
+printNumClusterCells	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::printNumClusterCells(void)$/;"	f	class:Design
+printNumHiddenCells	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::printNumHiddenCells(void)$/;"	f	class:Design
+printNumTopCells	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::printNumTopCells(void)$/;"	f	class:Design
 printQuadMatrix	$CODE_ROOT/AnalyticalSolve/GenSolveWL.cxx	/^printQuadMatrix(vector<uint> &subi_vec, vector<uint> &subj_vec, $/;"	f
 printStartBanner	$CODE_ROOT/main.cxx	/^printStartBanner(void)$/;"	f
 printSystemStat	$CODE_ROOT/main.cxx	/^printSystemStat(void)$/;"	f
@@ -5741,8 +5868,8 @@ rowIndex	$CODE_ROOT/include/PhysRow.h	/^  int rowIndex;$/;"	m	class:PhysRow
 rowNum	$CODE_ROOT/Cell/Cell.h	/^  vector<uint> rowNum;$/;"	m	class:Cluster
 rowNum	$CODE_ROOT/include/Cell.h	/^  vector<uint> rowNum;$/;"	m	class:Cluster
 rowOfInterest	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^int rowOfInterest = 56;$/;"	v
-rowOrientation	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	t	typeref:enum:__anon29
-rowOrientation	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	t	typeref:enum:__anon25
+rowOrientation	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	t	typeref:enum:__anon30
+rowOrientation	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	t	typeref:enum:__anon26
 rowType	$CODE_ROOT/PhysData/PhysRow.h	/^  rowOrientation rowType;$/;"	m	class:PhysRow
 rowType	$CODE_ROOT/include/PhysRow.h	/^  rowOrientation rowType;$/;"	m	class:PhysRow
 rst	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input clk, rst, i_local, i_vld;$/;"	p
@@ -5755,6 +5882,8 @@ score	$CODE_ROOT/Design/Design.h	/^  double score;$/;"	m	class:objPairScore
 score	$CODE_ROOT/include/Design.h	/^  double score;$/;"	m	class:objPairScore
 scoreCmpType	$CODE_ROOT/Design/Design.h	/^class scoreCmpType {$/;"	c
 scoreCmpType	$CODE_ROOT/include/Design.h	/^class scoreCmpType {$/;"	c
+scoreCmpTypeUint	$CODE_ROOT/Design/Design.h	/^class scoreCmpTypeUint {$/;"	c
+scoreCmpTypeUint	$CODE_ROOT/include/Design.h	/^class scoreCmpTypeUint {$/;"	c
 seqGetCstrBoundsTD	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveTD.cxx	/^seqGetCstrBoundsTD(Design& myDesign, HyperGraph& myGraph, $/;"	f
 seqGetCstrBoundsWL	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveWL.cxx	/^seqGetCstrBoundsWL(Design& myDesign, HyperGraph& myGraph, $/;"	f
 seqGetLinearCstrArrayTD	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveTD.cxx	/^seqGetLinearCstrArrayTD(Design& myDesign, HyperGraph& connectivityGraph, $/;"	f
@@ -5769,7 +5898,7 @@ seqSolveQCQOTD	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveTD.cxx	/^seqSolveQCQOTD
 seqSolveQCQOWL	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveWL.cxx	/^seqSolveQCQOWL(Design& myDesign, HyperGraph& seqCellGraph, $/;"	f
 seqSolveQOTD	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveTD.cxx	/^seqSolveQOTD(Design& myDesign, HyperGraph& seqCellGraph, $/;"	f
 seqSolveQOWL	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveWL.cxx	/^seqSolveQOWL(Design& myDesign, HyperGraph& seqCellGraph, $/;"	f
-seqSolverType	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QCQO_TD} seqSolverType;$/;"	t	typeref:enum:__anon32
+seqSolverType	$CODE_ROOT/common/common.h	/^	      SEQSOLVE_QCQO_TD} seqSolverType;$/;"	t	typeref:enum:__anon33
 seqSolverType	$CODE_ROOT/include/common.h	/^	      SEQSOLVE_QCQO_TD} seqSolverType;$/;"	t	typeref:enum:__anon7
 setdouble3	$CODE_ROOT/example/laplace3d.cc	/^inline void setdouble3( double3 &D, double d1, double d2, double d3 ) {$/;"	f
 setupAntiMat	$CODE_ROOT/example/antisym.cc	/^void setupAntiMat( int n, double(*f)(int), double reyn, AntiMat &A ) {$/;"	f
@@ -5778,22 +5907,22 @@ sign_a	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   sign_a, sign
 sign_b	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   sign_a, sign_b, sign_res_1, mode_1, cs_1, valid_1, sign_res_2,$/;"	n
 sign_res_1	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   sign_a, sign_b, sign_res_1, mode_1, cs_1, valid_1, sign_res_2,$/;"	n
 sign_res_2	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   sign_a, sign_b, sign_res_1, mode_1, cs_1, valid_1, sign_res_2,$/;"	n
-singleRowHeight	$CODE_ROOT/Design/Design.h	/^  unsigned int singleRowHeight;$/;"	m	class:Design
-singleRowHeight	$CODE_ROOT/include/Design.h	/^  unsigned int singleRowHeight;$/;"	m	class:Design
+singleRowHeight	$CODE_ROOT/Design/Design.h	/^  uint singleRowHeight;$/;"	m	class:Design
+singleRowHeight	$CODE_ROOT/include/Design.h	/^  uint singleRowHeight;$/;"	m	class:Design
 siteOrient	$CODE_ROOT/PhysData/PhysRow.h	/^  objOrient siteOrient;$/;"	m	class:PhysRow
 siteOrient	$CODE_ROOT/include/PhysRow.h	/^  objOrient siteOrient;$/;"	m	class:PhysRow
 siteSpacing	$CODE_ROOT/PhysData/PhysRow.h	/^  unsigned int siteSpacing;$/;"	m	class:PhysRow
 siteSpacing	$CODE_ROOT/include/PhysRow.h	/^  unsigned int siteSpacing;$/;"	m	class:PhysRow
 siteSym	$CODE_ROOT/PhysData/PhysRow.h	/^  siteSymmetry siteSym;$/;"	m	class:PhysRow
 siteSym	$CODE_ROOT/include/PhysRow.h	/^  siteSymmetry siteSym;$/;"	m	class:PhysRow
-siteSymmetry	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	t	typeref:enum:__anon30
-siteSymmetry	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	t	typeref:enum:__anon26
+siteSymmetry	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	t	typeref:enum:__anon31
+siteSymmetry	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	t	typeref:enum:__anon27
 siteWidth	$CODE_ROOT/PhysData/PhysRow.h	/^  unsigned int siteWidth;$/;"	m	class:PhysRow
 siteWidth	$CODE_ROOT/include/PhysRow.h	/^  unsigned int siteWidth;$/;"	m	class:PhysRow
 slack	$CODE_ROOT/Path/Path.h	/^  double slack;$/;"	m	class:Path
 slack	$CODE_ROOT/include/Path.h	/^  double slack;$/;"	m	class:Path
 sleepi	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  output valid_instr, change_flow, iore, iowe, ramre, ramwe, irqack, sleepi,$/;"	p
-solveForClusterCells	$CODE_ROOT/Design/DesignClusterNew.cxx	/^solveForClusterCells(Design &myDesign, Cell *clusterCell, vector<Cell *> &cellsToSolve, $/;"	f
+solveForClusterCells	$CODE_ROOT/Design/DesignCluster.cxx	/^solveForClusterCells(Design &myDesign, Cell *clusterCell, vector<Cell *> &cellsToSolve, $/;"	f
 solverStatus	$CODE_ROOT/SolverTest/SolverTest.cxx	/^} solverStatus;$/;"	t	typeref:enum:__anon1	file:
 sortCmpFunc	$CODE_ROOT/Design/DesignAnalysis.cxx	/^bool sortCmpFunc (NetStat obj1, NetStat obj2) {$/;"	f
 sortLValues	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^sortLValues(const pair<LegalizeBin*, double> &i, const pair<LegalizeBin*, double> &j)$/;"	f

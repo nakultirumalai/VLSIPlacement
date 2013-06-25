@@ -211,22 +211,22 @@ class scoreCmpTypeUint {
 class Design {
  private:
   Env DesignEnv;
-  map<unsigned int, unsigned int>RowHeights;
+  map<uint, uint>RowHeights;
   HyperGraph *DesignGraphPtr;
-  unsigned int NumCells;
-  unsigned int NumClustersSeenSofar;
-  unsigned int NumClusters;
-  unsigned int NumStdCells;
-  unsigned int NumMacroCells;
-  unsigned int NumFixedCells;
-  unsigned int NumTerminalCells;
-  unsigned int NumHiddenCells;
-  unsigned int NumNets;
-  unsigned int NumPins;
-  unsigned int NumPaths;
-  unsigned int NumTopNets;
-  unsigned int NumPhysRows;
-  unsigned int singleRowHeight;
+  uint NumCells;
+  uint NumClustersSeenSofar;
+  uint NumClusters;
+  uint NumStdCells;
+  uint NumMacroCells;
+  uint NumFixedCells;
+  uint NumTerminalCells;
+  uint NumHiddenCells;
+  uint NumNets;
+  uint NumPins;
+  uint NumPaths;
+  uint NumTopNets;
+  uint NumPhysRows;
+  uint singleRowHeight;
   int maxx, maxy;
   int preShiftLeft, preShiftBot, preShiftRight, preShiftTop;
 
@@ -255,7 +255,10 @@ class Design {
   uint peakUtilizationBinIdx;
   uint numBinRows, numBinCols;
   double peakUtilization;
-  
+
+  /* Other performance related parameters */
+  double hpwl;
+
   /* Average cell width */
   double averageStdCellHeight, averageStdCellWidth;
 
@@ -274,6 +277,10 @@ class Design {
 
   /* Erasing from the design database */
   void DesignRemoveOneClusterFromDesignDB(Cell *);
+  
+  /* Deletion of objects */
+  void DesignDeleteCell(Cell *);
+  void DesignDeletePin(Pin *);
 
   /* Hide-Unhide net functions */
   void DesignHideNet(Net *);
@@ -285,7 +292,7 @@ class Design {
 
   void DesignFileReadOneNode(ifstream &);
   void DesignFileReadNodes(ifstream &);
-  void DesignFileReadPins(ifstream &, unsigned int, Net &);
+  void DesignFileReadPins(ifstream &, uint, Net &);
   void DesignFileReadOneNet(ifstream &);
   void DesignFileReadOneRow(ifstream &);
   void DesignFileReadNets(ifstream &);
@@ -314,6 +321,12 @@ class Design {
   void DesignSetNumBinRows(uint);
   void DesignSetNumBinCols(uint);
 
+  /* HPWL related functions */
+  void DesignSetHPWL(double);
+  void DesignRemoveFromHPWL(double);
+  void DesignAddToHPWL(double);
+  double DesignGetHPWL(void);
+
   /* Set the vector of cells to a particular list */
   vector<Cell *>& DesignGetCellsToSolve(void);
   vector<Cell *> DesignGetCellsSortedByLeft(void);
@@ -333,7 +346,7 @@ class Design {
   vector<Net *> PseudoNets;
 
   Design();
-  Design(string, string);
+  Design(string, string, Env &);
   void DesignSetPath();
   void DesignReadCells();
   void DesignReadMapFile();
@@ -369,16 +382,16 @@ class Design {
   void DesignRebuildGraph(void);
 
   int DesignGetSingleRowHeight();
-  unsigned int DesignGetNumCells(void);
-  unsigned int DesignGetNumClusters(void);
-  unsigned int DesignGetNumClustersSeenSoFar(void);
-  unsigned int DesignGetNumTopCells(void);
-  unsigned int DesignGetNumNets(void);
-  unsigned int DesignGetNumPaths(void);
-  unsigned int DesignGetNumTopNets(void);
-  unsigned int DesignGetNumFixedCells(void);
-  unsigned int DesignGetNumTerminalCells(void);
-  unsigned int DesignGetNumPhysRows(void);
+  uint DesignGetNumCells(void);
+  uint DesignGetNumClusters(void);
+  uint DesignGetNumClustersSeenSoFar(void);
+  uint DesignGetNumTopCells(void);
+  uint DesignGetNumNets(void);
+  uint DesignGetNumPaths(void);
+  uint DesignGetNumTopNets(void);
+  uint DesignGetNumFixedCells(void);
+  uint DesignGetNumTerminalCells(void);
+  uint DesignGetNumPhysRows(void);
   void DesignAddCellToPhysRow(Cell*, vector<vector<int> > &, vector<PhysRow*> &);
   void DesignAddAllCellsToPhysRows(void);
 
@@ -388,11 +401,15 @@ class Design {
 
   /* Top level function for invoking the placer */
   void DesignDoGlobalPlacement(void);
+  /* Top level function for invoking the legalizer */
+  void DesignDoLegalization(void);
+  /* Top level function for invoking the detailed placer */
+  void DesignDoDetailedPlacement(void);
 
   /* Chip boundary function */
   void DesignGetBoundingBox(uint&, uint&);
   
-  map<unsigned int, unsigned int> DesignGetRowHeights();
+  map<uint, uint> DesignGetRowHeights();
 
   /* Solver functions */
   void DesignSolveForAllCellsMosekIter(void);
@@ -406,6 +423,8 @@ class Design {
   void DesignRunInternalPlacer(EnvSolverType);
   int DesignRunNTUPlace(string, string);
   int DesignRunFastPlace(string, string);
+  int DesignRunFastPlaceLegalizer(string, string);
+  int DesignRunFastPlaceDetailedPlacer(string, string);
   int DesignRunMPL6(string, string);
 
   /* Clustering functions */
@@ -421,6 +440,7 @@ class Design {
   //  bool DesignDoNetCluster(HyperGraph&);
   //  bool DesignDoESCCluster(HyperGraph&);
   void DesignCoarsenNetlist(void);
+  void DesignCollapseClusters(void);
   void DesignPlotCluster(string plotTitle, string plotFileName, Cell *clusterCell, 
 			 vector<Cell *> &boundaryCells, vector<uint> &rowNum, 
 			 vector<uint> &xPosInRow, vector<Pin*> &clusterPins);
@@ -432,13 +452,15 @@ class Design {
   void DesignExpandCluster(Cell *clusterCell, uint &resultHeight, uint &resultWidth);
   bool DesignPlaceCellsInCluster(vector<Cell *> &boundaryCellVec, vector<uint> &, vector<uint> &,
 				 uint resultHeight, uint resultWidth);
-  bool DesignPlaceCellsInClusterNoLegal(vector<Cell*>&, vector<unsigned int>&, vector<unsigned int>&, 
+  bool DesignPlaceCellsInClusterNoLegal(vector<Cell*>&, vector<uint>&, vector<uint>&, 
 					uint, uint);
   void DesignPlaceCellsInClusterInCenter(vector<Cell *> &boundaryCellVec, vector<Pin *> &clusterCellPins,
 					 vector<uint> &rowNum, vector<uint> &xPosInRow,
 					 uint resultHeight, uint resultWidth);
 
   Cell* DesignClusterCells(vector<Cell *> &listOfCells, bool, bool);
+  Cell* DesignClusterCellsSimple(vector<Cell *> &listOfCells);
+  void DesignCommitCluster(Cell *);
   void DesignSimpleCollapseCluster(Cell*, vector<Net*>&, vector<Cell*>&);
   void DesignUnclusterCell(Cell*, bool);
 
@@ -489,6 +511,7 @@ class Design {
 				     vector<Cell *> &, vector<Cell *> &, 
 				     double&, double&);
   void DesignPlotData(string, string);
+  void DesignPlotDataSelected(string, string, vector<Cell *>&);
 
   /* Computation of force on Cell */
   void DesignComputeForceOnCell(Cell *, double &, double &, double &,
@@ -499,6 +522,9 @@ class Design {
 			       double &, double &, uint, uint , uint , uint ,
 			       double &, double &);
 
+
+  /* Write out netlist in a created directory */
+  void DesignWriteCurrentNetlist(string, string);
 
   /* DEFINING AN EXTENSIVE LIST OF DEBUG FUNCTIONS THAT 
      WILL BE HELPFUL */

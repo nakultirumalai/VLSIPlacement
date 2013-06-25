@@ -82,7 +82,6 @@ void DesignWriteNodes(Design &myDesign, string fname)
   ofstream opFile;
 
   cout << "Writing nodes file.." << endl;
-
   if (fname == "") {
     designName = myDesign.DesignGetName();
     fileName = designName + ".nodes";

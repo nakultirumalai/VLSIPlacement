@@ -42,6 +42,7 @@
 
 # define DBL_MAX 1e+37
 # define GRID_COMPACTION_RATIO 1000
+# define GRID_COMPACTION_RATIO_SQUARED 1000000
 
 using namespace std;
 
@@ -139,6 +140,7 @@ void displayHeartBeat(void);
 bool isDouble(string);
 
 void makeDir(string dirName);
+void changeDir(string dirName);
 
 string getPlatformString(void);
 string getUserName(void);

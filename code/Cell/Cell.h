@@ -142,6 +142,8 @@ class Cluster {
   map<Pin *, Pin *> pinMap;
   /* Indicate if the boundary cells are placed */
   bool bCellsPlaced;
+  /* Indicate the level of the cluster */
+  char clusterLevel;
 
  public:
   uint numCells;
@@ -162,6 +164,7 @@ class Cluster {
   void ClusterSetXPosInRows(vector<uint> &);
   void ClusterSetPinMap(map<Pin *, Pin *> &);
   void ClusterSetBCellsPlaced(bool);
+  void ClusterSetClusterLevel(char);
 
   /* Get functions */
   uint ClusterGetNumCells(void);
@@ -172,6 +175,12 @@ class Cluster {
   vector<uint>& ClusterGetXPosInRows(void);
   map<Pin*, Pin*>& ClusterGetPinMap(void);
   bool ClusterGetBCellsPlaced(void);
+  char ClusterGetClusterLevel(void);
+  
+  /* Debug functions */
+  void PlotCluster(void);
+  void PrintCluster(void);
+  
 };
 # endif
 

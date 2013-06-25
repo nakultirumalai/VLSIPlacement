@@ -166,9 +166,12 @@ Design::DesignPlotData(string plotTitle, string plotFileName)
 	cellName != "o91" && cellName != "o1986" &&
 	cellName != "o92" && cellName != "o1987" &&
 	cellName != "o0") {
-      continue;
+	continue;
     }
     */
+    //    if (cellName != "c2741") {
+    //      continue;
+    //    }
     cellsToSolve.push_back(cellPtr);
   }  
 
@@ -181,6 +184,25 @@ Design::DesignPlotData(string plotTitle, string plotFileName)
   */
 
   
+  newPlot.PlotWriteOutput();
+}
+
+void
+Design::DesignPlotDataSelected(string plotTitle, string plotFileName,
+			       vector<Cell *>& cellsToSolve)
+{
+  Cell *cellPtr;
+  string cellName;
+  uint binIdx;
+
+  //  VECTOR_FOR_ALL_ELEMS(cellsToSolve, Cell*, cellPtr) {
+    //    cout << " CELL: " << (*cellPtr).CellGetName() << " Address: " << cellPtr 
+    //	 << "  has position: " << (*cellPtr).CellGetXpos() << ", " << (*cellPtr).CellGetYpos() << endl;
+  //  } END_FOR;
+
+  Plot newPlot(plotTitle, plotFileName);
+  newPlot.PlotSetBoundary(*this);
+  newPlot.PlotAddCells(cellsToSolve);
   newPlot.PlotWriteOutput();
 }
 
@@ -251,11 +273,7 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName)
   string oldPlFileName;
 
   placerPath = getenv("NTUPLACE_FULL_PATH");
-  status = chdir(clusterDirName.data());
-  if (status == -1) {
-    cout << "Error: Cannot change directory into clustered design's path" << endl;
-    exit(0);
-  }
+  changeDir(clusterDirName);
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/ntuplace/NTUPlace3/ntuplace3";
@@ -271,7 +289,7 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName)
   DesignReadCellPlacement(true);
   this->DesignPlFileName = oldPlFileName;
 
-  chdir("..");
+  changeDir("..");
 
   return (status);
 }
@@ -285,11 +303,7 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)
   string oldPlFileName;
 
   placerPath = getenv("FASTPLACE_GP_FULL_PATH");
-  status = chdir(clusterDirName.data());
-  if (status == -1) {
-    cout << "Error: Cannot change directory into clustered design's path" << endl;
-    exit(0);
-  }
+  changeDir(clusterDirName);
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_GP";
@@ -305,7 +319,7 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)
   DesignReadCellPlacement(true);
   this->DesignPlFileName = oldPlFileName;
   
-  chdir("..");
+  changeDir("..");
 
   return (status);
 }
@@ -319,11 +333,7 @@ Design::DesignRunMPL6(string clusterDirName, string clusterDesName)
   string oldPlFileName;
 
   placerPath = getenv("MPL6_FULL_PATH");
-  status = chdir(clusterDirName.data());
-  if (status == -1) {
-    cout << "Error: Cannot change directory into clustered design's path" << endl;
-    exit(0);
-  }
+  changeDir(clusterDirName);
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/mPL6-release/mPL6";
@@ -339,7 +349,65 @@ Design::DesignRunMPL6(string clusterDirName, string clusterDesName)
   DesignReadCellPlacement(true);
   this->DesignPlFileName = oldPlFileName;
   
-  chdir("..");
+  changeDir("..");
+
+  return (status);
+}
+
+int 
+Design::DesignRunFastPlaceLegalizer(string desDirName, string desName)
+{
+  int status;
+  char *placerPath; 
+  string placerCommand;
+  string oldPlFileName;
+
+  placerPath = getenv("FAST_PLACE_LEGALIZE_FULL_PATH");
+  changeDir(desDirName);
+
+  if (placerPath == NIL(char *)) {
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -legalize -noDp";
+  } else {
+    placerCommand = placerPath;
+  }
+  
+  placerCommand += " . " + desName + ".aux . " + desName + ".pl " + " | tee FastPlaceLegalize";
+  status = system(placerCommand.data());
+
+  oldPlFileName = this->DesignPlFileName;
+  this->DesignPlFileName = desName + "_FP_lg.pl";
+  DesignReadCellPlacement(true);
+  this->DesignPlFileName = oldPlFileName;
+  changeDir("..");
+
+  return (status);
+}
+
+int 
+Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName)
+{
+  int status;
+  char *placerPath; 
+  string placerCommand;
+  string oldPlFileName;
+
+  placerPath = getenv("FAST_PLACE_LEGALIZE_FULL_PATH");
+  changeDir(desDirName);
+
+  if (placerPath == NIL(char *)) {
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP ";
+  } else {
+    placerCommand = placerPath;
+  }
+  
+  placerCommand += " . " + desName + ".aux . " + desName + ".pl " + " | tee FastPlaceDP";
+  status = system(placerCommand.data());
+
+  oldPlFileName = this->DesignPlFileName;
+  this->DesignPlFileName = desName + "_FP_dp.pl";
+  DesignReadCellPlacement(true);
+  this->DesignPlFileName = oldPlFileName;
+  changeDir("..");
 
   return (status);
 }
@@ -377,6 +445,8 @@ Design::DesignComputeForceOnCell(Cell *thisCell, double &totalXForce,
   diffCellXPos = 0.0;
   diffCellYPos = 0.0;
 
+  celliXPos = (*thisCell).CellGetXpos();
+  celliYPos = (*thisCell).CellGetYpos();
   /* CAN CHANGE WITH NET MODEL */
   CELL_FOR_ALL_PINS((*thisCell), PIN_DIR_ALL, pini) {
     Net &connectedNet = (*pini).PinGetNet();
@@ -523,3 +593,18 @@ Design::DesignGetBoundaryPoints(double cellXpos, double cellYpos, double magnitu
   spreadForce = sqrt(portXForce * portXForce + portYForce * portYForce);
   springConstant = magnitude / spreadForce;
 }
+
+/*******************************************************************************
+  FUNCTION TO WRITE OUT THE CURRENT STATE OF THE NETLIST IN THE BOOKSHELF 
+  FORMAT 
+*******************************************************************************/
+void
+Design::DesignWriteCurrentNetlist(string dirName, string desName)
+{
+  makeDir(dirName);
+  changeDir(dirName.data());
+  DesignWriteBookShelfOutput((*this), desName);
+  changeDir("..");
+}
+
+

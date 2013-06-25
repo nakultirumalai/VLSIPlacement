@@ -364,10 +364,10 @@ Design::DesignSolveForAllCellsConjGradIter(void)
       x[i] = 0.0;
       y[i] = 0.0;
     }
-}
-cout << "Global placement complete" << endl;
-plotFileName = DesignName + ".gp.plt";
-DesignPlotData("Title", plotFileName);
+  }
+  cout << "Global placement complete" << endl;
+  plotFileName = DesignName + ".gp.plt";
+  DesignPlotData("Title", plotFileName);
 
   _STEP_END("Analytical solve and spread iterations");
 }

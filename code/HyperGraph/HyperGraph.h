@@ -9,6 +9,16 @@
 
 typedef std::map<uint, std::vector<uint > > mapOfVectors;
 
+/*******************************************************************************
+  FLAGS DEFINED FOR NODES AND EDGES 
+*******************************************************************************/
+/* EDGE FLAGS */
+# define EDGE_FLAG_HIDDEN 0x1 
+
+/* NODE FLAGS */
+# define NODE_FLAG_IS_TOP 0x1
+# define NODE_FLAG_IS_CLUSTER 0x1 << 1
+
 class HyperGraph {
  private:
   /* Variable to indicate if the older clusters which were absorbed into 
@@ -25,12 +35,12 @@ class HyperGraph {
 
   /* Map from index to actual node. 
      Space complexity = O(n) where n is the number of nodes*/
-  map<uint, Node *> idx2Node;
+  vector<Node *> idx2Node;
   /* Map from object to node index.
      Space complexity = O(n) where n is the number of nodes*/     
   map<void *, uint> obj2idx;
   /* Map from index to edges. space complexity O(n2)*/
-  map<uint, Edge *> idx2Edge;
+  vector<Edge *> idx2Edge;
 
   /* Array whose indices are Edges and values are 
      other arrays whose elements are indices of nodes
@@ -40,6 +50,11 @@ class HyperGraph {
   /* Array whose indices are Nodes and value is another
      array whose elements are connected edge indices */
   vector<vector<uint> > Nodes2Edges;
+
+  /* Vector of flags for edges */
+  vector<char> edgeFlags;
+  /* Vector of flags for nodes */
+  vector<char> nodeFlags;
 
   /* Private functions begin */
   /* Functions for adding nodes and edges */
