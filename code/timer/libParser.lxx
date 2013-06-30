@@ -1,0 +1,145 @@
+/* (c) Copyright 2004-2005, Cadence Design Systems, Inc.  All rights reserved. 
+
+This file is part of the OA Gear distribution.  See the COPYING file in
+the top level OA Gear directory for copyright and licensing information. */
+
+/*
+Author: Zhong Xiu <zxiu@andrew.cmu.edu>
+
+ChangeLog:
+2004-09-15: ChangeLog started
+*/
+
+%{
+
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+
+#include "libParser.tab.hxx"
+
+void yyerror(const char *msg) {
+  std::cerr << "LIB Line " << yylineno << ": " << msg <<
+      " next token '" << yytext << "'" << std::endl;
+}
+
+%}
+
+%option noyywrap
+%option yylineno
+
+%x COMMENT
+
+%%
+
+[ \t\n]+ ;
+
+"//".*\n ;
+"/*" { BEGIN COMMENT; }
+<COMMENT>[^*]*
+<COMMENT>"*"+[^*/]*
+<COMMENT>"*"+"/" { BEGIN INITIAL; }
+
+[aA][rR][eE][aA] { return K_AREA; }
+[cC][eE][lL][lL] { return K_CELL; }
+[cC][eE][lL][lL]_[fF][aA][lL][lL] { return K_CELL_FALL; }
+[cC][eE][lL][lL]_[fF][oO][oO][tT][pP][rR][iI][nN][tT] { 
+  return K_CELL_FOOTPRINT; 
+}
+[cC][eE][lL][lL]_[rR][iI][sS][eE] { return K_CELL_RISE; }
+[cC][aA][pP][aA][cC][iI][tT][aA][nN][cC][eE] { return K_CAPACITANCE; }
+[cC][lL][oO][cC][kK] { return K_CLOCK; }
+[fF][aA][lL][lL]_[cC][oO][nN][sS][tT][rR][aA][iI][nN][tT] { 
+  return K_FALL_CONS; 
+}
+[fF][aA][lL][lL]_[tT][rR][aA][nN][sS][iI][tT][iI][oO][nN] { 
+  return K_FALL_TRAN; 
+}
+[fF][aA][nN][oO][uU][tT]_[lL][eE][nN][gG][tT][hH] {
+  return K_FANOUT_LEN;
+}
+[fF][fF] { return K_FF; }
+[fF][uU][nN][cC][tT][iI][oO][nN] { return K_FUNCTION; }
+[cC][aA][pP][aA][cC][iI][tT][iI][vV][eE]_[lL][oO][aA][dD]_[uU][nN][iI][tT] {
+  return K_CAP_LOAD_UNIT;
+}
+[dD][eE][fF][iI][nN][eE]_[cC][eE][lL][lL]_[aA][rR][eE][aA] {
+  return K_DEFINE_CELL_AREA;
+}
+[dD][iI][rR][eE][cC][tT][iI][oO][nN] { return K_DIRECTION; }
+[iN][nN][dD][eE][xX]_[1] { return K_INDEX1; }
+[iN][nN][dD][eE][xX]_[2] { return K_INDEX2; }
+[iN][nN][dD][eE][xX]_[3] { return K_INDEX3; }
+[iN][nN][pP][uU][tT]_[vV][oO][lL][tT][aA][gG][eE] { 
+  return K_INPUT_VOL;
+}
+[iN][nN][tT][eE][rR][nN][aA][lL]_[pP][oO][wW][eE][rR] { 
+  return K_INTERNAL_POWER;
+}
+rise_power { return K_RISE_POWER; }
+fall_power { return K_FALL_POWER; }
+pg_pin { return K_PG_PIN; }
+normalized_driver_waveform { return K_NORM_DRV_WFM; }
+[lL][aA][tT][cC][hH] { return K_LATCH; }
+[lL][eE][aA][kK][aA][gG][eE]_[pP][oO][wW][eE][rR] { return K_LEAKAGE_POWER; }
+[lL][iI][bB][rR][aA][rR][yY] { return K_LIBRARY; }
+[lL][iI][bB][rR][aA][rR][yY]_[fF][eE][aA][tT][uU][rR][eE][sS] { 
+  return K_LIB_FEATURE;
+}
+[lL][uU]_[tT][aA][bB][lL][eE]_[tT][eE][mM][pP][lL][aA][tT][eE] { 
+  return K_LUTABLETEMP; 
+}
+[mM][aA][xX]_[cC][aA][pP][aA][cC][iI][tT][aA][nN][cC][eE] {
+  return K_MAXCAP;
+}
+[oO][pP][eE][rR][aA][tT][iI][nN][gG]_[cC][oO][nN][dD][iI][tT][iI][oO][nN][sS] {
+  return K_OP_COND;
+}
+[oO][uU][tT][pP][uU][tT]_[vV][oO][lL][tT][aA][gG][eE] { 
+  return K_OUTPUT_VOL;
+}
+[pP][iI][nN] { return K_PIN; }
+[pP][oO][wW][eE][rR]_[lL][uU][tT]_[tT][eE][mM][pP][lL][aA][tT][eE] { 
+  return K_POWER_TABLE;
+}
+[rR][eE][lL][aA][tT][eE][dD]_[pP][iI][nN] { return K_RELATED_PIN; }
+[rR][iI][sS][eE]_[cC][oO][nN][sS][tT][rR][aA][iI][nN][tT] { 
+  return K_RISE_CONS; 
+}
+[rR][iI][sS][eE]_[tT][rR][aA][nN][sS][iI][tT][iI][oO][nN] { 
+  return K_RISE_TRAN; 
+}
+[sS][lL][oO][pP][eE] { return K_SLOPE; }
+[sS][tT][aA][tT][eE][tT][aA][bB][lL][eE] { return K_STATETABLE; }
+[tT][eE][cC][hH][nN][oO][lL][oO][gG][yY] { return K_TECHNOLOGY; }
+[tT][eE][sS][tT]_[cC][eE][lL][lL] { return K_TEST_CELL; }
+[tT][iI][mM][iI][nN][gG] { return K_TIMING; }
+[tT][iI][mM][iI][nN][gG]_[sS][eE][nN][sS][eE] { return K_TIMING_SENSE; }
+[tT][iI][mM][iI][nN][gG]_[tT][yY][pP][eE] { return K_TIMING_TYPE; }
+[vV][aA][lL][uU][eE][sS] { return K_VALUES; }
+[vV][aA][rR][iI][aA][bB][lL][eE]_[1] { return K_VARIABLE_1; }
+[vV][aA][rR][iI][aA][bB][lL][eE]_[2] { return K_VARIABLE_2; }
+[vV][aA][rR][iI][aA][bB][lL][eE]_[3] { return K_VARIABLE_3; }
+[wW][iI][rR][eE]_[lL][oO][aA][dD] { return K_WIRE_LOAD; }
+[wW][iI][rR][eE]_[lL][oO][aA][dD]_[fF][rR][oO][mM]_[aA][rR][eE][aA] {
+  return K_WIRE_LOAD_AREA; 
+}
+[wW][iI][rR][eE]_[lL][oO][aA][dD]_[sS][eE][lL][eE][cC][tT][iI][oO][nN] {
+  return K_WIRE_LOAD_SEL; 
+}
+
+
+(\+|-)?([0-9]+\.?|[0-9]*\.[0-9]+)([eEdD](\+|-)?[0-9]+)? {
+  yylval.doubleData = atof(yytext);
+  return NUMBER;
+}
+
+[a-zA-Z0-9\._$]+ {
+  yylval.stringData = new char[strlen(yytext)+1];
+  strcpy(yylval.stringData, yytext);
+  return IDENTIFIER;
+}
+
+. { return yytext[0]; }
+
+%%
