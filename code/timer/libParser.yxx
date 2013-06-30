@@ -1,0 +1,805 @@
+/* (c) Copyright 2004-2005, Cadence Design Systems, Inc.  All rights reserved. 
+
+This file is part of the OA Gear distribution.  See the COPYING file in
+the top level OA Gear directory for copyright and licensing information. */
+
+/*
+Author: Zhong Xiu <zxiu@andrew.cmu.edu>
+
+ChangeLog:
+2004-09-15: ChangeLog started
+*/
+
+%{
+
+#include <iostream>
+#include <string.h>
+#include "Design.h"
+
+using namespace std;
+
+int yylex(void);
+void yyerror(const char *s);
+
+Design* curDesign;
+LookupTable *lutable=NULL, *lutableR=NULL, *lutableF=NULL, *lutableRT=NULL, *lutableFT=NULL;
+LibCell* libCell;
+LibPin *fromPin, *toPin;
+string pin1, pin2;
+LibArc* libArc;
+TestArc* testArc;
+int skip=0;
+int isTest=0;
+string arcSense="";
+string timingType="";
+%}
+
+%union {
+  char *stringData;
+  double doubleData;
+}
+
+%token <stringData> IDENTIFIER
+%token <doubleData> NUMBER
+
+%token K_AREA
+%token K_CAPACITANCE
+%token K_CAP_LOAD_UNIT
+%token K_CELL
+%token K_CELL_FALL
+%token K_CELL_FOOTPRINT
+%token K_CELL_RISE
+%token K_CLOCK
+%token K_DEFINE_CELL_AREA
+%token K_DIRECTION
+%token K_FALL_CONS
+%token K_FALL_TRAN
+%token K_FANOUT_LEN
+%token K_FF
+%token K_FUNCTION
+%token K_INDEX1
+%token K_INDEX2
+%token K_INDEX3
+%token K_INTERNAL_POWER
+%token K_INPUT_VOL
+%token K_LATCH
+%token K_LEAKAGE_POWER
+%token K_LIBRARY
+%token K_LIB_FEATURE
+%token K_LUTABLETEMP
+%token K_MAXCAP
+%token K_OP_COND
+%token K_OUTPUT_VOL
+%token K_PIN
+%token K_POWER_TABLE
+%token K_RELATED_PIN
+%token K_RISE_CONS
+%token K_RISE_TRAN
+%token K_SLOPE
+%token K_STATETABLE
+%token K_TECHNOLOGY
+%token K_TEST_CELL
+%token K_TIMING
+%token K_TIMING_SENSE
+%token K_TIMING_TYPE
+%token K_VALUES
+%token K_VARIABLE_1
+%token K_VARIABLE_2
+%token K_VARIABLE_3
+%token K_WIRE_LOAD
+%token K_WIRE_LOAD_AREA
+%token K_WIRE_LOAD_SEL
+%token K_PG_PIN
+%token K_RISE_POWER
+%token K_FALL_POWER
+%token K_NORM_DRV_WFM
+
+%%
+
+libFile: K_LIBRARY '(' '"' IDENTIFIER '"' ')' {
+          //cout<< $4 << "\n"; 
+curDesign = Design::getCurDesign();
+        }
+       '{' libProp '}' {
+        }
+;
+
+libProp:
+        | libProp libList
+;
+
+libList:  templateStatement
+        | cellStatement
+        | wireLoadStatement
+        | wireLoadStatement2
+        | junkPowerTable
+        | junkTableStatement
+        | junkLine
+;
+
+templateStatement:  K_LUTABLETEMP '(' '"' IDENTIFIER '"' ')' '{' templateLines '}' {
+        }
+;
+
+templateLines:
+        | templateLines variableLines
+        | templateLines junkDataRows
+;
+
+variableLines: variable1Line
+        |      variable2Line
+;
+
+variable1Line: K_VARIABLE_1 ':' '"' IDENTIFIER '"' ';' {
+        }
+;
+
+variable2Line: K_VARIABLE_2 ':' '"' IDENTIFIER '"' ';' {
+        }
+;
+
+wireLoadStatement: K_WIRE_LOAD '(' '"' IDENTIFIER '"' ')' '{' wLoadLines '}' {
+        }
+        | K_WIRE_LOAD '(' '"' NUMBER '"' ')' '{' wLoadLines '}' {
+        }
+;
+
+wireLoadStatement2: K_WIRE_LOAD '('  IDENTIFIER  ')' '{' wLoadLines '}' {
+        }
+;
+
+wLoadLines:
+        | wLoadLines wLoadLine
+;
+
+wLoadLine: capInWLoad
+        |  fanoutLine 
+        |  junkLine
+;
+
+fanoutLine: K_FANOUT_LEN '(' NUMBER ',' NUMBER ')' {
+        }
+        |   K_FANOUT_LEN '(' '"' NUMBER '"' ',' '"' NUMBER '"' ')' ';' {
+        }
+        |   K_FANOUT_LEN '(' '"' NUMBER '"' ',' '\\' '"' NUMBER '"' ')' ';' {
+        }
+;
+
+capInWLoad: K_CAPACITANCE ':' NUMBER ';' {
+        }
+;
+
+cellStatement: K_CELL '(' IDENTIFIER ')' '{' {
+          //cout<<$3<<endl;
+libCell = curDesign->findLibCell($3);
+if(libCell==NULL) {
+//  cout<<"Skipping cell "<<$3<<endl;
+  skip=1;
+}
+else {
+  skip=0;
+}
+        }
+          cellPropList '}' {
+          //cout<<"Cell done"<<endl;
+        }
+;
+
+cellPropList: {
+}
+        | cellPropList cellPropStatement
+;
+
+cellPropStatement: pinStatement
+        | ffStatement
+        | latchStatement
+        | leakageStatement
+        | stateStatement
+        | testCellStatement
+        | junkPgPin
+        | junkLines
+;
+
+pinStatement: K_PIN '(' IDENTIFIER ')' '{' 
+        {
+          //cout<<$3<<"\n";
+if(!skip) {
+  pin2 = $3;
+  toPin=libCell->findLibPin(pin2);
+  if(toPin==NULL) {
+//    toPin = new LibPin(pin2,libCell);
+//    libCell->insertPin(toPin);
+cout<<"Pin not found "<<$3<<" for "<<libCell->getName()<<endl;
+
+  }
+}
+        }
+        pinPropList '}' {
+        }
+;
+
+pinPropList:
+        | pinPropList pinPropStatement
+;
+
+pinPropStatement: pinDirStatement
+        | pinCapStatement
+        | maxCapStatement
+        | clockStatement
+        | functionStatement
+        | timingStatement
+        | powerStatement
+        | junkLine
+;
+
+pinDirStatement: K_DIRECTION ':' '"' IDENTIFIER '"' ';' {
+        }
+;
+
+pinCapStatement: K_CAPACITANCE ':' NUMBER ';' {
+if(!skip) {
+toPin->setPincap($3);
+}
+        }
+;
+
+maxCapStatement: K_MAXCAP ':' NUMBER ';' {
+        }
+;
+
+clockStatement: K_CLOCK ':' IDENTIFIER ';' {
+        }
+;
+
+timingStatement: K_TIMING '(' ')' '{' timingPropList '}' {
+if(!skip) {
+  if(isTest) {
+    testArc = new TestArc(fromPin,toPin,libCell);
+    libCell->insertTestArc(testArc);
+    isTest = 0;
+    testArc->setTestType(timingType);
+    timingType = "";
+    testArc->setRiseConstraintTable(lutableR);
+    testArc->setFallConstraintTable(lutableF);
+    lutableR = lutableF = NULL;
+  }
+  else {
+    libArc = libCell->findLibArc(pin1,pin2);
+    if(libArc==NULL) {
+      libArc = new LibArc(fromPin,toPin,libCell);
+      libCell->insertArc(libArc);
+    }
+    libArc->setTimingSense(arcSense);
+    arcSense = "";
+    libArc->setTimingType(timingType);
+    timingType = "";
+    libArc->setCellRiseTable(lutableR);
+    libArc->setCellFallTable(lutableF);
+    libArc->setRiseTransTable(lutableRT);
+    libArc->setFallTransTable(lutableFT);
+    lutableR = lutableF = lutableRT = lutableFT = NULL;
+  }
+}
+
+        }
+;
+
+timingPropList:
+        | timingPropList timingPropStatement
+;
+
+timingPropStatement: relatedPinStatement
+        | timingSenseStatement
+        | timingTypeStatement
+        | cellRiseStatement
+        | riseTranStatement
+        | cellFallStatement
+        | fallTranStatement
+        | riseConsStatement
+        | fallConsStatement
+        | junkLine
+;
+
+relatedPinStatement: K_RELATED_PIN ':' '"' IDENTIFIER '"' ';' {
+          //cout<<$4<<"\n";
+if(!skip) {
+  pin1 = $4;
+  fromPin = libCell->findLibPin(pin1);
+  if(fromPin==NULL) {
+cout<<"Pin not found "<<$4<<" for "<<libCell->getName()<<endl;
+//    fromPin = new LibPin(pin1,libCell);
+  //  libCell->insertPin(fromPin);
+  }
+}
+
+        // need record
+        }
+;
+
+timingSenseStatement: K_TIMING_SENSE ':' '"' IDENTIFIER '"' ';' {
+if(!skip)
+ arcSense = $4;
+        // need record
+        }
+;
+
+timingTypeStatement: K_TIMING_TYPE ':' '"' IDENTIFIER '"' ';' {
+if(!skip) {
+  size_t found;
+  timingType = $4;
+  found = timingType.find("setup");
+  if(found!=string::npos)
+    isTest = 1;
+  found = timingType.find("hold");
+  if(found!=string::npos)
+    isTest = 1;
+  found = timingType.find("recovery");
+  if(found!=string::npos)
+    isTest = 1;
+  found = timingType.find("removal");
+  if(found!=string::npos)
+    isTest = 1;
+}
+        // need record
+        }
+;
+
+cellRiseStatement: K_CELL_RISE '(' '"' IDENTIFIER '"' ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+ '{'tableStatement1 '}' {
+lutableR = lutable;
+        }
+;
+
+riseTranStatement: K_RISE_TRAN '(' '"' IDENTIFIER '"' ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+ '{'tableStatement1 '}' {
+lutableRT = lutable;
+        }
+        | K_RISE_TRAN '(' IDENTIFIER ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+'{'tableStatement1 '}' {
+lutableRT = lutable;
+}
+;
+
+cellFallStatement: K_CELL_FALL '(' '"' IDENTIFIER '"' ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+ '{'tableStatement1 '}' {
+lutableF = lutable;
+        }
+;
+
+fallTranStatement: K_FALL_TRAN '(' '"' IDENTIFIER '"' ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+ '{'tableStatement1 '}' {
+lutableFT = lutable;
+        }
+        | K_FALL_TRAN '(' IDENTIFIER ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+'{'tableStatement1 '}' {
+lutableFT = lutable;
+}
+;
+
+riseConsStatement: K_RISE_CONS '(' IDENTIFIER ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+'{'tableStatement2 '}' {
+lutableR = lutable;
+        }
+        | K_RISE_CONS '(' '"' IDENTIFIER '"' ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+'{'tableStatement2 '}' {
+lutableR = lutable;
+}
+;
+
+fallConsStatement: K_FALL_CONS '(' IDENTIFIER ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+'{'tableStatement2 '}' {
+lutableF = lutable;
+        }
+        | K_FALL_CONS '(' '"' IDENTIFIER '"' ')' {
+if(!skip)
+  lutable = new LookupTable();
+}
+'{'tableStatement2 '}' {
+lutableF = lutable;
+}
+;
+
+tableStatement1: indexStatements1 valueStatement {
+        }
+;
+
+indexStatements1:
+        | indexStatements1 indexStatement1
+;
+
+indexStatement1: indexStatement1_1
+        | indexStatement1_2
+;
+
+indexStatement1_1: K_INDEX1 '(' '"' dataRow1_1 '"' ')' ';' {
+        }
+;
+
+dataRow1_1:
+        | dataRow1_1 data1_1
+;
+
+data1_1: NUMBER {
+if(!skip)
+  lutable->insertIndex1($1);
+        }
+        | ','
+;
+
+indexStatement1_2: K_INDEX2 '(' '"' dataRow1_2 '"' ')' ';' {
+        }
+;
+
+dataRow1_2:
+        | dataRow1_2 data1_2
+;
+
+data1_2: NUMBER {
+if(!skip)
+  lutable->insertIndex2($1);
+        }
+        | ','
+;
+
+tableStatement2: indexStatements2 valueStatement {
+        }
+;
+
+indexStatements2:
+        | indexStatements2 indexStatement2
+;
+
+indexStatement2: indexStatement2_1
+        | indexStatement2_2
+;
+
+indexStatement2_1: K_INDEX1 '(' '"' dataRow2_1 '"' ')' ';' {
+        }
+;
+
+dataRow2_1:
+        | dataRow2_1 data2_1
+;
+
+data2_1: NUMBER {
+if(!skip)
+  lutable->insertIndex1($1);
+        }
+        | ','
+;
+
+indexStatement2_2: K_INDEX2 '(' '"' dataRow2_2 '"' ')' ';' {
+        }
+;
+
+dataRow2_2:
+        | dataRow2_2 data2_2
+;
+
+data2_2: NUMBER {
+if(!skip)
+  lutable->insertIndex2($1);
+        }
+        | ','
+;
+
+valueStatement: K_VALUES '(' valueList  ')' ';' {
+        }
+;
+
+valueList:
+        | valueList values
+;
+
+values: '\\'
+        | ','
+        | '"' dataRow '"'
+;
+
+dataRow:
+        | dataRow data
+;
+
+data: NUMBER {
+if(!skip)
+  lutable->insertValue($1);
+        }
+        | ','
+;
+
+functionStatement: K_FUNCTION ':' '"' '(' expression ')' '"' ';' {
+        }
+        | K_FUNCTION ':' '"' '(' expression ')' '\'' '"' ';'
+        | K_FUNCTION ':' '"' expression '"' ';' {
+        }
+        | K_FUNCTION ':' expression ';' {
+        }
+;
+
+expression: simpleExpression
+        | '(' expression ')' {
+        }
+        | unaryOperator expression {
+        }
+        | expression binaryOperator expression {
+        }
+        | expression expression {
+        }
+        | expression '\''
+;
+
+simpleExpression: NUMBER {
+        }
+        | simpleExpression IDENTIFIER {
+        }
+        | IDENTIFIER {
+        }
+;
+
+unaryOperator: '!' {
+        }
+;
+
+binaryOperator: '*' {
+        }
+        | '+' {
+        }
+        | '^' {
+        }
+        | '|' {
+        }
+;
+
+powerStatement: K_INTERNAL_POWER '(' ')' '{' powerPropList '}' {
+        }
+;
+
+powerPropList:
+        | powerPropList junkRelatedPin
+        | powerPropList junkLine
+        | powerPropList junkPowerTable
+;
+
+ffStatement: K_FF '(' junk ')' '{' junkLines '}' {
+        }
+;
+
+latchStatement: K_LATCH '(' junk ')' '{' junkLines '}' {
+        }
+;
+
+leakageStatement: K_LEAKAGE_POWER '(' ')' '{' junkLines '}' {
+        }
+;
+
+stateStatement: K_STATETABLE '(' junk '{' junkLines '}' {
+        }
+;
+
+testCellStatement: K_TEST_CELL '(' ')' '{' testLines '}' {
+        }
+;
+
+testLines:
+        | testLines testLine
+;
+
+testLine: testPinStatement
+        | ffStatement
+;
+
+testPinStatement: K_PIN '(' IDENTIFIER ')' '{' testPinLines '}' {
+        }
+        | K_PIN '(' IDENTIFIER ',' IDENTIFIER  ')' '{' testPinLines '}'
+;
+
+testPinLines: 
+        | testPinLines testPinLine
+;
+
+testPinLine:  testDirLine
+        |     testFunLine
+        |     junkLine
+;
+
+testDirLine: K_DIRECTION ':' IDENTIFIER ';' {
+        }
+;
+
+testFunLine: K_FUNCTION ':' junk ';' {
+        }
+;
+
+junkRelatedPin: K_RELATED_PIN ':' '"' IDENTIFIER '"' ';' {
+        }
+;
+
+//junkPowerTable: IDENTIFIER '(' IDENTIFIER ')' '{'
+//        junkDataRows junkValue '}' {
+//        }
+//;
+
+//junkValue: K_VALUES '(' junkValueList  ')' ';' {
+//        }
+;
+
+//junkValueList:
+//        | junkValueList junkValues
+;
+
+//junkValues: '\\'
+//        | ','
+//        | '"' junkDataRow '"'
+//;
+
+junkPgPin: K_PG_PIN '(' IDENTIFIER ')' '{' junkLines '}'
+; 
+
+junkPowerTable: K_POWER_TABLE '(' '"' IDENTIFIER '"' ')' '{' junkPowerLines '}' {
+        }
+        | K_RISE_POWER '(' '"' IDENTIFIER '"' ')' '{' junkPowerLines '}'
+        | K_RISE_POWER '(' IDENTIFIER ')' '{' junkPowerLines '}'
+        | K_FALL_POWER '(' '"' IDENTIFIER '"' ')' '{' junkPowerLines '}'
+        | K_FALL_POWER '(' IDENTIFIER ')' '{' junkPowerLines '}'
+;
+
+junkPowerLines:
+        | junkPowerLines junkPowerLine
+;
+
+junkPowerLine: K_VARIABLE_1 ':' '"' IDENTIFIER '"' ';' {
+        }
+        | K_VARIABLE_2 ':' '"' IDENTIFIER '"' ';' {
+        }
+        | K_VARIABLE_3 ':' '"' IDENTIFIER '"' ';' {
+        }
+        | K_INDEX1 junk ';' {
+        }
+        | K_INDEX2 junk ';' {
+        }
+        | K_INDEX3 junk ';' {
+        }
+        | K_VALUES junk ';'
+;
+
+junkTableStatement: tableHeader '(' IDENTIFIER ')' '{' junkLines '}' {
+        }
+        | tableHeader '(' '"' IDENTIFIER '"' ')' '{' junkLines '}' {
+        }
+;
+
+tableHeader:  K_OP_COND
+        |     K_INPUT_VOL
+        |     K_OUTPUT_VOL
+        |     K_WIRE_LOAD_SEL
+        |     K_NORM_DRV_WFM
+;
+
+junkLines:
+        | junkLines junkLine
+        | junkLines junkDataRows
+;
+
+junkLine: IDENTIFIER ':' junk ';' {
+        }
+        | junkHead '(' junk ';' {
+        }
+        | junkHead '(' junk ')' {
+        }
+        | K_AREA ':' NUMBER {
+        }
+        | K_AREA ':' NUMBER ';' {
+        }
+        | K_SLOPE ':' NUMBER {
+        }
+        | K_SLOPE ':' NUMBER ';' {
+        }
+        | K_CELL_FOOTPRINT ':' IDENTIFIER {
+        }
+        | K_CELL_FOOTPRINT ':' IDENTIFIER ';' {
+        }
+        | K_CELL_FOOTPRINT ':' '"'  IDENTIFIER '"' {
+        }
+        | K_CELL_FOOTPRINT ':' '"'  IDENTIFIER '"' ';' {
+        }
+        | IDENTIFIER '(' junk ';' {
+        }
+        | IDENTIFIER ':' '"' K_INTERNAL_POWER '"' ';'
+        | IDENTIFIER ':' '"' junk '"' ';'
+        | K_DIRECTION ':' '"' junk '"' ';'
+        | IDENTIFIER '(' junk K_LIBRARY junk ')' ';'
+        | IDENTIFIER '(' junk K_CELL junk ')' ';'
+        | IDENTIFIER '(' junk K_TIMING junk ')' ';'
+        | junkHead '(' junk K_FF junk ')' ';'
+;
+
+junkHead: K_CAP_LOAD_UNIT
+        | K_LIB_FEATURE
+        | K_TECHNOLOGY
+        | K_DEFINE_CELL_AREA
+        | K_WIRE_LOAD_AREA
+        | K_VARIABLE_1
+        | K_VARIABLE_2
+;
+
+
+junkDataRows: 
+        | junkDataRows junkDR
+;
+
+junkDR: K_INDEX1 '(' '"' junkDataRow '"' ')' ';' {
+        }
+        | K_INDEX2 '(' '"' junkDataRow '"' ')' ';' {
+        }
+        | K_INDEX3 '(' '"' junkDataRow '"' ')' ';' {
+        }
+        | K_VALUES '(' '"' junkDataRow '"' ')' ';' {
+        }
+;
+
+junkDataRow:
+        | junkDataRow junkData
+;
+
+junkData: NUMBER {}
+         | ','
+         | '"'
+         | '\\'
+;
+
+junk: 
+        | junk junkItem
+;
+
+junkItem: IDENTIFIER {
+        }
+        | NUMBER {}
+        | '(' 
+        | ')' 
+        | '!'
+        | '^'
+        | '|'
+        | '"'
+        | '\''
+        | ':'
+        | '+'
+        | '-'
+        | '='
+        | '&'
+        | '*'
+        | '\\'
+        | '~'
+        | ','
+        | '.'
+        | '['
+        | ']'
+;
+
+%%
