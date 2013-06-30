@@ -287,7 +287,7 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     }
   } else if (switchName == "output") {
     rtv = true;
-    topEnv.EnvSetOutputPath(ENV_SET_OUTPUT_PATH);
+    topEnv.EnvSetOutputFileName(switchValue);
   } else if (switchName == "help") {
     cout << "To execute the tool, use the following options:" << endl;
     cout << endl << "-trace_depth: Given a trace depth, prints cputime and memory for all routines " << endl;
