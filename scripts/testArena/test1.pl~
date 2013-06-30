@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $test = $ENV{TEST};
+print "Hi this is $test\n";
+exit(0);
