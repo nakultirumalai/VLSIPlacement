@@ -1,0 +1,13 @@
+#################################
+######## TEST INPUT FILE ########
+#################################
+
+$SELECT	1
+*BEGIN
+-cluster_strategy	bestchoice
+-global_placer		ntuplace
+-legalizer		fastplace
+-clust_max_area		23.5
+-force
+*END
+

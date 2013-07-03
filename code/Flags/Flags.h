@@ -32,6 +32,7 @@ typedef enum {
   CELL_IS_FIXED_FLAG,
   CELL_IS_LOCKED_FLAG,
   CELL_IS_STAR_NODE_FLAG,
+  CELL_TO_BE_MOVED_FLAG,
   TOTAL_NUM_INT_FLAGS
 } flagIntType;
 
@@ -180,5 +181,10 @@ extern void LegalizeBinSetBValue(LegalizeBin*, double);
 extern void LegalizeBinClearBValue(LegalizeBin*);
 extern void LegalizeBinClearAllBValue(void);
 
+/* FLAG: Check if a cell is to be moved */
+extern bool CellToBeMoved(Cell *);
+extern void CellSetToBeMoved(Cell *);
+extern void CellClearToBeMoved(Cell *);
+extern void CellClearAllToBeMoved(void);
 
 # endif

@@ -1,0 +1,83 @@
+
+void 
+LegalizeDesignNew(Design &myDesign)
+{
+  HyperGraph myGraph;
+  vector<PhysRow*> allPhysRows;
+  vector<vector<int> > allRowBounds;
+  vector<vector<Zone*> >DesignZones;
+  vector<vector<LegalizeBin*> > DesignBins;
+  vector<Cell*> cellsInRow;
+  Cell *CellPtr, *cellObj;
+  PhysRow *Obj;
+  rowOrientation rowType;
+  string CellName;
+  int rowBegin;
+  int rowEnd;
+  int columnWidth;
+  int totNumCells;
+  int rowCount;
+  int cellWidth, maxCellWidth;
+
+  /* Get all the physical rows in Design */
+  allPhysRows  = myDesign.DesignGetRows();
+
+  /* Get bounding boxes for all subrows in all rows in Design */
+  LegalizeGetAllBoundingBoxes(allPhysRows, allRowBounds);
+  rowType=((allPhysRows[0])->PhysRowGetType());
+
+  
+  /* Checking the Legality of all Cells and setting the variable isLegal
+     for all cells accordingly */
+  maxCellWidth = 0;
+  DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
+    if (!(CellPtr->CellIsTerminal())) {
+      cellWidth = (*CellPtr).CellGetWidth();
+      if (cellWidth > maxCellWidth) {
+        maxCellWidth = cellWidth;
+      }
+      LegalizeCheckLegality(CellPtr, allPhysRows, allRowBounds);
+    }
+  } DESIGN_END_FOR;
+  columnWidth = 2 * maxCellWidth;
+
+  /* Legalizing every cell so that is contained completely in some row */
+  DESIGN_FOR_ALL_CELLS(myDesign, CellName, CellPtr){
+    if (!CellPtr->CellIsTerminal()){
+      if (!(CellPtr->CellXIsLegal() && CellPtr->CellYIsLegal())) {
+	LegalizeSnapToNearestRows(CellPtr, allPhysRows, rowType);
+      }
+    }
+  } DESIGN_END_FOR;
+
+  /*  Adding all cells to their respective rows */
+  myDesign.DesignAddAllCellsToPhysRows();
+  
+  VECTOR_FOR_ALL_ELEMS (allPhysRows, PhysRow*, Obj){
+    currentRow = rowCount;
+    (*Obj).PhysRowGetCellsInRow(cellsInRow);
+
+
+    /* Find Zones in the row and push all movable cells into free zone */
+    vector<Zone*> zones;
+    LegalizeFindZonesInRow(Obj, zones, rowBegin, rowEnd);
+    DesignZones.push_back(zones);
+
+
+    /* Find all the regions in the row */
+    vector<LegalizeBin*> allBins; // denotes all bins in a specific row                                                       
+    LegalizeFindBinsInRow(zones, allBins, Obj, columnWidth, rowBegin, rowEnd);
+
+    /* Merge bins if they satisfy the condition for merging */
+    LegalizeMergeBins(allBins, columnWidth);
+
+    /* Add Cell To respective regions */
+    LegalizeAddCellsToBins(cellsInRow, allBins);
+
+    /* Adding all the bins to the vector<vector> of DesignBins */
+    DesignBins.push_back(allBins);
+
+  } END_FOR;
+
+
+}

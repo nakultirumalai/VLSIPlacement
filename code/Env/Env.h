@@ -123,6 +123,7 @@ typedef enum {
 /* Define the default value of the maximum utilization 
    after which ILR would start */
 # define DEFAULT_MAX_UTILIZATION_PHASEI 1.0
+# define DEFAULT_ENV_OUTPUT_FILE_NAME ./DEFAULT/defaultplacement
 
 /***************************************************
  EVERY VARIABLE DEFINED BELOW HAS TO BE DOCUMENTED!
@@ -174,6 +175,8 @@ class Env {
   string DesignName;
   /* Variable to define the design path */
   string DesignPath;
+  /* Decide what the name of the output file should be */
+  string OutputFileName;
   
   /***************************************/
   /* INTEGER VARIABLES                   */
@@ -215,6 +218,7 @@ class Env {
      should consider the cluster width to be an integral 
      multiple of site width */
   bool DiscreteWidth;
+  
 
   /***************************************/
   /* FLOAT/DOUBLE VARIABLES              */
@@ -395,9 +399,9 @@ class Env {
 
   void EnvSetShapeSelectionType(EnvShapeSelectionType);
   EnvShapeSelectionType EnvGetShapeSelectionType(void);
+  
+  void EnvSetOutputFileName(string);
+  string EnvGetOutputFileName(void);
 };
-
-# define DEFAULT_DESIGN_NAME ""
-# define DEFAULT_DESIGN_PATH ""
 
 # endif

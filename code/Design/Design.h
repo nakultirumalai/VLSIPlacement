@@ -589,6 +589,7 @@ extern void DesignCollectStats(Design& myDesign);
 extern void DesignWriteStats(Design& myDesign);
 extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
 extern void DesignWriteOutputPlacement(Design& myDesign);
+extern void DesignWriteOutputPlacement(Design& myDesign, string outputFileName);
 extern void DesignWriteBookShelfOutput(Design& myDesign, string opName);
 extern vector<Cell*> DesignGetConnectedCells(HyperGraph &, Cell *);
 

@@ -665,3 +665,29 @@ void LegalizeBinClearAllBValue(void)
 {
   FlagsDefClearAllObjs(LEGALIZE_BIN_B_VALUE);
 }
+
+
+bool CellToBeMoved(Cell *cellPtr)
+{
+  bool rtv;
+  void *obj = (void *)cellPtr;
+  rtv = FlagsDefGetFlag(CELL_TO_BE_MOVED_FLAG, obj);
+  return (rtv);
+}
+
+void CellSetToBeMoved(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  FlagsDefSetFlag(CELL_TO_BE_MOVED_FLAG, obj);
+}
+
+void CellClearToBeMoved(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+  FlagsDefClearFlag(CELL_TO_BE_MOVED_FLAG, obj);
+}
+
+void CellClearAllToBeMoved(void)
+{
+  FlagsDefClearAllObjs(CELL_TO_BE_MOVED_FLAG);
+}

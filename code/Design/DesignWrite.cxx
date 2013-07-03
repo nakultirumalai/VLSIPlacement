@@ -266,3 +266,8 @@ void DesignWriteOutputPlacement(Design &myDesign)
 {
   DesignWritePlacement(myDesign, (myDesign.DesignGetName() + ".ourplacer"));
 }
+
+void DesignWriteOutputPlacement(Design &myDesign, string outputFileName)
+{
+  DesignWritePlacement(myDesign, outputFileName);
+}

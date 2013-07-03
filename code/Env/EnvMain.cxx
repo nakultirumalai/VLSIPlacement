@@ -2,8 +2,6 @@
 
 Env::Env() 
 {
-  EnvSetDesignName(DEFAULT_DESIGN_NAME);
-  EnvSetDesignPath(DEFAULT_DESIGN_PATH);
   EnvSetNumCellsFromFile(0);
   EnvSetNumPorts(0);
   EnvSetNumTerminals(0);
@@ -28,10 +26,8 @@ Env::Env()
   EnvSetClusterPlacementType(DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE);
   EnvSetUnclusterType(DEFAULT_ENV_UNCLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
-  
   /* Initilization of double variables */
   EnvSetMaxUtilPhaseI(DEFAULT_MAX_UTILIZATION_PHASEI);
-
   /* Time related variables */
   /* Initialize start times to 0 */
   NetlistReadStartTime = 0;
@@ -573,4 +569,16 @@ EnvShapeSelectionType
 Env::EnvGetShapeSelectionType(void)
 {
   return ShapeSelectionType;
+}
+
+void
+Env::EnvSetOutputFileName(string OutputFileName)
+{
+  this->OutputFileName = OutputFileName;
+}
+
+string
+Env::EnvGetOutputFileName(void)
+{
+  return OutputFileName;
 }
