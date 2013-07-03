@@ -4,8 +4,9 @@
 /* Macros for iteration over pins and cells of the net */
 
 # define VECTOR_FOR_ALL_ELEMS(VectorObj, Type, Obj) \
-  { \
-  for (int i = 0;  i < VectorObj.size(); i++) { \
+  {						    \
+  uint __size = VectorObj.size();		    \
+  for (int i = 0;  i < __size; i++) {		    \
   Obj = (Type)VectorObj[i];
 
 # define VECTOR_FOR_ALL_ELEMS_DOUBLE(VectorObj1, Type1, Obj1, VectorObj2, Type2, Obj2) \

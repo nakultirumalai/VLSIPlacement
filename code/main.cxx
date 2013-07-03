@@ -124,6 +124,7 @@ printTimeUsage(Env &topEnv)
               c) netcluster
               d) tdcluster1
               e) tdcluster2
+              f) nocluster
 
 -cluster_placement: This option specifies how the cells should be placed
               inside the cluster. The options as of now are:
@@ -142,6 +143,9 @@ printTimeUsage(Env &topEnv)
 -detailed_placer: This option specifies which detailed placer to use
               a) fastplace
               b) ourplacer
+
+-break_util_phase1: This option is a temporary option which is used 
+              for experimentation
 
        -help: Prints out information about the tool
 ***********************************************************************/
@@ -284,6 +288,10 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 	   << "\"fastplace\", \"ourplacer\"" 
 	   << endl;
     }
+  } else if (switchName == "break_util_phase1") {
+    rtv = true;
+    double value = strToDouble(switchValue);
+    topEnv.EnvSetMaxUtilPhaseI(value);
   } else if (switchName == "help") {
     cout << "To execute the tool, use the following options:" << endl;
     cout << endl << "-trace_depth: Given a trace depth, prints cputime and memory for all routines " << endl;
@@ -328,25 +336,19 @@ int placeMain(Env &topEnv)
   /****************************************************
    *  DO GLOBAL PLACEMENT                             *
    ****************************************************/
+  ProfilerStart("GlobalPlacement");
   myDesign.DesignDoGlobalPlacement();
-  
+  ProfilerStart("GlobalPlacement");
+    
   /****************************************************
    *  DO LEGALIZATION                                 *
    ****************************************************/
-  /* Record the start time of legalizing the design */
-  DesignEnv.EnvSetLegalizationStartTime();
   myDesign.DesignDoLegalization();
-  /* Record the end time of the legalization */
-  DesignEnv.EnvRecordLegalizationTime();
 
   /****************************************************
    *  DO DETAILED PLACEMENT                           *
    ****************************************************/
-  /* Record the start time of detailed the design */
-  DesignEnv.EnvSetDetailedPlacementStartTime();
   myDesign.DesignDoDetailedPlacement();
-  /* Record the end time of the legalization */
-  DesignEnv.EnvRecordDetailedPlacementTime();
 
   /****************************************************
    *  PLOT THE FINAL PLACEMENT                        *

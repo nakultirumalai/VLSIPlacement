@@ -3,7 +3,7 @@
 void
 MSKAPI printDesignSolverOutput(void *handle, const char str[])
 {
-  //  printf("%s", str);
+  //printf("%s", str);
 }
 
 void
@@ -317,6 +317,7 @@ Design::DesignSolveForAllCellsMosekIter()
   prevPeakUtil = 0.0;
   itrCount = 0;
   stopThreshold = 0.5;
+  bool firstIter = true;
   _STEP_BEGIN("Analytical solve and spread iterations");
   while (1) {
     /**************************************************************/
@@ -403,6 +404,13 @@ Design::DesignSolveForAllCellsMosekIter()
       (*cellPtr).CellSetYpos(dtoi(ypos));
       CellSetDblX(cellPtr, xpos);
       CellSetDblY(cellPtr, ypos);
+      if (firstIter) {
+        CellSetOrigDblX(cellPtr, xpos);
+        CellSetOrigDblY(cellPtr, ypos);
+      }
+    }
+    if (firstIter) {
+      firstIter = false;
     }
     _STEP_END("Assigning locations to cells");
 
@@ -434,7 +442,7 @@ Design::DesignSolveForAllCellsMosekIter()
     /**************************************************************/
     /* STOPPING CONDITION                                         */
     /**************************************************************/
-    if (1 || ((prevPeakUtil > peakUtilization) && 
+    if (0 || ((prevPeakUtil > peakUtilization) && 
 	      ((prevPeakUtil - peakUtilization) < stopThreshold))) {
       cout << "Global placement complete" << endl;
       string plotFileName;
@@ -465,6 +473,7 @@ Design::DesignSolveForAllCellsMosekIter()
     _STEP_BEGIN("Perform cell spreading");
     double cellXpos, cellYpos;
     double pseudoPinX, pseudoPinY;
+    double tmp1, tmp2, tmp3;
     double springConstant;
     double coeffX, coeffY;
     uint quadCellIdx, linCellIdx;
@@ -474,6 +483,7 @@ Design::DesignSolveForAllCellsMosekIter()
       cellXpos = CellGetDblX(&thisCell);
       cellYpos = CellGetDblY(&thisCell);
       DesignSpreadCreatePseudoPort(thisCell, cellBin, cellXpos, cellYpos,
+				   tmp1, tmp2, tmp3,
 				   pseudoPinX, pseudoPinY, springConstant);
       coeffX = 2 * springConstant; coeffY = coeffX;
       _KEY_EXISTS_WITH_VAL(quadMap, (&thisCell), quadMapItr) {
@@ -623,7 +633,7 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
   /**************************************************************/
   prevPeakUtil = 0.0;
   itrCount = 0;
-  stopThreshold = 0.5;
+  stopThreshold = 0.01;
   _STEP_BEGIN("Analytical solve and spread iterations");
   while (1) {
     /**************************************************************/
@@ -802,6 +812,7 @@ Design::DesignSolveForAllCellsMosekIterSolveBoth()
       coeffY = coeffY * (-pseudoPinY / GRID_COMPACTION_RATIO);
       qvalx[linCellIdx] += (coeffX);
       qvaly[linCellIdx] += (coeffY);
+      break;
     }
     _STEP_END("Perform cell spreading");
 

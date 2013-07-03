@@ -8,6 +8,7 @@ class Bin {
   double newRight, newTop;
   double utilization;
   double cellArea;
+  double totalCellWidth;
   double averageCellWidth;
   bool stretchedInX, stretchedInY;
   /* Vector to store list of all cells that are cut by the 
@@ -40,12 +41,20 @@ class Bin {
   /* Set functions */
   void BinSetBoundingBox(uint, uint, uint, uint);
   void BinSetCellArea(double);
-  void BinSetAverageCellWidth(double);
-  void BinSetUtilization(double);
+  void BinAddCellArea(double);
+  void BinSetTotalCellWidth(double);
+  void BinAddCellWidth(double);
+  void BinComputeAverageCellWidth(void);
+  void BinComputeUtilization(void);
+  void BinAddCells(vector<Cell *>&);
+  void BinAddCell(Cell *);
+  void BinAddCellVirtual(Cell *);
+  void BinRemoveCell(uint);
   void BinSetCells(vector<Cell *>&);
+  void BinSetRight(uint);
+  void BinSetTop(uint);
   void BinSetNewRight(double);
   void BinSetNewTop(double);
-
   void BinDeleteData(void);
 
   /* Debug functions */

@@ -193,10 +193,11 @@ cghs( unsigned N, SpMat &A, double *b, double *x, double eps,
     ++its;
 
     if (its > max_iterations) {
-      rtv = -1;
+      rtv = its;
       break;
     }
   }
+  rtv = its;
   delete[] g;
   delete[] r;
   delete[] p;

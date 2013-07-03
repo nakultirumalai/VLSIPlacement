@@ -7,20 +7,32 @@ Design::DesignCoarsenNetlist(void)
   Pin *pinPtr;
   Env &DesignEnv = this->DesignEnv;
   uint numPinsBefore, numPinsAfter;
-
-  numPinsBefore = 0; numPinsAfter = 0;
-  cout << "Coarsening netlist" << endl;
+  EnvClusterType clusterType;
   HyperGraph &myGraph = DesignGetGraph();
-  DesignDoBestChoiceClustering(myGraph);
-  cout << "Finished coarsening" << endl;
+  clusterType = DesignEnv.EnvGetClusterType();
+
+  switch (clusterType) {
+  case ENV_NO_CLUSTERING: 
+    cout << "Clustering: No clustering " << endl;
+    break;
+  case ENV_FIRST_CHOICE_CLUSTERING:
+    cout << "Clustering: First choice clustering. Not ready yet " << endl;
+    break;
+  case ENV_BEST_CHOICE_CLUSTERING:
+    cout << "Clustering: Best choice clustering " << endl;
+    DesignDoBestChoiceClustering(myGraph);
+    cout << "Finished coarsening" << endl;
+    break;
+  case ENV_NET_CLUSTERING:
+    cout << "Clustering: Net clustering. Not ready yet " << endl;
+    break;
+  defaut:
+    cout << "Clustering: Clustering strategy unknown. Not clustering netlist " << endl;
+    break;
+  }
+
   /* Rebuild hypergraph after coarsening */
-  cout << "Rebuilding hypergraph.." << endl;
   DesignRebuildGraph();
-  HyperGraph &myGraph2 = DesignGetGraph();
-  //  cout << "After clustering:" << endl
-  //       << " Number of nodes:" << myGraph2.GetNumNodes() << endl
-  //       << " Number of edges:" << myGraph2.GetNumEdges() 
-  //       << endl;
 }
 
 void
@@ -157,36 +169,35 @@ Design::DesignDoGlobalPlacement(void)
   /***************************/
   /* Optional: Do clustering */
   /***************************/
-  ProfilerStart("Begin clustering");
   /* Record start time of clustering */
   DesignEnv.EnvSetClusteringStartTime();
   DesignCoarsenNetlist();
   /* Record end time of clustering */
   DesignEnv.EnvRecordClusteringTime();
-  ProfilerStop();
 
-  _STEP_BEGIN("Global placement");
+  _STEP_BEGIN("Global placement");  
   /* While doing global placement, it might be necessary to run other 
      placers to do global placement since macro spreading is not 
      yet implemented in our placer */
   if (globalPlacerType == ENV_NO_EXTERNAL_GP) {
-    ProfilerStart("Global placement");
+    //    ProfilerStart("Global placement");
     /* Record start time of global placement */
     DesignEnv.EnvSetGlobalPlacementStartTime();
     DesignRunInternalPlacer(solverType);
     /* Record end time of global placement */
     DesignEnv.EnvRecordGlobalPlacementTime();
-    ProfilerStop();
+    //    ProfilerStop();
   } else {
     clock_t start, end;
     double cpuTimeSpent;
-    start = clock();
-    cout << "START TIME: " << start << endl;
-    DesignEnv.EnvSetGlobalPlacementStartTime();
+    time_t timer1;
+    time_t timer2;
+    time(&timer1);
+    //    DesignEnv.EnvSetGlobalPlacementStartTime();
     DesignRunExternalPlacer(globalPlacerType);
-    end = clock();
-    cout << "END TIME: " << start << endl;
-    cpuTimeSpent = ((double) (end - start)) / CLOCKS_PER_SEC;
+    time(&timer2);
+    cpuTimeSpent = difftime(timer2, timer1);
+    //    cout << "Time taken: " << cpuTimeSpent << endl;
     DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
   }
   //  ProfilerStart("Unclustering");
@@ -209,13 +220,22 @@ Design::DesignDoLegalization(void)
   
   switch (legalizerType) {
   case ENV_BIN_BASED_LEGALIZER:
+    DesignEnv.EnvSetLegalizationStartTime();
     LegalizeDesign(*this);
+    DesignEnv.EnvRecordLegalizationTime();
     break;
   case ENV_FAST_PLACE_LEGALIZER:
+    time_t timer1;
+    time_t timer2;
+    double cpuTimeSpent;
     desName = desName + "_leg";
     dirName = "." + desName;
     DesignWriteCurrentNetlist(dirName, desName);
+    time(&timer1);
     DesignRunFastPlaceLegalizer(dirName, desName);
+    time(&timer2);
+    cpuTimeSpent = difftime(timer2, timer1);
+    DesignEnv.EnvRecordLegalizationTime(cpuTimeSpent);
     break;
   }
 }
@@ -235,10 +255,17 @@ Design::DesignDoDetailedPlacement(void)
   case ENV_NO_DETAIL_PLACEMENT:
     break;
   case ENV_FAST_PLACE_DP:
+    time_t timer1;
+    time_t timer2;
+    double cpuTimeSpent;
     desName = desName + "_dp";
     dirName = "." + desName;
     DesignWriteCurrentNetlist(dirName, desName);
+    time(&timer1);
     DesignRunFastPlaceDetailedPlacer(dirName, desName);
+    time(&timer2);
+    cpuTimeSpent = difftime(timer2, timer1);
+    DesignEnv.EnvRecordDetailedPlacementTime(cpuTimeSpent);
     break;
   case ENV_OURPLACER_DP:
     break;

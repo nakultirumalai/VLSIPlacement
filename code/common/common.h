@@ -46,6 +46,9 @@
 
 using namespace std;
 
+typedef unsigned int uint;
+typedef unsigned long ulong;
+
 /* Import variable definitions to all modules */
 extern unsigned int stepDepth;
 extern bool debug;
@@ -99,7 +102,6 @@ extern uint starModelUpgradeNumPins;
   Type definitions common for all objects
 *******************************************************************************/
 typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;
-typedef unsigned int uinteger;
 
 /*******************************************************************************
   Type definition to specify solver types
@@ -127,6 +129,7 @@ string getStrForOrientation(objOrient);
 
 void vectorRemoveDuplicates(vector<unsigned int>& vec);
 bool strIsNumber(const string& s);
+double strToDouble(const string& s);
 string strToLower(const char *s);
 string strToLower(const string& s);
 bool fileExists(string& fullFileName);

@@ -63,8 +63,15 @@ Bin	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::Bin()$/;"	f	class:Bin
 Bin	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top)$/;"	f	class:Bin
 Bin	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top, $/;"	f	class:Bin
 Bin	$CODE_ROOT/include/Bin.h	/^class Bin {$/;"	c
+BinAddCell	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinAddCell(Cell *cellToAdd) $/;"	f	class:Bin
+BinAddCellArea	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinAddCellArea(double cellArea)$/;"	f	class:Bin
 BinAddCellToBin	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinAddCellToBin(Cell* thisCell)$/;"	f	class:LegalizeBin
+BinAddCellVirtual	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinAddCellVirtual(Cell *cellToAdd) $/;"	f	class:Bin
+BinAddCellWidth	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinAddCellWidth(double cellWidth)$/;"	f	class:Bin
+BinAddCells	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinAddCells(vector<Cell *>& cellsToAdd) $/;"	f	class:Bin
 BinCalculateWidth	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinCalculateWidth(void)$/;"	f	class:LegalizeBin
+BinComputeAverageCellWidth	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinComputeAverageCellWidth(void)$/;"	f	class:Bin
+BinComputeUtilization	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinComputeUtilization(void)$/;"	f	class:Bin
 BinDeleteData	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinDeleteData(void)$/;"	f	class:Bin
 BinGetAllFractCells	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinGetAllFractCells(void)$/;"	f	class:LegalizeBin
 BinGetAverageCellWidth	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinGetAverageCellWidth(void)$/;"	f	class:Bin
@@ -98,9 +105,9 @@ BinGetWidth	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinGetWidth(void)
 BinGetZone	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinGetZone(void)$/;"	f	class:LegalizeBin
 BinPrintBin	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinPrintBin(void)$/;"	f	class:Bin
 BinRemoveAllFractCells	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinRemoveAllFractCells(void)$/;"	f	class:LegalizeBin
+BinRemoveCell	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinRemoveCell(uint cellIdx) $/;"	f	class:Bin
 BinRemoveCellFromBin	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinRemoveCellFromBin(Cell* thisCell)$/;"	f	class:LegalizeBin
 BinRemoveCellFromFract	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinRemoveCellFromFract(Cell* thisCell)$/;"	f	class:LegalizeBin
-BinSetAverageCellWidth	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetAverageCellWidth(double avgCellWidth)$/;"	f	class:Bin
 BinSetBegin	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetBegin(int binBegin)$/;"	f	class:LegalizeBin
 BinSetBot	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetBot(int bot)$/;"	f	class:LegalizeBin
 BinSetBoundingBox	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetBoundingBox(uint left, uint right, uint bot, uint top)$/;"	f	class:Bin
@@ -115,10 +122,12 @@ BinSetLBound	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetLBound(boo
 BinSetNewRight	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetNewRight(double newRight)$/;"	f	class:Bin
 BinSetNewTop	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetNewTop(double newTop)$/;"	f	class:Bin
 BinSetRBound	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetRBound(bool RBound)$/;"	f	class:LegalizeBin
+BinSetRight	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetRight(uint right)$/;"	f	class:Bin
 BinSetRow	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetRow(PhysRow* row)$/;"	f	class:LegalizeBin
 BinSetSupply	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetSupply(double supply)$/;"	f	class:LegalizeBin
+BinSetTop	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetTop(uint top)$/;"	f	class:Bin
+BinSetTotalCellWidth	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetTotalCellWidth(double totalCellWidth)$/;"	f	class:Bin
 BinSetTotalCellWidth	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetTotalCellWidth(int totalCellWidth)$/;"	f	class:LegalizeBin
-BinSetUtilization	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinSetUtilization(double utilization)$/;"	f	class:Bin
 BinSetZone	$CODE_ROOT/Legalize/LegalizeBin.cxx	/^LegalizeBin::BinSetZone(Zone *thisZone)$/;"	f	class:LegalizeBin
 BinStretchInX	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinStretchInX(void)$/;"	f	class:Bin
 BinStretchInY	$CODE_ROOT/Bin/BinMain.cxx	/^Bin::BinStretchInY(void)$/;"	f	class:Bin
@@ -158,6 +167,10 @@ CELL_MACROS_H	$CODE_ROOT/Cell/CellIter.h	2;"	d
 CELL_MACROS_H	$CODE_ROOT/include/CellIter.h	2;"	d
 CELL_MOVE_COST	$CODE_ROOT/Flags/Flags.h	/^  CELL_MOVE_COST,$/;"	e	enum:__anon3
 CELL_MOVE_COST	$CODE_ROOT/include/Flags.h	/^  CELL_MOVE_COST,$/;"	e	enum:__anon23
+CELL_ORIG_DBLX	$CODE_ROOT/Flags/Flags.h	/^  CELL_ORIG_DBLX,$/;"	e	enum:__anon3
+CELL_ORIG_DBLX	$CODE_ROOT/include/Flags.h	/^  CELL_ORIG_DBLX,$/;"	e	enum:__anon23
+CELL_ORIG_DBLY	$CODE_ROOT/Flags/Flags.h	/^  CELL_ORIG_DBLY,$/;"	e	enum:__anon3
+CELL_ORIG_DBLY	$CODE_ROOT/include/Flags.h	/^  CELL_ORIG_DBLY,$/;"	e	enum:__anon23
 CELL_PSEUDO_PORT	$CODE_ROOT/Flags/Flags.h	/^  CELL_PSEUDO_PORT,$/;"	e	enum:__anon5
 CELL_PSEUDO_PORT	$CODE_ROOT/include/Flags.h	/^  CELL_PSEUDO_PORT,$/;"	e	enum:__anon25
 CELL_SPREAD_H	$CODE_ROOT/CellSpread/CellSpread.h	2;"	d
@@ -181,15 +194,14 @@ CFLAGS_LOCAL	$CODE_ROOT/Path/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/PhysData/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c$/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/Pin/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/Plot/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
-CFLAGS_LOCAL	$CODE_ROOT/PriorityQueue/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
-CFLAGS_LOCAL	$CODE_ROOT/Sort/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c$/;"	m
+CFLAGS_LOCAL	$CODE_ROOT/Sort_bak/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c$/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/Stat/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/TimingModels/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
 CFLAGS_LOCAL	$CODE_ROOT/common/Makefile	/^CFLAGS_LOCAL = $(CFLAGS) -c $/;"	m
 CGHS_BLAS_H	$CODE_ROOT/cghs/cghs.h	4;"	d
 CLK	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  input RESET, CLK;$/;"	p
-CLUSTER_NAME_PREFIX	$CODE_ROOT/Design/Design.h	109;"	d
-CLUSTER_NAME_PREFIX	$CODE_ROOT/include/Design.h	109;"	d
+CLUSTER_NAME_PREFIX	$CODE_ROOT/Design/Design.h	108;"	d
+CLUSTER_NAME_PREFIX	$CODE_ROOT/include/Design.h	108;"	d
 CLUSTER_OF_CELL	$CODE_ROOT/Flags/Flags.h	/^  CLUSTER_OF_CELL,$/;"	e	enum:__anon5
 CLUSTER_OF_CELL	$CODE_ROOT/include/Flags.h	/^  CLUSTER_OF_CELL,$/;"	e	enum:__anon25
 COMMON_DEBUG	$CODE_ROOT/common/common.h	29;"	d
@@ -236,6 +248,8 @@ CellClearAllIsLocked	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllIsLocked(
 CellClearAllIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllIsPseudo(void)$/;"	f
 CellClearAllIsStarNode	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllIsStarNode(void)$/;"	f
 CellClearAllMoveCost	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllMoveCost(void)$/;"	f
+CellClearAllOrigDblX	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllOrigDblX(Cell *cellPtr) $/;"	f
+CellClearAllOrigDblY	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllOrigDblY(Cell *cellPtr) $/;"	f
 CellClearAllPseudoPort	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearAllPseudoPort(void)$/;"	f
 CellClearBin	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearBin(Cell *cellPtr, void *bin)$/;"	f
 CellClearCluster	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearCluster(Cell *cellPtr)$/;"	f
@@ -247,10 +261,13 @@ CellClearIsLocked	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearIsLocked(Cell *
 CellClearIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearIsPseudo(Cell *cellPtr)$/;"	f
 CellClearIsStarNode	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearIsStarNode(Cell *cellPtr)$/;"	f
 CellClearMoveCost	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearMoveCost(Cell *cellPtr)$/;"	f
+CellClearOrigDblX	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearOrigDblX(Cell *cellPtr)$/;"	f
+CellClearOrigDblY	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearOrigDblY(Cell *cellPtr)$/;"	f
 CellClearPseudoPort	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellClearPseudoPort(Cell *cellPtr)$/;"	f
 CellDecrementClusterLevel	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellDecrementClusterLevel(void)$/;"	f	class:Cell
 CellGetArcDelay	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetArcDelay(Pin *fromPin, Pin *toPin)$/;"	f	class:Cell
 CellGetArea	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetArea(void)$/;"	f	class:Cell
+CellGetBin	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetBin(void)$/;"	f	class:Cell
 CellGetBin	$CODE_ROOT/Flags/FlagsMain.cxx	/^void* CellGetBin(Cell *cellPtr)$/;"	f
 CellGetBoundingBox	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetBoundingBox(uint &left, uint &bot, uint &right, uint &top)$/;"	f	class:Cell
 CellGetChildCells	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetChildCells(void)$/;"	f	class:Cell
@@ -265,7 +282,11 @@ CellGetMoveCost	$CODE_ROOT/Flags/FlagsMain.cxx	/^double CellGetMoveCost(Cell *ce
 CellGetName	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetName(void)$/;"	f	class:Cell
 CellGetNumPins	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetNumPins(int pinDir)$/;"	f	class:Cell
 CellGetNumPins	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetNumPins(void)$/;"	f	class:Cell
+CellGetOldXpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetOldXpos(void)$/;"	f	class:Cell
+CellGetOldYpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetOldYpos(void)$/;"	f	class:Cell
 CellGetOrientation	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetOrientation(void)$/;"	f	class:Cell
+CellGetOrigDblX	$CODE_ROOT/Flags/FlagsMain.cxx	/^double CellGetOrigDblX(Cell *cellPtr)$/;"	f
+CellGetOrigDblY	$CODE_ROOT/Flags/FlagsMain.cxx	/^double CellGetOrigDblY(Cell *cellPtr)$/;"	f
 CellGetOrigName	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetOrigName(void)$/;"	f	class:Cell
 CellGetPinByName	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetPinByName(const string &PinName) $/;"	f	class:Cell
 CellGetPins	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetPins(int pinDir)$/;"	f	class:Cell
@@ -276,7 +297,9 @@ CellGetRight	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetRight(void)$/;"	f	class
 CellGetTop	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetTop(void)$/;"	f	class:Cell
 CellGetWidth	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetWidth(void)$/;"	f	class:Cell
 CellGetXpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetXpos(void)$/;"	f	class:Cell
+CellGetXposDbl	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetXposDbl(void)$/;"	f	class:Cell
 CellGetYpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetYpos(void)$/;"	f	class:Cell
+CellGetYposDbl	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellGetYposDbl(void)$/;"	f	class:Cell
 CellIncrementClusterLevel	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellIncrementClusterLevel(void)$/;"	f	class:Cell
 CellIsCluster	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellIsCluster(void)$/;"	f	class:Cell
 CellIsClusterChild	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellIsClusterChild(void)$/;"	f	class:Cell
@@ -292,11 +315,14 @@ CellIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^bool CellIsPseudo(Cell *cellPtr)$/
 CellIsSequential	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellIsSequential(void)$/;"	f	class:Cell
 CellIsStarNode	$CODE_ROOT/Flags/FlagsMain.cxx	/^bool CellIsStarNode(Cell *cellPtr)$/;"	f
 CellIsTerminal	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellIsTerminal(void)$/;"	f	class:Cell
-CellMoveCell	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveCell(int XOffset, int YOffset)$/;"	f	class:Cell
+CellMarkNetsDirty	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMarkNetsDirty(void)$/;"	f	class:Cell
+CellMoveCell	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveCell(double xPos, double yPos)$/;"	f	class:Cell
+CellMoveCellComputeHPWL	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveCellComputeHPWL(double newXpos, double newYpos,$/;"	f	class:Cell
 CellMoveDown	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveDown(int offset)$/;"	f	class:Cell
 CellMoveLeft	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveLeft(int offset)$/;"	f	class:Cell
 CellMoveRight	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveRight(int offset)$/;"	f	class:Cell
 CellMoveUp	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellMoveUp(int offset)$/;"	f	class:Cell
+CellSetBin	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetBin(Bin *binOfCell) $/;"	f	class:Cell
 CellSetBin	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellSetBin(Cell *cellPtr, void *bin)$/;"	f
 CellSetCluster	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellSetCluster(Cell *cellPtr, void *cluster)$/;"	f
 CellSetClusterLevel	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetClusterLevel(unsigned int clusterLevel)$/;"	f	class:Cell
@@ -324,15 +350,23 @@ CellSetName	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetName(const string& cellN
 CellSetNumInPins	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetNumInPins(int numInPins)$/;"	f	class:Cell
 CellSetNumOutPins	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetNumOutPins(int numOutPins)$/;"	f	class:Cell
 CellSetNumPins	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetNumPins(int numPins)$/;"	f	class:Cell
+CellSetOldPos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetOldPos(double oldXpos, double oldYpos) $/;"	f	class:Cell
+CellSetOldXpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetOldXpos(double oldXpos) $/;"	f	class:Cell
+CellSetOldYpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetOldYpos(double Ypos)$/;"	f	class:Cell
 CellSetOrientation	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetOrientation(objOrient orient)$/;"	f	class:Cell
+CellSetOrigDblX	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellSetOrigDblX(Cell *cellPtr, double cellDblX)$/;"	f
+CellSetOrigDblY	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellSetOrigDblY(Cell *cellPtr, double cellDblY)$/;"	f
 CellSetOrigName	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetOrigName(const string& origName)$/;"	f	class:Cell
-CellSetPos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetPos(int Xpos, int Ypos) $/;"	f	class:Cell
+CellSetPos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetPos(uint Xpos, uint Ypos) $/;"	f	class:Cell
+CellSetPosDbl	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetPosDbl(double Xpos, double Ypos) $/;"	f	class:Cell
 CellSetPseudoPort	$CODE_ROOT/Flags/FlagsMain.cxx	/^void CellSetPseudoPort(Cell *cellPtr, Cell *pseudoPort)$/;"	f
 CellSetWidth	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetWidth(int Width)$/;"	f	class:Cell
 CellSetXIsLegal	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetXIsLegal(const bool & isXLegal)$/;"	f	class:Cell
-CellSetXpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetXpos(int Xpos) $/;"	f	class:Cell
+CellSetXpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetXpos(uint Xpos) $/;"	f	class:Cell
+CellSetXposDbl	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetXposDbl(double Xpos) $/;"	f	class:Cell
 CellSetYIsLegal	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetYIsLegal(const bool & isYLegal)$/;"	f	class:Cell
-CellSetYpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetYpos(int Ypos)$/;"	f	class:Cell
+CellSetYpos	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetYpos(uint Ypos)$/;"	f	class:Cell
+CellSetYposDbl	$CODE_ROOT/Cell/CellMain.cxx	/^Cell::CellSetYposDbl(double Ypos)$/;"	f	class:Cell
 CellSpreadCreatePseudoPort	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	/^CellSpreadCreatePseudoPort(Design &myDesign, HyperGraph &myGraph, $/;"	f
 CellSpreadGetForceOnCell	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	/^CellSpreadGetForceOnCell(Design &myDesign, Cell &thisCell, $/;"	f
 CellSpreadInBin	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	/^CellSpreadInBin(Design &myDesign, HyperGraph &myGraph,$/;"	f
@@ -412,10 +446,10 @@ DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/Old2_LegalizeMAin.cxx	8;"	d	file:
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/Old_3LegalizeMain.cxx	8;"	d	file:
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/Old_4LegalizeMain.cxx	8;"	d	file:
 DEFAULT_DEMAND	$CODE_ROOT/Legalize/bak/TestMinCostFlow.cxx	11;"	d	file:
-DEFAULT_DESIGN_NAME	$CODE_ROOT/Env/Env.h	388;"	d
-DEFAULT_DESIGN_NAME	$CODE_ROOT/include/Env.h	388;"	d
-DEFAULT_DESIGN_PATH	$CODE_ROOT/Env/Env.h	389;"	d
-DEFAULT_DESIGN_PATH	$CODE_ROOT/include/Env.h	389;"	d
+DEFAULT_DESIGN_NAME	$CODE_ROOT/Env/Env.h	400;"	d
+DEFAULT_DESIGN_NAME	$CODE_ROOT/include/Env.h	400;"	d
+DEFAULT_DESIGN_PATH	$CODE_ROOT/Env/Env.h	401;"	d
+DEFAULT_DESIGN_PATH	$CODE_ROOT/include/Env.h	401;"	d
 DEFAULT_EMPTY	$CODE_ROOT/Legalize/Legalize.h	36;"	d
 DEFAULT_EMPTY	$CODE_ROOT/include/Legalize.h	36;"	d
 DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE	$CODE_ROOT/Env/Env.h	103;"	d
@@ -448,6 +482,8 @@ DEFAULT_INT_WIDTH	$CODE_ROOT/Legalize/Legalize.h	32;"	d
 DEFAULT_INT_WIDTH	$CODE_ROOT/include/Legalize.h	32;"	d
 DEFAULT_LBOUND	$CODE_ROOT/Legalize/Legalize.h	29;"	d
 DEFAULT_LBOUND	$CODE_ROOT/include/Legalize.h	29;"	d
+DEFAULT_MAX_UTILIZATION_PHASEI	$CODE_ROOT/Env/Env.h	125;"	d
+DEFAULT_MAX_UTILIZATION_PHASEI	$CODE_ROOT/include/Env.h	125;"	d
 DEFAULT_NUM_SITES	$CODE_ROOT/PhysData/PhysRow.h	14;"	d
 DEFAULT_NUM_SITES	$CODE_ROOT/include/PhysRow.h	14;"	d
 DEFAULT_NUM_SUBROWS	$CODE_ROOT/PhysData/PhysRow.h	15;"	d
@@ -499,14 +535,14 @@ DEMAND_BIN_RECT	$CODE_ROOT/include/Plot.h	/^  DEMAND_BIN_RECT,$/;"	e	enum:__anon
 DEPFILE	$CODE_ROOT/example/Makefile	/^DEPFILE	 = Dependfile$/;"	m
 DEPFLAG	$CODE_ROOT/example/Makefile	/^  DEPFLAG  = -M$/;"	m
 DEPFLAG	$CODE_ROOT/example/Makefile	/^  DEPFLAG  = -MM$/;"	m
-DESIGN_AUX_FILE_EXT	$CODE_ROOT/Design/Design.h	32;"	d
-DESIGN_AUX_FILE_EXT	$CODE_ROOT/include/Design.h	32;"	d
-DESIGN_CELL_DELAYS_FILE_EXT	$CODE_ROOT/Design/Design.h	41;"	d
-DESIGN_CELL_DELAYS_FILE_EXT	$CODE_ROOT/include/Design.h	41;"	d
-DESIGN_CELL_FILE_EXT	$CODE_ROOT/Design/Design.h	33;"	d
-DESIGN_CELL_FILE_EXT	$CODE_ROOT/include/Design.h	33;"	d
-DESIGN_CMDS_FILE_EXT	$CODE_ROOT/Design/Design.h	39;"	d
-DESIGN_CMDS_FILE_EXT	$CODE_ROOT/include/Design.h	39;"	d
+DESIGN_AUX_FILE_EXT	$CODE_ROOT/Design/Design.h	31;"	d
+DESIGN_AUX_FILE_EXT	$CODE_ROOT/include/Design.h	31;"	d
+DESIGN_CELL_DELAYS_FILE_EXT	$CODE_ROOT/Design/Design.h	40;"	d
+DESIGN_CELL_DELAYS_FILE_EXT	$CODE_ROOT/include/Design.h	40;"	d
+DESIGN_CELL_FILE_EXT	$CODE_ROOT/Design/Design.h	32;"	d
+DESIGN_CELL_FILE_EXT	$CODE_ROOT/include/Design.h	32;"	d
+DESIGN_CMDS_FILE_EXT	$CODE_ROOT/Design/Design.h	38;"	d
+DESIGN_CMDS_FILE_EXT	$CODE_ROOT/include/Design.h	38;"	d
 DESIGN_END_FOR	$CODE_ROOT/Design/DesignIter.h	121;"	d
 DESIGN_END_FOR	$CODE_ROOT/include/DesignIter.h	121;"	d
 DESIGN_FOR_ALL_BINS	$CODE_ROOT/Design/DesignIter.h	107;"	d
@@ -535,22 +571,22 @@ DESIGN_H	$CODE_ROOT/Design/Design.h	2;"	d
 DESIGN_H	$CODE_ROOT/include/Design.h	2;"	d
 DESIGN_ITER_H	$CODE_ROOT/Design/DesignIter.h	4;"	d
 DESIGN_ITER_H	$CODE_ROOT/include/DesignIter.h	4;"	d
-DESIGN_NET_FILE_EXT	$CODE_ROOT/Design/Design.h	34;"	d
-DESIGN_NET_FILE_EXT	$CODE_ROOT/include/Design.h	34;"	d
-DESIGN_NET_WTS_FILE_EXT	$CODE_ROOT/Design/Design.h	35;"	d
-DESIGN_NET_WTS_FILE_EXT	$CODE_ROOT/include/Design.h	35;"	d
-DESIGN_NODES_MAP_FILE_EXT	$CODE_ROOT/Design/Design.h	38;"	d
-DESIGN_NODES_MAP_FILE_EXT	$CODE_ROOT/include/Design.h	38;"	d
-DESIGN_PATH_DELAYS_FILE_EXT	$CODE_ROOT/Design/Design.h	42;"	d
-DESIGN_PATH_DELAYS_FILE_EXT	$CODE_ROOT/include/Design.h	42;"	d
-DESIGN_PINS_MAP_FILE_EXT	$CODE_ROOT/Design/Design.h	40;"	d
-DESIGN_PINS_MAP_FILE_EXT	$CODE_ROOT/include/Design.h	40;"	d
-DESIGN_PL_FILE_EXT	$CODE_ROOT/Design/Design.h	37;"	d
-DESIGN_PL_FILE_EXT	$CODE_ROOT/include/Design.h	37;"	d
-DESIGN_SCL_FILE_EXT	$CODE_ROOT/Design/Design.h	36;"	d
-DESIGN_SCL_FILE_EXT	$CODE_ROOT/include/Design.h	36;"	d
-DIR_SEP	$CODE_ROOT/Design/Design.h	101;"	d
-DIR_SEP	$CODE_ROOT/include/Design.h	101;"	d
+DESIGN_NET_FILE_EXT	$CODE_ROOT/Design/Design.h	33;"	d
+DESIGN_NET_FILE_EXT	$CODE_ROOT/include/Design.h	33;"	d
+DESIGN_NET_WTS_FILE_EXT	$CODE_ROOT/Design/Design.h	34;"	d
+DESIGN_NET_WTS_FILE_EXT	$CODE_ROOT/include/Design.h	34;"	d
+DESIGN_NODES_MAP_FILE_EXT	$CODE_ROOT/Design/Design.h	37;"	d
+DESIGN_NODES_MAP_FILE_EXT	$CODE_ROOT/include/Design.h	37;"	d
+DESIGN_PATH_DELAYS_FILE_EXT	$CODE_ROOT/Design/Design.h	41;"	d
+DESIGN_PATH_DELAYS_FILE_EXT	$CODE_ROOT/include/Design.h	41;"	d
+DESIGN_PINS_MAP_FILE_EXT	$CODE_ROOT/Design/Design.h	39;"	d
+DESIGN_PINS_MAP_FILE_EXT	$CODE_ROOT/include/Design.h	39;"	d
+DESIGN_PL_FILE_EXT	$CODE_ROOT/Design/Design.h	36;"	d
+DESIGN_PL_FILE_EXT	$CODE_ROOT/include/Design.h	36;"	d
+DESIGN_SCL_FILE_EXT	$CODE_ROOT/Design/Design.h	35;"	d
+DESIGN_SCL_FILE_EXT	$CODE_ROOT/include/Design.h	35;"	d
+DIR_SEP	$CODE_ROOT/Design/Design.h	100;"	d
+DIR_SEP	$CODE_ROOT/include/Design.h	100;"	d
 DONE	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         roots_ready, RE_error_correction, WE_error_correction, DONE,$/;"	n
 DONE_ext	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
 Design	$CODE_ROOT/Design/Design.h	/^class Design {$/;"	c
@@ -566,14 +602,20 @@ DesignAddOneNetToDesignDB	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddOn
 DesignAddOnePhysRowToDesignDB	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddOnePhysRowToDesignDB(PhysRow *row)$/;"	f	class:Design
 DesignAddPath	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddPath(Path *path)$/;"	f	class:Design
 DesignAddPseudoNet	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddPseudoNet(Net *pseudoNet)$/;"	f	class:Design
+DesignAddSpreadForcesConjGrad	$CODE_ROOT/Design/DesignSolveFastConjGrad.cxx	/^DesignAddSpreadForcesConjGrad(Design &myDesign,$/;"	f
+DesignAddToHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignAddToHPWL(ulong addHPWL)$/;"	f	class:Design
 DesignAssignPinOffSets	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignAssignPinOffSets(Cell *clusterCell,$/;"	f	class:Design
 DesignBins	$CODE_ROOT/Design/Design.h	/^  vector<Bin *> DesignBins;$/;"	m	class:Design
 DesignBins	$CODE_ROOT/include/Design.h	/^  vector<Bin *> DesignBins;$/;"	m	class:Design
+DesignBreakSolverPhaseI	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignBreakSolverPhaseI(void)$/;"	f	class:Design
+DesignBreakSolverPhaseII	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignBreakSolverPhaseII(void)$/;"	f	class:Design
 DesignBuildGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignBuildGraph(void)$/;"	f	class:Design
 DesignCellDelaysFileName	$CODE_ROOT/Design/Design.h	/^  string DesignCellDelaysFileName;$/;"	m	class:Design
 DesignCellDelaysFileName	$CODE_ROOT/include/Design.h	/^  string DesignCellDelaysFileName;$/;"	m	class:Design
 DesignCellFileName	$CODE_ROOT/Design/Design.h	/^  string DesignCellFileName;$/;"	m	class:Design
 DesignCellFileName	$CODE_ROOT/include/Design.h	/^  string DesignCellFileName;$/;"	m	class:Design
+DesignCellGetBestPosForILR	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCellGetBestPosForILR(Cell &thisCell, Bin &srcBin, Bin *& targetBinPtr,$/;"	f	class:Design
+DesignCellGetMoveCostHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCellGetMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, $/;"	f	class:Design
 DesignCellIsStdCell	$CODE_ROOT/Design/DesignUtils.cxx	/^DesignCellIsStdCell(Design &myDesign, Cell &thisCell)$/;"	f
 DesignCells	$CODE_ROOT/Design/Design.h	/^  map<string, Cell*> DesignCells;$/;"	m	class:Design
 DesignCells	$CODE_ROOT/include/Design.h	/^  map<string, Cell*> DesignCells;$/;"	m	class:Design
@@ -591,21 +633,26 @@ DesignCoarsenNetlist	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignCoarsenNe
 DesignCollapseClusters	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignCollapseClusters(void)$/;"	f	class:Design
 DesignCollectStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^DesignCollectStats(Design& myDesign)$/;"	f
 DesignCommitCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignCommitCluster(Cell *clusterCell)$/;"	f	class:Design
+DesignComputeBinSize	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignComputeBinSize(bool ILR) $/;"	f	class:Design
+DesignComputeBinSize	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignComputeBinSize(uint binHeight, uint binWidth)$/;"	f	class:Design
 DesignComputeForceOnCell	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignComputeForceOnCell(Cell *thisCell, double &totalXForce, $/;"	f	class:Design
-DesignCreateBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCreateBins(uint binHeight, uint binWidth)$/;"	f	class:Design
-DesignCreateBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCreateBins(void)$/;"	f	class:Design
+DesignComputeHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignComputeHPWL()$/;"	f	class:Design
+DesignCreateBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCreateBins()$/;"	f	class:Design
+DesignCreateEmptyBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignCreateEmptyBins()$/;"	f	class:Design
 DesignCreateGraph	$CODE_ROOT/Design/DesignGraph.cxx	/^Design::DesignCreateGraph(HyperGraph& thisGraph)$/;"	f	class:Design
-DesignCreatePseudoPort	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignCreatePseudoPort(Cell &thisCell,$/;"	f	class:Design
-DesignCreatePseudoPortOld	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignCreatePseudoPortOld(Cell &thisCell,$/;"	f	class:Design
+DesignCreatePseudoPort	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignCreatePseudoPort(Cell &thisCell, double newXpos, double newYpos,$/;"	f	class:Design
+DesignCreatePseudoPortOld	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignCreatePseudoPortOld(Cell &thisCell, double newXpos, double newYpos,$/;"	f	class:Design
 DesignDeleteCell	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDeleteCell(Cell *cellPtr)$/;"	f	class:Design
 DesignDeleteGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDeleteGraph(void)$/;"	f	class:Design
 DesignDeletePin	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDeletePin(Pin *pinPtr)$/;"	f	class:Design
+DesignDestroyBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignDestroyBins(void)$/;"	f	class:Design
 DesignDoBestChoiceClustering	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoBestChoiceClustering(HyperGraph &myGraph)$/;"	f	class:Design
 DesignDoClusterTest	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoClusterTest()$/;"	f	class:Design
 DesignDoDefaultCluster	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoDefaultCluster(HyperGraph &myGraph)$/;"	f	class:Design
 DesignDoDetailedPlacement	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignDoDetailedPlacement(void)$/;"	f	class:Design
 DesignDoFirstChoiceClustering	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoFirstChoiceClustering(HyperGraph &myGraph)$/;"	f	class:Design
 DesignDoGlobalPlacement	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignDoGlobalPlacement(void)$/;"	f	class:Design
+DesignDoILRIter	$CODE_ROOT/Design/DesignSpreadILR.cxx	/^Design::DesignDoILRIter(void)$/;"	f	class:Design
 DesignDoLegalization	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignDoLegalization(void)$/;"	f	class:Design
 DesignDoTimingDrivenCluster	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^Design::DesignDoTimingDrivenCluster(HyperGraph &myGraph)$/;"	f	class:Design
 DesignEnv	$CODE_ROOT/Design/Design.h	/^  Env DesignEnv;$/;"	m	class:Design
@@ -630,13 +677,18 @@ DesignFileReadPlacedCells	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignFileR
 DesignFileReadRows	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignFileReadRows(ifstream& file)$/;"	f	class:Design
 DesignGetAverageStdCellHeight	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetAverageStdCellHeight()$/;"	f	class:Design
 DesignGetAverageStdCellWidth	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetAverageStdCellWidth()$/;"	f	class:Design
+DesignGetAverageUtil	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetAverageUtil(void)$/;"	f	class:Design
+DesignGetBinHeight	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetBinHeight(void)$/;"	f	class:Design
+DesignGetBinWidth	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetBinWidth(void)$/;"	f	class:Design
 DesignGetBins	$CODE_ROOT/Design/DesignMain.cxx	/^vector<Bin*>& Design::DesignGetBins(void)$/;"	f	class:Design
+DesignGetBinsCreated	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetBinsCreated(void)$/;"	f	class:Design
 DesignGetBoundaryPoints	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignGetBoundaryPoints(double cellXpos, double cellYpos, double magnitude,$/;"	f	class:Design
 DesignGetBoundingBox	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetBoundingBox(uint &maxx, uint &maxy)$/;"	f	class:Design
 DesignGetCells	$CODE_ROOT/Design/DesignMain.cxx	/^map<string,Cell*>& Design::DesignGetCells(void)$/;"	f	class:Design
 DesignGetCellsOfBin	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignGetCellsOfBin(Bin *binPtr, uint left, uint right, uint bot, uint top,$/;"	f	class:Design
 DesignGetCellsSortedByBot	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCellsSortedByBot(void)$/;"	f	class:Design
 DesignGetCellsSortedByLeft	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCellsSortedByLeft(void)$/;"	f	class:Design
+DesignGetCellsSortedByRight	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCellsSortedByRight(void)$/;"	f	class:Design
 DesignGetCellsToSolve	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetCellsToSolve(void)$/;"	f	class:Design
 DesignGetClockPeriod	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetClockPeriod(void)$/;"	f	class:Design
 DesignGetClusterDimensions	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignGetClusterDimensions(vector<Cell *> &listOfCells, $/;"	f	class:Design
@@ -644,13 +696,18 @@ DesignGetClusters	$CODE_ROOT/Design/DesignMain.cxx	/^map<string,Cell*>& Design::
 DesignGetConnectedCells	$CODE_ROOT/Design/DesignUtils.cxx	/^DesignGetConnectedCells(HyperGraph &myGraph, Cell *cellPtr)$/;"	f
 DesignGetDelayArc	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetDelayArc(string libCell, string outputPin, string inputPin)$/;"	f	class:Design
 DesignGetEnv	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetEnv(void)$/;"	f	class:Design
-DesignGetForceOnCell	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignGetForceOnCell(Cell &thisCell,$/;"	f	class:Design
+DesignGetForceOnCell	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignGetForceOnCell(Cell &thisCell, double newXPos, double newYPos,$/;"	f	class:Design
 DesignGetGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetGraph(void)$/;"	f	class:Design
+DesignGetHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetHPWL(void)$/;"	f	class:Design
+DesignGetILRMultiple	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetILRMultiple(void)$/;"	f	class:Design
+DesignGetMaxUtil	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetMaxUtil(void)$/;"	f	class:Design
 DesignGetName	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetName(void)$/;"	f	class:Design
 DesignGetNets	$CODE_ROOT/Design/DesignMain.cxx	/^map<string,Net*>& Design::DesignGetNets(void)$/;"	f	class:Design
 DesignGetNextColBinIdx	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNextColBinIdx(uint binIdx)$/;"	f	class:Design
 DesignGetNextRowBinIdx	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNextRowBinIdx(uint binIdx)$/;"	f	class:Design
 DesignGetNode	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNode(string nodeName)$/;"	f	class:Design
+DesignGetNumBinCols	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNumBinCols(void)$/;"	f	class:Design
+DesignGetNumBinRows	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNumBinRows(void)$/;"	f	class:Design
 DesignGetNumCells	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNumCells(void)$/;"	f	class:Design
 DesignGetNumClusters	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNumClusters(void)$/;"	f	class:Design
 DesignGetNumFixedCells	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetNumFixedCells(void)$/;"	f	class:Design
@@ -671,8 +728,14 @@ DesignGetRowHeights	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetRowHeigh
 DesignGetRows	$CODE_ROOT/Design/DesignMain.cxx	/^vector<PhysRow*>& Design::DesignGetRows(void)$/;"	f	class:Design
 DesignGetSingleRowHeight	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetSingleRowHeight(void)$/;"	f	class:Design
 DesignGetStatData	$CODE_ROOT/Design/DesignAnalysis.cxx	/^DesignGetStatData(map<dataType, unsigned int> table) $/;"	f
+DesignGetTotalNumOccBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetTotalNumOccBins(void)$/;"	f	class:Design
+DesignGetTotalUtil	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetTotalUtil(void)$/;"	f	class:Design
+DesignGetXHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetXHPWL(void)$/;"	f	class:Design
+DesignGetYHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignGetYHPWL(void)$/;"	f	class:Design
 DesignGraphPtr	$CODE_ROOT/Design/Design.h	/^  HyperGraph *DesignGraphPtr;$/;"	m	class:Design
 DesignGraphPtr	$CODE_ROOT/include/Design.h	/^  HyperGraph *DesignGraphPtr;$/;"	m	class:Design
+DesignHPWL	$CODE_ROOT/Design/Design.h	/^  ulong DesignHPWL;$/;"	m	class:Design
+DesignHPWL	$CODE_ROOT/include/Design.h	/^  ulong DesignHPWL;$/;"	m	class:Design
 DesignHiddenCells	$CODE_ROOT/Design/Design.h	/^  map<string, Cell*> DesignHiddenCells;$/;"	m	class:Design
 DesignHiddenCells	$CODE_ROOT/include/Design.h	/^  map<string, Cell*> DesignHiddenCells;$/;"	m	class:Design
 DesignHiddenNets	$CODE_ROOT/Design/Design.h	/^  map<string, Net*> DesignHiddenNets;$/;"	m	class:Design
@@ -682,6 +745,7 @@ DesignHideNet	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignHideNet(Net *netP
 DesignInit	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignInit()$/;"	f	class:Design
 DesignMapFileName	$CODE_ROOT/Design/Design.h	/^  string DesignMapFileName;$/;"	m	class:Design
 DesignMapFileName	$CODE_ROOT/include/Design.h	/^  string DesignMapFileName;$/;"	m	class:Design
+DesignMoveCellsInBinsILR	$CODE_ROOT/Design/DesignSpreadILR.cxx	/^Design::DesignMoveCellsInBinsILR(void)$/;"	f	class:Design
 DesignName	$CODE_ROOT/Env/Env.h	/^  string DesignName;$/;"	m	class:Env
 DesignName	$CODE_ROOT/include/Env.h	/^  string DesignName;$/;"	m	class:Env
 DesignNetFileName	$CODE_ROOT/Design/Design.h	/^  string DesignNetFileName;$/;"	m	class:Design
@@ -712,6 +776,7 @@ DesignPlotCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignPlotCluste
 DesignPlotData	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignPlotData(string plotTitle, string plotFileName)$/;"	f	class:Design
 DesignPlotDataSelected	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignPlotDataSelected(string plotTitle, string plotFileName,$/;"	f	class:Design
 DesignPrintPorts	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::DesignPrintPorts(uint numPorts)$/;"	f	class:Design
+DesignPrintSpreadIter	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignPrintSpreadIter(uint itrCount, uint numSolverXIter, uint numSolverYIter) $/;"	f	class:Design
 DesignPrintTerminals	$CODE_ROOT/Design/DesignDebug.cxx	/^Design::DesignPrintTerminals(uint numTerminals)$/;"	f	class:Design
 DesignProcessProperty	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignProcessProperty(ifstream& file, string& Property, $/;"	f	class:Design
 DesignReadCellDelaysFile	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadCellDelaysFile()$/;"	f	class:Design
@@ -726,6 +791,8 @@ DesignReadPathDelays	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadPathDe
 DesignReadPinsMapFile	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadPinsMapFile()$/;"	f	class:Design
 DesignReadRows	$CODE_ROOT/Design/DesignRead.cxx	/^Design::DesignReadRows()$/;"	f	class:Design
 DesignRebuildGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignRebuildGraph(void)$/;"	f	class:Design
+DesignRefreshBins	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignRefreshBins()$/;"	f	class:Design
+DesignRemoveFromHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignRemoveFromHPWL(ulong removeHPWL)$/;"	f	class:Design
 DesignRemoveOneClusterFromDesignDB	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignRemoveOneClusterFromDesignDB(Cell *clusterCell)$/;"	f	class:Design
 DesignRunExternalPlacer	$CODE_ROOT/Design/DesignPlace.cxx	/^Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType) $/;"	f	class:Design
 DesignRunFastPlace	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)$/;"	f	class:Design
@@ -736,16 +803,25 @@ DesignRunMPL6	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunMPL6(string c
 DesignRunNTUPlace	$CODE_ROOT/Design/DesignUtils.cxx	/^Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName)$/;"	f	class:Design
 DesignSclFileName	$CODE_ROOT/Design/Design.h	/^  string DesignSclFileName;$/;"	m	class:Design
 DesignSclFileName	$CODE_ROOT/include/Design.h	/^  string DesignSclFileName;$/;"	m	class:Design
+DesignSetBinHeight	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetBinHeight(uint binHeight)$/;"	f	class:Design
+DesignSetBinWidth	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetBinWidth(uint binWidth)$/;"	f	class:Design
+DesignSetBinsCreated	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetBinsCreated(bool binsCreated)$/;"	f	class:Design
 DesignSetCellsToSolve	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetCellsToSolve(vector<Cell *> cellsToSolve)$/;"	f	class:Design
 DesignSetClockPeriod	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetClockPeriod(double clkPeriod)$/;"	f	class:Design
 DesignSetEnv	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetEnv(Env &thisEnv)$/;"	f	class:Design
 DesignSetGraph	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetGraph(HyperGraph& thisGraph) $/;"	f	class:Design
+DesignSetHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetHPWL(ulong designHPWL)$/;"	f	class:Design
+DesignSetILRMultiple	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetILRMultiple(uint ILRMultiple)$/;"	f	class:Design
+DesignSetMaxUtil	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetMaxUtil(double maxUtil)$/;"	f	class:Design
 DesignSetNumBinCols	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetNumBinCols(uint numCols)$/;"	f	class:Design
 DesignSetNumBinRows	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetNumBinRows(uint numRows)$/;"	f	class:Design
 DesignSetPeakUtil	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetPeakUtil(double maxUtil)$/;"	f	class:Design
 DesignSetPeakUtilBinIdx	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetPeakUtilBinIdx(uint peakUtilBinIdx)$/;"	f	class:Design
 DesignSetVarsPostRead	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetVarsPostRead()$/;"	f	class:Design
+DesignSetXHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetXHPWL(ulong DesignXHPWL)$/;"	f	class:Design
+DesignSetYHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignSetYHPWL(ulong DesignYHPWL)$/;"	f	class:Design
 DesignShiftChipToZeroZero	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignShiftChipToZeroZero(void)$/;"	f	class:Design
+DesignShrinkBinsForILR	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignShrinkBinsForILR(void)$/;"	f	class:Design
 DesignSimpleCollapseCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignSimpleCollapseCluster(Cell *cellToCollapse, $/;"	f	class:Design
 DesignSolveFastOOQP	$CODE_ROOT/Design/.bak/DesignSolveFastOOQP.cxx	/^Design::DesignSolveFastOOQP(void)$/;"	f	class:Design
 DesignSolveFastOOQP	$CODE_ROOT/Design/.bak/DesignSolveFastQuadProg.cxx	/^Design::DesignSolveFastOOQP(void)$/;"	f	class:Design
@@ -764,7 +840,9 @@ DesignSolveForAllCellsIterOld	$CODE_ROOT/Design/.bak/DesignSolveFastWn.cxx	/^Des
 DesignSolveForAllCellsMosekIter	$CODE_ROOT/Design/DesignSolveFastMosek7.cxx	/^Design::DesignSolveForAllCellsMosekIter()$/;"	f	class:Design
 DesignSpreadCellsFast	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignSpreadCellsFast(HyperGraph &myGraph, MSKrealt *qvalijx, MSKrealt *qvalijy, $/;"	f	class:Design
 DesignSpreadCreatePseudoPort	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin, $/;"	f	class:Design
+DesignSpreadCreatePseudoPortILR	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignSpreadCreatePseudoPortILR(Cell &thisCell, double cellOldXpos, $/;"	f	class:Design
 DesignStretchBins	$CODE_ROOT/Design/DesignSpread.cxx	/^Design::DesignStretchBins(void)$/;"	f	class:Design
+DesignTestCellMovement	$CODE_ROOT/Design/DesignSpreadILR.cxx	/^Design::DesignTestCellMovement(void)$/;"	f	class:Design
 DesignUnclusterCell	$CODE_ROOT/Design/DesignCluster.cxx	/^Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)$/;"	f	class:Design
 DesignUnhideCell	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignUnhideCell(Cell *thisCell)$/;"	f	class:Design
 DesignUnhideNet	$CODE_ROOT/Design/DesignMain.cxx	/^Design::DesignUnhideNet(Net *netPtr)$/;"	f	class:Design
@@ -780,6 +858,10 @@ DesignWritePlacement	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWritePlacement(De
 DesignWriteScl	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWriteScl(Design &myDesign, string fname)$/;"	f
 DesignWriteStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^void DesignWriteStats(Design& myDesign)$/;"	f
 DesignWriteWtsFile	$CODE_ROOT/Design/DesignWrite.cxx	/^DesignWriteWtsFile(Design &myDesign, string fname) $/;"	f
+DesignXHPWL	$CODE_ROOT/Design/Design.h	/^  ulong DesignXHPWL, DesignYHPWL;$/;"	m	class:Design
+DesignXHPWL	$CODE_ROOT/include/Design.h	/^  ulong DesignXHPWL, DesignYHPWL;$/;"	m	class:Design
+DesignYHPWL	$CODE_ROOT/Design/Design.h	/^  ulong DesignXHPWL, DesignYHPWL;$/;"	m	class:Design
+DesignYHPWL	$CODE_ROOT/include/Design.h	/^  ulong DesignXHPWL, DesignYHPWL;$/;"	m	class:Design
 DetailedPlacementStartTime	$CODE_ROOT/Env/Env.h	/^  double DetailedPlacementStartTime;$/;"	m	class:Env
 DetailedPlacementStartTime	$CODE_ROOT/include/Env.h	/^  double DetailedPlacementStartTime;$/;"	m	class:Env
 DetailedPlacementTime	$CODE_ROOT/Env/Env.h	/^  double DetailedPlacementTime;$/;"	m	class:Env
@@ -791,7 +873,7 @@ DiscreteHeight	$CODE_ROOT/Env/Env.h	/^  bool DiscreteHeight;$/;"	m	class:Env
 DiscreteHeight	$CODE_ROOT/include/Env.h	/^  bool DiscreteHeight;$/;"	m	class:Env
 DiscreteWidth	$CODE_ROOT/Env/Env.h	/^  bool DiscreteWidth;$/;"	m	class:Env
 DiscreteWidth	$CODE_ROOT/include/Env.h	/^  bool DiscreteWidth;$/;"	m	class:Env
-DoMerge	$CODE_ROOT/Sort/SortMain.cxx	/^DoMerge(vector<Type> &thisVector, int Left, int Mid, int Right,	funcPtrType this_func) $/;"	f
+DoMerge	$CODE_ROOT/Sort_bak/SortMain.cxx	/^DoMerge(vector<Type> &thisVector, int Left, int Mid, int Right,	funcPtrType this_func) $/;"	f
 DumpHessian	$CODE_ROOT/Env/Env.h	/^  bool DumpHessian;$/;"	m	class:Env
 DumpHessian	$CODE_ROOT/include/Env.h	/^  bool DumpHessian;$/;"	m	class:Env
 E	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
@@ -804,8 +886,8 @@ EDGE_FOR_ALL_NODES	$CODE_ROOT/HyperGraph/EdgeIter.h	4;"	d
 EDGE_H	$CODE_ROOT/HyperGraph/Edge.h	2;"	d
 EDGE_H	$CODE_ROOT/include/Edge.h	2;"	d
 EDGE_ITER_H	$CODE_ROOT/HyperGraph/EdgeIter.h	2;"	d
-END_FOR	$CODE_ROOT/common/commonIter.h	30;"	d
-END_FOR	$CODE_ROOT/include/commonIter.h	30;"	d
+END_FOR	$CODE_ROOT/common/commonIter.h	31;"	d
+END_FOR	$CODE_ROOT/include/commonIter.h	31;"	d
 ENV_BEST_CHOICE_CLUSTERING	$CODE_ROOT/Env/Env.h	/^  ENV_BEST_CHOICE_CLUSTERING,$/;"	e	enum:__anon42
 ENV_BEST_CHOICE_CLUSTERING	$CODE_ROOT/include/Env.h	/^  ENV_BEST_CHOICE_CLUSTERING,$/;"	e	enum:__anon18
 ENV_BIN_BASED_LEGALIZER	$CODE_ROOT/Env/Env.h	/^  ENV_BIN_BASED_LEGALIZER,$/;"	e	enum:__anon39
@@ -943,6 +1025,7 @@ EnvGetHyperGraphBuildTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetHyperGraphBuil
 EnvGetLegalizationStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetLegalizationStartTime(void)$/;"	f	class:Env
 EnvGetLegalizationTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetLegalizationTime(void)$/;"	f	class:Env
 EnvGetLegalizer	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetLegalizer(void)$/;"	f	class:Env
+EnvGetMaxUtilPhaseI	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetMaxUtilPhaseI(void) $/;"	f	class:Env
 EnvGetNetModel	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNetModel(void)$/;"	f	class:Env
 EnvGetNetlistReadStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNetlistReadStartTime(void)$/;"	f	class:Env
 EnvGetNetlistReadTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvGetNetlistReadTime(void)$/;"	f	class:Env
@@ -972,10 +1055,12 @@ EnvNetModel	$CODE_ROOT/include/Env.h	/^} EnvNetModel;$/;"	t	typeref:enum:__anon1
 EnvOptType	$CODE_ROOT/Env/Env.h	/^} EnvOptType;$/;"	t	typeref:enum:__anon41
 EnvOptType	$CODE_ROOT/include/Env.h	/^} EnvOptType;$/;"	t	typeref:enum:__anon17
 EnvRecordClusteringTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordClusteringTime(void)$/;"	f	class:Env
+EnvRecordDetailedPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordDetailedPlacementTime(double detailedPlacementTime)$/;"	f	class:Env
 EnvRecordDetailedPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordDetailedPlacementTime(void)$/;"	f	class:Env
-EnvRecordGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordGlobalPlacementTime(double currTime)$/;"	f	class:Env
+EnvRecordGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordGlobalPlacementTime(double globalPlacementTime)$/;"	f	class:Env
 EnvRecordGlobalPlacementTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordGlobalPlacementTime(void)$/;"	f	class:Env
 EnvRecordHyperGraphBuildTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordHyperGraphBuildTime(void)$/;"	f	class:Env
+EnvRecordLegalizationTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordLegalizationTime(double legalizationTime)$/;"	f	class:Env
 EnvRecordLegalizationTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordLegalizationTime(void)$/;"	f	class:Env
 EnvRecordNetlistReadTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordNetlistReadTime(void)$/;"	f	class:Env
 EnvRecordShapeSelectionTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvRecordShapeSelectionTime(void)$/;"	f	class:Env
@@ -994,6 +1079,7 @@ EnvSetGlobalPlacerType	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetGlobalPlacerType(
 EnvSetHyperGraphBuildStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetHyperGraphBuildStartTime(void)$/;"	f	class:Env
 EnvSetLegalizationStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetLegalizationStartTime(void)$/;"	f	class:Env
 EnvSetLegalizer	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetLegalizer(EnvLegalizer Legalizer)$/;"	f	class:Env
+EnvSetMaxUtilPhaseI	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetMaxUtilPhaseI(double MaxUtilPhaseI) $/;"	f	class:Env
 EnvSetNetModel	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNetModel(EnvNetModel NetModel)$/;"	f	class:Env
 EnvSetNetlistReadStartTime	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNetlistReadStartTime(void)$/;"	f	class:Env
 EnvSetNumCellsFromFile	$CODE_ROOT/Env/EnvMain.cxx	/^Env::EnvSetNumCellsFromFile(uint NumCellsFromFile)$/;"	f	class:Env
@@ -1032,32 +1118,32 @@ FLIB	$CODE_ROOT/example/Makefile	/^  FLIB     = -lftn$/;"	m
 FN	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 FN	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
 FORCE_DIR_BOT	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	11;"	d	file:
-FORCE_DIR_BOT	$CODE_ROOT/Design/Design.h	127;"	d
-FORCE_DIR_BOT	$CODE_ROOT/include/Design.h	127;"	d
+FORCE_DIR_BOT	$CODE_ROOT/Design/Design.h	126;"	d
+FORCE_DIR_BOT	$CODE_ROOT/include/Design.h	126;"	d
 FORCE_DIR_FIRST_QUAD	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	4;"	d	file:
-FORCE_DIR_FIRST_QUAD	$CODE_ROOT/Design/Design.h	120;"	d
-FORCE_DIR_FIRST_QUAD	$CODE_ROOT/include/Design.h	120;"	d
+FORCE_DIR_FIRST_QUAD	$CODE_ROOT/Design/Design.h	119;"	d
+FORCE_DIR_FIRST_QUAD	$CODE_ROOT/include/Design.h	119;"	d
 FORCE_DIR_FOURTH_QUAD	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	7;"	d	file:
-FORCE_DIR_FOURTH_QUAD	$CODE_ROOT/Design/Design.h	123;"	d
-FORCE_DIR_FOURTH_QUAD	$CODE_ROOT/include/Design.h	123;"	d
+FORCE_DIR_FOURTH_QUAD	$CODE_ROOT/Design/Design.h	122;"	d
+FORCE_DIR_FOURTH_QUAD	$CODE_ROOT/include/Design.h	122;"	d
 FORCE_DIR_LEFT	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	9;"	d	file:
-FORCE_DIR_LEFT	$CODE_ROOT/Design/Design.h	125;"	d
-FORCE_DIR_LEFT	$CODE_ROOT/include/Design.h	125;"	d
+FORCE_DIR_LEFT	$CODE_ROOT/Design/Design.h	124;"	d
+FORCE_DIR_LEFT	$CODE_ROOT/include/Design.h	124;"	d
 FORCE_DIR_NO_FORCE	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	3;"	d	file:
-FORCE_DIR_NO_FORCE	$CODE_ROOT/Design/Design.h	119;"	d
-FORCE_DIR_NO_FORCE	$CODE_ROOT/include/Design.h	119;"	d
+FORCE_DIR_NO_FORCE	$CODE_ROOT/Design/Design.h	118;"	d
+FORCE_DIR_NO_FORCE	$CODE_ROOT/include/Design.h	118;"	d
 FORCE_DIR_RIGHT	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	8;"	d	file:
-FORCE_DIR_RIGHT	$CODE_ROOT/Design/Design.h	124;"	d
-FORCE_DIR_RIGHT	$CODE_ROOT/include/Design.h	124;"	d
+FORCE_DIR_RIGHT	$CODE_ROOT/Design/Design.h	123;"	d
+FORCE_DIR_RIGHT	$CODE_ROOT/include/Design.h	123;"	d
 FORCE_DIR_SECOND_QUAD	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	5;"	d	file:
-FORCE_DIR_SECOND_QUAD	$CODE_ROOT/Design/Design.h	121;"	d
-FORCE_DIR_SECOND_QUAD	$CODE_ROOT/include/Design.h	121;"	d
+FORCE_DIR_SECOND_QUAD	$CODE_ROOT/Design/Design.h	120;"	d
+FORCE_DIR_SECOND_QUAD	$CODE_ROOT/include/Design.h	120;"	d
 FORCE_DIR_THIRD_QUAD	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	6;"	d	file:
-FORCE_DIR_THIRD_QUAD	$CODE_ROOT/Design/Design.h	122;"	d
-FORCE_DIR_THIRD_QUAD	$CODE_ROOT/include/Design.h	122;"	d
+FORCE_DIR_THIRD_QUAD	$CODE_ROOT/Design/Design.h	121;"	d
+FORCE_DIR_THIRD_QUAD	$CODE_ROOT/include/Design.h	121;"	d
 FORCE_DIR_TOP	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	10;"	d	file:
-FORCE_DIR_TOP	$CODE_ROOT/Design/Design.h	126;"	d
-FORCE_DIR_TOP	$CODE_ROOT/include/Design.h	126;"	d
+FORCE_DIR_TOP	$CODE_ROOT/Design/Design.h	125;"	d
+FORCE_DIR_TOP	$CODE_ROOT/include/Design.h	125;"	d
 FS	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 FS	$CODE_ROOT/include/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon6
 FW	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
@@ -1100,7 +1186,6 @@ GetEdgesOfNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOf
 GetEdgesOfNodes	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfNodes(uint nodeIdx1, uint nodeIdx2)$/;"	f	class:HyperGraph
 GetEdgesOfObject	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfObject(void *object)$/;"	f	class:HyperGraph
 GetEdgesOfObjects	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetEdgesOfObjects(void *object1, void *object2)$/;"	f	class:HyperGraph
-GetItems	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::GetItems(void)$/;"	f	class:PriorityQueue
 GetItems	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::GetItems(void)$/;"	f	class:PriorityQueue
 GetItems	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::GetItems(void)$/;"	f	class:PriorityQueue
 GetNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetNode(uint nodeIdx)$/;"	f	class:HyperGraph
@@ -1115,9 +1200,11 @@ GetObjIndex	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetObjIndex(v
 GetObjs	$CODE_ROOT/Design/Design.h	/^  double GetObjs(T &obj1, T &obj2) $/;"	f	class:objPairScore
 GetObjs	$CODE_ROOT/include/Design.h	/^  double GetObjs(T &obj1, T &obj2) $/;"	f	class:objPairScore
 GetOtherNodeOfEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::GetOtherNodeOfEdge(uint edgeIdx, void *obj)$/;"	f	class:HyperGraph
+GetParentCellName	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::GetParentCellName()$/;"	f	class:Pin
+GetParentCellXpos	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::GetParentCellXpos()$/;"	f	class:Pin
+GetParentCellYpos	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::GetParentCellYpos()$/;"	f	class:Pin
 GetScore	$CODE_ROOT/Design/Design.h	/^  double GetScore() const$/;"	f	class:objPairScore
 GetScore	$CODE_ROOT/include/Design.h	/^  double GetScore() const$/;"	f	class:objPairScore
-GetSize	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::GetSize(void) const$/;"	f	class:PriorityQueue
 GetSize	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::GetSize(void) const$/;"	f	class:PriorityQueue
 GetSize	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::GetSize(void) const$/;"	f	class:PriorityQueue
 GetTriplet	$CODE_ROOT/ConjGrad/ConjGradSolver.cxx	/^SpMat::GetTriplet(uint **idxi, uint **idxj, double **val) const$/;"	f	class:SpMat
@@ -1178,12 +1265,9 @@ HFILES	$CODE_ROOT/Pin/src.mk	/^HFILES := Pin$/;"	m
 HFILES	$CODE_ROOT/Plot/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
 HFILES	$CODE_ROOT/Plot/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
 HFILES	$CODE_ROOT/Plot/src.mk	/^HFILES := Plot$/;"	m
-HFILES	$CODE_ROOT/PriorityQueue/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
-HFILES	$CODE_ROOT/PriorityQueue/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
-HFILES	$CODE_ROOT/PriorityQueue/src.mk	/^HFILES := PriorityQueue common$/;"	m
-HFILES	$CODE_ROOT/Sort/Makefile	/^HFILES := Sort$/;"	m
-HFILES	$CODE_ROOT/Sort/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
-HFILES	$CODE_ROOT/Sort/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
+HFILES	$CODE_ROOT/Sort_bak/Makefile	/^HFILES := Sort$/;"	m
+HFILES	$CODE_ROOT/Sort_bak/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
+HFILES	$CODE_ROOT/Sort_bak/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
 HFILES	$CODE_ROOT/Stat/Makefile	/^HFILES:= $(addprefix $(INCLUDE_DIR)\/, $(HFILES))$/;"	m
 HFILES	$CODE_ROOT/Stat/Makefile	/^HFILES:=$(HFILES:=.h)$/;"	m
 HFILES	$CODE_ROOT/Stat/src.mk	/^HFILES := Stat$/;"	m
@@ -1199,8 +1283,8 @@ HIGHLIGHTED_PIN	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_PIN,$/;"	e	enum:__anon28
 HIGHLIGHTED_PIN	$CODE_ROOT/include/Plot.h	/^  HIGHLIGHTED_PIN,$/;"	e	enum:__anon9
 HIGHLIGHTED_RECT	$CODE_ROOT/Plot/Plot.h	/^  HIGHLIGHTED_RECT,$/;"	e	enum:__anon28
 HIGHLIGHTED_RECT	$CODE_ROOT/include/Plot.h	/^  HIGHLIGHTED_RECT,$/;"	e	enum:__anon9
-HIGH_FANOUT	$CODE_ROOT/Design/Design.h	114;"	d
-HIGH_FANOUT	$CODE_ROOT/include/Design.h	114;"	d
+HIGH_FANOUT	$CODE_ROOT/Design/Design.h	113;"	d
+HIGH_FANOUT	$CODE_ROOT/include/Design.h	113;"	d
 HORIZONTAL	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon30
 HORIZONTAL	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon26
 HYPERGRAPH_END_FOR	$CODE_ROOT/HyperGraph/HyperGraphIter.h	85;"	d
@@ -1236,6 +1320,8 @@ HyperGraphBuildStartTime	$CODE_ROOT/Env/Env.h	/^  double HyperGraphBuildStartTim
 HyperGraphBuildStartTime	$CODE_ROOT/include/Env.h	/^  double HyperGraphBuildStartTime;$/;"	m	class:Env
 HyperGraphBuildTime	$CODE_ROOT/Env/Env.h	/^  double HyperGraphBuildTime;$/;"	m	class:Env
 HyperGraphBuildTime	$CODE_ROOT/include/Env.h	/^  double HyperGraphBuildTime;$/;"	m	class:Env
+ILRMultiple	$CODE_ROOT/Design/Design.h	/^  uint ILRMultiple;$/;"	m	class:Design
+ILRMultiple	$CODE_ROOT/include/Design.h	/^  uint ILRMultiple;$/;"	m	class:Design
 INCLUDE_DIR	$CODE_ROOT/AnalyticalSolve/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/AnalyticalSolve/backup/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/Bin/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
@@ -1253,8 +1339,7 @@ INCLUDE_DIR	$CODE_ROOT/Path/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/PhysData/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/Pin/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/Plot/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
-INCLUDE_DIR	$CODE_ROOT/PriorityQueue/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
-INCLUDE_DIR	$CODE_ROOT/Sort/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
+INCLUDE_DIR	$CODE_ROOT/Sort_bak/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/Stat/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/TimingModels/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
 INCLUDE_DIR	$CODE_ROOT/common/Makefile	/^INCLUDE_DIR=$(CODE_ROOT)\/include$/;"	m
@@ -1304,8 +1389,8 @@ LEGALIZE_H	$CODE_ROOT/include/Legalize.h	2;"	d
 LFLAGS	$CODE_ROOT/Makefile	/^LFLAGS= $/;"	m
 LIBMOSEK	$CODE_ROOT/Makefile	/^LIBMOSEK= -lmosek64 -pthread$/;"	m
 LIBQUADPROG	$CODE_ROOT/Makefile	/^LIBQUADPROG= #-lQuadProgpp$/;"	m
-LIBS	$CODE_ROOT/Makefile	/^LIBS= .\/libs\/text.a -L\/usr\/local\/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)$/;"	m
-LIBSOOQP	$CODE_ROOT/Makefile	/^LIBSOOQP= -lblas \/usr\/local\/lib\/libma27.a -lgfortran -lprofiler$/;"	m
+LIBS	$CODE_ROOT/Makefile	/^LIBS= -L\/usr\/local\/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)$/;"	m
+LIBSOOQP	$CODE_ROOT/Makefile	/^LIBSOOQP= -lblas -lgfortran -lprofiler$/;"	m
 L_ready	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   CEO_0, In_mem_RE, S_ready, WE_transport, transport_done, L_ready,$/;"	n
 LegalizationStartTime	$CODE_ROOT/Env/Env.h	/^  double LegalizationStartTime;$/;"	m	class:Env
 LegalizationStartTime	$CODE_ROOT/include/Env.h	/^  double LegalizationStartTime;$/;"	m	class:Env
@@ -1398,20 +1483,20 @@ LowerTriangle	$CODE_ROOT/cghs/cblas.h	/^enum MatrixTriangle { UpperTriangle=0, L
 LowerTriangle	$CODE_ROOT/include/cblas.h	/^enum MatrixTriangle { UpperTriangle=0, LowerTriangle=1 };$/;"	e	enum:MatrixTriangle
 M	$CODE_ROOT/example/laplace3d.cc	/^  const double (&M)[8][8];      \/\/ Element-Matrix$/;"	m	struct:Matrix0bnd	file:
 MAKE	$CODE_ROOT/Makefile	/^MAKE=make$/;"	m
-MAP_FOR_ALL_ELEMS	$CODE_ROOT/common/commonIter.h	19;"	d
-MAP_FOR_ALL_ELEMS	$CODE_ROOT/include/commonIter.h	19;"	d
-MAP_FOR_ALL_KEYS	$CODE_ROOT/common/commonIter.h	25;"	d
-MAP_FOR_ALL_KEYS	$CODE_ROOT/include/commonIter.h	25;"	d
+MAP_FOR_ALL_ELEMS	$CODE_ROOT/common/commonIter.h	20;"	d
+MAP_FOR_ALL_ELEMS	$CODE_ROOT/include/commonIter.h	20;"	d
+MAP_FOR_ALL_KEYS	$CODE_ROOT/common/commonIter.h	26;"	d
+MAP_FOR_ALL_KEYS	$CODE_ROOT/include/commonIter.h	26;"	d
 MAXX	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveOldWorking.cxx	6;"	d	file:
 MAXY	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveOldWorking.cxx	7;"	d	file:
 MAX_DBL	$CODE_ROOT/CellSpread/CellSpreadMain.cxx	12;"	d	file:
-MAX_DBL	$CODE_ROOT/Design/Design.h	128;"	d
-MAX_DBL	$CODE_ROOT/include/Design.h	128;"	d
+MAX_DBL	$CODE_ROOT/Design/Design.h	127;"	d
+MAX_DBL	$CODE_ROOT/include/Design.h	127;"	d
 MAX_OUTPUTS	$CODE_ROOT/Design/DesignAnalysis.cxx	12;"	d	file:
-MAX_PATHS	$CODE_ROOT/Design/Design.h	24;"	d
-MAX_PATHS	$CODE_ROOT/include/Design.h	24;"	d
-MCOMMA	$CODE_ROOT/common/common.h	87;"	d
-MCOMMA	$CODE_ROOT/include/common.h	87;"	d
+MAX_PATHS	$CODE_ROOT/Design/Design.h	23;"	d
+MAX_PATHS	$CODE_ROOT/include/Design.h	23;"	d
+MCOMMA	$CODE_ROOT/common/common.h	90;"	d
+MCOMMA	$CODE_ROOT/include/common.h	90;"	d
 MEM_USAGE_UNIT	$CODE_ROOT/Stat/Stat.h	4;"	d
 MEM_USAGE_UNIT	$CODE_ROOT/include/Stat.h	4;"	d
 MKDEP	$CODE_ROOT/example/Makefile	/^MKDEP = $(CXX) $(DEPFLAG)$/;"	m
@@ -1433,8 +1518,7 @@ MODULE	$CODE_ROOT/PhysData/Makefile	/^MODULE = PhysData$/;"	m
 MODULE	$CODE_ROOT/PhysData/src.mk	/^MODULE = PhysData$/;"	m
 MODULE	$CODE_ROOT/Pin/src.mk	/^MODULE = Pin$/;"	m
 MODULE	$CODE_ROOT/Plot/src.mk	/^MODULE = Plot$/;"	m
-MODULE	$CODE_ROOT/PriorityQueue/src.mk	/^MODULE = PriorityQueue$/;"	m
-MODULE	$CODE_ROOT/Sort/Makefile	/^MODULE = Sort$/;"	m
+MODULE	$CODE_ROOT/Sort_bak/Makefile	/^MODULE = Sort$/;"	m
 MODULE	$CODE_ROOT/Stat/src.mk	/^MODULE = Stat$/;"	m
 MODULE	$CODE_ROOT/TimingModels/src.mk	/^MODULE = TimingModels$/;"	m
 MODULE	$CODE_ROOT/common/src.mk	/^MODULE = common$/;"	m
@@ -1454,7 +1538,9 @@ MatrixTriangle	$CODE_ROOT/include/cblas.h	/^enum MatrixTriangle { UpperTriangle=
 MatrixUnitTriangular	$CODE_ROOT/ConjGrad/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	g
 MatrixUnitTriangular	$CODE_ROOT/cghs/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	g
 MatrixUnitTriangular	$CODE_ROOT/include/cblas.h	/^enum MatrixUnitTriangular { UnitTriangular=0, NotUnitTriangular=1 };$/;"	g
-MergeSortVector	$CODE_ROOT/Sort/SortMain.cxx	/^MergeSortVector(Type Left, Type Right, cmp_func this_func)$/;"	f
+MaxUtilPhaseI	$CODE_ROOT/Env/Env.h	/^  double MaxUtilPhaseI;$/;"	m	class:Env
+MaxUtilPhaseI	$CODE_ROOT/include/Env.h	/^  double MaxUtilPhaseI;$/;"	m	class:Env
+MergeSortVector	$CODE_ROOT/Sort_bak/SortMain.cxx	/^MergeSortVector(Type Left, Type Right, cmp_func this_func)$/;"	f
 N	$CODE_ROOT/common/common.h	/^typedef enum {N, E, S, W, FN, FE, FS, FW} objOrient;$/;"	e	enum:__anon32
 N	$CODE_ROOT/example/laplace2d.cc	/^  int N;$/;"	m	struct:MassMat	file:
 N	$CODE_ROOT/example/laplace2d.cc	/^  int N;$/;"	m	struct:StiffMat	file:
@@ -1502,8 +1588,8 @@ NB	$CODE_ROOT/example/laplace3d.cc	/^  int NE, NV, NB;               \/\/ #Eleme
 NE	$CODE_ROOT/example/laplace3d.cc	/^  int NE, NV, NB;               \/\/ #Elementen, #Vertices, #Randvertices$/;"	m	struct:Matrix0bnd	file:
 NET_CLUSTER	$CODE_ROOT/Design/Design.h	/^  NET_CLUSTER,$/;"	e	enum:__anon2
 NET_CLUSTER	$CODE_ROOT/include/Design.h	/^  NET_CLUSTER,$/;"	e	enum:__anon22
-NET_DEGREE_PROPERTY	$CODE_ROOT/Design/Design.h	77;"	d
-NET_DEGREE_PROPERTY	$CODE_ROOT/include/Design.h	77;"	d
+NET_DEGREE_PROPERTY	$CODE_ROOT/Design/Design.h	76;"	d
+NET_DEGREE_PROPERTY	$CODE_ROOT/include/Design.h	76;"	d
 NET_END_FOR	$CODE_ROOT/Net/NetIter.h	35;"	d
 NET_END_FOR	$CODE_ROOT/include/NetIter.h	35;"	d
 NET_FOR_ALL_CELLS	$CODE_ROOT/Net/NetIter.h	7;"	d
@@ -1512,8 +1598,8 @@ NET_FOR_ALL_PINS	$CODE_ROOT/Net/NetIter.h	18;"	d
 NET_FOR_ALL_PINS	$CODE_ROOT/include/NetIter.h	18;"	d
 NET_FOR_ALL_PINS_DIR	$CODE_ROOT/Net/NetIter.h	27;"	d
 NET_FOR_ALL_PINS_DIR	$CODE_ROOT/include/NetIter.h	27;"	d
-NET_H	$CODE_ROOT/Net/Net.h	6;"	d
-NET_H	$CODE_ROOT/include/Net.h	6;"	d
+NET_H	$CODE_ROOT/Net/Net.h	7;"	d
+NET_H	$CODE_ROOT/include/Net.h	7;"	d
 NET_IS_HIDDEN_FLAG	$CODE_ROOT/Flags/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:__anon4
 NET_IS_HIDDEN_FLAG	$CODE_ROOT/include/Flags.h	/^  NET_IS_HIDDEN_FLAG,$/;"	e	enum:__anon24
 NET_IS_PSEUDO_FLAG	$CODE_ROOT/Flags/Flags.h	/^  NET_IS_PSEUDO_FLAG,$/;"	e	enum:__anon4
@@ -1522,8 +1608,8 @@ NET_ITER_H	$CODE_ROOT/Net/NetIter.h	2;"	d
 NET_ITER_H	$CODE_ROOT/include/NetIter.h	2;"	d
 NIL	$CODE_ROOT/common/common.h	27;"	d
 NIL	$CODE_ROOT/include/common.h	27;"	d
-NINE	$CODE_ROOT/Design/Design.h	104;"	d
-NINE	$CODE_ROOT/include/Design.h	104;"	d
+NINE	$CODE_ROOT/Design/Design.h	103;"	d
+NINE	$CODE_ROOT/include/Design.h	103;"	d
 NODE_ADJACENT_NODE_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	25;"	d	file:
 NODE_FLAG_CLEAR	$CODE_ROOT/HyperGraph/Node.h	7;"	d
 NODE_FLAG_CLEAR	$CODE_ROOT/include/Node.h	7;"	d
@@ -1546,8 +1632,8 @@ NODE_H	$CODE_ROOT/include/Node.h	2;"	d
 NODE_INPUT_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	24;"	d	file:
 NODE_ITER_H	$CODE_ROOT/HyperGraph/NodeIter.h	2;"	d
 NODE_OUTPUT_TABLE_EXT	$CODE_ROOT/Design/DesignAnalysis.cxx	23;"	d	file:
-NODE_TERMINAL_KEYWORD	$CODE_ROOT/Design/Design.h	70;"	d
-NODE_TERMINAL_KEYWORD	$CODE_ROOT/include/Design.h	70;"	d
+NODE_TERMINAL_KEYWORD	$CODE_ROOT/Design/Design.h	69;"	d
+NODE_TERMINAL_KEYWORD	$CODE_ROOT/include/Design.h	69;"	d
 NORMAL_LINE	$CODE_ROOT/Plot/Plot.h	/^  NORMAL_LINE = 0, $/;"	e	enum:__anon28
 NORMAL_LINE	$CODE_ROOT/include/Plot.h	/^  NORMAL_LINE = 0, $/;"	e	enum:__anon9
 NORMAL_RECT	$CODE_ROOT/Plot/Plot.h	/^  NORMAL_RECT,$/;"	e	enum:__anon28
@@ -1566,37 +1652,37 @@ NUM_ENV_GLOBAL_PLACERS	$CODE_ROOT/Env/Env.h	/^  NUM_ENV_GLOBAL_PLACERS$/;"	e	enu
 NUM_ENV_GLOBAL_PLACERS	$CODE_ROOT/include/Env.h	/^  NUM_ENV_GLOBAL_PLACERS$/;"	e	enum:__anon11
 NUM_ENV_SOLVERS	$CODE_ROOT/Env/Env.h	/^  NUM_ENV_SOLVERS$/;"	e	enum:__anon36
 NUM_ENV_SOLVERS	$CODE_ROOT/include/Env.h	/^  NUM_ENV_SOLVERS$/;"	e	enum:__anon12
-NUM_FIXED_CELL_PROPERTIES	$CODE_ROOT/Design/Design.h	57;"	d
-NUM_FIXED_CELL_PROPERTIES	$CODE_ROOT/include/Design.h	57;"	d
+NUM_FIXED_CELL_PROPERTIES	$CODE_ROOT/Design/Design.h	56;"	d
+NUM_FIXED_CELL_PROPERTIES	$CODE_ROOT/include/Design.h	56;"	d
 NUM_LEGALIZERS	$CODE_ROOT/Env/Env.h	/^  NUM_LEGALIZERS$/;"	e	enum:__anon39
 NUM_LEGALIZERS	$CODE_ROOT/include/Env.h	/^  NUM_LEGALIZERS$/;"	e	enum:__anon15
 NUM_MODES	$CODE_ROOT/Env/Env.h	/^  NUM_MODES$/;"	e	enum:__anon38
 NUM_MODES	$CODE_ROOT/include/Env.h	/^  NUM_MODES$/;"	e	enum:__anon14
-NUM_NETFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	48;"	d
-NUM_NETFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	48;"	d
-NUM_NETS_PROPERTY	$CODE_ROOT/Design/Design.h	75;"	d
-NUM_NETS_PROPERTY	$CODE_ROOT/include/Design.h	75;"	d
+NUM_NETFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	47;"	d
+NUM_NETFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	47;"	d
+NUM_NETS_PROPERTY	$CODE_ROOT/Design/Design.h	74;"	d
+NUM_NETS_PROPERTY	$CODE_ROOT/include/Design.h	74;"	d
 NUM_NET_MODELS	$CODE_ROOT/Env/Env.h	/^  NUM_NET_MODELS$/;"	e	enum:__anon37
 NUM_NET_MODELS	$CODE_ROOT/include/Env.h	/^  NUM_NET_MODELS$/;"	e	enum:__anon13
-NUM_NET_PROPERTIES	$CODE_ROOT/Design/Design.h	55;"	d
-NUM_NET_PROPERTIES	$CODE_ROOT/include/Design.h	55;"	d
-NUM_NODEFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	47;"	d
-NUM_NODEFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	47;"	d
-NUM_NODES_PROPERTY	$CODE_ROOT/Design/Design.h	68;"	d
-NUM_NODES_PROPERTY	$CODE_ROOT/include/Design.h	68;"	d
-NUM_NODE_PROPERTIES	$CODE_ROOT/Design/Design.h	54;"	d
-NUM_NODE_PROPERTIES	$CODE_ROOT/include/Design.h	54;"	d
-NUM_PINS_PROPERTY	$CODE_ROOT/Design/Design.h	76;"	d
-NUM_PINS_PROPERTY	$CODE_ROOT/include/Design.h	76;"	d
-NUM_ROWS_PROPERTY	$CODE_ROOT/Design/Design.h	82;"	d
-NUM_ROWS_PROPERTY	$CODE_ROOT/include/Design.h	82;"	d
-NUM_ROW_PROPERTIES	$CODE_ROOT/Design/Design.h	56;"	d
-NUM_ROW_PROPERTIES	$CODE_ROOT/include/Design.h	56;"	d
-NUM_SCLFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	49;"	d
-NUM_SCLFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	49;"	d
+NUM_NET_PROPERTIES	$CODE_ROOT/Design/Design.h	54;"	d
+NUM_NET_PROPERTIES	$CODE_ROOT/include/Design.h	54;"	d
+NUM_NODEFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	46;"	d
+NUM_NODEFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	46;"	d
+NUM_NODES_PROPERTY	$CODE_ROOT/Design/Design.h	67;"	d
+NUM_NODES_PROPERTY	$CODE_ROOT/include/Design.h	67;"	d
+NUM_NODE_PROPERTIES	$CODE_ROOT/Design/Design.h	53;"	d
+NUM_NODE_PROPERTIES	$CODE_ROOT/include/Design.h	53;"	d
+NUM_PINS_PROPERTY	$CODE_ROOT/Design/Design.h	75;"	d
+NUM_PINS_PROPERTY	$CODE_ROOT/include/Design.h	75;"	d
+NUM_ROWS_PROPERTY	$CODE_ROOT/Design/Design.h	81;"	d
+NUM_ROWS_PROPERTY	$CODE_ROOT/include/Design.h	81;"	d
+NUM_ROW_PROPERTIES	$CODE_ROOT/Design/Design.h	55;"	d
+NUM_ROW_PROPERTIES	$CODE_ROOT/include/Design.h	55;"	d
+NUM_SCLFILE_HEADER_LINES	$CODE_ROOT/Design/Design.h	48;"	d
+NUM_SCLFILE_HEADER_LINES	$CODE_ROOT/include/Design.h	48;"	d
 NUM_SOLVER_TYPES	$CODE_ROOT/SolverTest/SolverTest.cxx	/^  NUM_SOLVER_TYPES$/;"	e	enum:__anon1	file:
-NUM_TERMINALS_PROPERTY	$CODE_ROOT/Design/Design.h	69;"	d
-NUM_TERMINALS_PROPERTY	$CODE_ROOT/include/Design.h	69;"	d
+NUM_TERMINALS_PROPERTY	$CODE_ROOT/Design/Design.h	68;"	d
+NUM_TERMINALS_PROPERTY	$CODE_ROOT/include/Design.h	68;"	d
 NV	$CODE_ROOT/example/laplace3d.cc	/^  int NE, NV, NB;               \/\/ #Elementen, #Vertices, #Randvertices$/;"	m	struct:Matrix0bnd	file:
 Name	$CODE_ROOT/Design/Design.h	/^  string Name;$/;"	m	class:Design
 Name	$CODE_ROOT/Pin/Pin.h	/^  string Name;$/;"	m	class:Pin
@@ -1607,12 +1693,14 @@ Net	$CODE_ROOT/Net/NetMain.cxx	/^Net::Net()$/;"	f	class:Net
 Net	$CODE_ROOT/Net/NetMain.cxx	/^Net::Net(int id)$/;"	f	class:Net
 Net	$CODE_ROOT/Net/NetMain.cxx	/^Net::Net(int id, const string& Name)$/;"	f	class:Net
 Net	$CODE_ROOT/include/Net.h	/^class Net {$/;"	c
-NetAddPin	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetAddPin(const Pin& pinToAdd)$/;"	f	class:Net
+NetAddPin	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetAddPin(Pin& pinToAdd)$/;"	f	class:Net
 NetClearAllIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearAllIsHidden(Net *netPtr)$/;"	f
 NetClearAllIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearAllIsPseudo(void)$/;"	f
 NetClearIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearIsHidden(Net *netPtr)$/;"	f
 NetClearIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetClearIsPseudo(Net *netPtr)$/;"	f
 NetComputeHPWL	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)$/;"	f	class:Net
+NetComputeHPWL	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetComputeHPWL(uint &xOldHPWL, uint &yOldHPWL, uint &xNewHPWL, uint &yNewHPWL)$/;"	f	class:Net
+NetGetDirtyHPWL	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetDirtyHPWL(void) $/;"	f	class:Net
 NetGetDriverCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetDriverCount(void)$/;"	f	class:Net
 NetGetId	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetId(void)$/;"	f	class:Net
 NetGetLoadCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetGetLoadCount(void)$/;"	f	class:Net
@@ -1629,17 +1717,18 @@ NetIsUnderCluster	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetIsUnderCluster(void)$/;"	
 NetModel	$CODE_ROOT/Env/Env.h	/^  EnvNetModel NetModel;$/;"	m	class:Env
 NetModel	$CODE_ROOT/include/Env.h	/^  EnvNetModel NetModel;$/;"	m	class:Env
 NetPtr	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  Net *NetPtr;$/;"	m	struct:NetStatsStruct	file:
-NetRemovePin	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetRemovePin(const Pin& pinToRemove)$/;"	f	class:Net
-NetSetDriverCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetDriverCount(unsigned int driverCount)$/;"	f	class:Net
+NetRemovePin	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetRemovePin(Pin& pinToRemove)$/;"	f	class:Net
+NetSetDirtyHPWL	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetDirtyHPWL(bool dirtyHPWL) $/;"	f	class:Net
+NetSetDriverCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetDriverCount(uint driverCount)$/;"	f	class:Net
 NetSetId	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetId(int id)$/;"	f	class:Net
 NetSetIsHidden	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetSetIsHidden(Net *netPtr)$/;"	f
 NetSetIsHidden	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetIsHidden(const bool &isHidden)$/;"	f	class:Net
 NetSetIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void NetSetIsPseudo(Net *netPtr)$/;"	f
 NetSetIsUnderCluster	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetIsUnderCluster(const bool &isUnderCluster)$/;"	f	class:Net
-NetSetLoadCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetLoadCount(unsigned int loadCount)$/;"	f	class:Net
+NetSetLoadCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetLoadCount(uint loadCount)$/;"	f	class:Net
 NetSetMinMaxPositions	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetMinMaxPositions(uint xPos, uint yPos)$/;"	f	class:Net
 NetSetName	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetName(const string& Name)$/;"	f	class:Net
-NetSetPinCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetPinCount(unsigned int pinCount)$/;"	f	class:Net
+NetSetPinCount	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetPinCount(uint pinCount)$/;"	f	class:Net
 NetSetWeight	$CODE_ROOT/Net/NetMain.cxx	/^Net::NetSetWeight(double weight)$/;"	f	class:Net
 NetStat	$CODE_ROOT/Design/DesignAnalysis.cxx	/^typedef struct NetStatsStruct * NetStat;$/;"	t	typeref:struct:NetStatsStruct	file:
 NetStatsStruct	$CODE_ROOT/Design/DesignAnalysis.cxx	/^typedef struct NetStatsStruct NetStatsStruct;$/;"	t	typeref:struct:NetStatsStruct	file:
@@ -1771,8 +1860,7 @@ OBJDIR	$CODE_ROOT/Path/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/PhysData/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/Pin/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/Plot/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
-OBJDIR	$CODE_ROOT/PriorityQueue/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
-OBJDIR	$CODE_ROOT/Sort/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
+OBJDIR	$CODE_ROOT/Sort_bak/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/Stat/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/TimingModels/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
 OBJDIR	$CODE_ROOT/common/Makefile	/^OBJDIR=$(CODE_ROOT)\/objdir$/;"	m
@@ -1796,8 +1884,7 @@ OBJFILES	$CODE_ROOT/Path/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
 OBJFILES	$CODE_ROOT/PhysData/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
 OBJFILES	$CODE_ROOT/Pin/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
 OBJFILES	$CODE_ROOT/Plot/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
-OBJFILES	$CODE_ROOT/PriorityQueue/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
-OBJFILES	$CODE_ROOT/Sort/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
+OBJFILES	$CODE_ROOT/Sort_bak/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
 OBJFILES	$CODE_ROOT/Stat/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
 OBJFILES	$CODE_ROOT/TimingModels/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
 OBJFILES	$CODE_ROOT/common/Makefile	/^OBJFILES:= $(SRCFILES:=.o)$/;"	m
@@ -1817,7 +1904,6 @@ OBJGFILES	$CODE_ROOT/Path/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
 OBJGFILES	$CODE_ROOT/PhysData/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
 OBJGFILES	$CODE_ROOT/Pin/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
 OBJGFILES	$CODE_ROOT/Plot/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
-OBJGFILES	$CODE_ROOT/PriorityQueue/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
 OBJGFILES	$CODE_ROOT/Stat/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
 OBJGFILES	$CODE_ROOT/TimingModels/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
 OBJGFILES	$CODE_ROOT/common/Makefile	/^OBJGFILES:= $(SRCFILES:=-g.o)$/;"	m
@@ -1837,8 +1923,7 @@ OBJS	$CODE_ROOT/Path/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"
 OBJS	$CODE_ROOT/PhysData/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
 OBJS	$CODE_ROOT/Pin/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
 OBJS	$CODE_ROOT/Plot/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
-OBJS	$CODE_ROOT/PriorityQueue/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
-OBJS	$CODE_ROOT/Sort/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
+OBJS	$CODE_ROOT/Sort_bak/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
 OBJS	$CODE_ROOT/Stat/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
 OBJS	$CODE_ROOT/TimingModels/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
 OBJS	$CODE_ROOT/common/Makefile	/^OBJS := $(addprefix $(OBJDIR)\/,$(OBJFILES))$/;"	m
@@ -1858,7 +1943,6 @@ OBJSG	$CODE_ROOT/Path/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$
 OBJSG	$CODE_ROOT/PhysData/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
 OBJSG	$CODE_ROOT/Pin/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
 OBJSG	$CODE_ROOT/Plot/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
-OBJSG	$CODE_ROOT/PriorityQueue/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
 OBJSG	$CODE_ROOT/Stat/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
 OBJSG	$CODE_ROOT/TimingModels/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
 OBJSG	$CODE_ROOT/common/Makefile	/^OBJSG := $(addprefix $(OBJDIR)\/,$(OBJGFILES))$/;"	m
@@ -1893,12 +1977,12 @@ PIN_DIR_INOUT	$CODE_ROOT/Pin/Pin.h	9;"	d
 PIN_DIR_INOUT	$CODE_ROOT/include/Pin.h	9;"	d
 PIN_DIR_INPUT	$CODE_ROOT/Pin/Pin.h	7;"	d
 PIN_DIR_INPUT	$CODE_ROOT/include/Pin.h	7;"	d
-PIN_DIR_INPUT_STRING	$CODE_ROOT/Design/Design.h	98;"	d
-PIN_DIR_INPUT_STRING	$CODE_ROOT/include/Design.h	98;"	d
+PIN_DIR_INPUT_STRING	$CODE_ROOT/Design/Design.h	97;"	d
+PIN_DIR_INPUT_STRING	$CODE_ROOT/include/Design.h	97;"	d
 PIN_DIR_OUTPUT	$CODE_ROOT/Pin/Pin.h	8;"	d
 PIN_DIR_OUTPUT	$CODE_ROOT/include/Pin.h	8;"	d
-PIN_DIR_OUTPUT_STRING	$CODE_ROOT/Design/Design.h	99;"	d
-PIN_DIR_OUTPUT_STRING	$CODE_ROOT/include/Design.h	99;"	d
+PIN_DIR_OUTPUT_STRING	$CODE_ROOT/Design/Design.h	98;"	d
+PIN_DIR_OUTPUT_STRING	$CODE_ROOT/include/Design.h	98;"	d
 PIN_H	$CODE_ROOT/Pin/Pin.h	4;"	d
 PIN_H	$CODE_ROOT/include/Pin.h	4;"	d
 PIN_IS_PSEUDO_FLAG	$CODE_ROOT/Flags/Flags.h	/^  PIN_IS_PSEUDO_FLAG,$/;"	e	enum:__anon4
@@ -2019,6 +2103,8 @@ PinClearAllIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PinClearAllIsPseudo(vo
 PinClearAllOriginalPin	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PinClearAllOriginalPin(void)$/;"	f
 PinClearIsPseudo	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PinClearIsPseudo(Pin *pinPtr)$/;"	f
 PinClearOriginalPin	$CODE_ROOT/Flags/FlagsMain.cxx	/^void PinClearOriginalPin(Pin *thisPin)$/;"	f
+PinGetAbsXPos	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetAbsXPos(void) const$/;"	f	class:Pin
+PinGetAbsYPos	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetAbsYPos(void) const$/;"	f	class:Pin
 PinGetDirection	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetDirection(void) const$/;"	f	class:Pin
 PinGetId	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetId(void)$/;"	f	class:Pin
 PinGetLibName	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetLibName(void) const$/;"	f	class:Pin
@@ -2026,6 +2112,7 @@ PinGetName	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetName(void) const$/;"	f	class:
 PinGetNet	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetNet(void)$/;"	f	class:Pin
 PinGetOriginalPin	$CODE_ROOT/Flags/FlagsMain.cxx	/^void* PinGetOriginalPin(Pin *thisPin)$/;"	f
 PinGetParentCell	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetParentCell(void)$/;"	f	class:Pin
+PinGetParentCellPtr	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetParentCellPtr(void)$/;"	f	class:Pin
 PinGetXOffset	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetXOffset(void)$/;"	f	class:Pin
 PinGetXposYpos	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetXposYpos(int *xpos, int *ypos)$/;"	f	class:Pin
 PinGetYOffset	$CODE_ROOT/Pin/PinMain.cxx	/^Pin::PinGetYOffset(void)$/;"	f	class:Pin
@@ -2047,6 +2134,10 @@ Pins	$CODE_ROOT/Cell/Cell.h	/^  vector<Pin*> Pins;$/;"	m	class:Cell
 Pins	$CODE_ROOT/Net/Net.h	/^  map<string, Pin*> Pins;$/;"	m	class:Net
 Pins	$CODE_ROOT/include/Cell.h	/^  vector<Pin*> Pins;$/;"	m	class:Cell
 Pins	$CODE_ROOT/include/Net.h	/^  map<string, Pin*> Pins;$/;"	m	class:Net
+PinsVecX	$CODE_ROOT/Net/Net.h	/^  vector<Pin *> PinsVecX, PinsVecY;$/;"	m	class:Net
+PinsVecX	$CODE_ROOT/include/Net.h	/^  vector<Pin *> PinsVecX, PinsVecY;$/;"	m	class:Net
+PinsVecY	$CODE_ROOT/Net/Net.h	/^  vector<Pin *> PinsVecX, PinsVecY;$/;"	m	class:Net
+PinsVecY	$CODE_ROOT/include/Net.h	/^  vector<Pin *> PinsVecX, PinsVecY;$/;"	m	class:Net
 Plot	$CODE_ROOT/Plot/Plot.h	/^class Plot$/;"	c
 Plot	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::Plot()$/;"	f	class:Plot
 Plot	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::Plot(double minx, double miny, double maxx, double maxy)$/;"	f	class:Plot
@@ -2084,7 +2175,6 @@ PrintEdge	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintEdge(uint 
 PrintGraph	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintGraph(void)$/;"	f	class:HyperGraph
 PrintNode	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintNode(uint nodeIdx)$/;"	f	class:HyperGraph
 PrintSubGraph	$CODE_ROOT/HyperGraph/HyperGraphMain.cxx	/^HyperGraph::PrintSubGraph(vector<uint>& nodeSet) $/;"	f	class:HyperGraph
-PriorityQueue	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::PriorityQueue()$/;"	f	class:PriorityQueue
 PriorityQueue	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::PriorityQueue()$/;"	f	class:PriorityQueue
 PriorityQueue	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^template <class T = objPairScore<Cell *>, class C = objPairScoreCompare> class PriorityQueue {$/;"	c
 PriorityQueue	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::PriorityQueue()$/;"	f	class:PriorityQueue
@@ -2102,24 +2192,24 @@ RE_error_correction	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^      
 RE_out_stage	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^         RE_out_stage, out_done, DONE_ext, WE1, RE1, WE2, RE2, T_flag,$/;"	n
 RIGHT_TOP	$CODE_ROOT/Plot/Plot.h	/^  RIGHT_TOP = 0,$/;"	e	enum:__anon29
 RIGHT_TOP	$CODE_ROOT/include/Plot.h	/^  RIGHT_TOP = 0,$/;"	e	enum:__anon10
-ROW_BASED_PLACEMENT	$CODE_ROOT/Design/Design.h	62;"	d
-ROW_BASED_PLACEMENT	$CODE_ROOT/include/Design.h	62;"	d
-ROW_BEGIN_KEYWORD	$CODE_ROOT/Design/Design.h	87;"	d
-ROW_BEGIN_KEYWORD	$CODE_ROOT/include/Design.h	87;"	d
-ROW_COORDINATE	$CODE_ROOT/Design/Design.h	88;"	d
-ROW_COORDINATE	$CODE_ROOT/include/Design.h	88;"	d
-ROW_END_KEYWORD	$CODE_ROOT/Design/Design.h	96;"	d
-ROW_END_KEYWORD	$CODE_ROOT/include/Design.h	96;"	d
-ROW_HEIGHT	$CODE_ROOT/Design/Design.h	89;"	d
-ROW_HEIGHT	$CODE_ROOT/include/Design.h	89;"	d
-ROW_SITE_ORIENTATION	$CODE_ROOT/Design/Design.h	92;"	d
-ROW_SITE_ORIENTATION	$CODE_ROOT/include/Design.h	92;"	d
-ROW_SITE_SPACING	$CODE_ROOT/Design/Design.h	91;"	d
-ROW_SITE_SPACING	$CODE_ROOT/include/Design.h	91;"	d
-ROW_SITE_SYMMETRY	$CODE_ROOT/Design/Design.h	93;"	d
-ROW_SITE_SYMMETRY	$CODE_ROOT/include/Design.h	93;"	d
-ROW_SITE_WIDTH	$CODE_ROOT/Design/Design.h	90;"	d
-ROW_SITE_WIDTH	$CODE_ROOT/include/Design.h	90;"	d
+ROW_BASED_PLACEMENT	$CODE_ROOT/Design/Design.h	61;"	d
+ROW_BASED_PLACEMENT	$CODE_ROOT/include/Design.h	61;"	d
+ROW_BEGIN_KEYWORD	$CODE_ROOT/Design/Design.h	86;"	d
+ROW_BEGIN_KEYWORD	$CODE_ROOT/include/Design.h	86;"	d
+ROW_COORDINATE	$CODE_ROOT/Design/Design.h	87;"	d
+ROW_COORDINATE	$CODE_ROOT/include/Design.h	87;"	d
+ROW_END_KEYWORD	$CODE_ROOT/Design/Design.h	95;"	d
+ROW_END_KEYWORD	$CODE_ROOT/include/Design.h	95;"	d
+ROW_HEIGHT	$CODE_ROOT/Design/Design.h	88;"	d
+ROW_HEIGHT	$CODE_ROOT/include/Design.h	88;"	d
+ROW_SITE_ORIENTATION	$CODE_ROOT/Design/Design.h	91;"	d
+ROW_SITE_ORIENTATION	$CODE_ROOT/include/Design.h	91;"	d
+ROW_SITE_SPACING	$CODE_ROOT/Design/Design.h	90;"	d
+ROW_SITE_SPACING	$CODE_ROOT/include/Design.h	90;"	d
+ROW_SITE_SYMMETRY	$CODE_ROOT/Design/Design.h	92;"	d
+ROW_SITE_SYMMETRY	$CODE_ROOT/include/Design.h	92;"	d
+ROW_SITE_WIDTH	$CODE_ROOT/Design/Design.h	89;"	d
+ROW_SITE_WIDTH	$CODE_ROOT/include/Design.h	89;"	d
 RPERLENGTHX	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveOldWorking.cxx	8;"	d	file:
 RPERLENGTHX	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveOldWorking.cxx	5;"	d	file:
 RPERLENGTHY	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveOldWorking.cxx	10;"	d	file:
@@ -2221,8 +2311,9 @@ SOLVE_FOR_X	$CODE_ROOT/AnalyticalSolve/AnalyticalSolve.h	14;"	d
 SOLVE_FOR_X	$CODE_ROOT/include/AnalyticalSolve.h	14;"	d
 SOLVE_FOR_Y	$CODE_ROOT/AnalyticalSolve/AnalyticalSolve.h	15;"	d
 SOLVE_FOR_Y	$CODE_ROOT/include/AnalyticalSolve.h	15;"	d
-SORT_H	$CODE_ROOT/Sort/Sort.h	2;"	d
-SORT_H	$CODE_ROOT/include/Sort.h	2;"	d
+SORT_CLASSES_H	$CODE_ROOT/Sort/SortClasses.h	5;"	d
+SORT_CLASSES_H	$CODE_ROOT/include/SortClasses.h	5;"	d
+SORT_H	$CODE_ROOT/Sort_bak/Sort.h	2;"	d
 SPACES	$CODE_ROOT/Design/DesignAnalysis.cxx	13;"	d	file:
 SPMAT_END_FOR	$CODE_ROOT/ConjGrad/ConjGradSolver.h	38;"	d
 SPMAT_END_FOR	$CODE_ROOT/include/ConjGradSolver.h	38;"	d
@@ -2245,8 +2336,7 @@ SRCCPPFILES	$CODE_ROOT/Path/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
 SRCCPPFILES	$CODE_ROOT/PhysData/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
 SRCCPPFILES	$CODE_ROOT/Pin/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
 SRCCPPFILES	$CODE_ROOT/Plot/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
-SRCCPPFILES	$CODE_ROOT/PriorityQueue/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
-SRCCPPFILES	$CODE_ROOT/Sort/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
+SRCCPPFILES	$CODE_ROOT/Sort_bak/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
 SRCCPPFILES	$CODE_ROOT/Stat/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
 SRCCPPFILES	$CODE_ROOT/TimingModels/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
 SRCCPPFILES	$CODE_ROOT/common/Makefile	/^SRCCPPFILES:= $(SRCFILES:=.cxx)$/;"	m
@@ -2268,24 +2358,23 @@ SRCFILES	$CODE_ROOT/PhysData/Makefile	/^SRCFILES = PhysRow$/;"	m
 SRCFILES	$CODE_ROOT/PhysData/src.mk	/^SRCFILES = PhysRow$/;"	m
 SRCFILES	$CODE_ROOT/Pin/src.mk	/^SRCFILES = PinMain $/;"	m
 SRCFILES	$CODE_ROOT/Plot/src.mk	/^SRCFILES = PlotMain Line Rect Circle$/;"	m
-SRCFILES	$CODE_ROOT/PriorityQueue/src.mk	/^SRCFILES = PQueueMain$/;"	m
-SRCFILES	$CODE_ROOT/Sort/Makefile	/^SRCFILES = SortMain$/;"	m
+SRCFILES	$CODE_ROOT/Sort_bak/Makefile	/^SRCFILES = SortMain$/;"	m
 SRCFILES	$CODE_ROOT/Stat/src.mk	/^SRCFILES = StatMain$/;"	m
 SRCFILES	$CODE_ROOT/TimingModels/src.mk	/^SRCFILES = TMClique TMStar TMHybrid TMCustom TMCommon$/;"	m
 SRCFILES	$CODE_ROOT/common/src.mk	/^SRCFILES = common_utils$/;"	m
 STAT_H	$CODE_ROOT/Stat/Stat.h	2;"	d
 STAT_H	$CODE_ROOT/include/Stat.h	2;"	d
 STAT_H	$CODE_ROOT/stat/stat.h	2;"	d
-STD_CELL_BASED_PLACEMENT	$CODE_ROOT/Design/Design.h	63;"	d
-STD_CELL_BASED_PLACEMENT	$CODE_ROOT/include/Design.h	63;"	d
+STD_CELL_BASED_PLACEMENT	$CODE_ROOT/Design/Design.h	62;"	d
+STD_CELL_BASED_PLACEMENT	$CODE_ROOT/include/Design.h	62;"	d
 STD_CELL_HEIGHT	$CODE_ROOT/Design/DesignIter.h	6;"	d
 STD_CELL_HEIGHT	$CODE_ROOT/include/DesignIter.h	6;"	d
 STRETCHED_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  STRETCHED_BIN_RECT,$/;"	e	enum:__anon28
 STRETCHED_BIN_RECT	$CODE_ROOT/include/Plot.h	/^  STRETCHED_BIN_RECT,$/;"	e	enum:__anon9
-SUBROW_NUM_SITES	$CODE_ROOT/Design/Design.h	95;"	d
-SUBROW_NUM_SITES	$CODE_ROOT/include/Design.h	95;"	d
-SUBROW_ORIGIN	$CODE_ROOT/Design/Design.h	94;"	d
-SUBROW_ORIGIN	$CODE_ROOT/include/Design.h	94;"	d
+SUBROW_NUM_SITES	$CODE_ROOT/Design/Design.h	94;"	d
+SUBROW_NUM_SITES	$CODE_ROOT/include/Design.h	94;"	d
+SUBROW_ORIGIN	$CODE_ROOT/Design/Design.h	93;"	d
+SUBROW_ORIGIN	$CODE_ROOT/include/Design.h	93;"	d
 SUPPLY_BIN_RECT	$CODE_ROOT/Plot/Plot.h	/^  SUPPLY_BIN_RECT,$/;"	e	enum:__anon28
 SUPPLY_BIN_RECT	$CODE_ROOT/include/Plot.h	/^  SUPPLY_BIN_RECT,$/;"	e	enum:__anon9
 S_ready	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   CEO_0, In_mem_RE, S_ready, WE_transport, transport_done, L_ready,$/;"	n
@@ -2365,8 +2454,8 @@ UseVarBounds	$CODE_ROOT/include/Env.h	/^  bool UseVarBounds;$/;"	m	class:Env
 VECTOR_FOR_ALL_ELEMS	$CODE_ROOT/Legalize/bak/Old_4LegalizeMain.cxx	/^    VECTOR_FOR_ALL_ELEMS(cellsInRow, Cell*, cellObj){$/;"	f
 VECTOR_FOR_ALL_ELEMS	$CODE_ROOT/common/commonIter.h	6;"	d
 VECTOR_FOR_ALL_ELEMS	$CODE_ROOT/include/commonIter.h	6;"	d
-VECTOR_FOR_ALL_ELEMS_DOUBLE	$CODE_ROOT/common/commonIter.h	11;"	d
-VECTOR_FOR_ALL_ELEMS_DOUBLE	$CODE_ROOT/include/commonIter.h	11;"	d
+VECTOR_FOR_ALL_ELEMS_DOUBLE	$CODE_ROOT/common/commonIter.h	12;"	d
+VECTOR_FOR_ALL_ELEMS_DOUBLE	$CODE_ROOT/include/commonIter.h	12;"	d
 VERTICAL	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon30
 VERTICAL	$CODE_ROOT/include/PhysRow.h	/^typedef enum {VERTICAL,HORIZONTAL} rowOrientation;$/;"	e	enum:__anon26
 Valid_out	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  output CEO, Valid_out;$/;"	p
@@ -2387,8 +2476,8 @@ YES_SYMMETRY	$CODE_ROOT/PhysData/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SY
 YES_SYMMETRY	$CODE_ROOT/include/PhysRow.h	/^typedef enum {NO_SYMMETRY=1, YES_SYMMETRY} siteSymmetry;$/;"	e	enum:__anon27
 Yin	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  input [15:0] Yin;$/;"	p
 Ypre	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  wire   [14:0] Ypre;$/;"	n
-ZERO	$CODE_ROOT/Design/Design.h	103;"	d
-ZERO	$CODE_ROOT/include/Design.h	103;"	d
+ZERO	$CODE_ROOT/Design/Design.h	102;"	d
+ZERO	$CODE_ROOT/include/Design.h	102;"	d
 Zone	$CODE_ROOT/Legalize/Legalize.h	/^class Zone {$/;"	c
 Zone	$CODE_ROOT/Legalize/LegalizeZone.cxx	/^Zone::Zone()$/;"	f	class:Zone
 Zone	$CODE_ROOT/Legalize/LegalizeZone.cxx	/^Zone::Zone(int zoneBegin, PhysRow *thisRow, bool isEmpty)$/;"	f	class:Zone
@@ -2415,20 +2504,20 @@ _ASSERT	$CODE_ROOT/common/common.h	34;"	d
 _ASSERT	$CODE_ROOT/include/common.h	34;"	d
 _ASSERT_TRUE	$CODE_ROOT/common/common.h	39;"	d
 _ASSERT_TRUE	$CODE_ROOT/include/common.h	39;"	d
-_DEBUG_MSG	$CODE_ROOT/common/common.h	80;"	d
-_DEBUG_MSG	$CODE_ROOT/include/common.h	80;"	d
-_ERROR	$CODE_ROOT/common/common.h	83;"	d
-_ERROR	$CODE_ROOT/include/common.h	83;"	d
-_KEY_DOES_NOT_EXIST	$CODE_ROOT/common/common.h	92;"	d
-_KEY_DOES_NOT_EXIST	$CODE_ROOT/include/common.h	92;"	d
-_KEY_EXISTS	$CODE_ROOT/common/common.h	89;"	d
-_KEY_EXISTS	$CODE_ROOT/include/common.h	89;"	d
-_KEY_EXISTS_WITH_VAL	$CODE_ROOT/common/common.h	95;"	d
-_KEY_EXISTS_WITH_VAL	$CODE_ROOT/include/common.h	95;"	d
-_STEP_BEGIN	$CODE_ROOT/common/common.h	58;"	d
-_STEP_BEGIN	$CODE_ROOT/include/common.h	58;"	d
-_STEP_END	$CODE_ROOT/common/common.h	69;"	d
-_STEP_END	$CODE_ROOT/include/common.h	69;"	d
+_DEBUG_MSG	$CODE_ROOT/common/common.h	83;"	d
+_DEBUG_MSG	$CODE_ROOT/include/common.h	83;"	d
+_ERROR	$CODE_ROOT/common/common.h	86;"	d
+_ERROR	$CODE_ROOT/include/common.h	86;"	d
+_KEY_DOES_NOT_EXIST	$CODE_ROOT/common/common.h	95;"	d
+_KEY_DOES_NOT_EXIST	$CODE_ROOT/include/common.h	95;"	d
+_KEY_EXISTS	$CODE_ROOT/common/common.h	92;"	d
+_KEY_EXISTS	$CODE_ROOT/include/common.h	92;"	d
+_KEY_EXISTS_WITH_VAL	$CODE_ROOT/common/common.h	98;"	d
+_KEY_EXISTS_WITH_VAL	$CODE_ROOT/include/common.h	98;"	d
+_STEP_BEGIN	$CODE_ROOT/common/common.h	61;"	d
+_STEP_BEGIN	$CODE_ROOT/include/common.h	61;"	d
+_STEP_END	$CODE_ROOT/common/common.h	72;"	d
+_STEP_END	$CODE_ROOT/include/common.h	72;"	d
 _WRITE_TABLE	$CODE_ROOT/Design/DesignAnalysis.cxx	30;"	d	file:
 _setNULL	$CODE_ROOT/common/common.h	31;"	d
 _setNULL	$CODE_ROOT/include/common.h	31;"	d
@@ -2454,8 +2543,8 @@ annIdx2	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned int annIdx2;$/;"	m	class:Node
 annIdx2	$CODE_ROOT/include/Node.h	/^  unsigned int annIdx2;$/;"	m	class:Node
 annIdx3	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned int annIdx3;$/;"	m	class:Node
 annIdx3	$CODE_ROOT/include/Node.h	/^  unsigned int annIdx3;$/;"	m	class:Node
-arcDelays	$CODE_ROOT/Cell/Cell.h	/^  map<unsigned int, map<unsigned int, double > > arcDelays;$/;"	m	class:Cell
-arcDelays	$CODE_ROOT/include/Cell.h	/^  map<unsigned int, map<unsigned int, double > > arcDelays;$/;"	m	class:Cell
+arcDelays	$CODE_ROOT/Cell/Cell.h	/^  map<uint, map<uint, double > > arcDelays;$/;"	m	class:Cell
+arcDelays	$CODE_ROOT/include/Cell.h	/^  map<uint, map<uint, double > > arcDelays;$/;"	m	class:Cell
 areaMacroRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, unsigned int>areaMacroRanges;$/;"	v
 areaStdRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, unsigned int>areaStdRanges;$/;"	v
 argc	$CODE_ROOT/example/argument.cc	/^  int             argc;$/;"	m	struct:ArgumentsData	file:
@@ -2492,7 +2581,9 @@ binBot	$CODE_ROOT/Legalize/Legalize.h	/^  int binBot;$/;"	m	class:LegalizeBin
 binBot	$CODE_ROOT/include/Legalize.h	/^  int binBot;$/;"	m	class:LegalizeBin
 binEnd	$CODE_ROOT/Legalize/Legalize.h	/^  int binEnd;$/;"	m	class:LegalizeBin
 binEnd	$CODE_ROOT/include/Legalize.h	/^  int binEnd;$/;"	m	class:LegalizeBin
+binHeight	$CODE_ROOT/Design/Design.h	/^  uint binHeight, binWidth;$/;"	m	class:Design
 binHeight	$CODE_ROOT/Legalize/Legalize.h	/^  int binHeight;$/;"	m	class:LegalizeBin
+binHeight	$CODE_ROOT/include/Design.h	/^  uint binHeight, binWidth;$/;"	m	class:Design
 binHeight	$CODE_ROOT/include/Legalize.h	/^  int binHeight;$/;"	m	class:LegalizeBin
 binIdx	$CODE_ROOT/Bin/Bin.h	/^  uint binIdx;$/;"	m	class:Bin
 binIdx	$CODE_ROOT/include/Bin.h	/^  uint binIdx;$/;"	m	class:Bin
@@ -2505,10 +2596,14 @@ binPathRects	$CODE_ROOT/Plot/Plot.h	/^  vector<Rect> binPathRects;$/;"	m	class:P
 binPathRects	$CODE_ROOT/include/Plot.h	/^  vector<Rect> binPathRects;$/;"	m	class:Plot
 binRBound	$CODE_ROOT/Legalize/Legalize.h	/^  bool binRBound;$/;"	m	class:LegalizeBin
 binRBound	$CODE_ROOT/include/Legalize.h	/^  bool binRBound;$/;"	m	class:LegalizeBin
+binWidth	$CODE_ROOT/Design/Design.h	/^  uint binHeight, binWidth;$/;"	m	class:Design
 binWidth	$CODE_ROOT/Legalize/Legalize.h	/^  int binWidth;$/;"	m	class:LegalizeBin
+binWidth	$CODE_ROOT/include/Design.h	/^  uint binHeight, binWidth;$/;"	m	class:Design
 binWidth	$CODE_ROOT/include/Legalize.h	/^  int binWidth;$/;"	m	class:LegalizeBin
 bins	$CODE_ROOT/Plot/Plot.h	/^  vector<Rect> bins;$/;"	m	class:Plot
 bins	$CODE_ROOT/include/Plot.h	/^  vector<Rect> bins;$/;"	m	class:Plot
+binsCreated	$CODE_ROOT/Design/Design.h	/^  bool binsCreated;$/;"	m	class:Design
+binsCreated	$CODE_ROOT/include/Design.h	/^  bool binsCreated;$/;"	m	class:Design
 bit_num_r_io	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  wire   [2:0] bit_num_r_io;$/;"	n
 bit_pr_sreg_out	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  wire   [7:0] bit_pr_sreg_out;$/;"	n
 bit_test_op_out	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         bit_test_op_out, sbi_st, cbi_st, idc_bst, idc_bset, idc_bclr,$/;"	n
@@ -2527,9 +2622,15 @@ cargv	$CODE_ROOT/example/argument.cc	/^  const string   *cargv;$/;"	m	struct:Arg
 cbi_st	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         bit_test_op_out, sbi_st, cbi_st, idc_bst, idc_bset, idc_bclr,$/;"	n
 cellArea	$CODE_ROOT/Bin/Bin.h	/^  double cellArea;$/;"	m	class:Bin
 cellArea	$CODE_ROOT/include/Bin.h	/^  double cellArea;$/;"	m	class:Bin
+cellBin	$CODE_ROOT/Cell/Cell.h	/^  Bin *cellBin;$/;"	m	class:Cell
+cellBin	$CODE_ROOT/include/Cell.h	/^  Bin *cellBin;$/;"	m	class:Cell
 cellFracts	$CODE_ROOT/Legalize/Legalize.h	/^  map<Cell*, double> cellFracts;$/;"	m	class:LegalizeBin
 cellFracts	$CODE_ROOT/include/Legalize.h	/^  map<Cell*, double> cellFracts;$/;"	m	class:LegalizeBin
 cellObj	$CODE_ROOT/Legalize/bak/Old_4LegalizeMain.cxx	/^    Cell* cellObj;$/;"	v
+cellXpos	$CODE_ROOT/Pin/Pin.h	/^  double cellXpos, cellYpos;$/;"	m	class:Pin
+cellXpos	$CODE_ROOT/include/Pin.h	/^  double cellXpos, cellYpos;$/;"	m	class:Pin
+cellYpos	$CODE_ROOT/Pin/Pin.h	/^  double cellXpos, cellYpos;$/;"	m	class:Pin
+cellYpos	$CODE_ROOT/include/Pin.h	/^  double cellXpos, cellYpos;$/;"	m	class:Pin
 cellsInBin	$CODE_ROOT/Legalize/Legalize.h	/^  vector<Cell*> cellsInBin;$/;"	m	class:LegalizeBin
 cellsInBin	$CODE_ROOT/include/Legalize.h	/^  vector<Cell*> cellsInBin;$/;"	m	class:LegalizeBin
 cellsInRegion	$CODE_ROOT/Legalize/Legalize.h	/^  vector<Cell*> cellsInRegion;$/;"	m	class:Region
@@ -2566,15 +2667,20 @@ clockPeriod	$CODE_ROOT/Design/Design.h	/^  double clockPeriod;$/;"	m	class:Desig
 clockPeriod	$CODE_ROOT/include/Design.h	/^  double clockPeriod;$/;"	m	class:Design
 clr	$CODE_ROOT/results/sap/sap_compiled.v	/^  input clk, clr;$/;"	p
 clusterLevel	$CODE_ROOT/Cell/Cell.h	/^  char clusterLevel;$/;"	m	class:Cluster
-clusterLevel	$CODE_ROOT/Cell/Cell.h	/^  unsigned int clusterLevel;$/;"	m	class:Cell
+clusterLevel	$CODE_ROOT/Cell/Cell.h	/^  uint clusterLevel;$/;"	m	class:Cell
 clusterLevel	$CODE_ROOT/include/Cell.h	/^  char clusterLevel;$/;"	m	class:Cluster
-clusterLevel	$CODE_ROOT/include/Cell.h	/^  unsigned int clusterLevel;$/;"	m	class:Cell
+clusterLevel	$CODE_ROOT/include/Cell.h	/^  uint clusterLevel;$/;"	m	class:Cell
 clusteringType	$CODE_ROOT/Design/Design.h	/^} clusteringType;$/;"	t	typeref:enum:__anon2
 clusteringType	$CODE_ROOT/include/Design.h	/^} clusteringType;$/;"	t	typeref:enum:__anon22
 cmp	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^  C cmp;$/;"	m	class:PriorityQueue
 cmp	$CODE_ROOT/include/PriorityQueue.h	/^  C cmp;$/;"	m	class:PriorityQueue
 cmpCellBotPos	$CODE_ROOT/Design/DesignMain.cxx	/^bool cmpCellBotPos(Cell *cellPtri, Cell *cellPtrj)$/;"	f
 cmpCellLeftPos	$CODE_ROOT/Design/DesignMain.cxx	/^bool cmpCellLeftPos(Cell *cellPtri, Cell *cellPtrj)$/;"	f
+cmpCellRightPos	$CODE_ROOT/Design/DesignMain.cxx	/^bool cmpCellRightPos(Cell *cellPtri, Cell *cellPtrj)$/;"	f
+cmpPinXposStruct	$CODE_ROOT/Sort/SortClasses.h	/^struct cmpPinXposStruct {$/;"	s
+cmpPinXposStruct	$CODE_ROOT/include/SortClasses.h	/^struct cmpPinXposStruct {$/;"	s
+cmpPinYposStruct	$CODE_ROOT/Sort/SortClasses.h	/^struct cmpPinYposStruct {$/;"	s
+cmpPinYposStruct	$CODE_ROOT/include/SortClasses.h	/^struct cmpPinYposStruct {$/;"	s
 cmpZoneFunc	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^cmpZoneFunc(const pair<int, Zone*> &p1, const pair<int, Zone*> &p2)$/;"	f
 cnt3	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   [1:0] cnt3;$/;"	n
 common_error	$CODE_ROOT/common/common_utils.cxx	/^common_error(std::string ErrorString)$/;"	f
@@ -2583,6 +2689,7 @@ compareCostFunc	$CODE_ROOT/Legalize/LegalizeUtils.cxx	/^compareCostFunc(const pa
 computeForceOnCellOfCluster	$CODE_ROOT/Design/DesignCluster.cxx	/^computeForceOnCellOfCluster(Cell *clusterCell, map<Cell *, uint> cellLookupMap,$/;"	f
 computeForceUpdateHessianForBCells	$CODE_ROOT/Design/DesignCluster.cxx	/^computeForceUpdateHessianForBCells(Design &myDesign, Cell *clusterCell, $/;"	f
 computeScore	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^computeScore(HyperGraph &myGraph, uint nodeIdx1, uint nodeIdx2)$/;"	f
+computeScore	$CODE_ROOT/Design/DesignMain.cxx	/^computeScore(double maxUtil, double curBinUtil, double targetUtil, long diffHPWL) $/;"	f
 connectState	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  output [1:0] connectState;$/;"	p
 container	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^  vector<T> container;$/;"	m	class:PriorityQueue
 container	$CODE_ROOT/include/PriorityQueue.h	/^  vector<T> container;$/;"	m	class:PriorityQueue
@@ -2638,7 +2745,7 @@ debugMode	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^bool debugMode = false;$/;"	v
 debugPrint	$CODE_ROOT/Legalize/Legalize.h	40;"	d
 debugPrint	$CODE_ROOT/include/Legalize.h	40;"	d
 decoder_o	$CODE_ROOT/results/vit_enc_dec/vit_enc_dec_compiled.v	/^  output decoder_o;$/;"	p
-default_cmp_func	$CODE_ROOT/Sort/SortMain.cxx	/^bool default_cmp_func(vector<Type> &thisVector, unsigned int idx1, unsigned int idx2)$/;"	f
+default_cmp_func	$CODE_ROOT/Sort_bak/SortMain.cxx	/^bool default_cmp_func(vector<Type> &thisVector, unsigned int idx1, unsigned int idx2)$/;"	f
 demandBins	$CODE_ROOT/Plot/Plot.h	/^  vector<Rect> demandBins;$/;"	m	class:Plot
 demandBins	$CODE_ROOT/include/Plot.h	/^  vector<Rect> demandBins;$/;"	m	class:Plot
 destructAntiMat	$CODE_ROOT/example/antisym.cc	/^void destructAntiMat( AntiMat &A ) {$/;"	f
@@ -2654,6 +2761,8 @@ dger	$CODE_ROOT/include/cblas.h	/^void dger( int m, int n, double alpha, const d
 dir	$CODE_ROOT/Pin/Pin.h	/^  char dir; $/;"	m	class:Pin
 dir	$CODE_ROOT/include/Pin.h	/^  char dir; $/;"	m	class:Pin
 dirExists	$CODE_ROOT/common/common_utils.cxx	/^bool dirExists(const string &dirname)$/;"	f
+dirtyHPWL	$CODE_ROOT/Net/Net.h	/^  bool dirtyHPWL;$/;"	m	class:Net
+dirtyHPWL	$CODE_ROOT/include/Net.h	/^  bool dirtyHPWL;$/;"	m	class:Net
 displayHeartBeat	$CODE_ROOT/common/common_utils.cxx	/^displayHeartBeat(void)$/;"	f
 dnrm2	$CODE_ROOT/ConjGrad/cblas.h	/^double dnrm2( int n, const double *x, int incx ) {$/;"	f
 dnrm2	$CODE_ROOT/cghs/cblas.h	/^double dnrm2( int n, const double *x, int incx ) {$/;"	f
@@ -2661,8 +2770,8 @@ dnrm2	$CODE_ROOT/include/cblas.h	/^double dnrm2( int n, const double *x, int inc
 doFractReassign	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^bool doFractReassign = true;$/;"	v
 double3	$CODE_ROOT/example/laplace3d.cc	/^typedef double double3[3];$/;"	t	file:
 driverCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int driverCount;$/;"	m	struct:NetStatsStruct	file:
-driverCount	$CODE_ROOT/Net/Net.h	/^  uint driverCount;$/;"	m	class:Net
-driverCount	$CODE_ROOT/include/Net.h	/^  uint driverCount;$/;"	m	class:Net
+driverCount	$CODE_ROOT/Net/Net.h	/^  uint pinCount, driverCount,loadCount;$/;"	m	class:Net
+driverCount	$CODE_ROOT/include/Net.h	/^  uint pinCount, driverCount,loadCount;$/;"	m	class:Net
 drot	$CODE_ROOT/ConjGrad/cblas.h	/^void drot( int n, double *x, int incx, double *y, int incy, double c,$/;"	f
 drot	$CODE_ROOT/cghs/cblas.h	/^void drot( int n, double *x, int incx, double *y, int incy, double c,$/;"	f
 drot	$CODE_ROOT/include/cblas.h	/^void drot( int n, double *x, int incx, double *y, int incy, double c,$/;"	f
@@ -2724,7 +2833,6 @@ edgeType	$CODE_ROOT/HyperGraph/Node.h	/^typedef enum edgeType {$/;"	g
 edgeType	$CODE_ROOT/HyperGraph/Node.h	/^} edgeType;$/;"	t	typeref:enum:edgeType
 edgeType	$CODE_ROOT/include/Node.h	/^typedef enum edgeType {$/;"	g
 edgeType	$CODE_ROOT/include/Node.h	/^} edgeType;$/;"	t	typeref:enum:edgeType
-empty	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::empty() const$/;"	f	class:PriorityQueue
 empty	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::empty() const$/;"	f	class:PriorityQueue
 empty	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::empty() const$/;"	f	class:PriorityQueue
 ena	$CODE_ROOT/results/cordic/cordic_compiled.v	/^  input clk, ena;$/;"	p
@@ -2758,9 +2866,9 @@ flagIntType	$CODE_ROOT/Flags/Flags.h	/^} flagIntType;$/;"	t	typeref:enum:__anon4
 flagIntType	$CODE_ROOT/include/Flags.h	/^} flagIntType;$/;"	t	typeref:enum:__anon24
 flagPtrType	$CODE_ROOT/Flags/Flags.h	/^} flagPtrType;$/;"	t	typeref:enum:__anon5
 flagPtrType	$CODE_ROOT/include/Flags.h	/^} flagPtrType;$/;"	t	typeref:enum:__anon25
-flags	$CODE_ROOT/Cell/Cell.h	/^  unsigned long flags;$/;"	m	class:Cell
+flags	$CODE_ROOT/Cell/Cell.h	/^  ulong flags;$/;"	m	class:Cell
 flags	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned char flags;$/;"	m	class:Node
-flags	$CODE_ROOT/include/Cell.h	/^  unsigned long flags;$/;"	m	class:Cell
+flags	$CODE_ROOT/include/Cell.h	/^  ulong flags;$/;"	m	class:Cell
 flags	$CODE_ROOT/include/Node.h	/^  unsigned char flags;$/;"	m	class:Node
 fullSpeedBitRate	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  input clk, rst, SIEPortWEn, fullSpeedPolarity, fullSpeedBitRate,$/;"	p
 fullSpeedPolarity	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  input clk, rst, SIEPortWEn, fullSpeedPolarity, fullSpeedBitRate,$/;"	p
@@ -2802,6 +2910,7 @@ getBestNeighbor	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^getBestNeighbor(Hy
 getBestNeighbor	$CODE_ROOT/Design/DesignClusterStrategy.cxx	/^getBestNeighbor(HyperGraph &myGraph, uint &nodeIdx1, uint &nodeIdx2, double &score,$/;"	f
 getCPUTime	$CODE_ROOT/Stat/StatMain.cxx	/^double getCPUTime() {$/;"	f
 getCellLookupMap	$CODE_ROOT/TimingModels/TMCommon.cxx	/^getCellLookupMap(vector<Cell *>inputCells)$/;"	f
+getCellMoveCostHPWL	$CODE_ROOT/Design/DesignMain.cxx	/^getCellMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, long &diffXHPWL, $/;"	f
 getCurrentTime	$CODE_ROOT/common/common_utils.cxx	/^string getCurrentTime(void)$/;"	f
 getDesignBounds	$CODE_ROOT/AnalyticalSolve/backup/SolverCommon.cxx	/^getDesignBounds(Design& myDesign, double *minx, double *miny, $/;"	f
 getDesignPathAllowedDelay	$CODE_ROOT/AnalyticalSolve/backup/SeqSolveTD.cxx	/^getDesignPathAllowedDelay(Design& myDesign, HyperGraph& myGraph,$/;"	f
@@ -2853,9 +2962,9 @@ gradFuncY	$CODE_ROOT/Design/DesignSolveFastWnlib.cxx	/^gradFuncY(double *grad, d
 h	$CODE_ROOT/example/laplace2d.cc	/^  double h;$/;"	m	struct:MassMat	file:
 h	$CODE_ROOT/example/laplace2d.cc	/^  double h;$/;"	m	struct:StiffMat	file:
 h	$CODE_ROOT/example/laplace3d.cc	/^  double h;                     \/\/ Verkleinerungs-Faktor$/;"	m	struct:Matrix0bnd	file:
-height	$CODE_ROOT/Cell/Cell.h	/^  int height;$/;"	m	class:Cell
+height	$CODE_ROOT/Cell/Cell.h	/^  int height, width;$/;"	m	class:Cell
 height	$CODE_ROOT/PhysData/PhysRow.h	/^  unsigned int height;$/;"	m	class:PhysRow
-height	$CODE_ROOT/include/Cell.h	/^  int height;$/;"	m	class:Cell
+height	$CODE_ROOT/include/Cell.h	/^  int height, width;$/;"	m	class:Cell
 height	$CODE_ROOT/include/PhysRow.h	/^  unsigned int height;$/;"	m	class:PhysRow
 heightMacroRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, unsigned int>heightMacroRanges;$/;"	v
 heightStdRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, unsigned int>heightStdRanges;$/;"	v
@@ -2866,10 +2975,6 @@ highlightedLines	$CODE_ROOT/include/Plot.h	/^  vector<Line> highlightedLines;$/;
 highlightedRects	$CODE_ROOT/Plot/Plot.h	/^  vector<Rect> highlightedRects;$/;"	m	class:Plot
 highlightedRects	$CODE_ROOT/include/Plot.h	/^  vector<Rect> highlightedRects;$/;"	m	class:Plot
 hlt	$CODE_ROOT/results/sap/sap_compiled.v	/^  output hlt;$/;"	p
-hpwl	$CODE_ROOT/Design/Design.h	/^  double hpwl;$/;"	m	class:Design
-hpwl	$CODE_ROOT/Net/Net.h	/^  double hpwl;$/;"	m	class:Net
-hpwl	$CODE_ROOT/include/Design.h	/^  double hpwl;$/;"	m	class:Design
-hpwl	$CODE_ROOT/include/Net.h	/^  double hpwl;$/;"	m	class:Net
 i_data	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input [1:0] i_data;$/;"	p
 i_local	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input clk, rst, i_local, i_vld;$/;"	p
 i_query_length	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  input [5:0] i_query_length;$/;"	p
@@ -2962,14 +3067,14 @@ irqlines	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  input [22:0] irqlin
 irqok	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         irqok, globint, wdri;$/;"	p
 isClock	$CODE_ROOT/Pin/Pin.h	/^  bool isClock;$/;"	m	class:Pin
 isClock	$CODE_ROOT/include/Pin.h	/^  bool isClock;$/;"	m	class:Pin
-isCluster	$CODE_ROOT/Cell/Cell.h	/^  bool isCluster;$/;"	m	class:Cell
+isCluster	$CODE_ROOT/Cell/Cell.h	/^  bool isClustered, isCluster, isClusterChild;$/;"	m	class:Cell
 isCluster	$CODE_ROOT/HyperGraph/Node.h	/^  bool isCluster;$/;"	m	class:Node
-isCluster	$CODE_ROOT/include/Cell.h	/^  bool isCluster;$/;"	m	class:Cell
+isCluster	$CODE_ROOT/include/Cell.h	/^  bool isClustered, isCluster, isClusterChild;$/;"	m	class:Cell
 isCluster	$CODE_ROOT/include/Node.h	/^  bool isCluster;$/;"	m	class:Node
-isClusterChild	$CODE_ROOT/Cell/Cell.h	/^  bool isClusterChild;$/;"	m	class:Cell
-isClusterChild	$CODE_ROOT/include/Cell.h	/^  bool isClusterChild;$/;"	m	class:Cell
-isClustered	$CODE_ROOT/Cell/Cell.h	/^  bool isClustered;$/;"	m	class:Cell
-isClustered	$CODE_ROOT/include/Cell.h	/^  bool isClustered;$/;"	m	class:Cell
+isClusterChild	$CODE_ROOT/Cell/Cell.h	/^  bool isClustered, isCluster, isClusterChild;$/;"	m	class:Cell
+isClusterChild	$CODE_ROOT/include/Cell.h	/^  bool isClustered, isCluster, isClusterChild;$/;"	m	class:Cell
+isClustered	$CODE_ROOT/Cell/Cell.h	/^  bool isClustered, isCluster, isClusterChild;$/;"	m	class:Cell
+isClustered	$CODE_ROOT/include/Cell.h	/^  bool isClustered, isCluster, isClusterChild;$/;"	m	class:Cell
 isDouble	$CODE_ROOT/common/common_utils.cxx	/^isDouble(string str)$/;"	f
 isEmpty	$CODE_ROOT/Legalize/Legalize.h	/^  bool isEmpty;$/;"	m	class:LegalizeBin
 isEmpty	$CODE_ROOT/Legalize/Legalize.h	/^  bool isEmpty;$/;"	m	class:Region
@@ -2977,8 +3082,8 @@ isEmpty	$CODE_ROOT/Legalize/Legalize.h	/^  bool isEmpty;$/;"	m	class:Zone
 isEmpty	$CODE_ROOT/include/Legalize.h	/^  bool isEmpty;$/;"	m	class:LegalizeBin
 isEmpty	$CODE_ROOT/include/Legalize.h	/^  bool isEmpty;$/;"	m	class:Region
 isEmpty	$CODE_ROOT/include/Legalize.h	/^  bool isEmpty;$/;"	m	class:Zone
-isFixed	$CODE_ROOT/Cell/Cell.h	/^  bool isFixed;$/;"	m	class:Cell
-isFixed	$CODE_ROOT/include/Cell.h	/^  bool isFixed;$/;"	m	class:Cell
+isFixed	$CODE_ROOT/Cell/Cell.h	/^  bool isPort, isMacro, isFixed;$/;"	m	class:Cell
+isFixed	$CODE_ROOT/include/Cell.h	/^  bool isPort, isMacro, isFixed;$/;"	m	class:Cell
 isHidden	$CODE_ROOT/Cell/Cell.h	/^  bool isHidden;$/;"	m	class:Cell
 isHidden	$CODE_ROOT/HyperGraph/Edge.h	/^  bool isHidden;$/;"	m	class:Edge
 isHidden	$CODE_ROOT/Net/Net.h	/^  bool isHidden;$/;"	m	class:Net
@@ -2987,18 +3092,18 @@ isHidden	$CODE_ROOT/include/Cell.h	/^  bool isHidden;$/;"	m	class:Cell
 isHidden	$CODE_ROOT/include/Edge.h	/^  bool isHidden;$/;"	m	class:Edge
 isHidden	$CODE_ROOT/include/Net.h	/^  bool isHidden;$/;"	m	class:Net
 isHidden	$CODE_ROOT/include/Pin.h	/^  bool isHidden;$/;"	m	class:Pin
-isMacro	$CODE_ROOT/Cell/Cell.h	/^  bool isMacro;$/;"	m	class:Cell
-isMacro	$CODE_ROOT/include/Cell.h	/^  bool isMacro;$/;"	m	class:Cell
-isPort	$CODE_ROOT/Cell/Cell.h	/^  bool isPort;$/;"	m	class:Cell
-isPort	$CODE_ROOT/include/Cell.h	/^  bool isPort;$/;"	m	class:Cell
+isMacro	$CODE_ROOT/Cell/Cell.h	/^  bool isPort, isMacro, isFixed;$/;"	m	class:Cell
+isMacro	$CODE_ROOT/include/Cell.h	/^  bool isPort, isMacro, isFixed;$/;"	m	class:Cell
+isPort	$CODE_ROOT/Cell/Cell.h	/^  bool isPort, isMacro, isFixed;$/;"	m	class:Cell
+isPort	$CODE_ROOT/include/Cell.h	/^  bool isPort, isMacro, isFixed;$/;"	m	class:Cell
 isSequential	$CODE_ROOT/Cell/Cell.h	/^  bool isSequential;$/;"	m	class:Cell
 isSequential	$CODE_ROOT/include/Cell.h	/^  bool isSequential;$/;"	m	class:Cell
 isUnderCluster	$CODE_ROOT/Net/Net.h	/^  bool isUnderCluster;$/;"	m	class:Net
 isUnderCluster	$CODE_ROOT/include/Net.h	/^  bool isUnderCluster;$/;"	m	class:Net
-isXLegal	$CODE_ROOT/Cell/Cell.h	/^  bool isXLegal;$/;"	m	class:Cell
-isXLegal	$CODE_ROOT/include/Cell.h	/^  bool isXLegal;$/;"	m	class:Cell
-isYLegal	$CODE_ROOT/Cell/Cell.h	/^  bool isYLegal;$/;"	m	class:Cell
-isYLegal	$CODE_ROOT/include/Cell.h	/^  bool isYLegal;$/;"	m	class:Cell
+isXLegal	$CODE_ROOT/Cell/Cell.h	/^  bool isXLegal, isYLegal;$/;"	m	class:Cell
+isXLegal	$CODE_ROOT/include/Cell.h	/^  bool isXLegal, isYLegal;$/;"	m	class:Cell
+isYLegal	$CODE_ROOT/Cell/Cell.h	/^  bool isXLegal, isYLegal;$/;"	m	class:Cell
+isYLegal	$CODE_ROOT/include/Cell.h	/^  bool isXLegal, isYLegal;$/;"	m	class:Cell
 iwaitrequest	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^         valid_2, cs_2, iwaitrequest, N300, N301, N302, N303, N304, N305, N306,$/;"	n
 label	$CODE_ROOT/Plot/Plot.h	/^  string label;$/;"	m	class:Rect
 label	$CODE_ROOT/include/Plot.h	/^  string label;$/;"	m	class:Rect
@@ -3030,8 +3135,8 @@ listOfCells	$CODE_ROOT/include/Path.h	/^  vector<Cell *> listOfCells;$/;"	m	clas
 listOfPins	$CODE_ROOT/Path/Path.h	/^  vector<Pin *> listOfPins;$/;"	m	class:Path
 listOfPins	$CODE_ROOT/include/Path.h	/^  vector<Pin *> listOfPins;$/;"	m	class:Path
 loadCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int loadCount;$/;"	m	struct:NetStatsStruct	file:
-loadCount	$CODE_ROOT/Net/Net.h	/^  uint loadCount;$/;"	m	class:Net
-loadCount	$CODE_ROOT/include/Net.h	/^  uint loadCount;$/;"	m	class:Net
+loadCount	$CODE_ROOT/Net/Net.h	/^  uint pinCount, driverCount,loadCount;$/;"	m	class:Net
+loadCount	$CODE_ROOT/include/Net.h	/^  uint pinCount, driverCount,loadCount;$/;"	m	class:Net
 m_result	$CODE_ROOT/results/seq_align/seq_align_compiled.v	/^  output [10:0] m_result;$/;"	p
 macroCellEps	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int macroCellEps;$/;"	m	struct:NetStatsStruct	file:
 main	$CODE_ROOT/AnalyticalSolve/NonLinearSolve.cxx	/^int main()$/;"	f
@@ -3042,6 +3147,7 @@ main	$CODE_ROOT/example/laplace2d.cc	/^int main( int argc, char *argv[] ) {$/;"	
 main	$CODE_ROOT/example/laplace3d.cc	/^int main( int argc, char *argv[] ) {$/;"	f
 main	$CODE_ROOT/gprof2html.py	/^def main():$/;"	f
 main	$CODE_ROOT/main.cxx	/^int main(int argc, char *argv[])$/;"	f
+main	$CODE_ROOT/temp/main.cxx	/^int main()$/;"	f
 makeDir	$CODE_ROOT/common/common_utils.cxx	/^void makeDir(string dirName)$/;"	f
 mantissa_a	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   [57:0] mantissa_a;$/;"	n
 mantissa_b	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   [57:0] mantissa_b;$/;"	n
@@ -3051,25 +3157,27 @@ mapOfVectors	$CODE_ROOT/HyperGraph/HyperGraph.h	/^typedef std::map<uint, std::ve
 mapOfVectors	$CODE_ROOT/include/HyperGraph.h	/^typedef std::map<uint, std::vector<uint > > mapOfVectors;$/;"	t
 max	$CODE_ROOT/example/laplace3d.cc	/^template< class t > inline t max( t a, t b ) { return (a>b) ? a : b; }$/;"	f
 maxSupply	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^maxSupply(LegalizeBin *binOne, LegalizeBin *binTwo)$/;"	f
+maxUtilization	$CODE_ROOT/Design/Design.h	/^  double maxUtilization;$/;"	m	class:Design
+maxUtilization	$CODE_ROOT/include/Design.h	/^  double maxUtilization;$/;"	m	class:Design
 maxx	$CODE_ROOT/Design/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
-maxx	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
+maxx	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 maxx	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 maxx	$CODE_ROOT/include/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
-maxx	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
+maxx	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 maxx	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 maxy	$CODE_ROOT/Design/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
-maxy	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
+maxy	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 maxy	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 maxy	$CODE_ROOT/include/Design.h	/^  int maxx, maxy;$/;"	m	class:Design
-maxy	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy;$/;"	m	class:Net
+maxy	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 maxy	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
-minx	$CODE_ROOT/Net/Net.h	/^  uint minx, miny;$/;"	m	class:Net
+minx	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 minx	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
-minx	$CODE_ROOT/include/Net.h	/^  uint minx, miny;$/;"	m	class:Net
+minx	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 minx	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
-miny	$CODE_ROOT/Net/Net.h	/^  uint minx, miny;$/;"	m	class:Net
+miny	$CODE_ROOT/Net/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 miny	$CODE_ROOT/Plot/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
-miny	$CODE_ROOT/include/Net.h	/^  uint minx, miny;$/;"	m	class:Net
+miny	$CODE_ROOT/include/Net.h	/^  uint maxx, maxy, minx, miny;$/;"	m	class:Net
 miny	$CODE_ROOT/include/Plot.h	/^  double minx, miny, maxx, maxy;$/;"	m	class:Plot
 mode_1	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   sign_a, sign_b, sign_res_1, mode_1, cs_1, valid_1, sign_res_2,$/;"	n
 mosekSolve	$CODE_ROOT/SolverTest/SolverTest.cxx	/^mosekSolve(vector<uint> &subi_vec, vector<uint> &subj_vec, vector<double> &valij_vec, $/;"	f
@@ -3078,6 +3186,7 @@ mosekSolveQCQO	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveQuadratic.cxx	/^mosek
 mosekSolveQuadratic	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveOldWorking.cxx	/^mosekSolveQuadratic(Design& myDesign, vector<Cell *>& inputCells, $/;"	f
 mosekSolveQuadraticDist	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveDist.cxx	/^mosekSolveQuadraticDist(Design& myDesign, vector<Cell *>& seqCells, $/;"	f
 mosekSolveQuadraticTop	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveMain.cxx	/^mosekSolveQuadraticTop(Design& myDesign, HyperGraph& seqCellGraph, $/;"	f
+moveDebug	$CODE_ROOT/Design/DesignMain.cxx	/^bool moveDebug = false;$/;"	v
 mskGetLinearCstrArray	$CODE_ROOT/AnalyticalSolve/backup/AnalyticalSolveMain.cxx	/^mskGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph, $/;"	f
 mskGetLinearCstrArray	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveOldWorking.cxx	/^mskGetLinearCstrArray(vector<Cell*> inputCells, HyperGraph& connectivityGraph, $/;"	f
 mskGetObjectiveLinearArrForDist	$CODE_ROOT/AnalyticalSolve/backup/MosekSolveDist.cxx	/^mskGetObjectiveLinearArrForDist(vector<Cell*> inputCells, HyperGraph& connectivityGraph, $/;"	f
@@ -5613,8 +5722,8 @@ numHighFanoutNets	$CODE_ROOT/Env/Env.h	/^  uint numHighFanoutNets;$/;"	m	class:E
 numHighFanoutNets	$CODE_ROOT/include/Env.h	/^  uint numHighFanoutNets;$/;"	m	class:Env
 numInEdges	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned int numInEdges;$/;"	m	class:Node
 numInEdges	$CODE_ROOT/include/Node.h	/^  unsigned int numInEdges;$/;"	m	class:Node
-numInPins	$CODE_ROOT/Cell/Cell.h	/^  int numInPins;$/;"	m	class:Cell
-numInPins	$CODE_ROOT/include/Cell.h	/^  int numInPins;$/;"	m	class:Cell
+numInPins	$CODE_ROOT/Cell/Cell.h	/^  int numPins, numInPins, numOutPins;$/;"	m	class:Cell
+numInPins	$CODE_ROOT/include/Cell.h	/^  int numPins, numInPins, numOutPins;$/;"	m	class:Cell
 numItems	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^  uint numItems;$/;"	m	class:PriorityQueue
 numItems	$CODE_ROOT/include/PriorityQueue.h	/^  uint numItems;$/;"	m	class:PriorityQueue
 numMacroCells	$CODE_ROOT/Design/DesignAnalysis.cxx	/^unsigned int numMacroCells;$/;"	v
@@ -5625,11 +5734,11 @@ numNonZero	$CODE_ROOT/ConjGrad/ConjGradSolver.h	/^  uint numNonZero;$/;"	m	class
 numNonZero	$CODE_ROOT/include/ConjGradSolver.h	/^  uint numNonZero;$/;"	m	class:SpMat
 numOutEdges	$CODE_ROOT/HyperGraph/Node.h	/^  unsigned int numOutEdges;$/;"	m	class:Node
 numOutEdges	$CODE_ROOT/include/Node.h	/^  unsigned int numOutEdges;$/;"	m	class:Node
-numOutPins	$CODE_ROOT/Cell/Cell.h	/^  int numOutPins;$/;"	m	class:Cell
-numOutPins	$CODE_ROOT/include/Cell.h	/^  int numOutPins;$/;"	m	class:Cell
+numOutPins	$CODE_ROOT/Cell/Cell.h	/^  int numPins, numInPins, numOutPins;$/;"	m	class:Cell
+numOutPins	$CODE_ROOT/include/Cell.h	/^  int numPins, numInPins, numOutPins;$/;"	m	class:Cell
 numPhysRows	$CODE_ROOT/Design/DesignAnalysis.cxx	/^unsigned int numPhysRows;$/;"	v
-numPins	$CODE_ROOT/Cell/Cell.h	/^  int numPins;$/;"	m	class:Cell
-numPins	$CODE_ROOT/include/Cell.h	/^  int numPins;$/;"	m	class:Cell
+numPins	$CODE_ROOT/Cell/Cell.h	/^  int numPins, numInPins, numOutPins;$/;"	m	class:Cell
+numPins	$CODE_ROOT/include/Cell.h	/^  int numPins, numInPins, numOutPins;$/;"	m	class:Cell
 numSevenPinNets	$CODE_ROOT/Env/Env.h	/^  uint numSevenPinNets;$/;"	m	class:Env
 numSevenPinNets	$CODE_ROOT/include/Env.h	/^  uint numSevenPinNets;$/;"	m	class:Env
 numSites	$CODE_ROOT/PhysData/PhysRow.h	/^  unsigned int numSites;$/;"	m	class:PhysRow
@@ -5667,11 +5776,17 @@ objPairScoreCompareUint	$CODE_ROOT/Design/Design.h	/^class objPairScoreCompareUi
 objPairScoreCompareUint	$CODE_ROOT/include/Design.h	/^class objPairScoreCompareUint {$/;"	c
 object	$CODE_ROOT/HyperGraph/Edge.h	/^  void *object;$/;"	m	class:Edge
 object	$CODE_ROOT/include/Edge.h	/^  void *object;$/;"	m	class:Edge
+oldx	$CODE_ROOT/Cell/Cell.h	/^  double oldx;$/;"	m	class:Cell
+oldx	$CODE_ROOT/include/Cell.h	/^  double oldx;$/;"	m	class:Cell
+oldy	$CODE_ROOT/Cell/Cell.h	/^  double oldy;$/;"	m	class:Cell
+oldy	$CODE_ROOT/include/Cell.h	/^  double oldy;$/;"	m	class:Cell
 openFPU64	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^module openFPU64 ( reset_n, read, write, address, readdata, writedata, $/;"	m
 operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const objPairScore<Cell *> &pair1,$/;"	f	class:objPairScoreCompare
 operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const objPairScore<uint> &pair1,$/;"	f	class:objPairScoreCompareUint
 operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const pair<Cell *, double> &pair1,$/;"	f	class:scoreCmpType
 operator ()	$CODE_ROOT/Design/Design.h	/^  bool operator() (const pair<uint, double> &pair1,$/;"	f	class:scoreCmpTypeUint
+operator ()	$CODE_ROOT/Sort/SortClasses.h	/^  bool operator() (const Pin *pinPtr1, const Pin *pinPtr2) {$/;"	f	struct:cmpPinXposStruct
+operator ()	$CODE_ROOT/Sort/SortClasses.h	/^  bool operator() (const Pin *pinPtr1, const Pin *pinPtr2) {$/;"	f	struct:cmpPinYposStruct
 operator ()	$CODE_ROOT/example/argument.cc	/^  bool operator()( string t ) const { return t!=0 && 0==strcmp(s,t); }$/;"	f	struct:string_eq
 operator ()	$CODE_ROOT/example/laplace3d.cc	/^  double operator()( double x, double y, double z ) const {$/;"	f	struct:CosCosCos
 operator ()	$CODE_ROOT/example/laplace3d.cc	/^  double operator()( double x, double y, double z ) const {$/;"	f	struct:CosCosCosSolution
@@ -5679,6 +5794,8 @@ operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const objPairScore<
 operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const objPairScore<uint> &pair1,$/;"	f	class:objPairScoreCompareUint
 operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const pair<Cell *, double> &pair1,$/;"	f	class:scoreCmpType
 operator ()	$CODE_ROOT/include/Design.h	/^  bool operator() (const pair<uint, double> &pair1,$/;"	f	class:scoreCmpTypeUint
+operator ()	$CODE_ROOT/include/SortClasses.h	/^  bool operator() (const Pin *pinPtr1, const Pin *pinPtr2) {$/;"	f	struct:cmpPinXposStruct
+operator ()	$CODE_ROOT/include/SortClasses.h	/^  bool operator() (const Pin *pinPtr1, const Pin *pinPtr2) {$/;"	f	struct:cmpPinYposStruct
 opmode	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  wire   [2:0] opmode;$/;"	n
 option	$CODE_ROOT/results/RISC/RISC_compiled.v	/^  wire   [3:0] option;$/;"	n
 orient	$CODE_ROOT/Cell/Cell.h	/^  objOrient orient;$/;"	m	class:Cell
@@ -5700,8 +5817,8 @@ parseLine	$CODE_ROOT/Stat/StatMain.cxx	/^int parseLine(char* line){$/;"	f
 pathLength	$CODE_ROOT/Path/Path.h	/^  uint pathLength;$/;"	m	class:Path
 pathLength	$CODE_ROOT/include/Path.h	/^  uint pathLength;$/;"	m	class:Path
 pc	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^  output [15:0] pc;$/;"	p
-peakUtilization	$CODE_ROOT/Design/Design.h	/^  double peakUtilization;$/;"	m	class:Design
-peakUtilization	$CODE_ROOT/include/Design.h	/^  double peakUtilization;$/;"	m	class:Design
+peakUtilization	$CODE_ROOT/Design/Design.h	/^  double peakUtilization, totalUtilization;$/;"	m	class:Design
+peakUtilization	$CODE_ROOT/include/Design.h	/^  double peakUtilization, totalUtilization;$/;"	m	class:Design
 peakUtilizationBinIdx	$CODE_ROOT/Design/Design.h	/^  uint peakUtilizationBinIdx;$/;"	m	class:Design
 peakUtilizationBinIdx	$CODE_ROOT/include/Design.h	/^  uint peakUtilizationBinIdx;$/;"	m	class:Design
 performAnalysis	$CODE_ROOT/variables.cxx	/^bool performAnalysis=false;$/;"	v
@@ -5711,10 +5828,18 @@ phi2	$CODE_ROOT/results/fast_crc/fast_crc_compiled.v	/^  input phi1, phi2, reset
 pi	$CODE_ROOT/example/laplace2d.cc	/^const double pi = 3.14159265358979323846;$/;"	v
 pi	$CODE_ROOT/example/laplace3d.cc	/^const double pi = 3.14159265358979323846;$/;"	v
 pinCount	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int pinCount;$/;"	m	struct:NetStatsStruct	file:
-pinCount	$CODE_ROOT/Net/Net.h	/^  uint pinCount;$/;"	m	class:Net
-pinCount	$CODE_ROOT/include/Net.h	/^  uint pinCount;$/;"	m	class:Net
+pinCount	$CODE_ROOT/Net/Net.h	/^  uint pinCount, driverCount,loadCount;$/;"	m	class:Net
+pinCount	$CODE_ROOT/include/Net.h	/^  uint pinCount, driverCount,loadCount;$/;"	m	class:Net
 pinMap	$CODE_ROOT/Cell/Cell.h	/^  map<Pin *, Pin *> pinMap;$/;"	m	class:Cluster
 pinMap	$CODE_ROOT/include/Cell.h	/^  map<Pin *, Pin *> pinMap;$/;"	m	class:Cluster
+pinMaxx	$CODE_ROOT/Net/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMaxx	$CODE_ROOT/include/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMaxy	$CODE_ROOT/Net/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMaxy	$CODE_ROOT/include/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMinx	$CODE_ROOT/Net/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMinx	$CODE_ROOT/include/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMiny	$CODE_ROOT/Net/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
+pinMiny	$CODE_ROOT/include/Net.h	/^  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;$/;"	m	class:Net
 placeMain	$CODE_ROOT/main.cxx	/^int placeMain(Env &topEnv)$/;"	f
 plotFileName	$CODE_ROOT/Plot/Plot.h	/^  string plotFileName;$/;"	m	class:Plot
 plotFileName	$CODE_ROOT/include/Plot.h	/^  string plotFileName;$/;"	m	class:Plot
@@ -5722,7 +5847,6 @@ plotOpFile	$CODE_ROOT/Plot/Plot.h	/^  ofstream plotOpFile;$/;"	m	class:Plot
 plotOpFile	$CODE_ROOT/include/Plot.h	/^  ofstream plotOpFile;$/;"	m	class:Plot
 plotTitle	$CODE_ROOT/Plot/Plot.h	/^  string plotTitle;$/;"	m	class:Plot
 plotTitle	$CODE_ROOT/include/Plot.h	/^  string plotTitle;$/;"	m	class:Plot
-pop	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::pop() const$/;"	f	class:PriorityQueue
 pop	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::pop() $/;"	f	class:PriorityQueue
 pop	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::pop() $/;"	f	class:PriorityQueue
 populateBMat	$CODE_ROOT/SolverTest/SolverTest.cxx	/^populateBMat(string fileName, vector<uint> &sub_vec, vector<double> &val_vec)$/;"	f
@@ -5792,10 +5916,8 @@ processRxByteRdy	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  wire   RxWire
 processRxByteWEn	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^  wire   RxWireDataWEn, processRxBitRdy, processRxByteWEn, processRxByteRdy,$/;"	n
 processTxByteRdy	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         USBWireReadyFromTxArb, SIETxReq, SIETxWEn, processTxByteRdy,$/;"	n
 processTxByteWEn	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^         processTxByteWEn, TxRstCRC, SIEFsRate, TxFSRateFromSIETxToPrcTxByte,$/;"	n
-push	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::push(T &item)$/;"	f	class:PriorityQueue
 push	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::push(T &item)$/;"	f	class:PriorityQueue
 push	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::push(T &item)$/;"	f	class:PriorityQueue
-pushAndSort	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^void PriorityQueue<T, C>::pushAndSort(T &item)$/;"	f	class:PriorityQueue
 pushAndSort	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^void PriorityQueue<T, C>::pushAndSort(T &item)$/;"	f	class:PriorityQueue
 pushAndSort	$CODE_ROOT/include/PriorityQueue.h	/^void PriorityQueue<T, C>::pushAndSort(T &item)$/;"	f	class:PriorityQueue
 putVarBounds	$CODE_ROOT/Design/.bak/DesignSolveFast.cxx	/^putVarBounds(MSKtask_t *task, uint numVarBounds,$/;"	f
@@ -5926,7 +6048,6 @@ solveForClusterCells	$CODE_ROOT/Design/DesignCluster.cxx	/^solveForClusterCells(
 solverStatus	$CODE_ROOT/SolverTest/SolverTest.cxx	/^} solverStatus;$/;"	t	typeref:enum:__anon1	file:
 sortCmpFunc	$CODE_ROOT/Design/DesignAnalysis.cxx	/^bool sortCmpFunc (NetStat obj1, NetStat obj2) {$/;"	f
 sortLValues	$CODE_ROOT/Legalize/LegalizeMain.cxx	/^sortLValues(const pair<LegalizeBin*, double> &i, const pair<LegalizeBin*, double> &j)$/;"	f
-sortQueue	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^void PriorityQueue<T, C>::sortQueue(void)$/;"	f	class:PriorityQueue
 sortQueue	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^void PriorityQueue<T, C>::sortQueue(void)$/;"	f	class:PriorityQueue
 sortQueue	$CODE_ROOT/include/PriorityQueue.h	/^void PriorityQueue<T, C>::sortQueue(void)$/;"	f	class:PriorityQueue
 sp_en	$CODE_ROOT/results/avr_core/avr_core_compiled.v	/^         alu_h_flag_out, post_inc, pre_dec, reg_h_wr, sp_ndown_up, sp_en,$/;"	n
@@ -5945,6 +6066,7 @@ state	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   [5:0] state
 stdCellEps	$CODE_ROOT/Design/DesignAnalysis.cxx	/^  unsigned int stdCellEps;$/;"	m	struct:NetStatsStruct	file:
 stepDepth	$CODE_ROOT/variables.cxx	/^unsigned int stepDepth;$/;"	v
 strIsNumber	$CODE_ROOT/common/common_utils.cxx	/^bool strIsNumber(const string& s)$/;"	f
+strToDouble	$CODE_ROOT/common/common_utils.cxx	/^double strToDouble(const string &s) $/;"	f
 strToLower	$CODE_ROOT/common/common_utils.cxx	/^string strToLower(const char *s) $/;"	f
 strToLower	$CODE_ROOT/common/common_utils.cxx	/^string strToLower(const string& s) $/;"	f
 stretchedBins	$CODE_ROOT/Plot/Plot.h	/^  vector<Rect> stretchedBins;$/;"	m	class:Plot
@@ -5986,18 +6108,26 @@ totCellWidth	$CODE_ROOT/Legalize/Legalize.h	/^  int totCellWidth;$/;"	m	class:In
 totCellWidth	$CODE_ROOT/include/Legalize.h	/^  int totCellWidth;$/;"	m	class:Interval
 totalBoundingBoxWidth	$CODE_ROOT/PhysData/PhysRow.h	/^  int totalBoundingBoxWidth;$/;"	m	class:PhysRow
 totalBoundingBoxWidth	$CODE_ROOT/include/PhysRow.h	/^  int totalBoundingBoxWidth;$/;"	m	class:PhysRow
+totalCellWidth	$CODE_ROOT/Bin/Bin.h	/^  double totalCellWidth;$/;"	m	class:Bin
 totalCellWidth	$CODE_ROOT/Legalize/Legalize.h	/^  int totalCellWidth;$/;"	m	class:LegalizeBin
 totalCellWidth	$CODE_ROOT/Legalize/Legalize.h	/^  int totalCellWidth;$/;"	m	class:Region
 totalCellWidth	$CODE_ROOT/Legalize/Legalize.h	/^  int totalCellWidth;$/;"	m	class:Zone
 totalCellWidth	$CODE_ROOT/PhysData/PhysRow.h	/^  int totalCellWidth;$/;"	m	class:PhysRow
+totalCellWidth	$CODE_ROOT/include/Bin.h	/^  double totalCellWidth;$/;"	m	class:Bin
 totalCellWidth	$CODE_ROOT/include/Legalize.h	/^  int totalCellWidth;$/;"	m	class:LegalizeBin
 totalCellWidth	$CODE_ROOT/include/Legalize.h	/^  int totalCellWidth;$/;"	m	class:Region
 totalCellWidth	$CODE_ROOT/include/Legalize.h	/^  int totalCellWidth;$/;"	m	class:Zone
 totalCellWidth	$CODE_ROOT/include/PhysRow.h	/^  int totalCellWidth;$/;"	m	class:PhysRow
+totalNumOccupiedBins	$CODE_ROOT/Design/Design.h	/^  uint totalNumOccupiedBins;$/;"	m	class:Design
+totalNumOccupiedBins	$CODE_ROOT/include/Design.h	/^  uint totalNumOccupiedBins;$/;"	m	class:Design
+totalUtilization	$CODE_ROOT/Design/Design.h	/^  double peakUtilization, totalUtilization;$/;"	m	class:Design
+totalUtilization	$CODE_ROOT/include/Design.h	/^  double peakUtilization, totalUtilization;$/;"	m	class:Design
 traceDepth	$CODE_ROOT/variables.cxx	/^unsigned int traceDepth=0;$/;"	v
 transport_done	$CODE_ROOT/results/reedsoldec/reedsoldec_compiled.v	/^  wire   CEO_0, In_mem_RE, S_ready, WE_transport, transport_done, L_ready,$/;"	n
-uinteger	$CODE_ROOT/common/common.h	/^typedef unsigned int uinteger;$/;"	t
-uinteger	$CODE_ROOT/include/common.h	/^typedef unsigned int uinteger;$/;"	t
+uint	$CODE_ROOT/common/common.h	/^typedef unsigned int uint;$/;"	t
+uint	$CODE_ROOT/include/common.h	/^typedef unsigned int uint;$/;"	t
+ulong	$CODE_ROOT/common/common.h	/^typedef unsigned long ulong;$/;"	t
+ulong	$CODE_ROOT/include/common.h	/^typedef unsigned long ulong;$/;"	t
 updateCellOutputs	$CODE_ROOT/Design/DesignAnalysis.cxx	/^updateCellOutputs(Cell *CellPtr, unsigned int numOutputs) $/;"	f
 updateNetStats	$CODE_ROOT/Design/DesignAnalysis.cxx	/^updateNetStats(Net *NetPtr, NetStat thisNetStat)$/;"	f
 usbSerialInterfaceEngine	$CODE_ROOT/results/usb_sie/usb_sie_compiled.v	/^module usbSerialInterfaceEngine ( clk, rst, USBWireDataIn, USBWireDataInTick, $/;"	m
@@ -6024,36 +6154,40 @@ weight	$CODE_ROOT/HyperGraph/Edge.h	/^  double weight;$/;"	m	class:Edge
 weight	$CODE_ROOT/Net/Net.h	/^  double weight;$/;"	m	class:Net
 weight	$CODE_ROOT/include/Edge.h	/^  double weight;$/;"	m	class:Edge
 weight	$CODE_ROOT/include/Net.h	/^  double weight;$/;"	m	class:Net
-width	$CODE_ROOT/Cell/Cell.h	/^  int width;$/;"	m	class:Cell
-width	$CODE_ROOT/include/Cell.h	/^  int width;$/;"	m	class:Cell
+width	$CODE_ROOT/Cell/Cell.h	/^  int height, width;$/;"	m	class:Cell
+width	$CODE_ROOT/include/Cell.h	/^  int height, width;$/;"	m	class:Cell
 widthMacroRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, unsigned int>widthMacroRanges;$/;"	v
 widthStdRanges	$CODE_ROOT/Design/DesignAnalysis.cxx	/^map<unsigned int, unsigned int>widthStdRanges;$/;"	v
 write	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  input reset_n, read, write, begintransfer, clk;$/;"	p
 writedata	$CODE_ROOT/results/openfpu64/openfpu64_compiled.v	/^  input [31:0] writedata;$/;"	p
-x	$CODE_ROOT/Cell/Cell.h	/^  int x;$/;"	m	class:Cell
+x	$CODE_ROOT/Cell/Cell.h	/^  double x, y;$/;"	m	class:Cell
 x	$CODE_ROOT/Plot/Plot.h	/^  double x, y, radius;$/;"	m	class:Circle
 x	$CODE_ROOT/example/antisym.cc	/^  double *x;     \/\/ Wert der k-ten Hauptdiagonalen$/;"	m	struct:AntiMat	file:
-x	$CODE_ROOT/include/Cell.h	/^  int x;$/;"	m	class:Cell
+x	$CODE_ROOT/include/Cell.h	/^  double x, y;$/;"	m	class:Cell
 x	$CODE_ROOT/include/Plot.h	/^  double x, y, radius;$/;"	m	class:Circle
 x1	$CODE_ROOT/Plot/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
 x1	$CODE_ROOT/include/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
 x2	$CODE_ROOT/Plot/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
 x2	$CODE_ROOT/include/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
-xOffset	$CODE_ROOT/Pin/Pin.h	/^  int xOffset;$/;"	m	class:Pin
-xOffset	$CODE_ROOT/include/Pin.h	/^  int xOffset;$/;"	m	class:Pin
+xOffset	$CODE_ROOT/Pin/Pin.h	/^  int xOffset, yOffset;$/;"	m	class:Pin
+xOffset	$CODE_ROOT/include/Pin.h	/^  int xOffset, yOffset;$/;"	m	class:Pin
 xPosInRow	$CODE_ROOT/Cell/Cell.h	/^  vector<uint> xPosInRow;$/;"	m	class:Cluster
 xPosInRow	$CODE_ROOT/include/Cell.h	/^  vector<uint> xPosInRow;$/;"	m	class:Cluster
+xhpwl	$CODE_ROOT/Net/Net.h	/^  uint xhpwl, yhpwl;$/;"	m	class:Net
+xhpwl	$CODE_ROOT/include/Net.h	/^  uint xhpwl, yhpwl;$/;"	m	class:Net
 xor_intermediate	$CODE_ROOT/results/fast_crc/fast_crc_compiled.v	/^  wire   [15:0] xor_intermediate;$/;"	n
-y	$CODE_ROOT/Cell/Cell.h	/^  int y;$/;"	m	class:Cell
+y	$CODE_ROOT/Cell/Cell.h	/^  double x, y;$/;"	m	class:Cell
 y	$CODE_ROOT/Plot/Plot.h	/^  double x, y, radius;$/;"	m	class:Circle
-y	$CODE_ROOT/include/Cell.h	/^  int y;$/;"	m	class:Cell
+y	$CODE_ROOT/include/Cell.h	/^  double x, y;$/;"	m	class:Cell
 y	$CODE_ROOT/include/Plot.h	/^  double x, y, radius;$/;"	m	class:Circle
 y1	$CODE_ROOT/Plot/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
 y1	$CODE_ROOT/include/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
 y2	$CODE_ROOT/Plot/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
 y2	$CODE_ROOT/include/Plot.h	/^  double x1, y1, x2, y2;$/;"	m	class:Line
-yOffset	$CODE_ROOT/Pin/Pin.h	/^  int yOffset;$/;"	m	class:Pin
-yOffset	$CODE_ROOT/include/Pin.h	/^  int yOffset;$/;"	m	class:Pin
+yOffset	$CODE_ROOT/Pin/Pin.h	/^  int xOffset, yOffset;$/;"	m	class:Pin
+yOffset	$CODE_ROOT/include/Pin.h	/^  int xOffset, yOffset;$/;"	m	class:Pin
+yhpwl	$CODE_ROOT/Net/Net.h	/^  uint xhpwl, yhpwl;$/;"	m	class:Net
+yhpwl	$CODE_ROOT/include/Net.h	/^  uint xhpwl, yhpwl;$/;"	m	class:Net
 zoneBegin	$CODE_ROOT/Legalize/Legalize.h	/^  int zoneBegin;$/;"	m	class:Zone
 zoneBegin	$CODE_ROOT/include/Legalize.h	/^  int zoneBegin;$/;"	m	class:Zone
 zoneEnd	$CODE_ROOT/Legalize/Legalize.h	/^  int zoneEnd;$/;"	m	class:Zone
@@ -6075,7 +6209,6 @@ zoneWidth	$CODE_ROOT/include/Legalize.h	/^  int zoneWidth;$/;"	m	class:Zone
 ~Path	$CODE_ROOT/Path/PathMain.cxx	/^Path::~Path()$/;"	f	class:Path
 ~PhysRow	$CODE_ROOT/PhysData/PhysRow.cxx	/^PhysRow::~PhysRow()$/;"	f	class:PhysRow
 ~Plot	$CODE_ROOT/Plot/PlotMain.cxx	/^Plot::~Plot()$/;"	f	class:Plot
-~PriorityQueue	$CODE_ROOT/PriorityQueue/PQueueMain.cxx	/^PriorityQueue<T, C>::~PriorityQueue()$/;"	f	class:PriorityQueue
 ~PriorityQueue	$CODE_ROOT/PriorityQueue/PriorityQueue.h	/^PriorityQueue<T, C>::~PriorityQueue()$/;"	f	class:PriorityQueue
 ~PriorityQueue	$CODE_ROOT/include/PriorityQueue.h	/^PriorityQueue<T, C>::~PriorityQueue()$/;"	f	class:PriorityQueue
 ~Rect	$CODE_ROOT/Plot/Rect.cxx	/^Rect::~Rect()$/;"	f	class:Rect

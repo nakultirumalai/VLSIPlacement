@@ -1,4 +1,5 @@
 # include <Pin.h>
+# include <Cell.h>
 # include <common.h>
 
 /* Set functions */
@@ -93,10 +94,30 @@ Pin::PinGetDirection(void) const
   return (dir);
 }
 
+int 
+Pin::PinGetAbsXPos(void) const
+{
+  return ((*ParentCell).CellGetXposDbl() + xOffset);
+}
+
+int 
+Pin::PinGetAbsYPos(void) const
+{
+  return ((*ParentCell).CellGetYposDbl() + yOffset);
+}
+
 Cell& 
 Pin::PinGetParentCell(void)
 {
   Cell &parentCell = *ParentCell;
+  
+  return (parentCell);
+}
+
+Cell*
+Pin::PinGetParentCellPtr(void)
+{
+  Cell *parentCell = ParentCell;
   
   return (parentCell);
 }
@@ -348,3 +369,20 @@ Pin::Pin(int id, int xoffset, int yoffset, char direction,
   Connect(connectedNet);
 }
 
+string
+Pin::GetParentCellName()
+{
+  return ((*ParentCell).CellGetName());
+}
+
+uint
+Pin::GetParentCellXpos()
+{
+  return ((*ParentCell).CellGetXpos());
+}
+
+uint
+Pin::GetParentCellYpos()
+{
+  return ((*ParentCell).CellGetYpos());
+}

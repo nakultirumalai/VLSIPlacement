@@ -393,6 +393,64 @@ void CellClearAllDblY(Cell *cellPtr)
   FlagsDefClearAllObjs(CELL_DBLY);
 }
 
+double CellGetOrigDblX(Cell *cellPtr)
+{
+  double rtv;
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetDouble(CELL_ORIG_DBLX, obj);
+  
+  return rtv;
+}
+
+void CellSetOrigDblX(Cell *cellPtr, double cellDblX)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_ORIG_DBLX, obj, cellDblX);
+}
+
+void CellClearOrigDblX(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_ORIG_DBLX, obj);
+}
+
+void CellClearAllOrigDblX(Cell *cellPtr) 
+{
+  FlagsDefClearAllObjs(CELL_DBLX);
+}
+
+double CellGetOrigDblY(Cell *cellPtr)
+{
+  double rtv;
+  void *obj = (void *)cellPtr;
+
+  rtv = FlagsDefGetDouble(CELL_ORIG_DBLY, obj);
+  
+  return rtv;
+}
+
+void CellSetOrigDblY(Cell *cellPtr, double cellDblY)
+{
+  void *obj = (void *)cellPtr;
+  
+  FlagsDefSetDouble(CELL_ORIG_DBLY, obj, cellDblY);
+}
+
+void CellClearOrigDblY(Cell *cellPtr)
+{
+  void *obj = (void *)cellPtr;
+
+  FlagsDefClearDouble(CELL_ORIG_DBLY, obj);
+}
+
+void CellClearAllOrigDblY(Cell *cellPtr) 
+{
+  FlagsDefClearAllObjs(CELL_ORIG_DBLY);
+}
+
 /* Move Cost Flag on Cell */
 
 double CellGetMoveCost(Cell *cellPtr)

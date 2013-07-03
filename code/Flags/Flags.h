@@ -13,6 +13,8 @@ typedef enum {
   PATH_TOTAL_CELL_DELAY = 0,
   CELL_DBLX,
   CELL_DBLY,
+  CELL_ORIG_DBLX,
+  CELL_ORIG_DBLY,
   CELL_MOVE_COST,
   PHYSROW_SUPPLY,
   LEGALIZE_BIN_L_VALUE,
@@ -132,6 +134,16 @@ extern double CellGetDblY(Cell *);
 extern void CellSetDblY(Cell *, double);
 extern void CellClearDblY(Cell *);
 extern void CellClearAllDblY(Cell *);
+
+extern double CellGetOrigDblX(Cell *);
+extern void CellSetOrigDblX(Cell *, double);
+extern void CellClearOrigDblX(Cell *);
+extern void CellClearAllOrigDblX(Cell *);
+
+extern double CellGetOrigDblY(Cell *);
+extern void CellSetOrigDblY(Cell *, double);
+extern void CellClearOrigDblY(Cell *);
+extern void CellClearAllOrigDblY(Cell *);
 
 extern double CellGetMoveCost(Cell *);
 extern void CellSetMoveCost(Cell *, double);

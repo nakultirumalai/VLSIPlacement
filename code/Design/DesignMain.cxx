@@ -1,5 +1,7 @@
 # include <Design.h>
 
+bool moveDebug = false;
+
 using namespace std;
 
 bool cmpCellLeftPos(Cell *cellPtri, Cell *cellPtrj)
@@ -7,6 +9,11 @@ bool cmpCellLeftPos(Cell *cellPtri, Cell *cellPtrj)
   uint lefti = (*cellPtri).CellGetXpos();
   uint leftj = (*cellPtrj).CellGetXpos();
   return (lefti < leftj);
+}
+
+bool cmpCellRightPos(Cell *cellPtri, Cell *cellPtrj)
+{
+  return ((*cellPtri).CellGetRight() < (*cellPtrj).CellGetRight());
 }
 
 bool cmpCellBotPos(Cell *cellPtri, Cell *cellPtrj)
@@ -22,7 +29,6 @@ map<string,Net*>& Design::DesignGetNets(void)
 
   return (retVal);
 }
-
 
 map<string,Cell*>& Design::DesignGetCells(void)
 {
@@ -177,14 +183,12 @@ Design::DesignRemoveOneClusterFromDesignDB(Cell *clusterCell)
 void
 Design::DesignDeleteCell(Cell *cellPtr)
 {
-  //  return;
   delete cellPtr;
 }
 
 void
 Design::DesignDeletePin(Pin *pinPtr)
 {
-  //  return;
   delete pinPtr;
 }
 
@@ -192,6 +196,14 @@ void
 Design::DesignSetPeakUtil(double maxUtil)
 {
   this->peakUtilization = maxUtil;
+}
+
+void
+Design::DesignSetMaxUtil(double maxUtil)
+{
+  if (this->maxUtilization == 0) {
+    maxUtilization = maxUtil;
+  }
 }
 
 void
@@ -212,93 +224,667 @@ Design::DesignSetNumBinCols(uint numCols)
   this->numBinCols = numCols;
 }
 
-void 
-Design::DesignCreateBins(void)
+uint
+Design::DesignGetNumBinRows(void)
 {
-  uint binHeight, binWidth;
-  
-  binHeight = this->averageStdCellHeight;
-  binWidth = this->averageStdCellWidth;
-  
-  /* Configure bin to accommodate four cells */
-  /* SQUARE BIN */
-  //  binHeight *= 2; binWidth *= 2;
-  /* WIDE BIN */
-  //  binWidth*= 4; 
-  /* TALL BIN */
-  // binHeight = 4 * binHeight; */
-  /* LARGER SQUARE BIN */
-  // binHeight *= 3; binWidth *= 3; */
-  /* LARGER WIDE BIN */
-  binHeight *= 2; binWidth *= 4; 
-  /* LARGER TALL BIN */
-  //  binHeight *=3; binWidth *= 2;
-  DesignCreateBins(binHeight, binWidth);
+  return (this->numBinRows);
+}
+
+uint
+Design::DesignGetNumBinCols(void)
+{
+  return (this->numBinCols);
 }
 
 void
-Design::DesignCreateBins(uint binHeight, uint binWidth)
+Design::DesignSetHPWL(ulong designHPWL)
+{
+  this->DesignHPWL = designHPWL;
+}
+
+void 
+Design::DesignRemoveFromHPWL(ulong removeHPWL)
+{
+  this->DesignHPWL -= removeHPWL;
+}
+
+void 
+Design::DesignAddToHPWL(ulong addHPWL)
+{
+  this->DesignHPWL += addHPWL;
+}
+
+void
+Design::DesignComputeHPWL()
+{
+  Net *netPtr;
+  string netName;
+  ulong totalXHPWL, totalYHPWL;
+  ulong totalHPWL;
+  uint xHPWL, yHPWL;
+  
+  totalXHPWL = 0.0;
+  totalYHPWL = 0.0;
+  totalHPWL = 0.0;
+  DESIGN_FOR_ALL_NETS((*this), netName, netPtr) {
+    (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    totalXHPWL += xHPWL;
+    totalYHPWL += yHPWL;
+    totalHPWL += (xHPWL + yHPWL);
+  } DESIGN_END_FOR;
+  this->DesignXHPWL = totalXHPWL;
+  this->DesignYHPWL = totalYHPWL;
+  this->DesignHPWL = totalHPWL;
+}
+
+ulong 
+Design::DesignGetHPWL(void)
+{
+  return (this->DesignHPWL);
+}
+
+ulong 
+Design::DesignGetXHPWL(void)
+{
+  return (this->DesignXHPWL);
+}
+
+ulong 
+Design::DesignGetYHPWL(void)
+{
+  return (this->DesignYHPWL);
+}
+
+void
+Design::DesignSetXHPWL(ulong DesignXHPWL)
+{
+  this->DesignXHPWL = DesignXHPWL;
+}
+
+void
+Design::DesignSetYHPWL(ulong DesignYHPWL)
+{
+  this->DesignYHPWL = DesignYHPWL;
+}
+
+void
+Design::DesignCellGetMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, 
+				  long &diffXHPWL, long &diffYHPWL)
+{
+  Net *netPtr;
+  long oldXHPWL, oldYHPWL;
+  long newXHPWL, newYHPWL;
+  uint xPos, yPos;
+  uint netXHPWL, netYHPWL;
+  uint newNetXHPWL, newNetYHPWL;
+
+  Cell &thisCell = (*cellPtr);
+  thisCell.CellGetPos(xPos, yPos);
+  thisCell.CellSetPos(newXpos, newYpos);
+  oldXHPWL = 0; oldYHPWL = 0;
+  newXHPWL = 0; newYHPWL = 0;
+
+  CELL_FOR_ALL_NETS(thisCell, PIN_DIR_ALL, netPtr) {
+    (*netPtr).NetSetDirtyHPWL(true);
+    (*netPtr).NetComputeHPWL(netXHPWL, netYHPWL, newNetXHPWL, newNetYHPWL);
+    oldXHPWL += netXHPWL; oldYHPWL += netYHPWL;
+    newXHPWL += newNetXHPWL; newYHPWL += newNetYHPWL;
+  } CELL_END_FOR;
+
+  diffXHPWL = oldXHPWL - newXHPWL;
+  diffYHPWL = oldYHPWL - newYHPWL;
+  thisCell.CellGetPos(xPos, yPos);
+}
+
+inline void
+getCellMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, long &diffXHPWL, 
+		    long &diffYHPWL)
+{
+  Net *netPtr;
+  long oldXHPWL, oldYHPWL;
+  long newXHPWL, newYHPWL;
+  uint xPos, yPos;
+  uint netOldXHPWL, netOldYHPWL;
+  uint newNetXHPWL, newNetYHPWL;
+
+  Cell &thisCell = (*cellPtr);
+  
+  xPos = thisCell.CellGetXpos();
+  yPos = thisCell.CellGetYpos();
+  oldXHPWL = 0; oldYHPWL = 0;
+
+  //  CELL_FOR_ALL_NETS(thisCell, PIN_DIR_ALL, netPtr) {
+  //    (*netPtr).NetComputeHPWL(netXHPWL, netYHPWL);
+  //    oldXHPWL += netXHPWL; oldYHPWL += netYHPWL;
+  //  } CELL_END_FOR;
+
+  thisCell.CellMoveCell(newXpos, newYpos);
+
+  newXHPWL = 0; newYHPWL = 0;
+  oldXHPWL = 0; oldYHPWL = 0;
+  CELL_FOR_ALL_NETS(thisCell, PIN_DIR_ALL, netPtr) {
+    (*netPtr).NetComputeHPWL(netOldXHPWL, netOldYHPWL, newNetXHPWL, newNetYHPWL);
+    oldXHPWL += netOldXHPWL; oldYHPWL += netOldYHPWL;
+    newXHPWL += newNetXHPWL; newYHPWL += newNetYHPWL;
+    //    newXHPWL += netXHPWL; newYHPWL += netYHPWL;
+  } CELL_END_FOR;
+
+  thisCell.CellMoveCell(xPos, yPos);
+  diffXHPWL = oldXHPWL - newXHPWL;
+  diffYHPWL = oldYHPWL - newYHPWL;
+}
+
+inline double 
+computeScore(double maxUtil, double curBinUtil, double targetUtil, long diffHPWL) 
+{
+  double alpha, beta_m, beta_n, util_m, util_n;
+  double gamma, cont_m, cont_n;
+  double score;
+
+  alpha = 1.0;
+  gamma = 0; cont_m = 0; cont_n = 0;
+  beta_m = 10000 * curBinUtil * curBinUtil; beta_n = 10000 * targetUtil * targetUtil;
+  util_m = exp(curBinUtil * curBinUtil); util_n = exp(targetUtil * targetUtil);
+  if (moveDebug) {
+    cout << "SCORE: " 
+	 << " HPWL COMP: " << (alpha * diffHPWL) << endl
+	 << " UTIL COMP: " << ((beta_m * util_m - beta_n * util_n)) << endl;
+  }
+
+  score = alpha * diffHPWL + (beta_m * util_m - beta_n * util_n) + 
+    gamma * (cont_m - cont_n);
+
+  return score;
+}
+
+bool
+Design::DesignCellGetBestPosForILR(Cell &thisCell, Bin &srcBin, Bin *& targetBinPtr,
+				   uint &newXpos, uint &newYpos)
+{
+  Bin *binLeft, *binRight, *binTop, *binBot;
+  Bin *binLeftTop, *binRightTop, *binLeftBot, *binRightBot;
+  Cell *cellPtr;
+  double curBinUtil, diffBinUtil;
+  uint curBinIdx, cellXpos, cellYpos;
+  uint binHeight, binWidth;
+  int nRight, nLeft, nTop, nBot;
+  int nDiagRightTop, nDiagRightBot;
+  int nDiagLeftTop, nDiagLeftBot;
+  bool rtv = false;
+  
+  nDiagRightTop = -1;
+  nDiagLeftTop = -1;
+  nDiagRightBot = -1;
+  nDiagLeftBot = -1;
+  binLeft = NIL(Bin *); binRight = NIL(Bin *);
+  binTop = NIL(Bin *); binBot = NIL(Bin *);
+  binLeftTop = NIL(Bin *); binLeftBot = NIL(Bin *);
+  binRightTop = NIL(Bin *); binRightBot = NIL(Bin *);
+
+  curBinIdx = srcBin.BinGetIdx();
+  curBinUtil = srcBin.BinGetUtilization();
+  cellXpos = thisCell.CellGetXpos();
+  cellYpos = thisCell.CellGetYpos();
+  string cellName = thisCell.CellGetName();
+
+  binHeight = DesignGetBinHeight();
+  binWidth = DesignGetBinWidth();
+  cellPtr = &(thisCell);
+  nRight = DesignGetNextRowBinIdx(curBinIdx);
+  nLeft = DesignGetPrevRowBinIdx(curBinIdx);
+  nTop = DesignGetNextColBinIdx(curBinIdx);
+  nBot = DesignGetPrevColBinIdx(curBinIdx);
+
+  if (nRight >= 0) {
+    nDiagRightTop = DesignGetNextColBinIdx(nRight);
+    nDiagRightBot = DesignGetPrevColBinIdx(nRight);
+    binRight = DesignBins[nRight];
+    if (nDiagRightTop >= 0) {
+      binRightTop = DesignBins[nDiagRightTop];
+    }
+    if (nDiagRightBot >= 0) {
+      binRightBot = DesignBins[nDiagRightBot];
+    }
+  }
+  if (nLeft >= 0) {
+    nDiagLeftTop = DesignGetNextColBinIdx(nLeft);
+    nDiagLeftBot = DesignGetPrevColBinIdx(nLeft);
+    binLeft = DesignBins[nLeft];
+    if (nDiagLeftTop >= 0) {
+      binLeftTop = DesignBins[nDiagLeftTop];
+    }
+    if (nDiagLeftBot >= 0) {
+      binLeftBot = DesignBins[nDiagLeftBot];
+    }
+  }
+  if (nTop >= 0) {
+    binTop = DesignBins[nTop];
+  }
+  if (nBot >= 0) {
+    binBot = DesignBins[nBot];
+  }
+  
+  double topScore, botScore, leftScore, rightScore;
+  double topUtil, botUtil, leftUtil, rightUtil;
+  double maxUtil, diffUtilization;
+  double highestScore;
+  uint targetXpos, targetYpos;
+  long diffXHPWL, diffYHPWL, diffHPWL;
+  topScore = 0; botScore = 0; leftScore = 0; rightScore = 0; highestScore = -DBL_MAX;
+  targetXpos = cellXpos; targetYpos = cellYpos;
+  maxUtil = DesignGetMaxUtil();
+  targetBinPtr = NIL(Bin*);
+  //  bool moveDebug = true;
+  /* Compute four scores */
+  if (moveDebug) {
+    cout << "***************************************************" << endl;
+    cout << "Score computation summary:" << endl;
+    cout << " TOP BIN: " << endl;
+    if (!binTop) {
+      cout << "   INVALID" << endl;
+    }
+  }
+  if (binTop) {
+    diffXHPWL = 0; diffYHPWL = 0; diffHPWL = 0;
+    getCellMoveCostHPWL(cellPtr, cellXpos, (cellYpos + binHeight), diffXHPWL, diffYHPWL);
+    topUtil = (*binTop).BinGetUtilization();
+    diffHPWL = diffXHPWL + diffYHPWL;
+    diffUtilization = curBinUtil - topUtil;
+    topScore = computeScore(maxUtil, curBinUtil, topUtil, diffHPWL);
+    if (highestScore < topScore) {
+      highestScore = topScore;
+      targetYpos = cellYpos + binHeight;
+      targetXpos = cellXpos;
+      targetBinPtr = binTop;
+    }
+    if (moveDebug) {
+      cout << "     Old X-pos: " << cellXpos
+	   << "  Old Y-pos: " << cellYpos << endl;
+      cout << "     Target X-pos: " << cellXpos
+	   << "  Target Y-pos: " << cellYpos + binHeight << endl;
+      cout << "     Current Util: " << curBinUtil
+	   << "  Top bin Util: " << topUtil << endl;
+      cout << "        HPWL Diff: " << diffHPWL << endl;
+      cout << "        Util Diff: " << diffUtilization << endl;
+      cout << "        Score    : " << topScore << endl;
+    }
+  }
+  if (moveDebug) {
+    cout << endl;
+    cout << " RIGHT BIN: " << endl;
+    if (!binRight) {
+      cout << "   INVALID" << endl;
+    }
+  }
+  if (binRight) {
+    diffXHPWL = 0; diffYHPWL = 0; diffHPWL = 0;
+    getCellMoveCostHPWL(cellPtr, cellXpos + binWidth, cellYpos, diffXHPWL, diffYHPWL);
+    rightUtil = (*binRight).BinGetUtilization();
+    diffHPWL = diffXHPWL + diffYHPWL;
+    diffUtilization = curBinUtil - rightUtil;
+    rightScore = computeScore(maxUtil, curBinUtil, rightUtil, diffHPWL);
+    if (highestScore < rightScore) {
+      targetYpos = cellYpos;
+      targetXpos = cellXpos + binWidth;
+      highestScore = rightScore;
+      targetBinPtr = binRight;
+    }
+    if (moveDebug) {
+      cout << "     Old X-pos: " << cellXpos
+	   << "  Old Y-pos: " << cellYpos << endl;
+      cout << "     Target X-pos: " << cellXpos + binWidth
+	   << "  Target Y-pos: " << cellYpos << endl;
+      cout << "     Current Util: " << curBinUtil
+	   << "  Right bin Util: " << rightUtil << endl;
+      cout << "        HPWL Diff: " << diffHPWL << endl;
+      cout << "        Util Diff: " << diffUtilization << endl;
+      cout << "        Score    : " << rightScore << endl;
+    }
+  }
+  if (moveDebug) {
+    cout << endl;
+    cout << " LEFT BIN: " << endl;
+    if (!binLeft) {
+      cout << "   INVALID" << endl;
+    }
+  }
+  if (binLeft) {
+    diffXHPWL = 0; diffYHPWL = 0; diffHPWL = 0;
+    getCellMoveCostHPWL(cellPtr, (cellXpos - binWidth), cellYpos, diffXHPWL, diffYHPWL);
+    leftUtil = (*binLeft).BinGetUtilization();
+    diffHPWL = diffXHPWL + diffYHPWL;
+    diffUtilization = curBinUtil - leftUtil;
+    leftScore = computeScore(maxUtil, curBinUtil, leftUtil, diffHPWL);
+    if (highestScore < leftScore) {
+      highestScore = leftScore;
+      targetYpos = cellYpos;
+      targetXpos = cellXpos - binWidth;
+      targetBinPtr = binLeft;
+    }
+    if (moveDebug) {
+      cout << "     Old X-pos: " << cellXpos
+	   << "  Old Y-pos: " << cellYpos << endl;
+      cout << "     Target X-pos: " << cellXpos - binWidth
+	   << "  Target Y-pos: " << cellYpos << endl;
+      cout << "     Current Util: " << curBinUtil
+	   << "  Left bin Util: " << leftUtil << endl;
+      cout << "        HPWL Diff: " << diffHPWL << endl;
+      cout << "        Util Diff: " << diffUtilization << endl;
+      cout << "        Score    : " << leftScore << endl;
+    }
+  }
+  if (moveDebug) {
+    cout << endl;
+    cout << " BOT BIN: " << endl;
+    if (!binBot) {
+      cout << "   INVALID" << endl;
+    }
+  }
+  if (binBot) {
+    diffXHPWL = 0; diffYHPWL = 0; diffHPWL = 0;
+    getCellMoveCostHPWL(cellPtr, cellXpos, (cellYpos - binHeight), diffXHPWL, diffYHPWL);
+    botUtil = (*binBot).BinGetUtilization();
+    diffHPWL = diffXHPWL + diffYHPWL;
+    diffUtilization = curBinUtil - botUtil;
+    botScore = computeScore(maxUtil, curBinUtil, botUtil, diffHPWL);
+    if (highestScore < botScore) {
+      targetYpos = cellYpos - binHeight;
+      targetXpos = cellXpos;
+      highestScore = botScore;
+      targetBinPtr = binBot;
+    }
+    if (moveDebug) {
+      cout << "     Old X-pos: " << cellXpos
+	   << "  Old Y-pos: " << cellYpos << endl;
+      cout << "     Target X-pos: " << cellXpos
+	   << "  Target Y-pos: " << cellYpos - binHeight << endl;
+      cout << "     Current Util: " << curBinUtil
+	   << "  Bot bin Util: " << botUtil << endl;
+      cout << "        HPWL Diff: " << diffHPWL << endl;
+      cout << "        Util Diff: " << diffUtilization << endl;
+      cout << "        Score    : " << botScore << endl;
+    }
+  }
+  newXpos = targetXpos;
+  newYpos = targetYpos;
+  if (highestScore > 0) {
+    rtv = true;
+  } else {
+    rtv = false;
+  }
+    
+  if (moveDebug) {
+    cout << "#################################################" << endl;
+    cout << " Highest score    : " << highestScore << endl;
+    cout << " old x-pos : " << thisCell.CellGetXpos() << " old y-pos: " << thisCell.CellGetYpos() 
+	 << "  new x-pos: " << newXpos << "  new y-pos:" << newYpos
+	 << endl;
+    cout << "***************************************************" << endl;
+  }
+
+  return (rtv);
+}
+
+/*******************************************************************************
+  COMPUTE THE INITIAL BIN SIZE FOR CELL SPREADING AND ILR
+*******************************************************************************/
+void
+Design::DesignComputeBinSize(bool ILR) 
+{
+  uint binHeight, binWidth;
+  uint ILRMultiple;
+
+  binHeight = this->averageStdCellHeight;
+  binWidth = this->averageStdCellWidth;
+
+  if (!ILR) {
+    binHeight *= 4;
+    binWidth *= 4;
+  } else {
+    ILRMultiple = 10;
+    binHeight *= ILRMultiple;
+    binWidth *= ILRMultiple;
+    DesignSetILRMultiple(ILRMultiple);
+  }
+
+  DesignComputeBinSize(binHeight, binWidth);
+}
+
+void
+Design::DesignComputeBinSize(uint binHeight, uint binWidth)
+{
+  double divideToBins;
+  uint endRow, endCol;
+  uint overflowx, overflowy;
+  uint numRows, numCols;
+  uint maxx, maxy;
+  
+  DesignGetBoundingBox(maxx, maxy);
+  numCols = (uint)ceil(((double)maxx) / binWidth);
+  numRows = (uint)ceil(((double)maxy) / binHeight);
+  
+  endRow = (numCols) * binWidth;
+  endCol = (numRows) * binHeight;
+  overflowx = 0;
+  overflowy = 0;
+  if (endRow > maxx)  
+    overflowx = maxx - ((numCols - 1) * binWidth);
+  if (endCol > maxy) 
+    overflowy = maxy - ((numRows - 1) * binHeight);
+  
+  /* Adjust the binWidth/binHeight such that the overflow
+     contributes to at least one unit of placement space
+     in the x/y-direction to the binWidth/binHeight */
+  if (overflowx > 0) {
+    divideToBins = overflowx / (numCols - 1);
+    if (divideToBins >= 1) {
+      binWidth += floor(divideToBins);
+      numCols = (uint)ceil(((double)maxx) / binWidth);
+      endRow = (numCols) * binWidth;
+      if (endRow > maxx) {
+	overflowx = maxx - ((numCols - 1) * binWidth);
+	divideToBins = overflowx / (numCols - 1);
+	numCols--;
+	if (divideToBins >= 1) {
+	  _ASSERT_TRUE("Error: Overflow after adjustment is more than one unit per column");
+	}
+      }
+    }
+  }
+  if (overflowy > 0) {
+    divideToBins = overflowy / (numRows - 1);
+    if (divideToBins >= 1) {
+      binHeight += floor(divideToBins);
+      numRows = (uint)ceil(((double)maxy) / binHeight);
+      endCol = (numRows) * binHeight;
+      if (endCol > maxy) {
+	overflowy = maxy - ((numRows - 1) * binHeight);
+	divideToBins = overflowy / (numRows - 1);
+	numRows--;
+	if (divideToBins >= 1) {
+	  _ASSERT_TRUE("Error: Overflow after adjustment is more than one unit per row");
+	}
+      }
+    }
+  }
+  DesignSetNumBinRows(numRows);
+  DesignSetNumBinCols(numCols);
+  DesignSetBinHeight(binHeight);
+  DesignSetBinWidth(binWidth);
+
+  cout << "Average cell height: " << binHeight 
+       << "  Average cell width : " << binWidth 
+       << endl;
+  cout << "Row X Cols: " << numRows << " X " << numCols 
+       << endl;
+}
+
+void
+Design::DesignShrinkBinsForILR(void)
+{
+  uint modBinHeight, modBinWidth;
+  uint binHeight, binWidth;
+  uint oldNumRows, oldNumCols;
+  uint newNumRows, newNumCols;
+  uint ILRMultiple;
+
+  ILRMultiple = DesignGetILRMultiple();
+  binHeight = this->averageStdCellHeight;
+  binWidth = this->averageStdCellWidth;
+  oldNumRows = DesignGetNumBinRows();
+  oldNumCols = DesignGetNumBinCols();
+  newNumRows = oldNumRows;
+  newNumCols = oldNumCols;
+  
+  while((newNumRows > oldNumRows) &&
+	(newNumCols > newNumCols)) {
+    ILRMultiple--;
+    modBinHeight = binHeight * ILRMultiple;
+    modBinWidth = binWidth * ILRMultiple;
+    DesignComputeBinSize(modBinHeight, modBinWidth);
+    newNumRows = DesignGetNumBinRows();
+    newNumCols = DesignGetNumBinCols();
+  }
+  
+  DesignCreateBins();
+}
+
+void
+Design::DesignRefreshBins()
 {
   Bin *binPtr;
   vector<Cell*> cellsOfBin;
-  vector<Cell*> cellsSortedByLeft;
-  vector<Cell*> cellsSortedByBot;
+  vector<Cell*> cellsSortedByLeft, cellsSortedByRight;
   double maxUtilization, overlapArea;
   double totalCellWidth, averageCellWidth;
   double utilization;
+  uint left, right, bot, top;
+  uint peakUtilBinIdx;
+  uint numBins, numCells;
+  uint binIdx;
+  int prevBinIdx;
+  bool binCreated;
+  bool addToPreviousRowBin, addToPreviousColBin;
+
+  numBins = DesignBins.size();
+  if (numBins <= 0) {
+    cout << "Error: Refresh bins called without creating bins!" << endl;
+    return;
+  }
+  _STEP_BEGIN("Bin refresh");
+  maxUtilization = 0; 
+  peakUtilBinIdx = 0;
+  cellsSortedByLeft = DesignGetCellsSortedByLeft();
+  cellsSortedByRight = DesignGetCellsSortedByRight();
+  DESIGN_FOR_ALL_BINS((*this), binIdx, binPtr) {
+    (*binPtr).BinDeleteData();
+    (*binPtr).BinGetBoundingBox(left, right, bot, top);
+    cellsOfBin =
+      DesignGetCellsOfBin(binPtr, left, right, bot, top, cellsSortedByLeft,
+			  cellsSortedByRight, overlapArea, totalCellWidth);
+    numCells = cellsOfBin.size();      
+    if (numCells <= 0) {
+      continue;
+    }
+    (*binPtr).BinSetCells(cellsOfBin);
+    (*binPtr).BinSetCellArea(overlapArea);
+    (*binPtr).BinComputeUtilization();
+    (*binPtr).BinSetTotalCellWidth(totalCellWidth);
+    (*binPtr).BinComputeAverageCellWidth();
+    (*binPtr).BinSetNewRight(right);
+    (*binPtr).BinSetNewTop(top);
+    utilization = (*binPtr).BinGetUtilization();
+    totalUtilization += utilization;
+    //    (*binPtr).BinPrintBin();
+    if (numCells > 0) {
+      totalNumOccupiedBins++;
+    }
+    if (maxUtilization < utilization) {
+      maxUtilization = utilization;
+      peakUtilBinIdx = binIdx;
+    }
+  } DESIGN_END_FOR;
+  DesignSetMaxUtil(maxUtilization);
+  DesignSetPeakUtil(maxUtilization);
+  DesignSetPeakUtilBinIdx(peakUtilBinIdx);
+  _STEP_END("Bin refresh");
+}
+
+void
+Design::DesignCreateBins()
+{
+  Bin *binPtr;
+  vector<Cell*> cellsOfBin;
+  vector<Cell*> cellsSortedByLeft, cellsSortedByRight;
+  double oldUtilization, newUtilization;
+  double maxUtilization, overlapArea;
+  double totalCellWidth, averageCellWidth;
+  double utilization;
+  uint binWidth, binHeight;
   uint maxx, maxy;
-  uint binCount, numRows, numCols;
+  uint binCount, numRows, numCols, actualRows, actualCols;
+  uint numRowsSoFar, numColsSoFar;
   uint left, right, bot, top;
   uint peakUtilBinIdx;
   uint i, j;
   uint numBins, numCells;
-  bool createBins;
+  int prevBinIdx, curBegin;
+  bool binCreated;
+  bool addToPreviousRowBin, addToPreviousColBin;
 
   _STEP_BEGIN("Bin construction");
+  binWidth = DesignGetBinWidth();
+  binHeight = DesignGetBinHeight();
+  numRows = DesignGetNumBinRows();
+  numCols = DesignGetNumBinCols();
   DesignGetBoundingBox(maxx, maxy);
   cellsSortedByLeft = DesignGetCellsSortedByLeft();
-  cellsSortedByBot = DesignGetCellsSortedByBot();
-  numCols = (uint)ceil(((double)maxx) / binWidth);
-  numRows = (uint)ceil(((double)maxy) / binHeight);
+  cellsSortedByRight = DesignGetCellsSortedByRight();
 
   binCount = 0; 
   maxUtilization = 0; 
   peakUtilBinIdx = 0;
+  totalUtilization = 0;
+  totalNumOccupiedBins = 0;
+  binCreated = false;
   numBins = DesignBins.size();
-  createBins = false;
-  if (numBins == 0) createBins = true;
+  if (numBins > 0) {
+    _ASSERT_TRUE("Error: Bins already exist!!Clear bins before creating bins afresh!");
+  }
+  cout << "Created regular bin structure with " << " Rows: " << numRows 
+       << "  Columns: " << numCols << endl << endl;
   bot = 0; top = binHeight;
-  //  cout << "Creating " << numCols * numRows << " bins" << endl;
   for (i = 0; i < numRows; i++) {
     left = 0; right = binWidth;
     for (j = 0; j < numCols; j++) {
-      if (right > maxx) right = maxx;
-      if (top > maxy) top = maxy;
-      if (createBins) {
-	binPtr = new Bin(binCount, left, right, bot, top);
-	DesignBins.push_back(binPtr);
-      } else {
-	binPtr = DesignBins[binCount];
+      if (j == (numCols - 1)) {
+	right = maxx;
       }
+      if (i == (numRows - 1)) {
+	top = maxy;
+      }
+      binPtr = new Bin(binCount, left, right, bot, top);
+      DesignBins.push_back(binPtr);
       (*binPtr).BinSetNewRight(right);
       (*binPtr).BinSetNewTop(top);
       cellsOfBin =
         DesignGetCellsOfBin(binPtr, left, right, bot, top, cellsSortedByLeft,
-			    cellsSortedByBot, overlapArea, totalCellWidth);
-      utilization = overlapArea / (((double)binHeight) * binWidth);
-      numCells = cellsOfBin.size();
-      averageCellWidth = 0.0;
-      if (numCells > 0) {
-	averageCellWidth = totalCellWidth / numCells;
-      }
+			    cellsSortedByRight, overlapArea, totalCellWidth);
+      numCells = cellsOfBin.size();      
+      (*binPtr).BinSetCells(cellsOfBin);
+      (*binPtr).BinSetCellArea(overlapArea);
+      (*binPtr).BinComputeUtilization();
+      (*binPtr).BinSetTotalCellWidth(totalCellWidth);
+      (*binPtr).BinComputeAverageCellWidth();
+      utilization = (*binPtr).BinGetUtilization();
+      totalUtilization += utilization;
       if (maxUtilization < utilization) {
         maxUtilization = utilization;
         peakUtilBinIdx = binCount;
       }
-      (*binPtr).BinSetCells(cellsOfBin);
-      (*binPtr).BinSetCellArea(overlapArea);
-      (*binPtr).BinSetUtilization(utilization);
-      (*binPtr).BinSetAverageCellWidth(averageCellWidth);
+      if (numCells > 0) {
+	totalNumOccupiedBins++;
+      }
       left += binWidth;
       right += binWidth;
       binCount++;
@@ -306,11 +892,60 @@ Design::DesignCreateBins(uint binHeight, uint binWidth)
     bot += binHeight;
     top += binHeight;
   }
+  DesignSetMaxUtil(maxUtilization);
   DesignSetPeakUtil(maxUtilization);
   DesignSetPeakUtilBinIdx(peakUtilBinIdx);
-  DesignSetNumBinRows(numRows);
-  DesignSetNumBinCols(numCols);
+  DesignSetBinsCreated(true);
+  _STEP_END("Bin construction");
+}
 
+void
+Design::DesignCreateEmptyBins()
+{
+  Bin *binPtr;
+  uint binWidth, binHeight;
+  uint maxx, maxy;
+  uint binCount, numRows, numCols;
+  uint left, right, bot, top;
+  uint i, j;
+  uint numBins, numCells;
+
+  _STEP_BEGIN("Bin construction");
+  binWidth = DesignGetBinWidth();
+  binHeight = DesignGetBinHeight();
+  numRows = DesignGetNumBinRows();
+  numCols = DesignGetNumBinCols();
+  DesignGetBoundingBox(maxx, maxy);
+
+  binCount = 0; 
+  numBins = DesignBins.size();
+  if (numBins > 0) {
+    _ASSERT_TRUE("Error: Bins already exist!!Clear bins before creating bins afresh!");
+  }
+  cout << "Created regular bin structure with " << " Rows: " << numRows 
+       << "  Columns: " << numCols << endl << endl;
+  bot = 0; top = binHeight;
+  for (i = 0; i < numRows; i++) {
+    left = 0; right = binWidth;
+    for (j = 0; j < numCols; j++) {
+      if (j == (numCols - 1)) {
+	right = maxx;
+      }
+      if (i == (numRows - 1)) {
+	top = maxy;
+      }
+      binPtr = new Bin(binCount, left, right, bot, top);
+      DesignBins.push_back(binPtr);
+      (*binPtr).BinSetNewRight(right);
+      (*binPtr).BinSetNewTop(top);
+      left += binWidth;
+      right += binWidth;
+      binCount++;
+    }
+    bot += binHeight;
+    top += binHeight;
+  }
+  DesignSetBinsCreated(true);
   _STEP_END("Bin construction");
 }
 
@@ -324,6 +959,18 @@ Design::DesignClearBins(void)
   } END_FOR;
 }
 
+void
+Design::DesignDestroyBins(void)
+{
+  Bin *binPtr;
+
+  VECTOR_FOR_ALL_ELEMS(DesignBins, Bin*, binPtr) {
+    delete binPtr;
+  } END_FOR;
+  DesignSetBinsCreated(false);
+  DesignBins.clear();
+}
+
 double
 Design::DesignGetPeakUtil(void)
 {
@@ -334,6 +981,30 @@ uint
 Design::DesignGetPeakUtilBinIdx(void)
 {
   return (this->peakUtilizationBinIdx);
+}
+
+double
+Design::DesignGetMaxUtil(void)
+{
+  return (this->maxUtilization);
+}
+
+double
+Design::DesignGetTotalUtil(void)
+{
+  return (this->totalUtilization);
+}
+
+uint
+Design::DesignGetTotalNumOccBins(void)
+{
+  return (this->totalNumOccupiedBins);
+}
+
+double
+Design::DesignGetAverageUtil(void)
+{
+  return (totalUtilization / ((double)totalNumOccupiedBins));
 }
 
 vector<Cell *>&
@@ -400,6 +1071,54 @@ Design::DesignGetPrevColBinIdx(uint binIdx)
   return (rtv);
 }
 
+void
+Design::DesignSetBinHeight(uint binHeight)
+{
+  this->binHeight = binHeight;
+}
+
+void
+Design::DesignSetBinWidth(uint binWidth)
+{
+  this->binWidth = binWidth;
+}
+
+void
+Design::DesignSetILRMultiple(uint ILRMultiple)
+{
+  this->ILRMultiple = ILRMultiple;
+}
+
+void
+Design::DesignSetBinsCreated(bool binsCreated)
+{
+  this->binsCreated = binsCreated;
+}
+
+uint
+Design::DesignGetBinHeight(void)
+{
+  return (binHeight);
+}
+
+uint
+Design::DesignGetBinWidth(void)
+{
+  return (binWidth);
+}
+
+uint
+Design::DesignGetILRMultiple(void)
+{
+  return (this->ILRMultiple);
+}
+
+bool
+Design::DesignGetBinsCreated(void)
+{
+  return (this->binsCreated);
+}
+
 vector<Cell *>
 Design::DesignGetCellsSortedByLeft(void)
 {
@@ -407,6 +1126,17 @@ Design::DesignGetCellsSortedByLeft(void)
   
   rtv = DesignGetCellsToSolve();
   sort(rtv.begin(), rtv.end(), cmpCellLeftPos);
+
+  return (rtv);
+}
+
+vector<Cell *>
+Design::DesignGetCellsSortedByRight(void)
+{
+  vector<Cell *> rtv;
+  
+  rtv = DesignGetCellsToSolve();
+  sort(rtv.begin(), rtv.end(), cmpCellRightPos);
 
   return (rtv);
 }
@@ -904,10 +1634,17 @@ Design::DesignInit()
   maxy = -INT_MAX;
 
   singleRowHeight = -1;
+  binHeight = 0;
+  binWidth = 0;
+  ILRMultiple = 0;
   clockPeriod = 0.0;
   peakUtilization = 0.0;
+  totalUtilization = 0.0;
+  maxUtilization = 0.0;
+  totalNumOccupiedBins = 0;
   peakUtilizationBinIdx = 0;
-  
+  binsCreated = false;
+
   preShiftLeft = 0;
   preShiftBot = 0;
   preShiftRight = -INT_MAX;

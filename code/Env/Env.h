@@ -22,7 +22,7 @@ typedef enum {
   ENV_MPL6_GP,
   NUM_ENV_GLOBAL_PLACERS
 } EnvGlobalPlacerType;
-# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NTUPLACE_GP
+# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
 
 /* Define the solver type to be used in the design */
 typedef enum {
@@ -34,7 +34,7 @@ typedef enum {
   ENV_SOLVER_NON_LINEAR_CONJ_GRAD,
   NUM_ENV_SOLVERS
 } EnvSolverType;
-# define DEFAULT_ENV_SOLVER_TYPE ENV_SOLVER_QUADRATIC_MOSEK
+# define DEFAULT_ENV_SOLVER_TYPE ENV_SOLVER_QUADRATIC_CONJ_GRAD
 
 /* Define the net model used for hypernets of the placement tool  */
 typedef enum {
@@ -119,6 +119,10 @@ typedef enum {
   ENV_NUM_SHAPE_SELECTION_TYPES,
 } EnvShapeSelectionType;
 # define DEFAULT_ENV_SHAPE_SELECTION_TYPE ENV_NO_SHAPE_SELECTION
+
+/* Define the default value of the maximum utilization 
+   after which ILR would start */
+# define DEFAULT_MAX_UTILIZATION_PHASEI 1.0
 
 /***************************************************
  EVERY VARIABLE DEFINED BELOW HAS TO BE DOCUMENTED!
@@ -215,7 +219,10 @@ class Env {
   /***************************************/
   /* FLOAT/DOUBLE VARIABLES              */
   /***************************************/
-
+  /* Decide the peak utilization during which the 
+     global placer should switch to ILR */
+  double MaxUtilPhaseI;
+  
   /***************************************/
   /* CUSTOM ENUM VARIABLES               */
   /* ALL VALUES ARE DEFAULTED TO DEFAULT */
@@ -295,12 +302,14 @@ class Env {
   double EnvGetGlobalPlacementTime(void);
 
   void EnvRecordLegalizationTime(void);
+  void EnvRecordLegalizationTime(double);
   double EnvGetLegalizationTime(void);
 
   void EnvRecordShapeSelectionTime(void);
   double EnvGetShapeSelectionTime(void);
 
   void EnvRecordDetailedPlacementTime(void);
+  void EnvRecordDetailedPlacementTime(double);
   double EnvGetDetailedPlacementTime(void);
 
   /* Functions to set netlist statistics */
@@ -350,6 +359,9 @@ class Env {
 
   void EnvSetDiscreteWidth(bool);
   bool EnvGetDiscreteWidth(void);
+
+  void EnvSetMaxUtilPhaseI(double);
+  double EnvGetMaxUtilPhaseI(void);
 
   void EnvSetGlobalPlacerType(EnvGlobalPlacerType);
   EnvGlobalPlacerType EnvGetGlobalPlacerType(void);

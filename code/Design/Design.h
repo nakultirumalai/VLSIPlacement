@@ -8,7 +8,6 @@
 # include <Pin.h>
 # include <HyperGraph.h>
 # include <PhysRow.h>
-# include <Sort.h>
 # include <Flags.h>
 # include <DesignIter.h>
 # include <mosek.h>
@@ -254,13 +253,19 @@ class Design {
   /* Bin and utilization related stuff */
   uint peakUtilizationBinIdx;
   uint numBinRows, numBinCols;
-  double peakUtilization;
+  uint totalNumOccupiedBins;
+  uint binHeight, binWidth;
+  double maxUtilization;
+  double peakUtilization, totalUtilization;
+  bool binsCreated;
 
   /* Other performance related parameters */
-  double hpwl;
+  ulong DesignXHPWL, DesignYHPWL;
+  ulong DesignHPWL;
 
   /* Average cell width */
   double averageStdCellHeight, averageStdCellWidth;
+  uint ILRMultiple;
 
   void DesignSetVarsPostRead(void);
 
@@ -315,21 +320,38 @@ class Design {
   void DesignUpdateChipDim(PhysRow *);
   void DesignShiftChipToZeroZero(void);
 
-  /* Bin related set functions */
+  /* Bin related set/get functions */
   void DesignSetPeakUtil(double);
   void DesignSetPeakUtilBinIdx(uint);
+  void DesignSetMaxUtil(double);
   void DesignSetNumBinRows(uint);
   void DesignSetNumBinCols(uint);
+  uint DesignGetNumBinRows(void);
+  uint DesignGetNumBinCols(void);
 
   /* HPWL related functions */
-  void DesignSetHPWL(double);
-  void DesignRemoveFromHPWL(double);
-  void DesignAddToHPWL(double);
-  double DesignGetHPWL(void);
+  void DesignSetHPWL(ulong);
+  void DesignRemoveFromHPWL(ulong);
+  void DesignAddToHPWL(ulong);
+  void DesignComputeHPWL(void);
+  ulong DesignGetHPWL(void);
+  ulong DesignGetXHPWL(void);
+  ulong DesignGetYHPWL(void);
+  void DesignSetXHPWL(ulong);
+  void DesignSetYHPWL(ulong);
+
+  /* Move cost computation for cells */
+  void DesignCellGetMoveCostHPWL(Cell *, uint, uint, long &, long &);
+
+  /* ILR related function */
+  void DesignMoveCellsInBinsILR(void);
+  void DesignDoILRIter(void);
+  void DesignTestCellMovement(void);
 
   /* Set the vector of cells to a particular list */
   vector<Cell *>& DesignGetCellsToSolve(void);
   vector<Cell *> DesignGetCellsSortedByLeft(void);
+  vector<Cell *> DesignGetCellsSortedByRight(void);
   vector<Cell *> DesignGetCellsSortedByBot(void);
 
  public:
@@ -357,10 +379,15 @@ class Design {
   void DesignReadPinsMapFile();
   void DesignReadCellDelaysFile();
   void DesignReadPathDelays();
-  void DesignCreateBins(uint, uint);
-  void DesignCreateBins(void);
 
+  void DesignComputeBinSize(bool);
+  void DesignComputeBinSize(uint, uint);
+  void DesignShrinkBinsForILR();
+  void DesignRefreshBins(void);
+  void DesignCreateBins(void);
+  void DesignCreateEmptyBins(void);
   void DesignClearBins(void);
+  void DesignDestroyBins(void);
 
   map<string, Net*>& DesignGetNets(void);
   map<string, Cell*>& DesignGetCells(void);
@@ -417,6 +444,7 @@ class Design {
   void DesignSolveForCellsNoHyperGraph(vector<Cell *> &cellsToSolve);
   void DesignSolveForAllCellsConjGradWnLibIter(void);
   void DesignSetCellsToSolve(vector<Cell *>);
+  void DesignAdjustCells(void);
 
   /* Calling internal and external placers */
   void DesignRunExternalPlacer(EnvGlobalPlacerType);
@@ -482,29 +510,48 @@ class Design {
 			     MSKrealt *, MSKrealt *, 
 			     MSKrealt *, map<Cell *,uint> &,
 			     map<Cell *,uint> &);
+  bool DesignCellGetBestPosForILR(Cell &, Bin &, Bin *&, uint&, uint&);
   void DesignGetForceOnCell(Cell &, double, double, 
+			    double, double, double,
 			    double &, double &, double &, 
 			    char &, double&, double &, 
-			    double &, double &);
+			    double &, double &, bool);
   void DesignCreatePseudoPortOld(Cell &, double, double, double, double, 
 				 double, double, double, char, 
 				 MSKrealt *, MSKrealt *,  
 				 MSKrealt *, MSKrealt *, 
 				 map<Cell *, uint>&, map<Cell *, uint>&);
-  void DesignCreatePseudoPort(Cell &, double, double, double, double, 
-			      double, double, double, char, double &,
-			      double &, double &);
+  void DesignCreatePseudoPort(Cell &, double, double, double, 
+			      double, double, double, double, 
+			      char, double &, double &, double &);
   void DesignSpreadCreatePseudoPort(Cell&, Bin&, double, double, 
+				    double, double, double,
 				    double &, double &, double &);
+  void DesignSpreadCreatePseudoPortILR(Cell&, double, double, 
+				       double &, double &, double &);
+  bool DesignBreakSolverPhaseI(void);
+  bool DesignBreakSolverPhaseII(void);
 
   /* Bin related functions */
   void DesignStretchBins(void);
   double DesignGetPeakUtil(void);
   uint DesignGetPeakUtilBinIdx(void);
+  double DesignGetMaxUtil(void);
+  double DesignGetTotalUtil(void);
+  uint DesignGetTotalNumOccBins(void);
+  double DesignGetAverageUtil(void);
   int DesignGetNextRowBinIdx(uint);
   int DesignGetNextColBinIdx(uint);
   int DesignGetPrevRowBinIdx(uint);
   int DesignGetPrevColBinIdx(uint);
+  void DesignSetBinHeight(uint);
+  void DesignSetBinWidth(uint);
+  void DesignSetILRMultiple(uint);
+  void DesignSetBinsCreated(bool); 
+  uint DesignGetBinHeight(void);
+  uint DesignGetBinWidth(void);
+  uint DesignGetILRMultiple(void);
+  bool DesignGetBinsCreated(void);
 
   /* Miscellaneous utility functions */
   vector<Cell *> DesignGetCellsOfBin(Bin *binPtr, uint, uint, uint, uint, 
@@ -522,6 +569,8 @@ class Design {
 			       double &, double &, uint, uint , uint , uint ,
 			       double &, double &);
 
+  /* Print data of peak utilization in each iteration */
+  void DesignPrintSpreadIter(uint, uint, uint);
 
   /* Write out netlist in a created directory */
   void DesignWriteCurrentNetlist(string, string);

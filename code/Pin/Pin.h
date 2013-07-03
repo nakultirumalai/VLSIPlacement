@@ -9,22 +9,23 @@
 # define PIN_DIR_INOUT 0x1 << 2
 # define PIN_DIR_ALL 0x1 << 3
 
+
 class Cell;
 class Net;
 
 class Pin {
  private:
   int Id;
-  int xOffset;
-  int yOffset;
+  double cellXpos, cellYpos;
   char dir; 
-  Cell *ParentCell;
-  Net *ConnectedNet;
   bool isClock;
   bool isHidden;
   string libPinName;
   string Name;
  public:
+  Cell *ParentCell;
+  Net *ConnectedNet;
+  int xOffset, yOffset;
 
   /* Constructors */
   Pin();
@@ -65,10 +66,13 @@ class Pin {
   int PinGetId(void);
   int PinGetXOffset(void);
   int PinGetYOffset(void);
+  int PinGetAbsXPos(void) const;
+  int PinGetAbsYPos(void) const;
   char PinGetDirection(void) const;
   string PinGetName(void) const;
   string PinGetLibName(void) const;
   Cell& PinGetParentCell(void);
+  Cell* PinGetParentCellPtr(void);
   Net& PinGetNet(void);
   bool PinIsClock(void);
   bool PinIsHidden(void);
@@ -77,6 +81,11 @@ class Pin {
   void Connect(const Net&);
   Net& Disconnect(void);
   void PinGetXposYpos(int *, int*);
+
+  /* To be removed later */
+  string GetParentCellName();
+  uint GetParentCellXpos();
+  uint GetParentCellYpos();
 };
 
 # endif

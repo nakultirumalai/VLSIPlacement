@@ -1,22 +1,98 @@
 # include <Cell.h>
+# include <Pin.h>
 
 void 
-Cell::CellSetXpos(int Xpos) 
+Cell::CellSetXpos(uint Xpos) 
+{
+  x = Xpos;
+}
+
+void 
+Cell::CellSetOldXpos(double oldXpos) 
+{
+  oldx = oldXpos;
+}
+
+void 
+Cell::CellSetXposDbl(double Xpos) 
 {
   x = Xpos;
 }
 
 void
-Cell::CellSetYpos(int Ypos)
+Cell::CellSetYpos(uint Ypos)
 {
   y = Ypos;
 }
 
 void
-Cell::CellSetPos(int Xpos, int Ypos) 
+Cell::CellSetOldYpos(double Ypos)
+{
+  oldy = Ypos;
+}
+
+void
+Cell::CellSetYposDbl(double Ypos)
+{
+  y = Ypos;
+}
+
+
+void
+Cell::CellSetPos(uint Xpos, uint Ypos) 
 {
   x = Xpos;
   y = Ypos;
+}
+
+void
+Cell::CellSetPosDbl(double Xpos, double Ypos) 
+{
+  Pin *pinPtr;
+  Net *netPtr;
+  uint idx, absx, absy;
+  int xOffset, yOffset;
+  bool updatedx, updatedy;
+
+  x = Xpos; y = Ypos;
+  for (idx = 0; idx < numPins; idx++) {
+    pinPtr = Pins[idx];
+    netPtr = (*pinPtr).ConnectedNet;
+    xOffset = (*pinPtr).xOffset;
+    yOffset = (*pinPtr).yOffset;
+    updatedx = false; updatedy = false;
+    absx = x + xOffset;
+    absy = y + yOffset;
+    if ((*netPtr).maxx <= absx) {
+      (*netPtr).maxx = absx;
+      (*netPtr).pinMaxx = pinPtr;
+      updatedx = true;
+    } 
+    if ((*netPtr).minx >= absx) {
+      (*netPtr).minx = absx;
+      (*netPtr).pinMinx = pinPtr;
+      updatedx = true; 
+    }
+    if ((*netPtr).maxy <= absy) {
+      (*netPtr).maxy = absy;
+      (*netPtr).pinMaxy = pinPtr;
+      updatedy = true;
+    } 
+    if ((*netPtr).miny >= absy) {
+      (*netPtr).miny = absy;
+      (*netPtr).pinMiny = pinPtr;
+      updatedy = true;
+    }
+    if (updatedx) (*netPtr).xhpwl = (*netPtr).maxx - (*netPtr).minx;
+    if (updatedy) (*netPtr).yhpwl = (*netPtr).maxy - (*netPtr).miny;
+  }
+}
+
+void
+Cell::CellSetOldPos(double oldXpos, double oldYpos) 
+{
+  oldx = oldXpos;
+  oldy = oldYpos;
 }
 
 void
@@ -153,6 +229,11 @@ Cell::CellSetYIsLegal(const bool & isYLegal)
 }
 
 void
+Cell::CellMarkNetsDirty(void)
+{
+}
+
+void
 Cell::CellAddChildCell(Cell &thisCell)
 {
   childCells.push_back(&thisCell);
@@ -182,6 +263,12 @@ Cell::CellAddArcDelay(Pin *fromPin, Pin *toPin, double delay)
   unsigned int pin2Idx = (*toPin).PinGetId();
   
   (arcDelays[pin1Idx])[pin2Idx] = delay;
+}
+
+void
+Cell::CellSetBin(Bin *binOfCell) 
+{
+  cellBin = binOfCell;
 }
 
 void
@@ -224,31 +311,174 @@ Cell::CellMoveDown(int offset)
 }
 
 void
-Cell::CellMoveCell(int XOffset, int YOffset)
+Cell::CellMoveCell(double xPos, double yPos)
 {
-  x = x + XOffset;
-  y = y + YOffset;
+  Net *netPtr;
+  x = xPos;
+  y = yPos;
+  CELL_FOR_ALL_NETS((*this), PIN_DIR_ALL, netPtr) {
+    (*netPtr).NetSetDirtyHPWL(true);
+    //    cout << "Affected net: " << (*netPtr).NetGetName() << endl;
+  } CELL_END_FOR;
 }
 
-int 
+void
+Cell::CellMoveCellComputeHPWL(double newXpos, double newYpos,
+			      ulong &oldXHPWL, ulong &oldYHPWL,
+			      ulong &newXHPWL, ulong &newYHPWL)
+{
+  Pin *pinPtr;
+  Net *netPtr;
+  double oldXpos, oldYpos;
+  double oldPinAbsX, oldPinAbsY;
+  double newPinAbsX, newPinAbsY;
+  double maxx, maxy, minx, miny;
+  bool incx, decx, incy, decy;
+  bool recompute;
+  
+  incx = false; decx = false;
+  if (newXpos > x) { 
+    incx = true; 
+  } else if (newXpos < x) {
+    decx = true;
+  }
+  incy = false; decy = false;
+  if (newYpos > y) { 
+    incy = true; 
+  } else if (newYpos < y) {
+    decy = true;
+  }
+
+  oldXHPWL = 0; oldYHPWL = 0;
+  newXHPWL = 0; newYHPWL = 0;
+  oldXpos = x; oldYpos = y;
+  x = newXpos; y = newYpos;
+  VECTOR_FOR_ALL_ELEMS(Pins, Pin*, pinPtr) {
+    recompute = false;
+    Pin &thisPin = *pinPtr;
+    Net &thisNet = *((*pinPtr).ConnectedNet);
+    oldXHPWL += thisNet.maxx - thisNet.minx;
+    oldYHPWL += thisNet.maxy - thisNet.miny;
+    if (incx == true) {
+      oldPinAbsX = oldXpos + thisPin.xOffset;
+      newPinAbsX = newXpos + thisPin.xOffset;
+      if (thisNet.pinMaxx == pinPtr) {
+	thisNet.maxx = newPinAbsX;
+      } else if (thisNet.maxx < newPinAbsX) {
+	thisNet.maxx = newPinAbsX;
+	thisNet.pinMaxx = pinPtr;
+      } else if (thisNet.pinMinx == pinPtr) {
+	recompute = true;
+      }
+    } else if (decx == true && (!recompute)) {
+      oldPinAbsX = oldXpos + thisPin.xOffset;
+      newPinAbsX = newXpos + thisPin.xOffset;
+      if (thisNet.pinMinx == pinPtr) {
+	thisNet.minx = newPinAbsX;
+      } else if (thisNet.minx > newPinAbsX) {
+	thisNet.minx = newPinAbsX;
+	thisNet.pinMinx = pinPtr;
+      } else if (thisNet.pinMaxx == pinPtr) {
+	recompute = true;
+      }
+    }
+    if (incy == true && (!recompute)) {
+      oldPinAbsY = oldYpos + thisPin.yOffset;
+      newPinAbsY = newYpos + thisPin.yOffset;
+      if (thisNet.pinMaxy == pinPtr) {
+	thisNet.maxy = newPinAbsY;
+      } else if (thisNet.maxy < newPinAbsY) {
+	thisNet.maxy = newPinAbsY;
+	thisNet.pinMaxy = pinPtr;
+      } else if (thisNet.pinMiny == pinPtr) {
+	recompute = true;
+      }
+    } else if (decy == true && (!recompute)) {
+      oldPinAbsY = oldYpos + thisPin.yOffset;
+      newPinAbsY = newYpos + thisPin.yOffset;
+      if (thisNet.pinMiny == pinPtr) {
+	thisNet.miny = newPinAbsY;
+      } else if (thisNet.miny > newPinAbsY) {
+	thisNet.miny = newPinAbsY;
+	thisNet.pinMiny = pinPtr;
+      } else if (thisNet.pinMaxy == pinPtr) {
+	recompute = true;
+      }
+    }
+    if (recompute) {
+      thisNet.maxx = 0; thisNet.maxy = 0; 
+      thisNet.minx = INT_MAX; thisNet.miny = INT_MAX;
+      double cellx, celly;
+      NET_FOR_ALL_PINS(thisNet, pinPtr) {
+	cellx = (*pinPtr).ParentCell->x;
+	celly = (*pinPtr).ParentCell->y;
+	newPinAbsX = (*pinPtr).xOffset + cellx;
+	newPinAbsY = (*pinPtr).yOffset + celly;
+	if (newPinAbsX > thisNet.maxx) {
+	  thisNet.pinMaxx = pinPtr;
+	  thisNet.maxx = maxx;
+	}
+	if (newPinAbsX < thisNet.minx) {
+	  thisNet.minx = newPinAbsX;
+	  thisNet.pinMinx = pinPtr;
+	}
+	if (newPinAbsY > thisNet.maxy) {
+	  thisNet.maxy = newPinAbsY;
+	  thisNet.pinMaxy = pinPtr;
+	}
+	if (newPinAbsY < thisNet.miny) {
+	  thisNet.miny = newPinAbsY;
+	  thisNet.pinMiny = pinPtr;
+	}
+      } NET_END_FOR;
+    }
+  } END_FOR;
+}
+
+
+uint 
 Cell::CellGetXpos(void)
+{
+  return (dtoi(x));
+}
+
+double
+Cell::CellGetOldXpos(void)
+{
+  return (oldx);
+}
+
+double
+Cell::CellGetXposDbl(void)
 {
   return (x);
 }
 
-int 
+uint 
 Cell::CellGetRight(void)
 {
   return (x + width);
 }
 
-int 
+uint 
 Cell::CellGetYpos(void)
+{
+  return (dtoi(y));
+}
+
+double
+Cell::CellGetOldYpos(void)
+{
+  return (oldy);
+}
+
+double 
+Cell::CellGetYposDbl(void)
 {
   return (y);
 }
 
-int 
+uint 
 Cell::CellGetTop(void)
 {
   return (y + height);
@@ -456,6 +686,12 @@ Cell::CellGetArcDelay(Pin *fromPin, Pin *toPin)
   rtv = ((arcDelays[pin1Idx])[pin2Idx]);
 }
 
+Bin*
+Cell::CellGetBin(void)
+{
+  return (cellBin);
+}
+
 Cell::Cell()
 {
   CellSetPos(0, 0);
@@ -476,6 +712,7 @@ Cell::Cell()
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width) 
@@ -498,6 +735,7 @@ Cell::Cell(int Height, int Width)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, string Name)
@@ -521,6 +759,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 
@@ -545,6 +784,7 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos)
@@ -566,6 +806,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
@@ -589,6 +830,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name, 
@@ -613,6 +855,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
@@ -635,6 +878,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name)
@@ -658,11 +902,12 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, string Name, bool terminalCell)
 {
-  CellSetPos(Xpos, Ypos);
+  CellSetPos((uint)Xpos, (uint)Ypos);
   CellSetHeight(Height);
   CellSetWidth(Width);
   CellSetName(Name);
@@ -681,6 +926,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetBin(NIL(Bin*));
 }
 
 Cell::~Cell()

@@ -15,6 +15,7 @@ Bin::Bin()
   utilization = 0.0;
   newRight = 0;
   newTop = 0;
+  totalCellWidth = 0;
   averageCellWidth = 0;
   stretchedInX = false;
   stretchedInY = false;
@@ -158,21 +159,103 @@ Bin::BinSetCellArea(double binCellArea)
 }
 
 void 
-Bin::BinSetAverageCellWidth(double avgCellWidth)
+Bin::BinAddCellArea(double cellArea)
 {
-  this->averageCellWidth = avgCellWidth;
+  this->cellArea += cellArea;
+}
+
+void
+Bin::BinSetTotalCellWidth(double totalCellWidth)
+{
+  this->totalCellWidth = totalCellWidth;
+}
+
+void
+Bin::BinAddCellWidth(double cellWidth)
+{
+  this->totalCellWidth += cellWidth;
 }
 
 void 
-Bin::BinSetUtilization(double utilization)
+Bin::BinComputeAverageCellWidth(void)
 {
-  this->utilization = utilization;
+  this->averageCellWidth = totalCellWidth / (cellsOfBin.size());
+}
+
+void 
+Bin::BinComputeUtilization(void)
+{
+  double height;
+  double width;
+  
+  height = (double)(top - bot);
+  width = (double)(right - left);
+  
+  this->utilization = cellArea / (height * width);
+}
+
+void
+Bin::BinAddCells(vector<Cell *>& cellsToAdd) 
+{
+  cellsOfBin.insert(cellsOfBin.end(), cellsToAdd.begin(),
+		    cellsToAdd.end());
+}
+
+void
+Bin::BinAddCell(Cell *cellToAdd) 
+{
+  double height, width;
+
+  cellsOfBin.push_back(cellToAdd);
+  totalCellWidth += (*cellToAdd).CellGetWidth();
+  cellArea += (double)(*cellToAdd).CellGetArea();
+  height = (double)(top - bot);
+  width = (double)(right - left);
+
+  utilization = cellArea / (height * width);
+}
+
+void
+Bin::BinAddCellVirtual(Cell *cellToAdd) 
+{
+  double height, width;
+
+  totalCellWidth += (*cellToAdd).CellGetWidth();
+  cellArea += (double)(*cellToAdd).CellGetArea();
+  height = (double)(top - bot);
+  width = (double)(right - left);
+
+  utilization = cellArea / (height * width);
+}
+
+void
+Bin::BinRemoveCell(uint cellIdx) 
+{
+  Cell *cellPtr;
+
+  cellPtr = cellsOfBin[cellIdx];
+  //  cellsOfBin.erase(cellsOfBin.begin() + cellIdx);
+  totalCellWidth -= (*cellPtr).CellGetWidth();
+  cellArea -= (double)(*cellPtr).CellGetArea();
+  BinComputeUtilization();
 }
 
 void 
 Bin::BinSetCells(vector<Cell *>& cellsOfBin)
 {
   this->cellsOfBin = cellsOfBin;
+}
+
+void
+Bin::BinSetRight(uint right)
+{
+  this->right = right;
+}
+
+void
+Bin::BinSetTop(uint top)
+{
+  this->top = top;
 }
 
 void
@@ -202,6 +285,7 @@ Bin::BinDeleteData(void)
   this->utilization = 0;
   this->cellArea = 0;
   this->averageCellWidth = 0;
+  this->totalCellWidth = 0;
   this->stretchedInX = false;
   this->stretchedInY = false;
 }  
@@ -221,6 +305,8 @@ Bin::BinPrintBin(void)
   cout << "<<   newRight: " << newRight << endl;
   cout << "<<   newTop: " <<  newTop << endl;
   cout << "<<            " << endl;
+  cout << "<<   Number of cells: " << cellsOfBin.size() << endl;
+  cout << "<<   TotalCellArea: " << cellArea << endl;
   cout << "<<   Utilization: " << utilization << endl;
   cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
 }

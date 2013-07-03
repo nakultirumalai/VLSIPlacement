@@ -89,38 +89,81 @@ DesignCellIsStdCell(Design &myDesign, Cell &thisCell)
 
 vector<Cell *>
 Design::DesignGetCellsOfBin(Bin *binPtr, uint left, uint right, uint bot, uint top,
-			    vector<Cell *> &cellsSortedByLeft,
-			    vector<Cell *> &cellsSortedByBot,
-			    double &overLapArea, 
-			    double &totalCellWidth)
+			    vector<Cell *> &cellsSortedByLeft, vector<Cell *> &cellsSortedByRight,
+			    double &overLapArea, double &totalCellWidth)
 {
+  vector<Cell *> listOfCells;
+  Cell * cellPtr;
+  double thisCellOverlapArea;
   uint last, sortedListsSize, lastPos;
   uint cellLeftPos, cellRightPos, cellTopPos, cellBotPos;
-  uint idxLeft, idxRight, idxBot, idxTop;
+  uint idxLeft, idxRight;
+  uint startIdx;
   uint cellLeftXpos, cellRightXpos;
   uint cellTopYpos, cellBotYpos;
-  double thisCellOverlapArea;
+  uint numCells, mid;
   bool noCellFound;
-  vector<Cell *> listOfCells;
 
   overLapArea = 0.0;
   totalCellWidth = 0.0;
   /* Compute the overlap here after checking the y-positions of the cells in a 
      detailed manner */
-  for (int i = 0; i < cellsSortedByLeft.size(); i++) {
-    Cell &thisCell = *(cellsSortedByLeft[i]);
-    thisCell.CellGetBoundingBox(cellLeftPos, cellBotPos, cellRightPos,
-				cellTopPos);
-    thisCellOverlapArea = thetaFunc(left, right, cellLeftPos, cellRightPos) *
-      thetaFunc(bot, top, cellBotPos, cellTopPos);
-    if (thisCellOverlapArea != 0.0) {
-      if ((cellLeftPos >= left && cellLeftPos < right) &&
-          (cellBotPos >= bot && cellBotPos < top)) {
-        listOfCells.push_back(&thisCell);
+  if (1) {
+    for (int i = 0; i < cellsSortedByLeft.size(); i++) {
+      Cell &thisCell = *(cellsSortedByLeft[i]);
+      thisCell.CellGetBoundingBox(cellLeftPos, cellBotPos, cellRightPos,
+				  cellTopPos);
+      //      thisCellOverlapArea = thetaFunc(left, right, cellLeftPos, cellRightPos) *
+      //	thetaFunc(bot, top, cellBotPos, cellTopPos);
+      //      if (thisCellOverlapArea != 0.0) {
+	if ((cellLeftPos >= left && cellLeftPos < right) &&
+	    (cellBotPos >= bot && cellBotPos < top)) {
+	  listOfCells.push_back(&thisCell);
+	  CellSetBin(&thisCell, (void *)binPtr);
+	  totalCellWidth += thisCell.CellGetWidth();
+	  overLapArea += thisCell.CellGetArea();
+	}
+	//      }
+    }
+  } else {
+    /* Find the first cell in the list whose x position is greater than or equal 
+       to the left of the bin boundary using binary search*/
+    numCells = cellsSortedByRight.size();
+    idxLeft = 0; idxRight = numCells;
+    startIdx = 0;
+    while (1) {
+      mid = (idxRight - idxLeft) / 2;
+      cellPtr = cellsSortedByRight[mid];
+      cellRightXpos = (*cellPtr).CellGetXpos() + (*cellPtr).CellGetWidth(); 
+      if (cellRightXpos < left) {
+	startIdx = mid;
+	break;
+      } else {
+	idxRight = mid;
+      }
+      if (idxLeft == mid) {
+	startIdx = 0;
+	break;
+      }
+    }
+    for (int i = startIdx; i < cellsSortedByLeft.size(); i++) {
+      Cell &thisCell = *(cellsSortedByLeft[i]);
+      thisCell.CellGetBoundingBox(cellLeftPos, cellBotPos, cellRightPos,
+				  cellTopPos);
+      if (cellLeftPos > right) {
+	break;
+      }
+      //      thisCellOverlapArea = thetaFunc(left, right, cellLeftPos, cellRightPos) *
+      //	thetaFunc(bot, top, cellBotPos, cellTopPos);
+      //      overLapArea += thisCellOverlapArea;
+      //      if (thisCellOverlapArea != 0.0) {
+      //      }
+      if (cellBotPos >= bot && cellBotPos < top) {
+	listOfCells.push_back(&thisCell);
 	CellSetBin(&thisCell, (void *)binPtr);
 	totalCellWidth += thisCell.CellGetWidth();
+	overLapArea += thisCell.CellGetArea();
       }
-      overLapArea += thisCellOverlapArea;
     }
   }
 
@@ -177,12 +220,9 @@ Design::DesignPlotData(string plotTitle, string plotFileName)
 
   newPlot.PlotAddCells(cellsToSolve);
   
-  /*
   DESIGN_FOR_ALL_BINS((*this), binIdx, binPtr) {
     newPlot.PlotAddBin(*binPtr);
   } DESIGN_END_FOR;
-  */
-
   
   newPlot.PlotWriteOutput();
 }
@@ -607,4 +647,77 @@ Design::DesignWriteCurrentNetlist(string dirName, string desName)
   changeDir("..");
 }
 
+void
+Design::DesignPrintSpreadIter(uint itrCount, uint numSolverXIter, uint numSolverYIter) 
+{
+  double peakUtilization;
+  string plotFileName, DesignName;
 
+  peakUtilization = DesignGetPeakUtil();
+  DesignName = DesignGetName();
+  cout << "Iteration: " << itrCount 
+       << " CG-X: " << numSolverXIter 
+       << " CG-Y: " << numSolverYIter
+       << " Peak Util: " << peakUtilization 
+       << " Mem usage: " << getMemUsage() << MEM_USAGE_UNIT
+       << " CPU TIME:" << getCPUTime() << CPU_TIME_UNIT << endl;
+
+  //  plotFileName = DesignName + "_" + getStrFromInt(itrCount) + ".plt";
+  //  DesignPlotData("Title", plotFileName);
+}
+
+bool
+Design::DesignBreakSolverPhaseI(void)
+{
+  double averageUtilization;
+  double maxUtilization;
+  double peakUtilization;
+  bool rtv;
+  bool cond1, cond2, cond3;
+
+  /* Compute the average density of all the occupied bins */
+  Env &DesignEnv = DesignGetEnv();
+  
+  averageUtilization = (totalUtilization) / (totalNumOccupiedBins);
+  maxUtilization = DesignGetMaxUtil();
+  peakUtilization = DesignGetPeakUtil();
+  
+  rtv = false;
+  if (0 && (averageUtilization < (0.05) * maxUtilization)) {
+    rtv = true;
+  } 
+
+  cond1 = (peakUtilization < 30);
+  cond2 = (peakUtilization < ((0.01) * maxUtilization));
+  cond3 = (peakUtilization < ((0.20) * maxUtilization));
+  if (cond2 || (cond1 && cond3)) {
+    rtv = true;
+  }
+  return rtv;
+}
+
+bool
+Design::DesignBreakSolverPhaseII(void)
+{
+  double averageUtilization;
+  double maxUtilization;
+  double peakUtilization;
+  bool rtv;
+
+  /* Compute the average density of all the occupied bins */
+  Env &DesignEnv = DesignGetEnv();
+  
+  averageUtilization = (totalUtilization) / (totalNumOccupiedBins);
+  maxUtilization = DesignGetMaxUtil();
+  peakUtilization = DesignGetPeakUtil();
+  
+  rtv = false;
+  if (0 && (averageUtilization < (0.05) * maxUtilization)) {
+    rtv = true;
+  } 
+  
+  if (peakUtilization < (0.1) * maxUtilization) {
+    rtv = true;
+  }
+  return rtv;
+}

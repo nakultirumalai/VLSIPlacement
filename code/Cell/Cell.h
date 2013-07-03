@@ -2,37 +2,31 @@
 # define CELL_H
 
 # include <common.h>
-# include <Pin.h>
 # include <CellIter.h>
 
+class Pin;
+class Net;
+class Bin;
 using namespace std;
 
 class Cell {
  private:
-  unsigned long flags;
-  int x;
-  int y;
-  int height;
-  int width;
-  int numPins;
-  int numInPins;
-  int numOutPins;
-  unsigned int clusterLevel;
+  ulong flags;
+  double oldx;
+  double oldy;
+  int height, width;
+  int numPins, numInPins, numOutPins;
+  uint clusterLevel;
   objOrient orient;
   bool terminalCell;
-  bool isClustered;
-  bool isCluster;
-  bool isClusterChild;
-  bool isMacro;
-  bool isFixed;
+  bool isClustered, isCluster, isClusterChild;
+  bool isPort, isMacro, isFixed;
   bool isSequential;
-  bool isPort;
-  bool isXLegal;
-  bool isYLegal;
+  bool isXLegal, isYLegal;
   bool isHidden;
   vector<Pin*> Pins;
   vector<Cell*> childCells;
-  map<unsigned int, map<unsigned int, double > > arcDelays;
+  map<uint, map<uint, double > > arcDelays;
 
   string name;
   string origName;
@@ -40,6 +34,9 @@ class Cell {
   string libName;
 
  public:
+  double x, y;
+  Bin *cellBin;
+
   /* Constructor & Destructor */
   Cell();
   Cell(int, int);
@@ -54,9 +51,16 @@ class Cell {
   ~Cell();
 
   /* Set functions */
-  void CellSetXpos(int);
-  void CellSetYpos(int);
-  void CellSetPos(int, int);
+  void CellSetXpos(uint);
+  void CellSetOldXpos(double);
+  void CellSetXposDbl(double);
+  void CellSetOldYPos(double);
+  void CellSetYpos(uint);
+  void CellSetOldYpos(double);
+  void CellSetYposDbl(double);
+  void CellSetOldPos(double, double);
+  void CellSetPosDbl(double, double);
+  void CellSetPos(uint, uint);
   void CellSetHeight(int);
   void CellSetWidth(int);
   void CellSetOrientation(objOrient);
@@ -73,32 +77,38 @@ class Cell {
   void CellSetIsClustered(const bool&);
   void CellSetIsMacro(const bool &);
   void CellSetIsFixed(const bool &);
-  void CellSetClusterLevel(unsigned int);
+  void CellSetClusterLevel(uint);
   void CellSetIsSequential(const bool &);
   void CellSetIsPort(const bool &);
   void CellSetIsHidden(const bool &);
   void CellSetXIsLegal(const bool&);
   void CellSetYIsLegal(const bool&);
+  void CellMarkNetsDirty(void);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
   void CellAddArcDelay(Pin *, Pin *, double);
+  void CellSetBin(Bin *);
   void CellIncrementClusterLevel(void);
   void CellDecrementClusterLevel(void);
 
   /* Get functions */
-  int CellGetXpos(void);
-  int CellGetRight(void);
-  int CellGetYpos(void);
-  int CellGetTop(void);
+  uint CellGetXpos(void);
+  double CellGetXposDbl(void);
+  double CellGetOldXpos(void);
+  uint CellGetRight(void);
+  uint CellGetYpos(void);
+  double CellGetOldYpos(void);
+  double CellGetYposDbl(void);
+  uint CellGetTop(void);
   void CellGetPos(uint &, uint &);
   void CellGetBoundingBox(uint &, uint &, uint&, uint&);
   int CellGetHeight(void);
   int CellGetWidth(void);
   int CellGetNumPins(int);
   int CellGetNumPins(void);
-  unsigned int CellGetClusterLevel(void);
+  uint CellGetClusterLevel(void);
   objOrient CellGetOrientation(void);
-  unsigned int CellGetArea(void);
+  uint CellGetArea(void);
   bool CellIsTerminal(void);
   bool CellIsCluster(void);
   bool CellIsClusterChild(void);
@@ -118,13 +128,16 @@ class Cell {
   vector<Pin*> CellGetPins(void);
   vector<Cell*> CellGetChildCells(void);
   double CellGetArcDelay(Pin *, Pin *);
+  Bin *CellGetBin(void);
 
   /* Other functions */
   void CellMoveRight(int);
   void CellMoveLeft(int);
   void CellMoveUp(int);
   void CellMoveDown(int);
-  void CellMoveCell(int, int);
+  void CellMoveCell(double, double);
+  void CellMoveCellComputeHPWL(double, double, ulong &, ulong &, 
+			       ulong &, ulong &);
   Pin* CellGetPinByName(const string &PinName);
 };
 

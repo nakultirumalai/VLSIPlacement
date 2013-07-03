@@ -121,25 +121,113 @@ getObjFuncInConjGradFormat(Design &myDesign, HyperGraph &myGraph,
 }
 
 void
+DesignAddSpreadForcesConjGrad(Design &myDesign,
+			      vector<Cell *> inputCells, 
+			      vector<double> pseudoPinXVec,
+			      vector<double> pseudoPinYVec,
+			      vector<double> springConstantVec,
+			      map<Cell *, uint> &quadMap,
+			      map<Cell *, uint> &linMap,
+			      map<uint, double> &quadMapX,
+			      map<uint, double> &quadMapY,
+			      map<uint, double> &linMapX,
+			      map<uint, double> &linMapY,
+			      SpMat &matX, SpMat &matY,
+			      double *bx, double *by, 
+			      bool ILR)
+{
+  Cell *cellPtr;
+  map<Cell *, uint>::iterator quadMapItr;
+  map<Cell *, uint>::iterator linMapItr;
+  double cellXpos, cellYpos;
+  double pseudoPinX, pseudoPinY;
+  double springConstant;
+  double coeffX, coeffY;
+  double linX, linY;
+  uint quadCellIdx, linCellIdx;
+  uint i, numVars;
+
+  _STEP_BEGIN("Perform cell spreading");
+  numVars = inputCells.size();
+  for (i = 0; i < numVars; i++) {
+    cellPtr = (Cell *)inputCells[i];
+    Cell &thisCell = (*cellPtr);
+    if (CellIsStarNode(&thisCell)) break;
+    Bin &cellBin = *(thisCell.cellBin);
+    cellXpos = thisCell.CellGetXposDbl();
+    cellYpos = thisCell.CellGetYposDbl();
+    if (!ILR) {
+      myDesign.DesignSpreadCreatePseudoPort(thisCell, cellBin, cellXpos, cellYpos,
+                         pseudoPinXVec[i], pseudoPinYVec[i], springConstantVec[i], 
+                         pseudoPinX, pseudoPinY, springConstant);
+    } else {
+      myDesign.DesignSpreadCreatePseudoPortILR(thisCell, cellXpos, cellYpos,
+                                              pseudoPinX, pseudoPinY, springConstant);
+    }
+    coeffX = springConstant; coeffY = coeffX;
+    linX = coeffX * (pseudoPinX / GRID_COMPACTION_RATIO);
+    linY = coeffY * (pseudoPinY / GRID_COMPACTION_RATIO);
+    pseudoPinXVec[i] = pseudoPinX;
+    pseudoPinYVec[i] = pseudoPinY;
+    springConstantVec[i] = springConstant;
+    _KEY_EXISTS_WITH_VAL(quadMap, cellPtr, quadMapItr) {
+      quadCellIdx = quadMapItr->second;
+      matX.SetValue(quadCellIdx, (quadMapX[quadCellIdx] + coeffX));
+      matY.SetValue(quadCellIdx, (quadMapY[quadCellIdx] + coeffY));
+    } else {
+      cout << "SEVERE ERROR QUAD: ENTRY FOR cell: (PTR: " << &thisCell << ") "
+	   << thisCell.CellGetName() << " not found in quadMap" << endl;
+      exit(0);
+    }
+    _KEY_EXISTS_WITH_VAL(linMap, cellPtr, linMapItr) {
+      linCellIdx = linMapItr->second;
+      bx[linCellIdx] = linMapX[linCellIdx];
+      by[linCellIdx] = linMapY[linCellIdx];
+    } else {
+      cout << "SEVERE ERROR LINEAR: ENTRY FOR cell: (PTR: " << &thisCell << ") "
+	   << thisCell.CellGetName() << " not found in linMap" << endl;
+      exit(0);
+    }
+    /* Update the linear matrix */
+    bx[i] += linX;
+    by[i] += linY;
+  }
+  _STEP_END("Perform cell spreading");
+}
+
+void
 Design::DesignSolveForAllCellsConjGradIter(void)
 {
   void *cellObj;
   ofstream logFile;
   vector<Cell *> inputCells;
+  vector<Cell *> cellsSortedByLeft, cellsSortedByRight;
+  //  vector<double> cellXposVec, cellYposVec;
+  vector<double> pseudoPinXVec, pseudoPinYVec;
+  vector<double> springConstantVec;
   map<Cell *, uint> quadMap;
   map<Cell *, uint>::iterator quadMapItr;
   map<uint, double> quadMapX, quadMapY;
   map<Cell *, uint> linMap;
   map<Cell *, uint>::iterator linMapItr;
   map<uint, double> linMapX, linMapY;
+  double itrCount, stopThreshold;
+  double peakUtil, averageUtil;
+  double xpos, ypos, cellRight, cellTop;
+  double rowBin, colBin;
+  ulong curHPWL;
   string DesignPath, DesignName, logFileName;
-  string DirName;
-  string plotFileName;
-  double prevPeakUtil, itrCount, stopThreshold;
+  string DirName, plotFileName;
+  uint maxx, maxy;
+  uint numXIter, numYIter;
+  uint cellHeight, cellWidth;
+  uint binHeight, binWidth, binIdx;
+  uint numRows, numCols;
   uint peakUtilBinIdx;
   uint numVars, nodeIdx;
   uint qvalIdx, i;
   SpMat *matX, *matY;
+  Bin *binOfCell, *binPtr;
   double *bx, *by;
   double constantx, constanty;
   
@@ -151,8 +239,7 @@ Design::DesignSolveForAllCellsConjGradIter(void)
 
   HyperGraph &myGraph = (*this).DesignGetGraph();
 
-  /* Insert cells into a vector in the order of their indices in the 
-     hypergraph */ 
+  /* Insert cells into a vector in the order of their indices in the hypergraph */ 
   HYPERGRAPH_FOR_ALL_NODES(myGraph, nodeIdx, cellObj) {
     if ((*(Cell*)cellObj).CellIsTerminal()) continue;
     inputCells.push_back((Cell *)cellObj);
@@ -186,188 +273,184 @@ Design::DesignSolveForAllCellsConjGradIter(void)
   for (i = 0; i < numVars; i++) {
     x[i] = 0.0;
     y[i] = 0.0;
+    pseudoPinXVec.push_back(-1.0);
+    pseudoPinYVec.push_back(-1.0);
+    springConstantVec.push_back(-1.0);
   }
 
   /**************************************************************/
   /* LOOP OF QUADRATIC SOLVING AND SPREADING BEINGS HERE        */
   /**************************************************************/
-  prevPeakUtil = 0.0;
+  numXIter = 0; numYIter = 0;
   itrCount = 0;
   stopThreshold = 1;
+
   _STEP_BEGIN("Analytical solve and spread iterations");
+  DesignGetBoundingBox(maxx, maxy);
+  DesignComputeBinSize(/* ILR */false);
+  DesignCreateEmptyBins();
+  binHeight = DesignGetBinHeight();
+  binWidth = DesignGetBinWidth();
+  numRows = DesignGetNumBinRows();
+  numCols = DesignGetNumBinCols();
+  ProfilerStart("GlobalPlacement");
   while (1) {
     /**************************************************************/
     /* SOLVER PART BEGINS HERE  :  SOLVE FOR X FIRST AND THEN Y   */
     /**************************************************************/
-    _STEP_BEGIN("Solve for X using Conjugate Gradient minimization");
-    cghs(numVars, (*matX), bx, x, eps, false, max_iterations);
-    _STEP_END("Solve for X using Conjugate Gradient minimization");
-    /**************************************************************/
-    /* SOLVE FOR Y NEXT                                           */
-    /**************************************************************/
-    _STEP_BEGIN("Solve for Y using Conjugate Gradient minimization");
-    cghs(numVars, (*matY), by, y, eps, false, max_iterations);
+    _STEP_BEGIN("Solve for X-Y using Conjugate Gradient minimization");
+    numXIter = cghs(numVars, (*matX), bx, x, eps, false, max_iterations);
+    numYIter = cghs(numVars, (*matY), by, y, eps, false, max_iterations);
     _STEP_END("Solve for Y using Conjugate Gradient minimization");
     /**************************************************************/
-    /* WRITE CELL LOCATIONS TO LOG FILE IN EACH ITERATION         */
-    /* IN THE TEST MODE ONLY                                      */
+    /* ASSIGN LOCATIONS TO CELLS AND ADDING TO BINS               */
     /**************************************************************/
-    if (DesignEnv.EnvGetToolMode() == ENV_MODE_TEST) {
-      if (!dirExists(DirName)) {
-	if (!(0 == mkdir(DirName.data(), S_IRWXU | S_IRWXG | S_IRWXO))) {
-	  cout << "Error: Directory does not exist. Cannot create directory!!" << endl;
-	  exit(0);
-	}
-      }
-      logFileName = DirName + "/ConjGradX_Itr" + getStrFromInt(itrCount) + ".txt";
-      logFile.open(logFileName.data());
-      for (i = 0; i < numVars; i++) {
-	logFile << "X" << i << ": " << x[i] << endl;
-      }
-      logFile.close();
-      logFileName = DirName + "/ConjGradY_Itr" + getStrFromInt(itrCount) + ".txt";
-      logFile.open(logFileName.data());
-      for (i = 0; i < numVars; i++) {
-	logFile << "Y" << i << ": " << y[i] << endl;
-      }
-      logFile.close();
-    }
-    /**************************************************************/
-    /* ASSIGN LOCATIONS TO CELLS                                  */
-    /**************************************************************/
-    _STEP_BEGIN("Assigning locations to cells");
-    Cell *cellPtr;
-    double xpos, ypos;
+    _STEP_BEGIN("Assign locations to cells and add to bin");
     for (i = 0; i < numVars; i++) {
       cellPtr = inputCells[i];
-      xpos = x[i] * GRID_COMPACTION_RATIO; 
-      ypos = y[i] * GRID_COMPACTION_RATIO;
-      (*cellPtr).CellSetXpos(dtoi(xpos));
-      (*cellPtr).CellSetYpos(dtoi(ypos));
-      CellSetDblX(cellPtr, xpos);
-      CellSetDblY(cellPtr, ypos);
+      xpos = x[i] * GRID_COMPACTION_RATIO; ypos = y[i] * GRID_COMPACTION_RATIO;
+      cellWidth = (*cellPtr).CellGetWidth();
+      cellHeight = (*cellPtr).CellGetHeight();
+      cellRight = xpos + cellWidth;
+      cellTop = xpos + cellHeight;
+
+      /* Fix bounds overflow */
+      if (cellRight > maxx) { xpos = cellRight - maxx; }
+      if (cellTop > maxy) { ypos = cellTop - maxy; }
+      if (xpos < 0) { xpos = 0; }
+      if (ypos < 0) { ypos = 0; }
+      if (xpos > maxx) { xpos = maxx - cellWidth; }
+      if (ypos > maxy) { ypos = maxy - cellHeight; }
+      (*cellPtr).CellSetPosDbl(xpos, ypos);
+
+      /* Set the bin of cell */
+      //      cout << "xposition: " << xpos;
+      //      cout << "  yposition: " << ypos << endl;
+      rowBin = floor(ypos / binHeight);
+      colBin = floor(xpos / binWidth);
+      //      cout << " rowBin: " << rowBin << "  colBin: " << colBin << endl;
+      //      cout << " numRows: " << numRows << "  numCols: " << numCols << endl;
+      if (rowBin == numRows) { rowBin = numRows - 1; }
+      if (colBin == numCols) { colBin = numCols - 1; }
+      binIdx = colBin + (numCols * rowBin);
+      //      cout << " binIdx:" << binIdx << endl << endl;
+      binOfCell = DesignBins[binIdx];
+      (*cellPtr).cellBin = binOfCell;
+      (*binOfCell).BinAddCell(cellPtr);
     }
-    _STEP_END("Assigning locations to cells");
+    _STEP_END("Assigning locations to cells and add to bin");
 
     /**************************************************************/
-    /* BIN CREATION AND STRETCHING                                */
+    /* COMPUTE MAX UTILIZATION                                    */
     /**************************************************************/
-    _STEP_BEGIN("Creating Bins");
-    DesignCreateBins();
-    _STEP_END("Creating Bins");
-
-    _STEP_BEGIN("Stretching Bins");
+    _STEP_BEGIN("Compute max utilization");
+    peakUtil = 0.0;
+    peakUtilBinIdx = 0;
+    double totalBinUtil = 0.0;
+    double averageBinUtil;
+    uint totalUsedBins = 0;
+    uint binIdx;
+    double binUtil;
+    DESIGN_FOR_ALL_BINS((*this), binIdx, binPtr) {
+      binUtil = (*binPtr).BinGetUtilization();
+      if (binUtil > peakUtil) {
+	peakUtil = binUtil;
+	peakUtilBinIdx = binIdx;
+      }
+      if (binUtil > 0) {
+	totalUsedBins++;
+	totalBinUtil += binUtil;
+      }
+    } DESIGN_END_FOR;
+    DesignSetMaxUtil(peakUtil);
+    DesignSetPeakUtil(peakUtil);
+    DesignSetPeakUtilBinIdx(peakUtilBinIdx);
+    _STEP_END("Compute max utilization");
+    /**************************************************************/
+    /* BIN STRETCHING                                             */
+    /**************************************************************/
+    _STEP_BEGIN("Compute max utilization");
     DesignStretchBins();
-    _STEP_END("Stretching Bins");
-    
+    _STEP_END("Compute max utilization");
     /**************************************************************/
     /* PRINT THE PEAK UTILIZATION VALUE                           */
     /**************************************************************/
-    peakUtilization = DesignGetPeakUtil();
-    peakUtilBinIdx = DesignGetPeakUtilBinIdx();
-    if (prevPeakUtil == 0.0) {
-       prevPeakUtil = peakUtilization;
-    }
-    cout << "Iteration: " << itrCount++
-	 << " Peak Utilization: " << peakUtilization
-	 << " Bin index: " << peakUtilBinIdx 
-	 << " Mem usage: " << getMemUsage() << MEM_USAGE_UNIT
-	 << " CPU TIME:" << getCPUTime() << CPU_TIME_UNIT << endl;
-
+    DesignPrintSpreadIter(itrCount++, numXIter, numYIter);
     /**************************************************************/
     /* STOPPING CONDITION                                         */
     /**************************************************************/
-    if (itrCount < 0) {
+    //    if (itrCount > 1) break;
+    plotFileName = DesignName + "_itr_" + getStrFromInt(itrCount) + ".plt";
+    DesignPlotData("Title", plotFileName);
+    if (DesignBreakSolverPhaseI()) {
       break;
     }
-    if ((prevPeakUtil > peakUtilization) && ((prevPeakUtil - peakUtilization) < stopThreshold)) {
-      break;
-    } else {
-      prevPeakUtil = peakUtilization;
-    }
-
     /**************************************************************/
-    /* RESET LINEAR AND QUADRATIC VALUES                          */
+    /* ADD SPREAD FORCES ON CELLS                                 */
     /**************************************************************/
-    _STEP_BEGIN("Reset quadratic and linear term values");
-    MAP_FOR_ALL_ELEMS(quadMap, Cell*, uint, cellPtr, qvalIdx) {
-      (*matX).SetValue(qvalIdx, quadMapX[qvalIdx]);
-      (*matY).SetValue(qvalIdx, quadMapY[qvalIdx]);
-    } END_FOR;
-    MAP_FOR_ALL_ELEMS(linMap, Cell*, uint, cellPtr, qvalIdx) {
-      bx[qvalIdx] = linMapX[qvalIdx];
-      by[qvalIdx] = linMapY[qvalIdx];
-    } END_FOR;
-    _STEP_END("Reset quadratic and linear term values");
-
-    /**************************************************************/
-    /* ADD SPREADING FORCES                                       */
-    /**************************************************************/
-    _STEP_BEGIN("Perform cell spreading");
-    double cellXpos, cellYpos;
-    double pseudoPinX, pseudoPinY;
-    double springConstant;
-    double coeffX, coeffY;
-    uint quadCellIdx, linCellIdx;
-    for (i = 0; i < numVars; i++) {
-      Cell &thisCell = (*(Cell *)(inputCells[i]));
-      if (CellIsStarNode(&thisCell)) break;
-      Bin &cellBin = *((Bin *)CellGetBin(&thisCell));
-      cellXpos = CellGetDblX(&thisCell);
-      cellYpos = CellGetDblY(&thisCell);
-      DesignSpreadCreatePseudoPort(thisCell, cellBin, cellXpos, cellYpos,
-                                   pseudoPinX, pseudoPinY, springConstant);
-      //      cout << "Created pseudo port at: (" << pseudoPinX << "," << pseudoPinY << ")   Spring constant:" << springConstant << endl;
-      coeffX = springConstant; coeffY = coeffX;
-      _KEY_EXISTS_WITH_VAL(quadMap, (&thisCell), quadMapItr) {
-        quadCellIdx = quadMapItr->second;
-      } else {
-        cout << "SEVERE ERROR QUAD: ENTRY FOR cell: (PTR: " << &thisCell << ") "
-             << thisCell.CellGetName() << " not found in quadMap" << endl;
-        exit(0);
-      }
-      _KEY_EXISTS_WITH_VAL(linMap, (&thisCell), linMapItr) {
-        linCellIdx = linMapItr->second;
-      } else {
-        cout << "SEVERE ERROR LINEAR: ENTRY FOR cell: (PTR: " << &thisCell << ") "
-             << thisCell.CellGetName() << " not found in linMap" << endl;
-        exit(0);
-      }
-      /* Update the diagonals of the quadratic matrix */
-      //      cout << "Updated the quad value of cell index " << quadCellIdx << " from " << (*matX).GetValue(quadCellIdx);
-      (*matX).AddValue(quadCellIdx, coeffX);
-      //      cout << " to " << (*matX).GetValue(quadCellIdx) << endl;
-      //      cout << "Updated the quad value of cell index " << quadCellIdx << " from " << (*matY).GetValue(quadCellIdx);
-      (*matY).AddValue(quadCellIdx, coeffY);
-      //cout << " to " << (*matY).GetValue(quadCellIdx) << endl;
-      
-      /* Update the linear matrix */
-      coeffX = coeffX * (pseudoPinX / GRID_COMPACTION_RATIO);
-      coeffY = coeffY * (pseudoPinY / GRID_COMPACTION_RATIO);
-      //      cout << "Updated the lin value of cell index " << linCellIdx << " from " << bx[linCellIdx];
-      bx[i] += (coeffX);
-      //      cout << " to " << bx[linCellIdx] << endl;
-      //      cout << "Updated the lin value of cell index " << linCellIdx << " from " << by[linCellIdx];
-      by[i] += (coeffY);
-      //      cout << " to " << by[linCellIdx] << endl;
-    }
-    _STEP_END("Perform cell spreading");
-
+    DesignAddSpreadForcesConjGrad((*this), inputCells, 
+   	           pseudoPinXVec, pseudoPinYVec, springConstantVec,
+		   quadMap, linMap, quadMapX, quadMapY, linMapX,
+	           linMapY, (*matX), (*matY), bx, by, false);
     /**************************************************************/
     /* REMOVE BINS                                                */
     /**************************************************************/
-    _STEP_BEGIN("Perform bin removal");
+    _STEP_BEGIN("Perform bin refresh");
     DesignClearBins();
-    _STEP_END("Perform bin removal");
-
-    for (i = 0; i < numVars; i++) {
-      x[i] = 0.0;
-      y[i] = 0.0;
-    }
+    _STEP_END("Perform bin refresh");
   }
-  cout << "Global placement complete" << endl;
-  plotFileName = DesignName + ".gp.plt";
+  cout << "Global placement complete: Phase I" << endl;
+  plotFileName = DesignName + ".phase1.gp.plt";
   DesignPlotData("Title", plotFileName);
+  DesignComputeHPWL();
+  curHPWL = DesignGetHPWL();
+  cout << "HPWL-X: " << DesignGetXHPWL() << "  HPWL-Y: " << DesignGetYHPWL() 
+       << " HPWL: " << curHPWL << endl;
+  ProfilerStop();
+  return;
+  /**********************************************************/
+  /* BEGIN ITERATIVE LOCAL REFINEMENT                       */
+  /**********************************************************/
+  DesignDestroyBins();
+  uint ilrItrCount = 0;
+  uint largeBinHeight, largeBinWidth;
+  binHeight = DesignGetAverageStdCellHeight();
+  binWidth = DesignGetAverageStdCellWidth();
+  largeBinHeight = binHeight * 10;
+  largeBinWidth = binWidth * 10;
+  for (i = 0; i < numVars; i++) {
+    cellPtr = inputCells[i];
+    (*cellPtr).CellSetOldXpos((*cellPtr).CellGetXposDbl());
+    (*cellPtr).CellSetOldYpos((*cellPtr).CellGetYposDbl());
+  }
+  DesignComputeBinSize(true);
+  while (1) {
+    if (ilrItrCount == 6) {
+      break;
+    }
+    DesignCreateBins();
+    DesignDoILRIter();
+    DesignAddSpreadForcesConjGrad((*this), inputCells, pseudoPinXVec, pseudoPinYVec, 
+				  springConstantVec, quadMap, linMap, quadMapX, quadMapY, 
+				  linMapX, linMapY, (*matX), (*matY), bx, by, true);
+    numXIter = cghs(numVars, (*matX), bx, x, eps, false, max_iterations);
+    numYIter = cghs(numVars, (*matY), by, y, eps, false, max_iterations);
+    for (i = 0; i < numVars; i++) {
+      cellPtr = inputCells[i];
+      (*cellPtr).CellSetOldXpos((*cellPtr).CellGetXposDbl());
+      (*cellPtr).CellSetOldYpos((*cellPtr).CellGetYposDbl());
+      xpos = x[i] * GRID_COMPACTION_RATIO;
+      ypos = y[i] * GRID_COMPACTION_RATIO;
+      (*cellPtr).CellMoveCell(xpos, ypos);
+    }
+    DesignPrintSpreadIter(ilrItrCount++, numXIter, numYIter);
+    //    plotFileName = DesignName + "_ILR_" + getStrFromInt(ilrItrCount) + ".plt";
+    //    DesignPlotData("Title", plotFileName);
 
-  _STEP_END("Analytical solve and spread iterations");
+    DesignDestroyBins();
+    largeBinHeight -= binHeight;
+    largeBinWidth -= binWidth;
+    break;
+  }
+  /* ILR LOOP END */
 }

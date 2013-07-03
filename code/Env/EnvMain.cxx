@@ -28,6 +28,9 @@ Env::Env()
   EnvSetClusterPlacementType(DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE);
   EnvSetUnclusterType(DEFAULT_ENV_UNCLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
+  
+  /* Initilization of double variables */
+  EnvSetMaxUtilPhaseI(DEFAULT_MAX_UTILIZATION_PHASEI);
 
   /* Time related variables */
   /* Initialize start times to 0 */
@@ -191,10 +194,9 @@ Env::EnvRecordGlobalPlacementTime(void)
 }
 
 void 
-Env::EnvRecordGlobalPlacementTime(double currTime)
+Env::EnvRecordGlobalPlacementTime(double globalPlacementTime)
 {
-  this->GlobalPlacementTime += 
-    currTime - this->GlobalPlacementStartTime;
+  this->GlobalPlacementTime += globalPlacementTime;
 }
 
 double 
@@ -210,6 +212,12 @@ Env::EnvRecordLegalizationTime(void)
 
   this->LegalizationTime = 
     currTime - this->LegalizationStartTime;
+}
+
+void 
+Env::EnvRecordLegalizationTime(double legalizationTime)
+{
+  this->LegalizationTime += legalizationTime;
 }
 
 double
@@ -240,6 +248,12 @@ Env::EnvRecordDetailedPlacementTime(void)
 
   this->DetailedPlacementTime = 
     currTime - this->DetailedPlacementStartTime;
+}
+
+void 
+Env::EnvRecordDetailedPlacementTime(double detailedPlacementTime)
+{
+  this->DetailedPlacementTime += detailedPlacementTime;
 }
 
 double
@@ -417,6 +431,18 @@ bool
 Env::EnvGetDiscreteWidth(void)
 {
   return DiscreteWidth;
+}
+
+void
+Env::EnvSetMaxUtilPhaseI(double MaxUtilPhaseI) 
+{
+  this->MaxUtilPhaseI = MaxUtilPhaseI;
+}
+
+double
+Env::EnvGetMaxUtilPhaseI(void) 
+{
+  return (MaxUtilPhaseI);
 }
 
 void 
