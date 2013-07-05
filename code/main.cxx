@@ -123,11 +123,29 @@ printTimeUsage(Env &topEnv)
               e) tdcluster2
               f) nocluster
 
+-cluster_ratio: Clustering ratio to indicate to what extent the netlist 
+              should be compressed. Lets say the clustering ratio is 0.4,
+              the clustering strategy tries to compress the netlist to 
+              retain 40% of the objects
+
+-cluster_numrows: Indicates the number of rows that should be assigned 
+              to each clusters. To build clusters as standard cells,
+              use num_rows 1
+
+-cluster_maxarea: Indicates the maximum area of clusters that should 
+              be formed.
+
+-cluster_maxwidth: Indicates the maximum width of the clusters that should
+              be formed.
+
+-cluster_bound_penalty: Indicates that instead of using strict bounds, use soft
+              bounds to penalize the excess of width 
+
 -cluster_placement: This option specifies how the cells should be placed
               inside the cluster. The options as of now are:
               a) placeboundary
               b) placecentre
-             
+
 -uncluster_strategy: This option specifies how the unclustering of cells
               should be done. 
               a) placeboundary
@@ -259,10 +277,50 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 	   << "\"bestchoice\", \"firstchoice\", \"netcluster\" "
 	   << "\"tdcluster1\", \"tdcluster2\"" << endl;
     }
+  } else if (switchName == "cluster_ratio") {
+    rtv = true;
+    double clusterRatio = strToDouble(switchValue);
+    if (clusterRatio > 1) {
+      cout << "Error: Invalid option. Must be a decimal value less than 0.7" << endl;
+      rtv = false;
+    } else {
+      topEnv.EnvSetClusteringRatio(clusterRatio);
+    }
+  } else if (switchName == "cluster_numrows") {
+    rtv = true;
+    uint clusterNumRows = strToInt(switchValue);
+    topEnv.EnvSetClusterNumRows(clusterNumRows);
+  } else if (switchName == "cluster_maxarea") {
+    rtv = true;
+    //    if (switchValue == "") {
+    //      rtv = false;
+    //      cout << "Error: Invalid value for max area. Should be a percentage of chip area!" << endl;
+    //    } else {
+      double clusterMaxArea = strToDouble(switchValue);
+      topEnv.EnvSetClusterMaxArea(clusterMaxArea);
+      //    }
+  } else if (switchName == "cluster_maxwidth") {
+    rtv = true;
+    //    if (switchValue == "") {
+    //      rtv = false;
+    //      cout << "Error: Invalid value for max width. Should be a percentage of chip width!" << endl;
+    //    } else {
+    double clusterMaxWidth = strToDouble(switchValue);
+    topEnv.EnvSetClusterMaxWidth(clusterMaxWidth);
+      //    }
+  } else if (switchName == "cluster_bound_penalty") {
+    rtv = true;
+    if (!strIsNumber(switchName)) {
+      rtv = false;
+      cout << "Error: Invalid value for bound penalty. Should be an integer!" << endl;
+    } else {
+      uint clusterBoundPenalty = strToInt(switchValue);
+      topEnv.EnvSetClusterBoundPenalty(clusterBoundPenalty);
+    }
   } else if (switchName == "cluster_placement") {
     
   } else if (switchName == "uncluster_strategy") {
-
+    
   } else if (switchName == "legalizer") {
     rtv = true;
     if (switchValue == "binbased") {

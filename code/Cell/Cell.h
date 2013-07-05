@@ -155,6 +155,8 @@ class Cluster {
   map<Pin *, Pin *> pinMap;
   /* Indicate if the boundary cells are placed */
   bool bCellsPlaced;
+  /* Indicate if this is a row based cluster */
+  bool rowBased;
   /* Indicate the level of the cluster */
   char clusterLevel;
 
@@ -177,6 +179,7 @@ class Cluster {
   void ClusterSetXPosInRows(vector<uint> &);
   void ClusterSetPinMap(map<Pin *, Pin *> &);
   void ClusterSetBCellsPlaced(bool);
+  void ClusterSetRowBased(bool);
   void ClusterSetClusterLevel(char);
 
   /* Get functions */
@@ -188,6 +191,7 @@ class Cluster {
   vector<uint>& ClusterGetXPosInRows(void);
   map<Pin*, Pin*>& ClusterGetPinMap(void);
   bool ClusterGetBCellsPlaced(void);
+  bool ClusterGetRowBased(void);
   char ClusterGetClusterLevel(void);
   
   /* Debug functions */

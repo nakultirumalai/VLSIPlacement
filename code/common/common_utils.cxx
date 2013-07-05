@@ -131,6 +131,17 @@ bool strIsNumber(const string& s)
   return !s.empty() && it == s.end();
 }
 
+int strToInt(const string &s) 
+{
+  int rtv;
+
+  istringstream stream(s, istringstream::in);
+  
+  stream >> rtv;
+
+  return rtv;
+}
+
 double strToDouble(const string &s) 
 {
   double rtv;

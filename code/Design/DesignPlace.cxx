@@ -1,15 +1,51 @@
 # include <Design.h>
 
+bool
+Design::DesignValidateClusterParams(double clusterRatio, double maxArea, double maxWidth, 
+				    double clusterBoundPenalty, uint clusterNumRows)
+{
+  bool rtv;
+
+  rtv = true;
+  /* Print all the clustering parameters first */
+  cout << "CLUSTER : Clustering ratio : " << clusterRatio << endl;
+  cout << "CLUSTER : Maximum Area     : " << maxArea << endl;
+  cout << "CLUSTER : Maximum Width    : " << maxWidth << endl;
+  cout << "CLUSTER : Bound penalty    : " << clusterBoundPenalty << endl;
+  if (clusterNumRows == 0) {
+    cout << "CLUSTER : Number of rows   : " << clusterNumRows << " : SQUARE CLUSTERS " << endl;
+  } else {
+    cout << "CLUSTER : Number of rows   : " << clusterNumRows << endl;
+  }
+
+  return (rtv);
+}
+
 void
 Design::DesignCoarsenNetlist(void)
 {
   Cell *cellPtr;
   Pin *pinPtr;
   Env &DesignEnv = this->DesignEnv;
+  double clusterRatio, maxArea, maxWidth;
+  double inputMaxWidth, inputMaxArea;
+  double clusterBoundPenalty;
+  uint clusterNumRows;
   uint numPinsBefore, numPinsAfter;
+  uint maxx, maxy;
   EnvClusterType clusterType;
   HyperGraph &myGraph = DesignGetGraph();
   clusterType = DesignEnv.EnvGetClusterType();
+  clusterRatio = DesignEnv.EnvGetClusteringRatio();
+  maxArea = DesignEnv.EnvGetClusterMaxArea();
+  maxWidth = DesignEnv.EnvGetClusterMaxWidth();
+  clusterBoundPenalty = DesignEnv.EnvGetClusterBoundPenalty();
+  clusterNumRows = DesignEnv.EnvGetClusterNumRows();
+  (void)DesignValidateClusterParams(clusterRatio, maxArea, maxWidth, 
+				    clusterBoundPenalty, clusterNumRows);
+  DesignGetBoundingBox(maxx, maxy);
+  inputMaxWidth = floor(maxWidth * maxx);
+  inputMaxArea = maxArea * ((double)maxx * maxy);
 
   switch (clusterType) {
   case ENV_NO_CLUSTERING: 
@@ -19,8 +55,17 @@ Design::DesignCoarsenNetlist(void)
     cout << "Clustering: First choice clustering. Not ready yet " << endl;
     break;
   case ENV_BEST_CHOICE_CLUSTERING:
-    cout << "Clustering: Best choice clustering " << endl;
-    DesignDoBestChoiceClustering(myGraph);
+    cout << "Clustering: Best choice clustering " << endl << endl;
+    if (clusterNumRows > 0) {
+      DesignDoBestChoiceClusteringCstr(myGraph, inputMaxArea, inputMaxWidth,
+				       true, clusterRatio);
+      //      DesignDoBestChoiceClusteringPenalty(myGraph, clusterBoundPenalty,
+      //					  true, clusterRatio);
+    } else {
+      DesignDoBestChoiceClustering(myGraph, clusterRatio);
+    }
+    /* Rebuild hypergraph after coarsening */
+    DesignRebuildGraph();
     cout << "Finished coarsening" << endl;
     break;
   case ENV_NET_CLUSTERING:
@@ -30,9 +75,6 @@ Design::DesignCoarsenNetlist(void)
     cout << "Clustering: Clustering strategy unknown. Not clustering netlist " << endl;
     break;
   }
-
-  /* Rebuild hypergraph after coarsening */
-  DesignRebuildGraph();
 }
 
 void
@@ -125,7 +167,6 @@ Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType)
   
   /* Write out the current clustered netlist into the folder .designName_clust */
   DesignWriteCurrentNetlist(clustDir, clusterDesignName);
-
   if (globalPlacerType == ENV_NTUPLACE_GP) {
     /* Run NTUPlace for global placement. The variable 
        NTUPLACE_FULL_PATH has to be set for NTUPlace to 
@@ -198,7 +239,7 @@ Design::DesignDoGlobalPlacement(void)
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
     //    cout << "Time taken: " << cpuTimeSpent << endl;
-    DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
+    //DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
   }
   //  ProfilerStart("Unclustering");
   DesignCollapseClusters();

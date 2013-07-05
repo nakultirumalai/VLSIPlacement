@@ -638,7 +638,7 @@ Design::DesignComputeBinSize(bool ILR)
   binWidth = this->averageStdCellWidth;
 
   if (!ILR) {
-    binHeight *= 4;
+    binHeight *= 2;
     binWidth *= 4;
   } else {
     ILRMultiple = 10;
@@ -712,8 +712,8 @@ Design::DesignComputeBinSize(uint binHeight, uint binWidth)
   DesignSetBinHeight(binHeight);
   DesignSetBinWidth(binWidth);
 
-  cout << "Average cell height: " << binHeight 
-       << "  Average cell width : " << binWidth 
+  cout << "Bin height: " << binHeight 
+       << "  Bin width : " << binWidth 
        << endl;
   cout << "Row X Cols: " << numRows << " X " << numCols 
        << endl;
@@ -811,80 +811,101 @@ Design::DesignRefreshBins()
 }
 
 void
-Design::DesignCreateBins()
+Design::DesignCreateBins(void)
+{
+  uint binHeight, binWidth;
+
+  //  binHeight = this->averageStdCellHeight;
+  //  binWidth = this->averageStdCellWidth;
+
+  /* Configure bin to accommodate four cells */
+  /* SQUARE BIN */
+  //  binHeight *= 2; binWidth *= 2;
+  /* WIDE BIN */
+  //  binWidth*= 4; 
+  /* TALL BIN */
+  // binHeight = 4 * binHeight; */
+  /* LARGER SQUARE BIN */
+  // binHeight *= 3; binWidth *= 3; */
+  /* LARGER WIDE BIN */
+  //  binHeight *= 2; binWidth *= 4;
+  /* LARGER TALL BIN */
+  //  binHeight *=3; binWidth *= 2;
+  binHeight = DesignGetBinHeight();
+  binWidth = DesignGetBinWidth();
+  DesignCreateBins(binHeight, binWidth);
+}
+
+void
+Design::DesignCreateBins(uint binHeight, uint binWidth)
 {
   Bin *binPtr;
   vector<Cell*> cellsOfBin;
-  vector<Cell*> cellsSortedByLeft, cellsSortedByRight;
-  double oldUtilization, newUtilization;
+  vector<Cell*> cellsSortedByLeft;
+  vector<Cell*> cellsSortedByBot;
   double maxUtilization, overlapArea;
   double totalCellWidth, averageCellWidth;
   double utilization;
-  uint binWidth, binHeight;
   uint maxx, maxy;
-  uint binCount, numRows, numCols, actualRows, actualCols;
-  uint numRowsSoFar, numColsSoFar;
+  uint binCount, numRows, numCols;
   uint left, right, bot, top;
   uint peakUtilBinIdx;
   uint i, j;
   uint numBins, numCells;
-  int prevBinIdx, curBegin;
-  bool binCreated;
-  bool addToPreviousRowBin, addToPreviousColBin;
+  bool createBins;
 
   _STEP_BEGIN("Bin construction");
-  binWidth = DesignGetBinWidth();
-  binHeight = DesignGetBinHeight();
-  numRows = DesignGetNumBinRows();
-  numCols = DesignGetNumBinCols();
   DesignGetBoundingBox(maxx, maxy);
   cellsSortedByLeft = DesignGetCellsSortedByLeft();
-  cellsSortedByRight = DesignGetCellsSortedByRight();
-
-  binCount = 0; 
-  maxUtilization = 0; 
+  cellsSortedByBot = DesignGetCellsSortedByBot();
+  //  numCols = (uint)ceil(((double)maxx) / binWidth);
+  //  numRows = (uint)ceil(((double)maxy) / binHeight);
+  numCols = DesignGetNumBinCols();
+  numRows = DesignGetNumBinRows();
+  binCount = 0;
+  maxUtilization = 0;
   peakUtilBinIdx = 0;
-  totalUtilization = 0;
-  totalNumOccupiedBins = 0;
-  binCreated = false;
   numBins = DesignBins.size();
-  if (numBins > 0) {
-    _ASSERT_TRUE("Error: Bins already exist!!Clear bins before creating bins afresh!");
-  }
-  cout << "Created regular bin structure with " << " Rows: " << numRows 
-       << "  Columns: " << numCols << endl << endl;
+  createBins = false;
+  if (numBins == 0) createBins = true;
   bot = 0; top = binHeight;
+  //  cout << "Creating " << numCols * numRows << " bins" << endl;
   for (i = 0; i < numRows; i++) {
     left = 0; right = binWidth;
     for (j = 0; j < numCols; j++) {
+      //      if (right > maxx) right = maxx;
+      //      if (top > maxy) top = maxy;
       if (j == (numCols - 1)) {
 	right = maxx;
       }
       if (i == (numRows - 1)) {
 	top = maxy;
       }
-      binPtr = new Bin(binCount, left, right, bot, top);
-      DesignBins.push_back(binPtr);
+      if (createBins) {
+        binPtr = new Bin(binCount, left, right, bot, top);
+        DesignBins.push_back(binPtr);
+      } else {
+        binPtr = DesignBins[binCount];
+      }
       (*binPtr).BinSetNewRight(right);
       (*binPtr).BinSetNewTop(top);
       cellsOfBin =
         DesignGetCellsOfBin(binPtr, left, right, bot, top, cellsSortedByLeft,
-			    cellsSortedByRight, overlapArea, totalCellWidth);
-      numCells = cellsOfBin.size();      
-      (*binPtr).BinSetCells(cellsOfBin);
-      (*binPtr).BinSetCellArea(overlapArea);
-      (*binPtr).BinComputeUtilization();
-      (*binPtr).BinSetTotalCellWidth(totalCellWidth);
-      (*binPtr).BinComputeAverageCellWidth();
-      utilization = (*binPtr).BinGetUtilization();
-      totalUtilization += utilization;
+                            cellsSortedByBot, overlapArea, totalCellWidth);
+      utilization = overlapArea / (((double)binHeight) * binWidth);
+      numCells = cellsOfBin.size();
+      averageCellWidth = 0.0;
+      if (numCells > 0) {
+        averageCellWidth = totalCellWidth / numCells;
+      }
       if (maxUtilization < utilization) {
         maxUtilization = utilization;
         peakUtilBinIdx = binCount;
       }
-      if (numCells > 0) {
-	totalNumOccupiedBins++;
-      }
+      (*binPtr).BinSetCells(cellsOfBin);
+      (*binPtr).BinSetCellArea(overlapArea);
+      (*binPtr).BinSetUtilization(utilization);
+      (*binPtr).BinSetAverageCellWidth(averageCellWidth);
       left += binWidth;
       right += binWidth;
       binCount++;
@@ -892,10 +913,11 @@ Design::DesignCreateBins()
     bot += binHeight;
     top += binHeight;
   }
-  DesignSetMaxUtil(maxUtilization);
   DesignSetPeakUtil(maxUtilization);
   DesignSetPeakUtilBinIdx(peakUtilBinIdx);
-  DesignSetBinsCreated(true);
+  DesignSetNumBinRows(numRows);
+  DesignSetNumBinCols(numCols);
+
   _STEP_END("Bin construction");
 }
 

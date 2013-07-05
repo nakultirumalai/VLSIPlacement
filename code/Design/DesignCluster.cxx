@@ -61,6 +61,7 @@ Design::DesignGetClusterDimensions(vector<Cell *> &listOfCells,
   uint minHeight, minWidth, maxHeight, maxWidth;
   uint cellHeight, cellWidth;
   uint totalHeight, totalWidth;
+  uint numRows;
   bool discreteClusterHeight;
   bool discreteClusterWidth;
   double totalArea, rowHeight;
@@ -76,6 +77,8 @@ Design::DesignGetClusterDimensions(vector<Cell *> &listOfCells,
   /* max width among all cells                             */
   discreteClusterHeight = DesignEnv.EnvGetDiscreteHeight();
   discreteClusterWidth = DesignEnv.EnvGetDiscreteWidth();
+  numRows = DesignEnv.EnvGetClusterNumRows();
+  rowHeight = DesignGetSingleRowHeight();
   minHeight = INT_MAX; minWidth = INT_MAX;
   maxHeight = 0; maxWidth = 0; totalWidth = 0; totalHeight = 0;
   totalArea = 0.0;
@@ -101,23 +104,24 @@ Design::DesignGetClusterDimensions(vector<Cell *> &listOfCells,
   /* Inflate total area by 10% to incorporate 
      white space */
   //  totalArea += 0.1 * totalArea;
-  resultWidth = (unsigned int)ceil(sqrt(totalArea));
-  if (resultWidth < maxWidth) {
-    resultWidth = maxWidth;
-  }
-  resultHeight = (unsigned int)ceil(sqrt(totalArea));
-  if (resultHeight < maxHeight) {
-    resultHeight = maxHeight;
-  }
-  /* Make result height a multiple of row height in the 
-     design and width a multiple of row width*/
-  if (discreteClusterHeight) {
-    rowHeight = (double)DesignGetSingleRowHeight();
-    multiple = ceil(resultHeight / rowHeight);
-    resultHeight = rowHeight * multiple;
-  }
-  if (discreteClusterWidth) {
-    /* Do nothing. Not considering width right now */
+  if (numRows == 0) {
+    resultWidth = (unsigned int)ceil(sqrt(totalArea));
+    if (resultWidth < maxWidth) {
+      resultWidth = maxWidth;
+    }
+    resultHeight = (unsigned int)ceil(sqrt(totalArea));
+    if (resultHeight < maxHeight) {
+      resultHeight = maxHeight;
+    }
+    /* Make result height a multiple of row height in the 
+       design and width a multiple of row width*/
+    if (discreteClusterHeight) {
+      multiple = ceil(resultHeight / rowHeight);
+      resultHeight = rowHeight * multiple;
+    }
+  } else if (numRows > 0) {
+    resultHeight = numRows * rowHeight;
+    resultWidth = floor(totalArea / resultHeight);
   }
 }
 
@@ -163,6 +167,36 @@ Design::DesignAssignPinOffSets(Cell *clusterCell,
     }
     (*pinPtr).PinSetYOffset(absOffset);
     absOffset = xPos + pinXOffset;
+    if (absOffset > maxx) {
+      cout << "For cell : " << (*cellOfPin).CellGetName() << endl;
+      _ASSERT_TRUE("Error: Pin x-offset out of cluster bounds");
+    }
+    (*pinPtr).PinSetXOffset(absOffset);
+  } END_FOR;
+}
+
+void
+Design::DesignAssignPinOffSetsInRows(Cell *clusterCell, vector<Pin *> &clusterCellPins,
+				     map<Pin *, Pin*> &pinMap)
+{
+  Cell *cellOfPin;
+  Pin *pinPtr, *cellPin;
+  uint pinXOffset, pinYOffset;
+  uint absOffset;
+  uint maxx, maxy;
+
+  maxx = (*clusterCell).CellGetWidth(); maxy = (*clusterCell).CellGetHeight();
+  VECTOR_FOR_ALL_ELEMS(clusterCellPins, Pin *, pinPtr) {
+    cellPin = pinMap[pinPtr];
+    cellOfPin = &(*cellPin).PinGetParentCell();
+    pinXOffset = (*cellPin).PinGetXOffset();
+    pinYOffset = (*cellPin).PinGetYOffset();
+    absOffset = pinYOffset + (*cellOfPin).CellGetYposDbl();
+    if (absOffset > maxy) {
+      cout << "For cell : " << (*cellOfPin).CellGetName() << endl;
+      _ASSERT_TRUE("Error: Pin y-offset out of cluster bounds");
+    }
+    absOffset = pinXOffset + (*cellOfPin).CellGetXposDbl();
     if (absOffset > maxx) {
       cout << "For cell : " << (*cellOfPin).CellGetName() << endl;
       _ASSERT_TRUE("Error: Pin x-offset out of cluster bounds");
@@ -479,6 +513,56 @@ Design::DesignPlaceCellsInCluster(vector<Cell *> &boundaryCellVec,
   return (cellPlaced);
 }
 
+/*******************************************************************************
+  PLACED CELLS OF THE CLUSTER IN THE GIVEN NUMBER OF ROWS
+*******************************************************************************/
+void
+Design::DesignPlaceCellsInClusterInRows(vector<Cell *> &cellsOfCluster,
+					uint resultHeight, uint resultWidth)
+{
+  Cell *cellPtr;
+  vector<uint> lastLeftPos;
+  uint rowHeight, numRows;
+  uint cellWidth;
+  uint cellXPos, cellYPos;
+  uint numCells, idx, placedRows;
+  uint curRow, curRowLeftPos;
+  bool cellPlaced;
+  
+  rowHeight = DesignGetSingleRowHeight();
+  numRows = resultHeight / rowHeight;
+  for (idx = 0; idx < numRows; idx++) {
+    lastLeftPos.push_back(0);
+  }
+  
+  curRow = 0;
+  numCells = cellsOfCluster.size();
+  for (idx = 0; idx < numCells; idx++) {
+    Cell &thisCell = *(cellsOfCluster[idx]);
+    cellWidth = thisCell.CellGetWidth();
+    cellPlaced = false;
+
+    cellXPos = 0; 
+    while (cellPlaced) {
+      curRowLeftPos = lastLeftPos[curRow];
+      if (curRowLeftPos + cellWidth > resultWidth) {
+	if (curRow == numRows - 1) {
+	  cellXPos = resultWidth - cellWidth;
+	  cellPlaced = true;
+	} else {
+	  curRow++;
+	  cellYPos = curRow * rowHeight;
+	}
+      } else {
+	cellXPos = curRowLeftPos;
+	cellPlaced = true;
+      }
+    }
+    cellYPos = curRow * rowHeight;
+    thisCell.CellSetPosDbl(cellXPos, cellYPos);
+  }
+}
+
 /****************************************************************
   GIVEN A CLUSTER CELL, COLLAPSE IT AND RETURN ITS CLUSTER
   DATA
@@ -539,11 +623,6 @@ Design::DesignClusterCellsSimple(vector<Cell *> &listOfCells)
   Cell *clusterCell, *cellPtr;
   Net *netPtr;
   void *netObj;
-  string clusterCellName;
-  uint resultHeight, resultWidth;
-  uint numCells;
-  uint numClusters;
-  uint idx;
   map<void *, bool> internalNetObjs, externalNetObjs;
   map<Net *, bool> internalNets, affectedNets;
   map<Pin *, Pin *> pinMap;
@@ -552,12 +631,20 @@ Design::DesignClusterCellsSimple(vector<Cell *> &listOfCells)
   vector<uint> bCellIndices;
   vector<uint> rowNum;
   vector<uint> xPosInRow;
+  string clusterCellName;
+  uint resultHeight, resultWidth;
+  uint numCells, numClusters, idx;
+  bool rowBased;
 
+  Env &DesignEnv = DesignGetEnv();
   HyperGraph &myGraph = DesignGetGraph();
 
   numCells = listOfCells.size();
   numClusters = NumClustersSeenSofar++;
   clusterCellName = "c" + getStrFromInt(numClusters + 1);
+  if (clusterCellName == "c1005") {
+    cout << "break here" << endl;
+  }
   if (debug) {
     cout << "Cluster cell name : " << clusterCellName << " " << endl;
     cout << "Number of cells to cluster : " << numCells << " " << endl;
@@ -633,7 +720,14 @@ Design::DesignClusterCellsSimple(vector<Cell *> &listOfCells)
   /* Create the cluster object */
   Cluster *thisCluster = new Cluster(listOfCells, bCellIndices, rowNum,
 				     xPosInRow, pinMap);
-
+  
+  /* Check if row based clustering has been specified */
+  uint numRows = DesignEnv.EnvGetClusterNumRows();
+  rowBased = false;
+  if (numRows > 0) {
+    rowBased = true;
+    (*thisCluster).ClusterSetRowBased(rowBased);
+  }
   /* Create a vector of internal nets */
   (*thisCluster).ClusterSetBCellsPlaced(false);
   (*thisCluster).ClusterSetInternalNets(internalNetVec);
@@ -643,6 +737,149 @@ Design::DesignClusterCellsSimple(vector<Cell *> &listOfCells)
   DesignAddOneClusterToDesignDB(clusterCell);
   
   return (clusterCell);
+}
+
+/*******************************************************************************
+  AN EXTENSION OF THE FUNCTION DesignCommitCluster. INSTEAD OF PLACING BOUNDARY 
+  CELLS, PLACES ALL THE CELLS IN THE FORM OF ROWS
+*******************************************************************************/
+void
+Design::DesignCommitClusterRowBased(Cell *clusterCell, Cluster *clusterOfCell)
+{
+  Cell *cellPtr;
+  Pin *pinPtr, *clusterPinPtr, *newPinPtr;
+  Net *netPtr;
+  string clusterCellName, newPinName;
+  bool bCellsPlaced, rowBased;
+  uint numCells, numBoundaryCells;
+  uint clusterCellNumPins;
+  uint resultHeight, resultWidth;
+  uint edgeIdx;
+  uint idx;
+
+  if (clusterOfCell == NIL(Cluster *)) {
+    _ASSERT_TRUE("Error: Clustered cell does not have an associated cluster data structure");
+    return;
+  }
+
+  HyperGraph &myGraph = DesignGetGraph();
+  clusterCellName = (*clusterCell).CellGetName();
+
+  /* Get the internal nets of the cluster */
+  vector<Net *> &internalNetVec = (*clusterOfCell).ClusterGetInternalNets();
+  /* Get the cells of the cluster */
+  vector<Cell *> &cellsOfCluster = (*clusterOfCell).ClusterGetCellsOfCluster();
+  /* Get the pin map of the cluster: Empty */
+  map<Pin*, Pin*> &pinMap = (*clusterOfCell).ClusterGetPinMap();
+
+  map<Cell *, bool> cellLookupMap;
+  map<Net *, bool> internalNets, externalNets;
+  map<Cell *, uint> boundaryCells;
+  vector<Cell *> boundaryCellVec;
+  vector<Pin *> clusterCellPins;
+  vector<uint> bCellIndices;
+
+  resultHeight = (*clusterCell).CellGetHeight();
+  resultWidth = (*clusterCell).CellGetWidth();
+
+  numCells = cellsOfCluster.size();
+  /* Build a list of cells for lookup later */
+  for (idx = 0; idx < numCells; idx++) {
+    cellPtr = cellsOfCluster[idx];
+    _KEY_EXISTS(cellLookupMap, cellPtr) {
+      _ASSERT_TRUE("Error: Duplicate cells found in cluster list!!");
+    }
+    cellLookupMap[cellPtr] = true;
+  }
+  /* Build external nets */
+  vector<uint> externalNetsVec = myGraph.GetEdgesOfObject((void *)clusterCell);
+  VECTOR_FOR_ALL_ELEMS(externalNetsVec, uint, edgeIdx) {
+    Net *netPtr = (Net *)myGraph.GetEdgeObject(edgeIdx);
+    externalNets[netPtr] = true;
+  } END_FOR;
+  /* Infer boundary cells */
+  MAP_FOR_ALL_KEYS(cellLookupMap, Cell *, bool, cellPtr) {
+    CELL_FOR_ALL_NETS((*cellPtr), PIN_DIR_ALL, netPtr) {
+      _KEY_EXISTS(externalNets, netPtr) {
+        boundaryCells[cellPtr] = true;
+        break;
+      }
+    } CELL_END_FOR;
+  } END_FOR;
+  /* Create a vector of boundary cells */
+  for (idx = 0; idx < numCells; idx++) {
+    cellPtr = cellsOfCluster[idx];
+    _KEY_EXISTS(boundaryCells, cellPtr) {
+      boundaryCellVec.push_back(cellPtr);
+      bCellIndices.push_back(idx);
+    }
+  }
+  /* Create of pins on the cluster which are mapped to actual pins of the boundary cells */
+  /* All pins of these cells connected to external nets will have */
+  clusterCellNumPins = 1;
+  MAP_FOR_ALL_KEYS(boundaryCells, Cell *, uint, cellPtr) {
+    CELL_FOR_ALL_PINS((*cellPtr), PIN_DIR_ALL, pinPtr) {
+      netPtr = &((*pinPtr).PinGetNet());
+      _KEY_EXISTS(externalNets, netPtr) {
+	newPinPtr = new Pin();
+	(*newPinPtr).PinSetParentCell(*clusterCell);
+	newPinName = clusterCellName + "_" + getStrFromInt(clusterCellNumPins);
+	(*newPinPtr).PinSetName(newPinName);
+	(*newPinPtr).PinSetDirection((*pinPtr).PinGetDirection());
+	(*clusterCell).CellAddPin(newPinPtr);
+	clusterCellPins.push_back(newPinPtr);
+	pinMap[newPinPtr] = pinPtr;
+	clusterCellNumPins++;
+      }
+    } CELL_END_FOR;
+  } END_FOR;
+  /* Create pin offsets for the clustered cell from boundary cells */
+  /***** TODO: Quick dirty placement of boundary cells inside the cluster ******/
+  bCellsPlaced = false;
+  vector<uint> rowNum;
+  vector<uint> xPosInRow;
+  DesignPlaceCellsInClusterInRows(cellsOfCluster, resultHeight, resultWidth);
+  /* Hide internal nets */
+  VECTOR_FOR_ALL_ELEMS(internalNetVec, Net*, netPtr) {
+    DesignHideNet(netPtr);
+  } END_FOR;
+  /* Connect the net connected to existing pins, to corresponding pins of 
+     the cluster and hide the original pins */
+  MAP_FOR_ALL_ELEMS(pinMap, Pin *, Pin *, newPinPtr, pinPtr) {
+    Net &connectedNet = (*pinPtr).PinGetNet();
+    (*pinPtr).PinSetIsHidden(true);
+    (*newPinPtr).Connect(connectedNet);
+    connectedNet.NetAddPin(*newPinPtr);
+  } END_FOR;
+  /* Hide all the cells and update indices of cells in the 
+     vector "listOfCells" in the map  */
+  for (idx = 0; idx < numCells; idx++) {
+    cellPtr = (Cell *)cellsOfCluster[idx];
+    DesignHideCell(cellPtr);
+  }
+  for (idx = 0; idx < boundaryCellVec.size(); idx++) {
+    cellPtr = (Cell *)boundaryCellVec[idx];
+    _KEY_EXISTS(boundaryCells, cellPtr) {
+      boundaryCells[cellPtr] = idx;
+    }
+  }
+  DesignAssignPinOffSetsInRows(clusterCell, clusterCellPins, pinMap);
+  /* Add data to the cluster object */
+  (*clusterOfCell).ClusterSetNumCells(numCells);
+  (*clusterOfCell).ClusterSetCellsOfCluster(cellsOfCluster);
+  (*clusterOfCell).ClusterSetBCellIndices(bCellIndices);
+  (*clusterOfCell).ClusterSetRowNums(rowNum);
+  (*clusterOfCell).ClusterSetXPosInRows(xPosInRow);
+  (*clusterOfCell).ClusterSetPinMap(pinMap);
+  (*clusterOfCell).ClusterSetBCellsPlaced(bCellsPlaced);
+  (*clusterOfCell).ClusterSetInternalNets(internalNetVec);
+  /* Write out a placement plot for the cluster */
+  if (debug) {
+    DesignPlotCluster("cluster formed", (clusterCellName + ".plt"),
+                      clusterCell, boundaryCellVec, rowNum, xPosInRow,
+                      clusterCellPins);
+  }
+  debug = false;
 }
 
 /*******************************************************************************
@@ -668,7 +905,7 @@ Design::DesignCommitCluster(Cell *clusterCell)
   Pin *pinPtr, *clusterPinPtr, *newPinPtr;
   Net *netPtr;
   string clusterCellName, newPinName;
-  bool bCellsPlaced;
+  bool bCellsPlaced, rowBased;
   uint numCells, numBoundaryCells;
   uint clusterCellNumPins;
   uint resultHeight, resultWidth;
@@ -677,14 +914,22 @@ Design::DesignCommitCluster(Cell *clusterCell)
 
   clusterOfCell = (Cluster *)CellGetCluster(clusterCell);
   if (clusterOfCell == NIL(Cluster *)) {
+    _ASSERT_TRUE("Error: Clustered cell does not have an associated cluster data structure");
+    return;
+  }
+
+  /* Check if the cluster is a row based cluster */
+  rowBased = (*clusterOfCell).ClusterGetRowBased();
+  if (rowBased) {
+    DesignCommitClusterRowBased(clusterCell, clusterOfCell);
     return;
   }
 
   HyperGraph &myGraph = DesignGetGraph();
   clusterCellName = (*clusterCell).CellGetName();
-  /* Get the internal cells */
-  vector<Net *> &internalNetVec = (*clusterOfCell).ClusterGetInternalNets();
   /* Get the internal nets of the cluster */
+  vector<Net *> &internalNetVec = (*clusterOfCell).ClusterGetInternalNets();
+  /* Get the cells of the cluster */
   vector<Cell *> &cellsOfCluster = (*clusterOfCell).ClusterGetCellsOfCluster();
   /* Get the pin map of the cluster: Empty */
   map<Pin*, Pin*> &pinMap = (*clusterOfCell).ClusterGetPinMap();
@@ -734,9 +979,6 @@ Design::DesignCommitCluster(Cell *clusterCell)
       bCellIndices.push_back(idx);
     }
   }
-  numBoundaryCells = boundaryCellVec.size();
-  vector<uint> rowNum(numBoundaryCells);
-  vector<uint> xPosInRow(numBoundaryCells);
   /* Create of pins on the cluster which are mapped to actual pins of the boundary cells */
   /* All pins of these cells connected to external nets will have */
   if (debug) {
@@ -771,15 +1013,17 @@ Design::DesignCommitCluster(Cell *clusterCell)
   /* Create pin offsets for the clustered cell from boundary cells */
   /***** TODO: Quick dirty placement of boundary cells inside the cluster ******/
   bCellsPlaced = false;
+  numBoundaryCells = boundaryCellVec.size();
+  vector<uint> rowNum(numBoundaryCells);
+  vector<uint> xPosInRow(numBoundaryCells);
   if (DesignEnv.EnvGetClusterPlacementType() == ENV_CLUSTER_PLACE_BOUNDARY) {
     DesignPlaceCellsInClusterNoLegal(boundaryCellVec, rowNum, xPosInRow, resultHeight,
-                                     resultWidth);
+				     resultWidth);
     bCellsPlaced = true;
   } else {
     DesignPlaceCellsInClusterInCenter(boundaryCellVec, clusterCellPins, rowNum,
-                                      xPosInRow, resultHeight, resultWidth);
+				      xPosInRow, resultHeight, resultWidth);
   }
-
   if (debug) {
     cout << "---------------------------------------" << endl
          << " HIDING INTERNAL NETS                  " << endl
@@ -1441,6 +1685,69 @@ solveForClusterCells(Design &myDesign, Cell *clusterCell, vector<Cell *> &cellsT
 }
 
 void
+Design::DesignUnclusterCellRowBased(Cell *clusterCell, Cluster *clusterCellPtr)
+{
+  Cell *thisCell;
+  Pin *pinPtr, *connPinPtr;
+  Net *netPtr;
+  uint clusterXpos, clusterYpos;
+  double cellXPos, cellYPos;
+  uint cellIndex, numRows, numCells;
+  uint idx;
+
+  /* Get the cluster structure corresponding to the current cluster cell */
+  Cluster &thisCluster = *clusterCellPtr;
+  vector<Cell *> &cellsOfCluster = thisCluster.ClusterGetCellsOfCluster();
+  vector<Net *> &netsOfCluster = thisCluster.ClusterGetInternalNets();
+  map<Pin*, Pin*> &pinMap = thisCluster.ClusterGetPinMap();
+  clusterXpos = (*clusterCell).CellGetXpos();
+  clusterYpos = (*clusterCell).CellGetYpos();
+  
+  numCells = cellsOfCluster.size();
+  for (idx = 0; idx < numCells; idx++) {
+    Cell &thisCell = *(cellsOfCluster[idx]);
+    cellXPos = thisCell.CellGetXposDbl();
+    cellYPos = thisCell.CellGetYposDbl();
+    thisCell.CellSetXposDbl(clusterXpos + cellXPos);
+    thisCell.CellSetYposDbl(clusterYpos + cellYPos);
+  }
+
+  /* Un-hide the cells of the cluster and the internal cells and all the pins 
+     of the cells of the cluster */
+  VECTOR_FOR_ALL_ELEMS(cellsOfCluster, Cell *, thisCell) {
+    DesignUnhideCell(thisCell);
+    CELL_FOR_ALL_PINS((*thisCell), PIN_DIR_ALL, pinPtr) {
+      (*pinPtr).PinSetIsHidden(false);
+    } CELL_END_FOR;
+  } END_FOR;
+
+  /* Un-hide all the internal nets */
+  VECTOR_FOR_ALL_ELEMS(netsOfCluster, Net *, netPtr) {
+    DesignUnhideNet(netPtr);
+  } END_FOR;
+
+  /* Remove pins of the cluster from the external nets */
+  MAP_FOR_ALL_KEYS(pinMap, Pin *, Pin *, pinPtr) {
+    Net &connectedNet = (*pinPtr).PinGetNet();
+    connectedNet.NetRemovePin(*pinPtr);
+    /* Destroy the pin that has been created on the cluster */
+    DesignDeletePin(pinPtr);
+  } END_FOR;
+
+  /* Clear flag on cluster cell */
+  CellClearCluster(clusterCell);
+  
+  /* Remove the cluster cell from the design database */
+  DesignRemoveOneClusterFromDesignDB(clusterCell);
+  
+  /* Remove the data "Cluster" stored on the cell */
+  delete (&thisCluster);
+
+  /* Delete the cluster cell */
+  DesignDeleteCell(clusterCell);
+}
+
+void
 Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)
 {
   Cell *thisCell;
@@ -1455,7 +1762,7 @@ Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)
   uint bCellWidth;
   uint rowNum, xPosInRow;
   bool left, right, top, bot;
-  bool bCellsPlaced;
+  bool bCellsPlaced, rowBased;
   uint idx, bCellIdx;
   Env &DesignEnv = DesignGetEnv();
 
@@ -1464,6 +1771,12 @@ Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)
      cluster cell */
   Cluster *clusterCellPtr = (Cluster *)CellGetCluster(clusterCell);
   Cluster &thisCluster = *clusterCellPtr;
+  rowBased = thisCluster.ClusterGetRowBased();
+
+  if (rowBased) {
+    DesignUnclusterCellRowBased(clusterCell, clusterCellPtr);
+    return;
+  }
 
   singleRowHeight = DesignGetSingleRowHeight();
   if (singleRowHeight < 0) {
@@ -1580,9 +1893,8 @@ Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)
     } END_FOR;
 
     /* Solve for internal cells of the cluster */
-    solveForClusterCells((*this), clusterCell, cellsToSolve, netsOfCluster, 
-			 boundaryCells, DesignEnv.EnvGetUnclusterType());
-
+    //    solveForClusterCells((*this), clusterCell, cellsToSolve, netsOfCluster, 
+    //			 boundaryCells, DesignEnv.EnvGetUnclusterType());
 
     /* Remove pins of the cluster from the external nets */
     MAP_FOR_ALL_KEYS(pinMap, Pin *, Pin *, pinPtr) {

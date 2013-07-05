@@ -4,10 +4,10 @@
 class Bin {
  private:
   uint binIdx;
-  uint left, right, bot, top;
   double newRight, newTop;
   double utilization;
   double cellArea;
+  double binArea;
   double totalCellWidth;
   double averageCellWidth;
   bool stretchedInX, stretchedInY;
@@ -16,6 +16,8 @@ class Bin {
   vector<Cell *> cellsOfBin;
 
  public:
+  uint left, right, bot, top;
+
   /* Constructors */
   Bin();
   Bin(uint);
@@ -44,7 +46,9 @@ class Bin {
   void BinAddCellArea(double);
   void BinSetTotalCellWidth(double);
   void BinAddCellWidth(double);
+  void BinSetAverageCellWidth(double);
   void BinComputeAverageCellWidth(void);
+  void BinSetUtilization(double);
   void BinComputeUtilization(void);
   void BinAddCells(vector<Cell *>&);
   void BinAddCell(Cell *);

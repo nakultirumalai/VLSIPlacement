@@ -2,8 +2,7 @@
 
 void
 Design::DesignGetForceOnCell(Cell &thisCell, double newXPos, double newYPos,
-			     double oldPseudoPinX, double oldPseudoPinY, 
-			     double oldSpringConstant, double &magnitude, 
+			     double &magnitude,
 			     double &totalXForce, double &totalYForce,
 			     char &forceDir, double &chipBoundLeft,
 			     double &chipBoundRight, double &chipBoundTop,
@@ -63,17 +62,8 @@ Design::DesignGetForceOnCell(Cell &thisCell, double newXPos, double newYPos,
     } NET_END_FOR;
   } CELL_END_FOR;
 
-  /* Also add the force due to the old pseudo port */
-  //  if (oldPseudoPinX > 0 && oldPseudoPinY > 0) {
-  //    diffCellXPos += oldSpringConstant * (oldPseudoPinX - celliXPos);
-  //    diffCellYPos += oldSpringConstant * (oldPseudoPinY - celliYPos);
-  //  }
-
   totalXForce = diffCellXPos;
   totalYForce = diffCellYPos;
-
-  //  totalXForce -= oldSpringConstant * (oldPseudoPinX - celliXPos);
-  //  totalYForce -= oldSpringConstant * (oldPseudoPinY - celliYPos);
 
   int intXForce, intYForce;
   intXForce = dtoi(totalXForce); intYForce = dtoi(totalYForce);
@@ -304,8 +294,8 @@ Design::DesignCreatePseudoPort(Cell &thisCell, double newXpos, double newYpos,
 
   /* Since we are minimizing quadratic wirelength. Model of force for 
      other objective types is going to change */
-  portXForce = pseudoPinX - thisCell.CellGetXposDbl();
-  portYForce = pseudoPinY - thisCell.CellGetYposDbl();
+  portXForce = pseudoPinX - cellXpos;
+  portYForce = pseudoPinY - cellYpos;
   spreadForce = sqrt(portXForce * portXForce + portYForce * portYForce);
   springConstant = magnitude / spreadForce;
 }
@@ -574,8 +564,6 @@ Design::DesignStretchBins(void)
 void
 Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin, 
 				     double cellXpos, double cellYpos,
-				     double oldPseudoPinX, double oldPseudoPinY,
-				     double oldSpringConstant,
 				     double &pseudoPinX, double &pseudoPinY, 
 				     double &springConstant)
 {
@@ -598,7 +586,7 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
   stretchInY = cellBin.BinStretchInY();
   if (!stretchInX && !stretchInY) return;
 
-  averageCellWidth = DesignGetAverageStdCellWidth();
+  averageCellWidth = cellBin.BinGetAverageCellWidth();
   cellHeight = thisCell.CellGetHeight();
 
   xj = cellXpos;
@@ -626,10 +614,10 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
     xjPrime = newBinRight * (xj - binLeft);
     xjPrime += newBinRightPrev * (binRight - xj);
     xjPrime /= (binRight - binLeft);
-    //    alphaX = 0.09 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+    alphaX = 0.09 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
     //    alphaX = 0.07 + (1 / maxUtil) * (averageCellWidth/cellHeight);
-    //alphaX = 0.2 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
-    alphaX = 1.0;
+    //    alphaX = 0.02 + ((0.5/maxUtil) * (averageCellWidth/cellHeight));
+    //alphaX = 1.0;
     newXPos = xj + alphaX * (xjPrime - xj);
     cellWidth = thisCell.CellGetWidth();
     if (newXPos > (maxx - cellWidth)) {
@@ -640,10 +628,10 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
     yjPrime = newBinTop * (yj - binBot);
     yjPrime += newBinTopPrev * (binTop - yj);
     yjPrime /= (binTop - binBot);
-    //    alphaY = 0.09 + (0.5/maxUtil);
+    alphaY = 0.09 + (0.5/maxUtil);
     //    alphaY = 0.07 + (1 / maxUtil);
-    //    alphaY = 0.2 + (0.5 / maxUtil);
-    alphaY = 1.0;
+    //alphaY = 0.02 + (0.5 / maxUtil);
+    //alphaY = 1.0;
     newYPos = yj + alphaY * (yjPrime - yj);
     if (newYPos > (maxy - cellHeight)) {
       newYPos = maxy - cellHeight;
@@ -658,7 +646,6 @@ Design::DesignSpreadCreatePseudoPort(Cell &thisCell, Bin &cellBin,
   
   /* COMPUTE FORCE ON CELL IN NEW POSITION */
   DesignGetForceOnCell(thisCell, newXPos, newYPos,
-		       oldPseudoPinX, oldPseudoPinY, springConstant,
 		       magnitude, totalXForce, totalYForce, forceDir, 
 		       chipBoundLeft, chipBoundRight, chipBoundTop, chipBoundBot, 
 		       false);
@@ -685,7 +672,7 @@ Design::DesignSpreadCreatePseudoPortILR(Cell &thisCell, double cellOldXpos,
   newYPos = thisCell.CellGetYposDbl();
 
   /* COMPUTE FORCE ON CELL IN NEW POSITION */
-  DesignGetForceOnCell(thisCell, newXPos, newYPos, -1, -1, -1, magnitude, 
+  DesignGetForceOnCell(thisCell, newXPos, newYPos, magnitude, 
 		       totalXForce, totalYForce, forceDir, 
 		       chipBoundLeft, chipBoundRight, chipBoundTop, chipBoundBot, 
 		       true);
