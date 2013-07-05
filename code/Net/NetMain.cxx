@@ -227,16 +227,16 @@ void
 Net::NetComputeHPWL(uint &xOldHPWL, uint &yOldHPWL, uint &xNewHPWL, uint &yNewHPWL)
 {
   Pin *pinPtr;
-  struct cmpPinXposStruct cmpPinXpos;
-  struct cmpPinYposStruct cmpPinYpos;
+  //  struct cmpPinXposStruct cmpPinXpos;
+  //  struct cmpPinYposStruct cmpPinYpos;
 
   xOldHPWL = xhpwl;
   yOldHPWL = yhpwl;
   
   if (NetGetDirtyHPWL()) {
     //    cout << name << " is dirty" << endl;
-    std::sort(PinsVecX.begin(), PinsVecX.end(), cmpPinXpos);
-    std::sort(PinsVecY.begin(), PinsVecY.end(), cmpPinYpos);
+    //    std::sort(PinsVecX.begin(), PinsVecX.end(), cmpPinXpos);
+    //    std::sort(PinsVecY.begin(), PinsVecY.end(), cmpPinYpos);
     maxx = (*PinsVecX[0]).PinGetAbsXPos();
     maxy = (*PinsVecY[0]).PinGetAbsYPos();
     minx = (*PinsVecX[pinCount - 1]).PinGetAbsXPos();
@@ -254,8 +254,8 @@ Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
   Cell *cellPtr;
   uint cellXpos, cellYpos;
   uint pinXPos, pinYPos;
-  struct cmpPinXposStruct cmpPinXpos;
-  struct cmpPinYposStruct cmpPinYpos;
+  //  struct cmpPinXposStruct cmpPinXpos;
+  //  struct cmpPinYposStruct cmpPinYpos;
   uint idx;
 
   if (NetGetDirtyHPWL()) {

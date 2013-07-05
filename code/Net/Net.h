@@ -1,7 +1,6 @@
 # include <common.h>
 # include <NetIter.h>
 # include <Pin.h>
-# include <SortClasses.h>
 
 # ifndef NET_H
 # define NET_H
