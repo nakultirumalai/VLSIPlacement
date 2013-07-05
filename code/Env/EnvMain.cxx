@@ -28,6 +28,12 @@ Env::Env()
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
   /* Initilization of double variables */
   EnvSetMaxUtilPhaseI(DEFAULT_MAX_UTILIZATION_PHASEI);
+  EnvSetClusteringRatio(DEFAULT_CLUSTERING_RATIO);
+  EnvSetClusterMaxArea(DEFAULT_CLUSTER_MAX_AREA);
+  EnvSetClusterMaxWidth(DEFAULT_CLUSTER_MAX_WIDTH);
+  EnvSetClusterBoundPenalty(DEFAULT_CLUSTER_BOUND_PENALTY);
+  /* Initialization of other integer variables */
+  EnvSetClusterNumRows(DEFAULT_CLUSTER_NUM_ROWS);
   /* Time related variables */
   /* Initialize start times to 0 */
   NetlistReadStartTime = 0;
@@ -381,6 +387,18 @@ Env::EnvGetNumNets(void)
   return NumNets;
 }
 
+void
+Env::EnvSetClusterNumRows(uint ClusterNumRows)
+{
+  this->ClusterNumRows = ClusterNumRows;
+}
+
+uint 
+Env::EnvGetClusterNumRows(void)
+{
+  return (ClusterNumRows);
+}
+
 void 
 Env::EnvSetUseVarBounds(bool UseVarBounds)
 {
@@ -439,6 +457,54 @@ double
 Env::EnvGetMaxUtilPhaseI(void) 
 {
   return (MaxUtilPhaseI);
+}
+
+void
+Env::EnvSetClusteringRatio(double ClusteringRatio) 
+{
+  this->ClusteringRatio = ClusteringRatio;
+}
+
+double
+Env::EnvGetClusteringRatio(void) 
+{
+  return (ClusteringRatio);
+}
+
+void
+Env::EnvSetClusterMaxArea(double ClusterMaxArea) 
+{
+  this->ClusterMaxArea = ClusterMaxArea;
+}
+
+double
+Env::EnvGetClusterMaxArea(void) 
+{
+  return (ClusterMaxArea);
+}
+
+void
+Env::EnvSetClusterMaxWidth(double ClusterMaxWidth)
+{
+  this->ClusterMaxWidth = ClusterMaxWidth;
+}
+
+double
+Env::EnvGetClusterMaxWidth(void) 
+{
+  return (ClusterMaxWidth);
+}
+
+void
+Env::EnvSetClusterBoundPenalty(double ClusterBoundPenalty) 
+{
+  this->ClusterBoundPenalty = ClusterBoundPenalty;
+}
+
+double
+Env::EnvGetClusterBoundPenalty(void) 
+{
+  return (ClusterBoundPenalty);
 }
 
 void 

@@ -4,6 +4,7 @@ Cluster::Cluster()
 {
   ClusterSetNumCells(0);
   ClusterSetBCellsPlaced(false);
+  ClusterSetRowBased(false);
 }
 
 Cluster::Cluster(vector<Cell *> &cellsOfCluster)
@@ -11,6 +12,7 @@ Cluster::Cluster(vector<Cell *> &cellsOfCluster)
   ClusterSetNumCells(cellsOfCluster.size());
   ClusterSetCellsOfCluster(cellsOfCluster);
   ClusterSetBCellsPlaced(false);
+  ClusterSetRowBased(false);
 }
 
 Cluster::Cluster(vector<Cell *> &cellsOfCluster, 
@@ -26,6 +28,7 @@ Cluster::Cluster(vector<Cell *> &cellsOfCluster,
   ClusterSetXPosInRows(xPosInRow);
   ClusterSetPinMap(pinMap);
   ClusterSetBCellsPlaced(false);
+  ClusterSetRowBased(false);
 }
 
 Cluster::~Cluster()
@@ -82,6 +85,12 @@ Cluster::ClusterSetBCellsPlaced(bool bCellsPlaced)
 }
 
 void
+Cluster::ClusterSetRowBased(bool clusterRowBased)
+{
+  this->rowBased = rowBased;
+}
+
+void
 Cluster::ClusterSetClusterLevel(char clusterLevel)
 {
   this->clusterLevel = clusterLevel;
@@ -133,6 +142,12 @@ bool
 Cluster::ClusterGetBCellsPlaced(void)
 {
   return (this->bCellsPlaced);
+}
+
+bool
+Cluster::ClusterGetRowBased(void)
+{
+  return (this->rowBased);
 }
 
 char

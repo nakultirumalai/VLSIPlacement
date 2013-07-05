@@ -416,7 +416,7 @@ Cell::CellMoveCellComputeHPWL(double newXpos, double newYpos,
 	newPinAbsY = (*pinPtr).yOffset + celly;
 	if (newPinAbsX > thisNet.maxx) {
 	  thisNet.pinMaxx = pinPtr;
-	  thisNet.maxx = maxx;
+	  thisNet.maxx = newPinAbsX;
 	}
 	if (newPinAbsX < thisNet.minx) {
 	  thisNet.minx = newPinAbsX;

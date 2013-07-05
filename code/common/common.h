@@ -129,6 +129,7 @@ string getStrForOrientation(objOrient);
 
 void vectorRemoveDuplicates(vector<unsigned int>& vec);
 bool strIsNumber(const string& s);
+int strToInt(const string &s);
 double strToDouble(const string& s);
 string strToLower(const char *s);
 string strToLower(const string& s);

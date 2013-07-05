@@ -22,7 +22,7 @@ typedef enum {
   ENV_MPL6_GP,
   NUM_ENV_GLOBAL_PLACERS
 } EnvGlobalPlacerType;
-# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
+# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NTUPLACE_GP
 
 /* Define the solver type to be used in the design */
 typedef enum {
@@ -70,7 +70,7 @@ typedef enum {
   ENV_OURPLACER_DP,
   NUM_DETAILED_PLACEMENT
 } EnvDetailedPlacer;
-# define DEFAULT_ENV_DETAIL_PLACEMENT ENV_FAST_PLACE_DP
+# define DEFAULT_ENV_DETAIL_PLACEMENT ENV_NO_DETAIL_PLACEMENT
 
 /* Define the type of optimization desired in the placement tool  */
 typedef enum {
@@ -123,6 +123,11 @@ typedef enum {
 /* Define the default value of the maximum utilization 
    after which ILR would start */
 # define DEFAULT_MAX_UTILIZATION_PHASEI 1.0
+# define DEFAULT_CLUSTERING_RATIO 0.3
+# define DEFAULT_CLUSTER_MAX_AREA 0.25
+# define DEFAULT_CLUSTER_MAX_WIDTH 0.25
+# define DEFAULT_CLUSTER_BOUND_PENALTY 1
+# define DEFAULT_CLUSTER_NUM_ROWS 0
 # define DEFAULT_ENV_OUTPUT_FILE_NAME ./DEFAULT/defaultplacement
 
 /***************************************************
@@ -201,6 +206,9 @@ class Env {
   uint NumFixedMacros;
   /* Total number of nets that are read */
   uint NumNets;
+  /* Total number of rows that need to be allotted to 
+     a cluster */
+  uint ClusterNumRows;
 
   /***************************************/
   /* BOOLEAN VARIABLES                   */
@@ -226,7 +234,15 @@ class Env {
   /* Decide the peak utilization during which the 
      global placer should switch to ILR */
   double MaxUtilPhaseI;
-  
+  /* Clustering ratio */
+  double ClusteringRatio;
+  /* Cluster max area */
+  double ClusterMaxArea;
+  /* Double cluster max width */
+  double ClusterMaxWidth;
+  /* Double cluster bound penalty */
+  double ClusterBoundPenalty;
+    
   /***************************************/
   /* CUSTOM ENUM VARIABLES               */
   /* ALL VALUES ARE DEFAULTED TO DEFAULT */
@@ -352,6 +368,9 @@ class Env {
   void EnvSetNumNets(uint);
   uint EnvGetNumNets(void);
 
+  void EnvSetClusterNumRows(uint);
+  uint EnvGetClusterNumRows(void);
+
   void EnvSetUseVarBounds(bool);
   bool EnvGetUseVarBounds(void);
 
@@ -366,6 +385,18 @@ class Env {
 
   void EnvSetMaxUtilPhaseI(double);
   double EnvGetMaxUtilPhaseI(void);
+
+  void EnvSetClusteringRatio(double);
+  double EnvGetClusteringRatio(void);
+
+  void EnvSetClusterMaxArea(double);
+  double EnvGetClusterMaxArea(void);
+
+  void EnvSetClusterMaxWidth(double);
+  double EnvGetClusterMaxWidth(void);
+  
+  void EnvSetClusterBoundPenalty(double);
+  double EnvGetClusterBoundPenalty(void);
 
   void EnvSetGlobalPlacerType(EnvGlobalPlacerType);
   EnvGlobalPlacerType EnvGetGlobalPlacerType(void);

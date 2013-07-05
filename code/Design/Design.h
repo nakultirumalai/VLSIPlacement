@@ -385,6 +385,7 @@ class Design {
   void DesignShrinkBinsForILR();
   void DesignRefreshBins(void);
   void DesignCreateBins(void);
+  void DesignCreateBins(uint, uint);
   void DesignCreateEmptyBins(void);
   void DesignClearBins(void);
   void DesignDestroyBins(void);
@@ -458,9 +459,12 @@ class Design {
   /* Clustering functions */
   //void DesignClusterCells(HyperGraph&, clusteringType);
   //  void DesignCollapseCluster(Cell& MasterCell);
+  bool DesignValidateClusterParams(double, double, double, double, uint);
   bool DesignDoDefaultCluster(HyperGraph&);
   bool DesignDoTimingDrivenCluster(HyperGraph&);
-  bool DesignDoBestChoiceClustering(HyperGraph&);
+  bool DesignDoBestChoiceClustering(HyperGraph&, double);
+  bool DesignDoBestChoiceClusteringPenalty(HyperGraph &, double, bool, double);
+  bool DesignDoBestChoiceClusteringCstr(HyperGraph &, double, double, bool, double);
   bool DesignDoFirstChoiceClustering(HyperGraph&);
   bool DesignDoClusterTest(void);
 
@@ -477,7 +481,9 @@ class Design {
   void DesignAssignPinOffSets(Cell *clusterCell, map<Cell *, uint> &boundaryCells,
 			      vector<Pin *> &clusterCellPins, map<Pin *, Pin*> &pinMap,
 			      vector<uint> &rowNum, vector<uint> &xPosInRow);
+  void DesignAssignPinOffSetsInRows(Cell *, vector<Pin *> &, map<Pin *, Pin *> &pinMap);
   void DesignExpandCluster(Cell *clusterCell, uint &resultHeight, uint &resultWidth);
+  void DesignPlaceCellsInClusterInRows(vector<Cell *> &, uint, uint);
   bool DesignPlaceCellsInCluster(vector<Cell *> &boundaryCellVec, vector<uint> &, vector<uint> &,
 				 uint resultHeight, uint resultWidth);
   bool DesignPlaceCellsInClusterNoLegal(vector<Cell*>&, vector<uint>&, vector<uint>&, 
@@ -488,8 +494,10 @@ class Design {
 
   Cell* DesignClusterCells(vector<Cell *> &listOfCells, bool, bool);
   Cell* DesignClusterCellsSimple(vector<Cell *> &listOfCells);
+  void DesignCommitClusterRowBased(Cell *, Cluster *);
   void DesignCommitCluster(Cell *);
   void DesignSimpleCollapseCluster(Cell*, vector<Net*>&, vector<Cell*>&);
+  void DesignUnclusterCellRowBased(Cell*, Cluster *);
   void DesignUnclusterCell(Cell*, bool);
 
   /* Constraint functions */
@@ -512,20 +520,18 @@ class Design {
 			     map<Cell *,uint> &);
   bool DesignCellGetBestPosForILR(Cell &, Bin &, Bin *&, uint&, uint&);
   void DesignGetForceOnCell(Cell &, double, double, 
-			    double, double, double,
-			    double &, double &, double &, 
-			    char &, double&, double &, 
-			    double &, double &, bool);
+			    double &, double &, double &, char&, 
+			    double&, double &, double &, double &, 
+			    bool);
   void DesignCreatePseudoPortOld(Cell &, double, double, double, double, 
 				 double, double, double, char, 
 				 MSKrealt *, MSKrealt *,  
 				 MSKrealt *, MSKrealt *, 
 				 map<Cell *, uint>&, map<Cell *, uint>&);
-  void DesignCreatePseudoPort(Cell &, double, double, double, 
-			      double, double, double, double, 
-			      char, double &, double &, double &);
+  void DesignCreatePseudoPort(Cell &, double, double, double, double, 
+			      double, double, double, char, 
+			      double &, double &, double &);
   void DesignSpreadCreatePseudoPort(Cell&, Bin&, double, double, 
-				    double, double, double,
 				    double &, double &, double &);
   void DesignSpreadCreatePseudoPortILR(Cell&, double, double, 
 				       double &, double &, double &);

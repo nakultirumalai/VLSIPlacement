@@ -1,3 +1,5 @@
+# ifndef CONJGRAD_SOLVER_H
+# define CONJGRAD_SOLVER_H
 # include <common.h>
 
 /* Sparse matrix container which stores only the 
@@ -43,3 +45,4 @@ cghs(uint N, SpMat &A, double *b, double *x, double eps, bool detailed, uint max
 
 void 
 mult(const SpMat &T, const double *v, double *w);
+# endif

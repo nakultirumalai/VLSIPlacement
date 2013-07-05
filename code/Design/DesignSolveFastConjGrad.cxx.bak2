@@ -1,5 +1,4 @@
 # include <Design.h>
-# include <ConjGradSolver.h>
 
 void
 getObjFuncInConjGradFormat(Design &myDesign, HyperGraph &myGraph,
@@ -55,7 +54,7 @@ getObjFuncInConjGradFormat(Design &myDesign, HyperGraph &myGraph,
   /* Dump the hessian and the constant matrices into a file */
   if (DesignEnv.EnvGetDumpHessian()) {
     string hessDir, hessFile, bMatFile;
-    hessDir = "/home/nakul/thesis/VLSIPlacement/code/SolverTest/" + DesignEnv.EnvGetDesignName();
+    hessDir = "SolverTest/" + DesignEnv.EnvGetDesignName();
     if (!dirExists(hessDir)) {
       if (!(0 == mkdir(hessDir.data(), S_IRWXU | S_IRWXG | S_IRWXO))) {
 	cout << "Error: Directory does not exist. Cannot create directory!!" << endl;
@@ -122,12 +121,6 @@ getObjFuncInConjGradFormat(Design &myDesign, HyperGraph &myGraph,
 }
 
 void
-addCellToBin(Cell *cellPtr)
-{
-  
-}
-
-void
 Design::DesignSolveForAllCellsConjGradIter(void)
 {
   void *cellObj;
@@ -143,8 +136,6 @@ Design::DesignSolveForAllCellsConjGradIter(void)
   string DirName;
   string plotFileName;
   double prevPeakUtil, itrCount, stopThreshold;
-  uint cellLeft, cellRight, cellTop, cellBot;
-  uint cellHeight, cellWidth;
   uint peakUtilBinIdx;
   uint numVars, nodeIdx;
   uint qvalIdx, i;
@@ -202,12 +193,8 @@ Design::DesignSolveForAllCellsConjGradIter(void)
   /**************************************************************/
   prevPeakUtil = 0.0;
   itrCount = 0;
-  stopThreshold = 0.1;
+  stopThreshold = 1;
   _STEP_BEGIN("Analytical solve and spread iterations");
-  plotFileName = DesignName + ".bins.plt";
-  DesignPlotData("Title", plotFileName);
-  DesignComputeBinSize(false);
-  //  DesignCreateEmptyBins();
   while (1) {
     /**************************************************************/
     /* SOLVER PART BEGINS HERE  :  SOLVE FOR X FIRST AND THEN Y   */
@@ -255,20 +242,8 @@ Design::DesignSolveForAllCellsConjGradIter(void)
       cellPtr = inputCells[i];
       xpos = x[i] * GRID_COMPACTION_RATIO; 
       ypos = y[i] * GRID_COMPACTION_RATIO;
-      cellWidth = (*cellPtr).CellGetWidth();
-      cellHeight = (*cellPtr).CellGetHeight();
-      cellRight = xpos + cellWidth;
-      cellTop = xpos + cellHeight;
-      cellBot = ypos; cellLeft = xpos;
-
-      if (cellRight > maxx) { xpos -= (cellRight - maxx); }
-      if (cellTop > maxy) { ypos -= (cellTop - maxy); }
-      if (xpos < 0) { xpos = 0; }
-      if (ypos < 0) { ypos = 0; }
-      if (xpos > maxx) { xpos = maxx - cellWidth - 1; }
-      if (ypos > maxy) { ypos = maxy - cellHeight - 1; }
-      (*cellPtr).CellSetXposDbl(xpos);
-      (*cellPtr).CellSetYposDbl(ypos);
+      (*cellPtr).CellSetXpos(dtoi(xpos));
+      (*cellPtr).CellSetYpos(dtoi(ypos));
       CellSetDblX(cellPtr, xpos);
       CellSetDblY(cellPtr, ypos);
     }
@@ -302,12 +277,10 @@ Design::DesignSolveForAllCellsConjGradIter(void)
     /**************************************************************/
     /* STOPPING CONDITION                                         */
     /**************************************************************/
-    if ((itrCount < 0) || 
-	((prevPeakUtil > peakUtilization) && 
-	 ((prevPeakUtil - peakUtilization) < stopThreshold))) {
-      cout << "Global placement complete" << endl;
-      plotFileName = DesignName + ".gp.plt";
-      DesignPlotData("Title", plotFileName);
+    if (itrCount < 0) {
+      break;
+    }
+    if ((prevPeakUtil > peakUtilization) && ((prevPeakUtil - peakUtilization) < stopThreshold)) {
       break;
     } else {
       prevPeakUtil = peakUtilization;
@@ -339,12 +312,10 @@ Design::DesignSolveForAllCellsConjGradIter(void)
     for (i = 0; i < numVars; i++) {
       Cell &thisCell = (*(Cell *)(inputCells[i]));
       if (CellIsStarNode(&thisCell)) break;
-      Bin *binPtr = (Bin *)CellGetBin(&thisCell);
-      cellXpos = thisCell.CellGetXposDbl();
-      cellYpos = thisCell.CellGetYposDbl();
-      //      cellXpos = CellGetDblX(&thisCell);
-      //   cellYpos = CellGetDblY(&thisCell);
-      DesignSpreadCreatePseudoPort(thisCell, *binPtr, cellXpos, cellYpos,
+      Bin &cellBin = *((Bin *)CellGetBin(&thisCell));
+      cellXpos = CellGetDblX(&thisCell);
+      cellYpos = CellGetDblY(&thisCell);
+      DesignSpreadCreatePseudoPort(thisCell, cellBin, cellXpos, cellYpos,
                                    pseudoPinX, pseudoPinY, springConstant);
       //      cout << "Created pseudo port at: (" << pseudoPinX << "," << pseudoPinY << ")   Spring constant:" << springConstant << endl;
       coeffX = springConstant; coeffY = coeffX;
@@ -389,10 +360,14 @@ Design::DesignSolveForAllCellsConjGradIter(void)
     DesignClearBins();
     _STEP_END("Perform bin removal");
 
-    //    for (i = 0; i < numVars; i++) {
-    //      x[i] = 0.0;
-    //      y[i] = 0.0;
-    //    }
+    for (i = 0; i < numVars; i++) {
+      x[i] = 0.0;
+      y[i] = 0.0;
+    }
   }
+  cout << "Global placement complete" << endl;
+  plotFileName = DesignName + ".gp.plt";
+  DesignPlotData("Title", plotFileName);
+
   _STEP_END("Analytical solve and spread iterations");
 }

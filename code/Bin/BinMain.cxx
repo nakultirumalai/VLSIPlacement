@@ -12,6 +12,7 @@ Bin::Bin()
   bot = 0;
   top = 0;
   cellArea = 0.0;
+  binArea = 0.0;
   utilization = 0.0;
   newRight = 0;
   newTop = 0;
@@ -29,6 +30,7 @@ Bin::Bin(uint binIdx, uint left, uint right, uint bot, uint top)
   this->bot = bot;
   this->top = top;
   cellArea = 0.0;
+  binArea = (right - left) * (top - bot);
   utilization = 0.0;
   newRight = 0;
   newTop = 0;
@@ -162,6 +164,7 @@ void
 Bin::BinAddCellArea(double cellArea)
 {
   this->cellArea += cellArea;
+  this->utilization = cellArea / binArea;
 }
 
 void
@@ -180,6 +183,18 @@ void
 Bin::BinComputeAverageCellWidth(void)
 {
   this->averageCellWidth = totalCellWidth / (cellsOfBin.size());
+}
+
+void 
+Bin::BinSetAverageCellWidth(double averageCellWidth)
+{
+  this->averageCellWidth = averageCellWidth;
+}
+
+void 
+Bin::BinSetUtilization(double utilization)
+{
+  this->utilization = utilization;
 }
 
 void 
