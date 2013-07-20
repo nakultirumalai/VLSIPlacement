@@ -16,7 +16,7 @@ using namespace std;
 
 # define debugPrint 0
 
-class FdPSite{
+class FDPSite{
  private:
   Cell *siteHasCell;
   bool siteIsLocked;

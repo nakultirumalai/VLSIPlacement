@@ -1,4 +1,4 @@
-#include <fdPlace.h>
+#include <ForceDirectedPlacer.h>
 
 FDPSite*
 FDPGetSiteOfCell(vector<vector<FDPSite*> > &gridMatrix, Cell *thisCell, 
@@ -43,8 +43,6 @@ FDPGetRoundedSiteLocation(double tempX, double tempY, int rowHeight,
     Y = quotient * rowHeight;
   }
 }
-  
-    
 
 void
 FDPGetOptLocation(vector<void*> &connectedNodes, void<Cell*> &movableCells,

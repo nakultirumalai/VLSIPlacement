@@ -1,4 +1,4 @@
-# include<fdPlace.h>
+# include <ForceDirectedPlacer.h>
 
 /* Set functions */
 void
