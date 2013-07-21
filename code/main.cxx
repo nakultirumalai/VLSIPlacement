@@ -110,6 +110,9 @@ printTimeUsage(Env &topEnv)
               bounds in the solver. This option is only valid 
               when the solver used is mosek.
 
+  -noplacement: Use this option to indicate that no placement has
+              to be done.
+
 -global_placer: If this option is specified, an external global placer 
               is selected to perform global placement
 
@@ -121,8 +124,20 @@ printTimeUsage(Env &topEnv)
               c) netcluster
               d) tdcluster1
               e) tdcluster2
-              f) nocluster
+              f) largecluster
+              g) nocluster
+-cluster_global_placer: The global placer used for placing cells
+              inside large clusters. Option values are:
+              a) ntuplace
+              b) mpl6
+              c) fastplace
 
+-cluster_legalizer: The legalizer used for legalizing cells 
+              inside large clusters:
+              a) ntuplace
+              b) mpl6
+              c) fastplace
+              
 -cluster_ratio: Clustering ratio to indicate to what extent the netlist 
               should be compressed. Lets say the clustering ratio is 0.4,
               the clustering strategy tries to compress the netlist to 
@@ -131,6 +146,15 @@ printTimeUsage(Env &topEnv)
 -cluster_numrows: Indicates the number of rows that should be assigned 
               to each clusters. To build clusters as standard cells,
               use num_rows 1
+
+-numclusters: Indicates the number of clusters that need to 
+              be created for the design
+
+-imbalance_factor: The imbalance factor for the k-way partitioning engine
+
+       -num_runs: The number of runs of khmetis to produce the k-way partitions
+
+-recursive_biparititon: Use recursive bi-partitioning to produce k-paritions
 
 -cluster_maxarea: Indicates the maximum area of clusters that should 
               be formed.
@@ -143,8 +167,8 @@ printTimeUsage(Env &topEnv)
 
 -cluster_placement: This option specifies how the cells should be placed
               inside the cluster. The options as of now are:
-              a) placeboundary
-              b) placecentre
+              a) boundaryonly
+              b) placefull
 
 -uncluster_strategy: This option specifies how the unclustering of cells
               should be done. 
@@ -243,9 +267,14 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       topEnv.EnvSetSolverType(ENV_SOLVER_QUADRATIC_MOSEK);
     } else if (switchValue == "conjgrad") {
       topEnv.EnvSetSolverType(ENV_SOLVER_QUADRATIC_CONJ_GRAD);
+    } else if (switchValue == "fdsolver") {
+      topEnv.EnvSetSolverType(ENV_SOLVER_FORCE_DIRECTED);
     } else {
       rtv = false;
     }
+  } else if (switchName == "noplacement") {
+    rtv = true;
+    topEnv.EnvSetGlobalPlacerType(ENV_NO_PLACEMENT);
   } else if (switchName == "global_placer") {
     rtv = true;
     if (switchValue == "ntuplace") {
@@ -271,11 +300,25 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       topEnv.EnvSetClusterType(ENV_TIMING_DRIVEN_CLUSTERING1);
     } else if (switchValue == "tdcluster2") {
       topEnv.EnvSetClusterType(ENV_TIMING_DRIVEN_CLUSTERING2);
+    } else if (switchValue == "largecluster") {
+      topEnv.EnvSetClusterType(ENV_LARGE_CLUSTERING);
     } else {
       rtv = false;
       cout << "Error: Valid options for cluster_strategy are " 
 	   << "\"bestchoice\", \"firstchoice\", \"netcluster\" "
 	   << "\"tdcluster1\", \"tdcluster2\"" << endl;
+    }
+  } else if (switchName == "cluster_global_placer") {
+    rtv = true;
+    if (switchValue == "ntuplace") {
+      topEnv.EnvSetClusterGlobalPlacerType(ENV_NTUPLACE_GP);
+    } else if (switchValue == "mpl6") {
+      topEnv.EnvSetClusterGlobalPlacerType(ENV_MPL6_GP);
+    } else if (switchValue == "fastplace") {
+      topEnv.EnvSetClusterGlobalPlacerType(ENV_FAST_PLACE_GP);
+    } else {
+      rtv = false;
+      cout << "Error: invalid option for cluster_global_placer" << endl;
     }
   } else if (switchName == "cluster_ratio") {
     rtv = true;
@@ -290,6 +333,25 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     rtv = true;
     uint clusterNumRows = strToInt(switchValue);
     topEnv.EnvSetClusterNumRows(clusterNumRows);
+  } else if (switchName == "numclusters") {
+    rtv = true;
+    uint numClusters = strToInt(switchValue);
+    topEnv.EnvSetNumClusters(numClusters);
+  } else if (switchName == "imbalance_factor") {
+    rtv = true;
+    uint imbalanceFactor = strToInt(switchValue);
+    topEnv.EnvSetImbalanceFactor(imbalanceFactor);
+  } else if (switchName == "numruns") {
+    rtv = true;
+    uint numRuns = strToInt(switchValue);
+    topEnv.EnvSetNumKHmetisRuns(numRuns);
+  } else if (switchName == "recursive_bipartition") {
+    rtv = true;
+    if (switchValue == "true") {
+      topEnv.EnvSetRecursiveBiPartitioning(true);
+    } else {
+      topEnv.EnvSetRecursiveBiPartitioning(false);
+    }
   } else if (switchName == "cluster_maxarea") {
     rtv = true;
     //    if (switchValue == "") {
@@ -318,7 +380,15 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       topEnv.EnvSetClusterBoundPenalty(clusterBoundPenalty);
     }
   } else if (switchName == "cluster_placement") {
-    
+    rtv = true;
+    if (switchValue == "boundaryonly") {
+      topEnv.EnvSetPlaceCellsInCluster(false);
+    } else if (switchValue == "placefull") {
+      topEnv.EnvSetPlaceCellsInCluster(true);
+    } else {
+      rtv = false;
+      cout << "Error: Valid options for \"cluster_placement\" are \"boundaryonly\" or \"placefull\"" << endl;
+    }
   } else if (switchName == "uncluster_strategy") {
     
   } else if (switchName == "legalizer") {
@@ -373,6 +443,8 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 int placeMain(Env &topEnv)
 {
   string DesignName, DesignPath;
+  EnvGlobalPlacerType globalPlacerType;
+
   /* Initialize the flags here */
   FlagsInit();
   
@@ -401,15 +473,18 @@ int placeMain(Env &topEnv)
   myDesign.DesignDoGlobalPlacement();
   ProfilerStart("GlobalPlacement");
     
+  globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
+  if (globalPlacerType != ENV_NO_PLACEMENT) {
   /****************************************************
    *  DO LEGALIZATION                                 *
    ****************************************************/
-  myDesign.DesignDoLegalization();
+    myDesign.DesignDoLegalization();
 
   /****************************************************
    *  DO DETAILED PLACEMENT                           *
    ****************************************************/
-  myDesign.DesignDoDetailedPlacement();
+    myDesign.DesignDoDetailedPlacement();
+  }
 
   /****************************************************
    *  PLOT THE FINAL PLACEMENT                        *

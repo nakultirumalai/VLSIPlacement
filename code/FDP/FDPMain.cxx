@@ -18,7 +18,7 @@ FDPGetSiteOfCell(vector<vector<FDPSite*> > &gridMatrix, Cell *thisCell,
 
 void
 FDPGetRoundedSiteLocation(double tempX, double tempY, int rowHeight, 
-			  int siteWidth, int X, int Y)
+			  int siteWidth, int &X, int &Y)
 {
   int modVal, halfVal;
   int quotient;
@@ -46,8 +46,9 @@ FDPGetRoundedSiteLocation(double tempX, double tempY, int rowHeight,
 
 void
 FDPGetOptLocation(vector<void*> &connectedNodes, vector<Cell*> &movableCells,
-		  vector<Cell*> &fixedCells, HyperGraph &myGraph, int rowHeight,
-		  int siteWidth, Cell *thisCell, int x, int y)
+		  vector<Cell*> &fixedCells, map<Cell *, bool> &mapOfCells,
+		  HyperGraph &myGraph, int rowHeight,
+		  int siteWidth, Cell *thisCell, int &x, int &y)
 {
   void *thisNode;
   void *seedNode;
@@ -59,22 +60,12 @@ FDPGetOptLocation(vector<void*> &connectedNodes, vector<Cell*> &movableCells,
   int Xj, Yj;
     
   seedNode = (void*)thisCell;
-  /* Join and convert both the vectors to a map for searching */
-  
-  VECTOR_FOR_ALL_ELEMS(fixedCells, Cell*, thisCell) {
-    cellsInCluster[thisCell] = true;
-  } END_FOR;
-
-  VECTOR_FOR_ALL_ELEMS(movableCells, Cell*, thisCell) {
-    cellsInCluster[thisCell] = true;
-  } END_FOR;
-  
   sumWDX = 0;
   sumWDY = 0;
   sumW = 0;
   VECTOR_FOR_ALL_ELEMS(connectedNodes, void*, thisNode) {
     thisCell = (Cell*)thisNode;
-    _KEY_EXISTS(cellsInCluster, thisCell) {
+    _KEY_DOES_NOT_EXIST(mapOfCells, thisCell) {
       continue;
     } else {
       Xj = (int)(*thisCell).CellGetXpos();
@@ -178,9 +169,6 @@ FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix
   }
 }
 
-
-  
-
 void
 FDPClearAllLocks(vector<Cell*> &movableCells, vector<vector<FDPSite*> > &gridMatrix,
 		 int siteWidth, int rowHeight)
@@ -201,13 +189,13 @@ FDPClearAllLocks(vector<Cell*> &movableCells, vector<vector<FDPSite*> > &gridMat
  
 /* Top level function to place the cells using a force-directed heuristic */
 void 
-FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &moveableCells, 
-	    int &numRows, int &numSitesInRow, int &rowHeight, int &siteWidth,
+FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &movableCells, 
+	    int numRows, int numSitesInRow, int rowHeight, int siteWidth,
 	    bool topLevel, HyperGraph &myGraph)
 {
   map<Cell*, bool> usedCells;
+  map<Cell*, bool> mapOfCells;
   vector<vector<FDPSite*> > gridMatrix;
-  vector<Cell*> movableCells;
   vector<FDPSite*> oneRow;
   vector<int> rowCap;
   vector<void*> connectedNodes;
@@ -258,24 +246,27 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &moveableCells,
   /* Mark the gridMatrix with cellNumbers that are locked */
   VECTOR_FOR_ALL_ELEMS(fixedCells, Cell*, thisCell) {
     /* Found an internal cell */
-      cellXpos = (int)(*thisCell).CellGetXpos();
-      cellYpos = (int)(*thisCell).CellGetYpos();
-      siteNum = cellXpos / siteWidth;
-      rowNum = cellYpos / rowHeight;
-      cellWidth = (int)(*thisCell).CellGetWidth();
-      numSitesOfCell = (cellXpos + cellWidth) / siteWidth;
-      siteX = cellXpos;
-      for (i = 0; i < numSitesOfCell; i++) {
-	thisSite = gridMatrix[rowNum][siteNum];
-	(*thisSite).FDPSiteSetIsLocked(1);
-	siteX += siteWidth;
-      }
-      rowCap[cellYpos] -= cellWidth;
+    cellXpos = (int)(*thisCell).CellGetXpos();
+    cellYpos = (int)(*thisCell).CellGetYpos();
+    siteNum = cellXpos / siteWidth;
+    rowNum = cellYpos / rowHeight;
+    cellWidth = (int)(*thisCell).CellGetWidth();
+    numSitesOfCell = (cellXpos + cellWidth) / siteWidth;
+    siteX = cellXpos;
+    for (i = 0; i < numSitesOfCell; i++) {
+      thisSite = gridMatrix[rowNum][siteNum];
+      (*thisSite).FDPSiteSetIsLocked(1);
+      siteX += siteWidth;
+    }
+    rowCap[cellYpos] -= cellWidth;
+    mapOfCells[thisCell] = true;
   } END_FOR;
-  
-  if (!(topLevel)) {
 
-  
+  VECTOR_FOR_ALL_ELEMS(movableCells, Cell*, thisCell) {
+    mapOfCells[thisCell] = true;
+  } END_FOR;
+
+  if (!(topLevel)) {
     lastPlacedCell = 0;
     /* Initial placement for movable cells */
     for (i = 0; i < numRows; i++) {
@@ -304,6 +295,7 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &moveableCells,
   }
   
   iter_count = 0;
+  iter_limit = 10;
   abort_count = 0;
   /* Do iterative refinement on the initial placement using a force directed heuristic */
   counter = 0;
@@ -328,8 +320,8 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &moveableCells,
 	connectedNodes = myGraph.GetConnectedNodes(thisNode);
       
 	/* Get equilibrium position of cell */
-	FDPGetOptLocation(connectedNodes, movableCells, fixedCells, myGraph,
-			  rowHeight, siteWidth, thisCell, siteXpos, siteYpos);
+	FDPGetOptLocation(connectedNodes, movableCells, fixedCells, mapOfCells,
+			  myGraph, rowHeight, siteWidth, thisCell, siteXpos, siteYpos);
 	siteNum = siteXpos / siteWidth;
 	rowNum = siteYpos / rowHeight;
 	thisSite = gridMatrix[rowNum][siteNum];
@@ -383,14 +375,4 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &moveableCells,
     }
   }
 }
-    
-      
-      
-    
-    
-      
-      
-
-
-
 

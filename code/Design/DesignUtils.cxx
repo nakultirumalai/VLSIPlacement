@@ -263,7 +263,7 @@ getNTUPlaceGlobalPlacementTime(string DesignName, double &globalPlacementTime)
   string inputFileName;
 
   globalPlacementTime = 0;
-  inputFileName = DesignName + "_NTUPlaceGPLog";
+  inputFileName = DesignName + "_NTUPlaceLog";
   ifile.open(inputFileName.data());
 
   while (!ifile.eof()) {
@@ -315,44 +315,130 @@ getMPL6GlobalPlacementTime(string DesignName, double &globalPlacementTime)
   ifile.close();
 }
 
+void
+getKHmetisRunTime(string DesignName, double &clusteringTime)
+{
+  ifstream ifile;
+  string line, garbage;
+  string inputFileName;
+  bool foundCPU;
+
+  clusteringTime = 0;
+  inputFileName = DesignName + "_KHmetisLog";
+  ifile.open(inputFileName.data());
+
+  foundCPU = false;
+  while (!ifile.eof()) {
+    getline(ifile, line);
+    if (line.find("  Partitioning Time:") == 0) {
+      istringstream stream(line, istringstream::in);
+      stream >> garbage;
+      stream >> garbage;
+      stream >> garbage;
+      break;
+    }
+  }
+  ifile.close();
+}
+
 int 
-Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName)
+Design::DesignRunKHMetis(string graphFileName, uint numWays, uint UBfactor,
+			 uint Nruns, uint CType, uint OType, uint VCycle, 
+			 uint dbglvl)
+{
+  int status;
+  char *hmetisPath; 
+  string hmetisCommand;
+  string DesignName;
+  double clusteringTime;
+  char path[PATH_MAX];
+  FILE *progRun;
+
+  Env &DesignEnv = DesignGetEnv();
+  hmetisPath = getenv("KHMETIS_FULL_PATH");
+
+  if (hmetisPath == NIL(char *)) {
+    hmetisCommand = "~/Downloads/Tools/Partitioning/hmetis-1.5-linux/khmetis";
+  } else {
+    hmetisCommand = hmetisPath;
+  }
+
+  DesignName = DesignGetName();
+  hmetisCommand += " ./" + graphFileName;
+  hmetisCommand += " " + getStrFromInt(numWays);
+  hmetisCommand += " " + getStrFromInt(UBfactor);
+  hmetisCommand += " " + getStrFromInt(Nruns);
+  hmetisCommand += " " + getStrFromInt(CType);
+  hmetisCommand += " " + getStrFromInt(OType);
+  hmetisCommand += " " + getStrFromInt(VCycle);
+  hmetisCommand += " " + getStrFromInt(dbglvl);
+  hmetisCommand += " | tee " + DesignName + "_KHmetisLog";
+  cout << "Executing khmetis command: " << hmetisCommand << endl;
+  status = executeCommand(hmetisCommand);
+  getKHmetisRunTime(DesignName, clusteringTime);
+  DesignEnv.EnvRecordClusteringTime(clusteringTime);
+
+  /* READ THE CLUSTERS HERE */
+  //  oldPlFileName = this->DesignPlFileName;
+  //  this->DesignPlFileName = clusterDesName + ".gp.pl";
+  //  DesignReadCellPlacement(true);
+  //  this->DesignPlFileName = oldPlFileName;
+
+  //  changeDir("..");
+
+  return (status);
+}
+
+int 
+Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName, 
+			  double &globalPlacementTime, bool changeDirectory,
+			  bool readPlacementTime, bool silent,
+			  string &placerLogFile)
 {
   int status;
   char *placerPath; 
   string placerCommand, oldPlFileName;
   string DesignName;
-  double globalPlacementTime;
   Env &DesigEnv = DesignGetEnv();
 
   placerPath = getenv("NTUPLACE_FULL_PATH");
-  changeDir(clusterDirName);
+  if (changeDirectory) {
+    changeDir(clusterDirName);
+  }
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/ntuplace/NTUPlace3/ntuplace3";
   } else {
     placerCommand = placerPath;
   }
-  
-  DesignName = DesignGetName();
-  placerCommand += " -aux ./" + clusterDesName + ".aux | tee " + DesignName + "_NTUPlaceGPLog";
-  status = system(placerCommand.data());
-  
-  getNTUPlaceGlobalPlacementTime(DesignName, globalPlacementTime);
-  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
 
-  oldPlFileName = this->DesignPlFileName;
-  this->DesignPlFileName = clusterDesName + ".gp.pl";
-  DesignReadCellPlacement(true);
-  this->DesignPlFileName = oldPlFileName;
-
-  changeDir("..");
+  placerLogFile = clusterDesName + "_NTUPlaceLog";
+  if (silent) {
+    placerCommand += " -aux ./" + clusterDesName + ".aux > " + placerLogFile;
+  } else {
+    placerCommand += " -aux ./" + clusterDesName + ".aux | tee " + placerLogFile;
+  }
+  status = executeCommand(placerCommand);
+  
+  getNTUPlaceGlobalPlacementTime(clusterDesName, globalPlacementTime);
+  //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
+  if (readPlacementTime) {
+    oldPlFileName = this->DesignPlFileName;
+    this->DesignPlFileName = clusterDesName + ".gp.pl";
+    DesignReadCellPlacement(true);
+    this->DesignPlFileName = oldPlFileName;
+  }
+  if (changeDirectory) {
+    changeDir("..");
+  }
 
   return (status);
 }
 
 int 
-Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)
+Design::DesignRunFastPlace(string clusterDirName, string clusterDesName,
+			   double &globalPlacementTime, bool changeDirectory,
+			   bool readPlacementTime, bool silent, string &placerLogFile)
 {
   int status;
   char *placerPath; 
@@ -364,7 +450,9 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)
   double cpuTimeSpent;
 
   placerPath = getenv("FASTPLACE_GP_FULL_PATH");
-  changeDir(clusterDirName);
+  if (changeDirectory) {
+    changeDir(clusterDirName);
+  }
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_GP";
@@ -372,35 +460,45 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName)
     placerCommand = placerPath;
   }
 
-  DesignName = DesignGetName();
+  placerLogFile = clusterDesName + "_FastPlaceLog";
   time(&timer1);
-  placerCommand += " . " + clusterDesName + ".aux . | tee " + DesignName + "_FastPlaceGPLog";
-  status = system(placerCommand.data());
+  if (silent) {
+    placerCommand += " . " + clusterDesName + ".aux . > " + placerLogFile;
+  } else {
+    //    placerCommand += " . " + clusterDesName + ".aux . | tee " + DesignName + "_FastPlaceGPLog";
+    placerCommand += " . " + clusterDesName + ".aux .";
+  }
+  status = executeCommand(placerCommand);
   time(&timer2);
-  cpuTimeSpent = difftime(timer2, timer1);
-  DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
-
-  oldPlFileName = this->DesignPlFileName;
-  this->DesignPlFileName = clusterDesName + "_FP_gp.pl";
-  DesignReadCellPlacement(true);
-  this->DesignPlFileName = oldPlFileName;
-  
-  changeDir("..");
+  globalPlacementTime = difftime(timer2, timer1);
+  //DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
+  if (readPlacementTime) {
+    oldPlFileName = this->DesignPlFileName;
+    this->DesignPlFileName = clusterDesName + "_FP_gp.pl";
+    DesignReadCellPlacement(true);
+    this->DesignPlFileName = oldPlFileName;
+  }
+  if (changeDirectory) {
+    changeDir("..");
+  }
 
   return (status);
 }
 
 int 
-Design::DesignRunMPL6(string clusterDirName, string clusterDesName)
+Design::DesignRunMPL6(string clusterDirName, string clusterDesName,
+		      double &globalPlacementTime, bool changeDirectory,
+		      bool readPlacement)
 {
   int status;
   char *placerPath; 
   string placerCommand, oldPlFileName;
   string DesignName;
-  double globalPlacementTime;
 
   placerPath = getenv("MPL6_FULL_PATH");
-  changeDir(clusterDirName);
+  if (changeDirectory) {
+    changeDir(clusterDirName);
+  }
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/mPL6-release/mPL6";
@@ -410,22 +508,25 @@ Design::DesignRunMPL6(string clusterDirName, string clusterDesName)
   
   DesignName = DesignGetName();
   placerCommand += " -d ./" + clusterDesName + ".aux . | tee " + DesignName + "_mPL6GPLog";
-  status = system(placerCommand.data());
+  status = executeCommand(placerCommand);
   getMPL6GlobalPlacementTime(DesignName, globalPlacementTime);
-  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
-
-  oldPlFileName = this->DesignPlFileName;
-  this->DesignPlFileName = clusterDesName + "-mPL-gp.pl";
-  DesignReadCellPlacement(true);
-  this->DesignPlFileName = oldPlFileName;
-  
-  changeDir("..");
+  //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
+  if (readPlacement) {
+    oldPlFileName = this->DesignPlFileName;
+    this->DesignPlFileName = clusterDesName + "-mPL-gp.pl";
+    DesignReadCellPlacement(true);
+    this->DesignPlFileName = oldPlFileName;
+  }
+  if (changeDirectory) {
+    changeDir("..");
+  }
 
   return (status);
 }
 
 int 
-Design::DesignRunFastPlaceLegalizer(string desDirName, string desName)
+Design::DesignRunFastPlaceLegalizer(string desDirName, string desName, 
+				    bool readPlacement, bool changeDirectory)
 {
   int status;
   char *placerPath; 
@@ -433,7 +534,9 @@ Design::DesignRunFastPlaceLegalizer(string desDirName, string desName)
   string oldPlFileName;
 
   placerPath = getenv("FAST_PLACE_LEGALIZE_FULL_PATH");
-  changeDir(desDirName);
+  if (changeDirectory) {
+    changeDir(desDirName);
+  }
 
   if (placerPath == NIL(char *)) {
     placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -legalize -noDp";
@@ -442,19 +545,24 @@ Design::DesignRunFastPlaceLegalizer(string desDirName, string desName)
   }
   
   placerCommand += " . " + desName + ".aux . " + desName + ".pl " + " | tee FastPlaceLegalize";
-  status = system(placerCommand.data());
+  status = executeCommand(placerCommand);
 
-  oldPlFileName = this->DesignPlFileName;
-  this->DesignPlFileName = desName + "_FP_lg.pl";
-  DesignReadCellPlacement(true);
-  this->DesignPlFileName = oldPlFileName;
-  changeDir("..");
+  if (readPlacement) {
+    oldPlFileName = this->DesignPlFileName;
+    this->DesignPlFileName = desName + "_FP_lg.pl";
+    DesignReadCellPlacement(true);
+    this->DesignPlFileName = oldPlFileName;
+  }
+  if (changeDirectory) {
+    changeDir("..");
+  }
 
   return (status);
 }
 
 int 
-Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName)
+Design::DesignRunFastPlaceLegalizerForCluster(string desDirName, string desName, 
+					      string plFileName)
 {
   int status;
   char *placerPath; 
@@ -462,22 +570,51 @@ Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName)
   string oldPlFileName;
 
   placerPath = getenv("FAST_PLACE_LEGALIZE_FULL_PATH");
-  changeDir(desDirName);
 
   if (placerPath == NIL(char *)) {
-    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP ";
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -legalize -noDp";
+  } else {
+    placerCommand = placerPath;
+  }
+  
+  placerCommand += " . " + desName + ".aux . " + plFileName + " | tee FastPlaceLegalize";
+  status = executeCommand(placerCommand);
+
+  return (status);
+}
+
+int 
+Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName,
+					 bool readPlacement, bool changeDirectory)
+{
+  int status;
+  char *placerPath; 
+  string placerCommand;
+  string oldPlFileName;
+
+  placerPath = getenv("FAST_PLACE_LEGALIZE_FULL_PATH");
+  if (changeDirectory) {
+    changeDir(desDirName);
+  }
+
+  if (placerPath == NIL(char *)) {
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -legalize ";
   } else {
     placerCommand = placerPath;
   }
   
   placerCommand += " . " + desName + ".aux . " + desName + ".pl " + " | tee FastPlaceDP";
-  status = system(placerCommand.data());
+  status = executeCommand(placerCommand);
 
-  oldPlFileName = this->DesignPlFileName;
-  this->DesignPlFileName = desName + "_FP_dp.pl";
-  DesignReadCellPlacement(true);
-  this->DesignPlFileName = oldPlFileName;
-  changeDir("..");
+  if (readPlacement) {
+    oldPlFileName = this->DesignPlFileName;
+    this->DesignPlFileName = desName + "_FP_dp.pl";
+    DesignReadCellPlacement(true);
+    this->DesignPlFileName = oldPlFileName;
+  }
+  if (changeDirectory) {
+    changeDir("..");
+  }
 
   return (status);
 }

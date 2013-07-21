@@ -123,6 +123,9 @@ Design::DesignFileReadOneNode(ifstream& file)
       terminalCell = true;
       NumTerminalCells++;
     }
+    if (MaxWidth < width) {
+      MaxWidth = width;
+    }
     newCell = new Cell(height, width, NodeName, terminalCell);
     
     DesignAddOneCellToDesignDB(newCell);
@@ -136,7 +139,7 @@ void
 Design::DesignFileReadNodes(ifstream& file)
 {
   string Property, Value;
-  unsigned int numNodes, numTerminals;
+  uint numNodes, numTerminals;
   int idx, cellCount;
 
   /* Skip empty lines */
@@ -174,18 +177,21 @@ Design::DesignReadCells()
 
 
 void 
-Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
+Design::DesignFileReadPins(ifstream &file, uint netDegree,
 			   Net &newNet) 
 {
+  map<Cell *, bool> cellMap;
+  Cell *cellPtr;
   string nodeName, pinDir, garbage;
   string PinName, Msg, line;
   string NetName;
-  unsigned int pinNum, cellPinNum;
+  uint pinNum, cellPinNum;
   float xoffset, yoffset;
+  bool portOnNet;
   char dir;
 
   NetName = newNet.NetGetName();
-  pinNum = 1;
+  pinNum = 1; portOnNet = false;
   for (int i=0; i < netDegree; i++, pinNum++) {
     if (file.eof()) {
       break;
@@ -205,6 +211,19 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     else if (pinDir == PIN_DIR_OUTPUT_STRING) dir = PIN_DIR_OUTPUT;
 
     node = DesignGetNode(nodeName);
+    if (node == NIL(Cell *)) {
+      string msg;
+      msg = "Error: Cannot find cell " + nodeName + "in database: DesignRead.cxx: 214";
+      _ASSERT_TRUE(msg);
+    }
+    _KEY_DOES_NOT_EXIST(cellMap, node) {
+      if ((*node).CellIsPort()) {
+	portOnNet = true;
+      } else {
+	cellMap[node] = true;
+      }
+    }
+
     /* Adjust the offset so that it is from the left bottom corner of the 
        cell */
     xoffset = xoffset + ((*node).CellGetWidth()/2);
@@ -218,7 +237,16 @@ Design::DesignFileReadPins(ifstream &file, unsigned int netDegree,
     (*newPin).Connect(newNet);
     (*newPin).PinSetParentCell(*node);
     (*node).CellAddPin(newPin);
+    cellPinNum += 1;
+    if (cellPinNum > NumMaxPins) {
+      NumMaxPins = cellPinNum;
+    }
     newNet.NetAddPin(*newPin);
+  }
+  if (portOnNet == true) {
+    MAP_FOR_ALL_KEYS(cellMap, Cell*, bool, cellPtr) {
+      (*cellPtr).CellSetAdjacentToPort(true);
+    } END_FOR;
   }
 
   Msg = "Read and created " + getStrFromInt((pinNum - 1)) + " pins";
@@ -231,7 +259,7 @@ Design::DesignFileReadOneNet(ifstream &file)
 {
   string line, garbage;
   string NetDegree, NetName;
-  unsigned int netDegree;
+  uint netDegree;
   Cell *node;
   Net *newNet;
 
@@ -274,7 +302,7 @@ void
 Design::DesignFileReadNets(ifstream& file)
 {
   string Property, Value;
-  unsigned int numNets, numPins, numNodes;
+  uint numNets, numPins, numNodes;
   int idx, netCount;
 
   for (idx = 0; idx < NUM_NET_PROPERTIES; idx++) {
@@ -314,12 +342,12 @@ Design::DesignFileReadOneRow(ifstream &file)
   string rowProperty, garbage, line;
   bool rowBegin;
   int rowCoordinate, subRowOrigin, rowLeft;
-  unsigned int height, siteWidth, siteSpacing, numSites;
+  uint height, siteWidth, siteSpacing, numSites;
   rowOrientation rowType;
   objOrient siteOrient;
   siteSymmetry symmetry;
   vector<int> subRowOrigins;
-  vector<unsigned int> numSitesForSubRows;
+  vector<uint> numSitesForSubRows;
 
   rowBegin = false;
   rowLeft = -INT_MAX;
@@ -350,6 +378,9 @@ Design::DesignFileReadOneRow(ifstream &file)
       stream >> garbage;
       if (garbage != ":") {_ASSERT_TRUE("Benchmark error: Missing ':'");break;}
       stream >> siteWidth;
+      if (singleSiteWidth == 0) {
+	singleSiteWidth = siteWidth;
+      }
     } else if (strToLower(rowProperty) == strToLower(ROW_SITE_SPACING)) {
       if (rowBegin == false) {_ASSERT_TRUE("Benchmark error: Row begin unspecified");break;}
       stream >> garbage;
@@ -399,7 +430,7 @@ Design::DesignFileReadOneRow(ifstream &file)
     (*row).PhysRowSetRowBegin(rowLeft);
   }
   VECTOR_FOR_ALL_ELEMS_DOUBLE(subRowOrigins, int, subRowOrigin,
-			      numSitesForSubRows, unsigned int, numSites) {
+			      numSitesForSubRows, uint, numSites) {
     (*row).PhysRowAddSubRow(subRowOrigin, numSites);
   } END_FOR;
   DesignAddOnePhysRowToDesignDB(row);
@@ -409,7 +440,7 @@ void
 Design::DesignFileReadRows(ifstream& file)
 {
   string Property, Value;
-  unsigned int numRows;
+  uint numRows;
   int idx, netCount;
 
   for (idx = 0; idx < NUM_ROW_PROPERTIES; idx++) {
@@ -500,7 +531,7 @@ void
 Design::DesignFileReadPlacedCells(ifstream& file, bool skipFixed)
 {
   string Property, Value;
-  unsigned int numCells;
+  uint numCells;
   int idx;
 
   for (idx = 0; idx < NUM_FIXED_CELL_PROPERTIES; idx++) {
@@ -651,7 +682,7 @@ Design::DesignFileReadPinsMap(ifstream &file)
     stream >> pin;
     stream >> libPin;
     
-    unsigned int _pos = pin.find('_');
+    uint _pos = pin.find('_');
     if (_pos == string::npos) {
       cout << "Error: Invalid pin name " << pin << endl;
       continue;

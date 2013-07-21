@@ -183,12 +183,14 @@ Design::DesignRemoveOneClusterFromDesignDB(Cell *clusterCell)
 void
 Design::DesignDeleteCell(Cell *cellPtr)
 {
+  //  return;
   delete cellPtr;
 }
 
 void
 Design::DesignDeletePin(Pin *pinPtr)
 {
+  //  return;
   delete pinPtr;
 }
 
@@ -639,7 +641,7 @@ Design::DesignComputeBinSize(bool ILR)
 
   if (!ILR) {
     binHeight *= 2;
-    binWidth *= 4;
+    binWidth *= 2;
   } else {
     ILRMultiple = 10;
     binHeight *= ILRMultiple;
@@ -684,7 +686,6 @@ Design::DesignComputeBinSize(uint binHeight, uint binWidth)
       if (endRow > maxx) {
 	overflowx = maxx - ((numCols - 1) * binWidth);
 	divideToBins = overflowx / (numCols - 1);
-	numCols--;
 	if (divideToBins >= 1) {
 	  _ASSERT_TRUE("Error: Overflow after adjustment is more than one unit per column");
 	}
@@ -700,7 +701,6 @@ Design::DesignComputeBinSize(uint binHeight, uint binWidth)
       if (endCol > maxy) {
 	overflowy = maxy - ((numRows - 1) * binHeight);
 	divideToBins = overflowy / (numRows - 1);
-	numRows--;
 	if (divideToBins >= 1) {
 	  _ASSERT_TRUE("Error: Overflow after adjustment is more than one unit per row");
 	}
@@ -712,8 +712,8 @@ Design::DesignComputeBinSize(uint binHeight, uint binWidth)
   DesignSetBinHeight(binHeight);
   DesignSetBinWidth(binWidth);
 
-  cout << "Bin height: " << binHeight 
-       << "  Bin width : " << binWidth 
+  cout << "Average cell height: " << binHeight 
+       << "  Average cell width : " << binWidth 
        << endl;
   cout << "Row X Cols: " << numRows << " X " << numCols 
        << endl;
@@ -811,126 +811,26 @@ Design::DesignRefreshBins()
 }
 
 void
-Design::DesignCreateBins(void)
-{
-  uint binHeight, binWidth;
-
-  //  binHeight = this->averageStdCellHeight;
-  //  binWidth = this->averageStdCellWidth;
-
-  /* Configure bin to accommodate four cells */
-  /* SQUARE BIN */
-  //  binHeight *= 2; binWidth *= 2;
-  /* WIDE BIN */
-  //  binWidth*= 4; 
-  /* TALL BIN */
-  // binHeight = 4 * binHeight; */
-  /* LARGER SQUARE BIN */
-  // binHeight *= 3; binWidth *= 3; */
-  /* LARGER WIDE BIN */
-  //  binHeight *= 2; binWidth *= 4;
-  /* LARGER TALL BIN */
-  //  binHeight *=3; binWidth *= 2;
-  binHeight = DesignGetBinHeight();
-  binWidth = DesignGetBinWidth();
-  DesignCreateBins(binHeight, binWidth);
-}
-
-void
-Design::DesignCreateBins(uint binHeight, uint binWidth)
+Design::DesignCreateBins()
 {
   Bin *binPtr;
   vector<Cell*> cellsOfBin;
-  vector<Cell*> cellsSortedByLeft;
-  vector<Cell*> cellsSortedByBot;
+  vector<Cell*> cellsSortedByLeft, cellsSortedByRight;
+  double oldUtilization, newUtilization;
   double maxUtilization, overlapArea;
   double totalCellWidth, averageCellWidth;
   double utilization;
+  uint binWidth, binHeight;
   uint maxx, maxy;
-  uint binCount, numRows, numCols;
+  uint binCount, numRows, numCols, actualRows, actualCols;
+  uint numRowsSoFar, numColsSoFar;
   uint left, right, bot, top;
   uint peakUtilBinIdx;
   uint i, j;
   uint numBins, numCells;
-  bool createBins;
-
-  _STEP_BEGIN("Bin construction");
-  DesignGetBoundingBox(maxx, maxy);
-  cellsSortedByLeft = DesignGetCellsSortedByLeft();
-  cellsSortedByBot = DesignGetCellsSortedByBot();
-  //  numCols = (uint)ceil(((double)maxx) / binWidth);
-  //  numRows = (uint)ceil(((double)maxy) / binHeight);
-  numCols = DesignGetNumBinCols();
-  numRows = DesignGetNumBinRows();
-  binCount = 0;
-  maxUtilization = 0;
-  peakUtilBinIdx = 0;
-  numBins = DesignBins.size();
-  createBins = false;
-  if (numBins == 0) createBins = true;
-  bot = 0; top = binHeight;
-  //  cout << "Creating " << numCols * numRows << " bins" << endl;
-  for (i = 0; i < numRows; i++) {
-    left = 0; right = binWidth;
-    for (j = 0; j < numCols; j++) {
-      //      if (right > maxx) right = maxx;
-      //      if (top > maxy) top = maxy;
-      if (j == (numCols - 1)) {
-	right = maxx;
-      }
-      if (i == (numRows - 1)) {
-	top = maxy;
-      }
-      if (createBins) {
-        binPtr = new Bin(binCount, left, right, bot, top);
-        DesignBins.push_back(binPtr);
-      } else {
-        binPtr = DesignBins[binCount];
-      }
-      (*binPtr).BinSetNewRight(right);
-      (*binPtr).BinSetNewTop(top);
-      cellsOfBin =
-        DesignGetCellsOfBin(binPtr, left, right, bot, top, cellsSortedByLeft,
-                            cellsSortedByBot, overlapArea, totalCellWidth);
-      utilization = overlapArea / (((double)binHeight) * binWidth);
-      numCells = cellsOfBin.size();
-      averageCellWidth = 0.0;
-      if (numCells > 0) {
-        averageCellWidth = totalCellWidth / numCells;
-      }
-      if (maxUtilization < utilization) {
-        maxUtilization = utilization;
-        peakUtilBinIdx = binCount;
-      }
-      (*binPtr).BinSetCells(cellsOfBin);
-      (*binPtr).BinSetCellArea(overlapArea);
-      (*binPtr).BinSetUtilization(utilization);
-      (*binPtr).BinSetAverageCellWidth(averageCellWidth);
-      left += binWidth;
-      right += binWidth;
-      binCount++;
-    }
-    bot += binHeight;
-    top += binHeight;
-  }
-  DesignSetPeakUtil(maxUtilization);
-  DesignSetPeakUtilBinIdx(peakUtilBinIdx);
-  DesignSetNumBinRows(numRows);
-  DesignSetNumBinCols(numCols);
-
-  _STEP_END("Bin construction");
-}
-
-void
-Design::DesignCreateEmptyBins()
-{
-  Bin *binPtr;
-  uint binWidth, binHeight;
-  uint maxx, maxy;
-  uint binCount, numRows, numCols;
-  uint left, right, bot, top;
-  uint i, j;
-  uint numBins, numCells;
+  int prevBinIdx, curBegin;
+  bool binCreated;
+  bool addToPreviousRowBin, addToPreviousColBin;
 
   _STEP_BEGIN("Bin construction");
   binWidth = DesignGetBinWidth();
@@ -938,8 +838,15 @@ Design::DesignCreateEmptyBins()
   numRows = DesignGetNumBinRows();
   numCols = DesignGetNumBinCols();
   DesignGetBoundingBox(maxx, maxy);
+  cellsSortedByLeft = DesignGetCellsSortedByLeft();
+  cellsSortedByRight = DesignGetCellsSortedByRight();
 
   binCount = 0; 
+  maxUtilization = 0; 
+  peakUtilBinIdx = 0;
+  totalUtilization = 0;
+  totalNumOccupiedBins = 0;
+  binCreated = false;
   numBins = DesignBins.size();
   if (numBins > 0) {
     _ASSERT_TRUE("Error: Bins already exist!!Clear bins before creating bins afresh!");
@@ -947,26 +854,117 @@ Design::DesignCreateEmptyBins()
   cout << "Created regular bin structure with " << " Rows: " << numRows 
        << "  Columns: " << numCols << endl << endl;
   bot = 0; top = binHeight;
+  actualRows = 0; actualCols = 0;
+  numRowsSoFar = 0; 
+  curBegin = 0;
   for (i = 0; i < numRows; i++) {
     left = 0; right = binWidth;
+    numColsSoFar = 0;
+    curBegin = binCount;
     for (j = 0; j < numCols; j++) {
-      if (j == (numCols - 1)) {
+      binCreated = false;
+      addToPreviousRowBin = false;
+      addToPreviousColBin = false;
+      if (right > maxx) {
+	addToPreviousRowBin = true;
 	right = maxx;
       }
-      if (i == (numRows - 1)) {
-	top = maxy;
+      //      if (top > maxy) {
+	addToPreviousColBin = false;
+	//	top = maxy;
+	//      }
+      if (!(addToPreviousRowBin || addToPreviousColBin)) {
+	binPtr = new Bin(binCount, left, right, bot, top);
+	DesignBins.push_back(binPtr);
+	binCreated = true;
+      } else {
+	binPtr = NIL(Bin *);
+	if (addToPreviousColBin) {
+	  prevBinIdx = binCount - actualCols;
+	  if (prevBinIdx == curBegin) {
+	    prevBinIdx -= 1;
+	  }
+	  if (prevBinIdx < 0) {
+	    _ASSERT_TRUE("Error: Previous bin of last bin in column not found");
+	  }
+	  binPtr = DesignBins[prevBinIdx];
+	} else if (addToPreviousRowBin) {
+	  prevBinIdx = binCount - 1;
+	  binCount--;
+	  if (prevBinIdx < 0) {
+	    _ASSERT_TRUE("Error: Previous bin of last bin in row not found");
+	  }
+	  binPtr = DesignBins[prevBinIdx];
+	}
+	if (binPtr == NIL(Bin *)) {
+	  _ASSERT_TRUE("Error: Bin object not found!");
+	}
+	(*binPtr).BinSetRight(right);
+	(*binPtr).BinSetTop(top);
       }
-      binPtr = new Bin(binCount, left, right, bot, top);
-      DesignBins.push_back(binPtr);
       (*binPtr).BinSetNewRight(right);
       (*binPtr).BinSetNewTop(top);
+      cellsOfBin =
+        DesignGetCellsOfBin(binPtr, left, right, bot, top, cellsSortedByLeft,
+			    cellsSortedByRight, overlapArea, totalCellWidth);
+      numCells = cellsOfBin.size();      
+      if (addToPreviousRowBin || addToPreviousColBin) {
+	if (numCells > 0) {
+	  (*binPtr).BinAddCells(cellsOfBin);
+	  (*binPtr).BinAddCellWidth(totalCellWidth);
+	  (*binPtr).BinAddCellArea(overlapArea);
+	  (*binPtr).BinComputeAverageCellWidth();
+	}
+	oldUtilization = (*binPtr).BinGetUtilization();
+	totalUtilization -= oldUtilization;
+	(*binPtr).BinComputeUtilization();
+	newUtilization = (*binPtr).BinGetUtilization();
+	totalUtilization += newUtilization;
+	if (oldUtilization == 0 && newUtilization != 0) {
+	  totalNumOccupiedBins++;
+	}
+      } else {
+	(*binPtr).BinSetCells(cellsOfBin);
+	(*binPtr).BinSetCellArea(overlapArea);
+	(*binPtr).BinComputeUtilization();
+	(*binPtr).BinSetTotalCellWidth(totalCellWidth);
+	(*binPtr).BinComputeAverageCellWidth();
+	utilization = (*binPtr).BinGetUtilization();
+	totalUtilization += utilization;
+	if (numCells > 0) {
+	  totalNumOccupiedBins++;
+	}
+	if (binCreated) {
+	  numColsSoFar++;
+	  if (numColsSoFar > actualCols) {
+	    actualCols = numColsSoFar;
+	  }
+	}
+      }
+      utilization = (*binPtr).BinGetUtilization();
+      if (maxUtilization < utilization) {
+        maxUtilization = utilization;
+        peakUtilBinIdx = binCount;
+      }
       left += binWidth;
       right += binWidth;
       binCount++;
+      //      (*binPtr).BinPrintBin();
+    }
+    if (binCreated) {
+      numRowsSoFar++;
+      if (numRowsSoFar > actualRows) { 
+	actualRows = numRowsSoFar;
+      }
     }
     bot += binHeight;
     top += binHeight;
   }
+  DesignSetMaxUtil(maxUtilization);
+  DesignSetPeakUtil(maxUtilization);
+  DesignSetPeakUtilBinIdx(peakUtilBinIdx);
+  DesignSetNumBinRows(actualRows);
+  DesignSetNumBinCols(actualCols);
   DesignSetBinsCreated(true);
   _STEP_END("Bin construction");
 }
@@ -1372,22 +1370,10 @@ Design::DesignCloseFile(void)
   }
 }
 
-uint 
-Design::DesignGetMaxCellWidth(void)
-{
-  return (MaxWidth);
-}
-
 int 
 Design::DesignGetSingleRowHeight(void)
 {
   return singleRowHeight;
-}
-
-uint 
-Design::DesignGetSingleSiteWidth(void)
-{
-  return singleSiteWidth;
 }
 
 unsigned int
@@ -1397,16 +1383,6 @@ Design::DesignGetNumCells(void)
   
   rtv = this->NumCells;
   
-  return (rtv);
-}
-
-uint
-Design::DesignGetNumMaxCellPins(void)
-{
-  uint rtv;
-
-  rtv = this->NumMaxPins;
-
   return (rtv);
 }
 
@@ -1623,30 +1599,6 @@ Design::DesignGetAverageStdCellHeight()
   return (this->averageStdCellHeight);
 }
 
-void
-Design::DesignSetAverageClusterCellWidth(double averageClusterWidth)
-{
-  this->averageClusterWidth = averageClusterWidth;
-}
-
-void
-Design::DesignSetAverageClusterCellHeight(double averageClusterHeight)
-{
-  this->averageClusterHeight = averageClusterHeight;
-}
-
-double
-Design::DesignGetAverageClusterCellWidth(void)
-{
-  return (this->averageClusterWidth);
-}
-
-double
-Design::DesignGetAverageClusterCellHeight(void)
-{
-  return (this->averageClusterHeight);
-}
-
 void 
 Design::DesignSetEnv(Env &thisEnv)
 {
@@ -1698,15 +1650,10 @@ Design::DesignInit()
   NumTerminalCells = 0;
   NumStdCells = 0;
   NumMacroCells = 0;
-  NumMaxPins = 0;
   maxx = -INT_MAX;
   maxy = -INT_MAX;
 
   singleRowHeight = -1;
-  singleSiteWidth = 0;
-  averageClusterWidth = 0;
-  averageClusterHeight = 0;
-  MaxWidth = 0;
   binHeight = 0;
   binWidth = 0;
   ILRMultiple = 0;

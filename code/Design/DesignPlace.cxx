@@ -1,7 +1,7 @@
 # include <Design.h>
 
 bool
-Design::DesignValidateClusterParams(double clusterRatio, double maxArea, double maxWidth, 
+Design::DesignPrintClusterParams(double clusterRatio, double maxArea, double maxWidth, 
 				    double clusterBoundPenalty, uint clusterNumRows)
 {
   bool rtv;
@@ -29,10 +29,12 @@ Design::DesignCoarsenNetlist(void)
   Env &DesignEnv = this->DesignEnv;
   double clusterRatio, maxArea, maxWidth;
   double inputMaxWidth, inputMaxArea;
-  double clusterBoundPenalty;
+  double clusterBoundPenalty, clusteringTime;
+  double clusteringStartTime, achievedClusteringRatio;
   uint clusterNumRows;
   uint numPinsBefore, numPinsAfter;
   uint maxx, maxy;
+  string DesignName;
   EnvClusterType clusterType;
   HyperGraph &myGraph = DesignGetGraph();
   clusterType = DesignEnv.EnvGetClusterType();
@@ -41,15 +43,23 @@ Design::DesignCoarsenNetlist(void)
   maxWidth = DesignEnv.EnvGetClusterMaxWidth();
   clusterBoundPenalty = DesignEnv.EnvGetClusterBoundPenalty();
   clusterNumRows = DesignEnv.EnvGetClusterNumRows();
-  (void)DesignValidateClusterParams(clusterRatio, maxArea, maxWidth, 
-				    clusterBoundPenalty, clusterNumRows);
+  DesignName = DesignEnv.EnvGetDesignName();
+  DesignPrintClusterParams(clusterRatio, maxArea, maxWidth, 
+			   clusterBoundPenalty, clusterNumRows);
   DesignGetBoundingBox(maxx, maxy);
   inputMaxWidth = floor(maxWidth * maxx);
   inputMaxArea = maxArea * ((double)maxx * maxy);
 
+  clusteringStartTime = getCPUTime();
+  achievedClusteringRatio = DesignGetNumCells();
+  cout << "CLUSTERING BEGIN... CPU: " << getCPUTime() << "s" << endl;
   switch (clusterType) {
   case ENV_NO_CLUSTERING: 
     cout << "Clustering: No clustering " << endl;
+    break;
+  case ENV_LARGE_CLUSTERING:
+    cout << "Clustering: Performing k-way clustering " << endl;
+    DesignDoKWayClustering(myGraph);
     break;
   case ENV_FIRST_CHOICE_CLUSTERING:
     cout << "Clustering: First choice clustering. Not ready yet " << endl;
@@ -64,17 +74,28 @@ Design::DesignCoarsenNetlist(void)
     } else {
       DesignDoBestChoiceClustering(myGraph, clusterRatio);
     }
+    //    (void)DesignValidateClusterCstrs(clusterRatio, maxArea, maxWidth, clusterNumRows);
     /* Rebuild hypergraph after coarsening */
     DesignRebuildGraph();
     cout << "Finished coarsening" << endl;
     break;
   case ENV_NET_CLUSTERING:
-    cout << "Clustering: Net clustering. Not ready yet " << endl;
+    cout << "Clustering: Net cluster " << endl;
+    DesignDoNetCluster(myGraph, maxArea, maxWidth);
     break;
   defaut:
     cout << "Clustering: Clustering strategy unknown. Not clustering netlist " << endl;
     break;
   }
+
+  achievedClusteringRatio = DesignGetNumTopCells() / achievedClusteringRatio;
+  clusteringTime = getCPUTime() - clusteringStartTime;
+  cout << "CLUSTERING DONE. CPU: " << clusteringTime << "s" << endl;
+  cout << "CLUSTERING RATIO ACHIEVED: " << achievedClusteringRatio << endl;
+  cout << "Dumping cluster information.....";
+  DesignDumpClusterInfo(DesignName);
+  cout << "Done" << endl;
+  //  DesignWriteBookShelfOutput((*this), "usb_sie_clust");
 }
 
 void
@@ -100,18 +121,20 @@ Design::DesignCollapseClusters(void)
     DesignPlotDataSelected("After unclustering", "after.plt", cellsToSolve);
     return;
   } else {
-    map<string, Cell*> DesignClusterMap = DesignGetClusters();
-    map<string, Cell*>::iterator mapIter;
-    for (mapIter = DesignClusterMap.begin(); mapIter != DesignClusterMap.end(); mapIter++) {
-      cellName = mapIter->first;
-      cellPtr = mapIter->second;
+    //    if (0) {
+      map<string, Cell*> DesignClusterMap = DesignGetClusters();
+      map<string, Cell*>::iterator mapIter;
+      for (mapIter = DesignClusterMap.begin(); mapIter != DesignClusterMap.end(); mapIter++) {
+	cellName = mapIter->first;
+	cellPtr = mapIter->second;
 
-      //    cout << "Unclustering cell " << cellName << endl;
-      //    if (cellName == "c205") {
-      //      cout << "Break here" << endl;
+	//    cout << "Unclustering cell " << cellName << endl;
+	//    if (cellName == "c205") {
+	//      cout << "Break here" << endl;
+	//    }
+	DesignUnclusterLargeCluster(cellPtr, /* noDissolve = false */false);
+      }
       //    }
-      DesignUnclusterCell(cellPtr, /* noDissolve = false */false);
-    }
   }
 }
 
@@ -148,6 +171,9 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     }
     cout << "Solver not ready yet!" << endl;
     break;
+  case ENV_SOLVER_FORCE_DIRECTED:
+    DesignSolveForAllCellsForceDirected();
+    break;
   default: cout << "Unknown solver type provided" << endl;
   };
 }
@@ -155,8 +181,9 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
 void
 Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType) 
 {
+  double globalPlacementTime;
   int statusCode;
-  string placerPath;
+  string placerPath, placerLogFile;
   string DesignName;
   string clusterDesignName, clustDir;
 
@@ -171,21 +198,28 @@ Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType)
     /* Run NTUPlace for global placement. The variable 
        NTUPLACE_FULL_PATH has to be set for NTUPlace to 
        run successfully */
-    statusCode = DesignRunNTUPlace("." + clusterDesignName, clusterDesignName);
+    statusCode = DesignRunNTUPlace("." + clusterDesignName, clusterDesignName, 
+				   globalPlacementTime, true, true, false, placerLogFile);
+    topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: NTUPlace ... Returned status: " 
 	 << statusCode << endl;
   } else if (globalPlacerType == ENV_FAST_PLACE_GP) {
     /* Run FastPlace for global placement. The variable 
        FASTPLACE_FULL_PATH has to be set for FastPlace to 
        run successfully */
-    statusCode = DesignRunFastPlace("." + clusterDesignName, clusterDesignName);
+    statusCode = DesignRunFastPlace("." + clusterDesignName, clusterDesignName,
+				    globalPlacementTime, true, true, false, 
+				    placerLogFile);
+    topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: FastPlace ... Returned status: " 
 	 << statusCode << endl;
   } else if (globalPlacerType == ENV_MPL6_GP) {
     /* Run MPL6 for global placement. The variable 
        MPL6_FULL_PATH has to be set for mPL6 to 
        run successfully */
-    statusCode = DesignRunMPL6("." + clusterDesignName, clusterDesignName);
+    statusCode = DesignRunMPL6("." + clusterDesignName, clusterDesignName,
+			       globalPlacementTime, true, true);
+    topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: mPL6 ... Returned status: " 
 	 << statusCode << endl;
   } else {
@@ -216,6 +250,9 @@ Design::DesignDoGlobalPlacement(void)
   /* Record end time of clustering */
   DesignEnv.EnvRecordClusteringTime();
 
+  if (globalPlacerType == ENV_NO_PLACEMENT) {
+    return;
+  }
   _STEP_BEGIN("Global placement");  
   /* While doing global placement, it might be necessary to run other 
      placers to do global placement since macro spreading is not 
@@ -273,7 +310,7 @@ Design::DesignDoLegalization(void)
     dirName = "." + desName;
     DesignWriteCurrentNetlist(dirName, desName);
     time(&timer1);
-    DesignRunFastPlaceLegalizer(dirName, desName);
+    DesignRunFastPlaceLegalizer(dirName, desName, true, true);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
     DesignEnv.EnvRecordLegalizationTime(cpuTimeSpent);
@@ -303,7 +340,7 @@ Design::DesignDoDetailedPlacement(void)
     dirName = "." + desName;
     DesignWriteCurrentNetlist(dirName, desName);
     time(&timer1);
-    DesignRunFastPlaceDetailedPlacer(dirName, desName);
+    DesignRunFastPlaceDetailedPlacer(dirName, desName, true, true);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
     DesignEnv.EnvRecordDetailedPlacementTime(cpuTimeSpent);

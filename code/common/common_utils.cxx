@@ -326,3 +326,23 @@ printMap(map<uint,uint> mapToPrint)
     cout << key << " " << endl;
   } END_FOR;
 }
+
+/* Execute a shell command. This is done after 
+   blocking the profiler signal SIGPROF */
+/* Internally calls system() */
+int
+executeCommand(string command)
+{
+  int status;
+  struct sigaction new_action, old_action;
+  
+  new_action.sa_handler = SIG_IGN;
+  sigemptyset(&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  
+  sigaction (SIGPROF, &new_action, &old_action);
+  status = system(command.data());
+  sigaction (SIGPROF, &old_action, NULL);
+  
+  return status;
+}

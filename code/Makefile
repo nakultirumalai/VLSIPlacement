@@ -15,7 +15,7 @@ LIBS= -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
 
 SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData \
 	Flags Legalize TimingModels Bin \
-	Plot ConjGrad Env Path 
+	Plot ConjGrad Env Path lists FDP
 # Removed modules 
 # CellSpread AnalyticalSolve		
 

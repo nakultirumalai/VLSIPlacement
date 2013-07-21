@@ -1,21 +1,49 @@
 # ifndef LISTS_H
 # define LISTS_H
+# include <common.h>
 
-class Node {
+class dllist;
+
+class listNode {
  public:
-  Node *next;
-  Node *prev;
+  listNode *next;
+  listNode *prev;
+  dllist *parent;
   uint data;
+
+  /* Constructors */
+  listNode();
+  listNode(uint);
+  listNode(uint, dllist *);
+
+  /* Destructor */
+  ~listNode();
+
+  /* Set functions */
+  void SetData(uint);
+  void SetNext(listNode *);
+  void SetPrev(listNode *);
+  void SetParent(dllist *);
+
+  /* Get functions */
+  dllist* GetParent(void);
+  listNode *GetNext(void);
+  listNode *GetPrev(void);
+  uint GetData(void);
 };
 
 class dllist {
  public:
-  Node *start;
-  Node *end;
+  listNode *start;
+  listNode *end;
   uint listSize;
-  void addNode(Node *);
-  Node *addNode(uint);
-  void deleteNode(Node *);
+  
+  dllist();
+  ~dllist();
+  void addNode(listNode *);
+  listNode *addNode(uint);
+  void deleteNode(listNode *);
+  listNode *popNode(void);
 };
 
 # endif

@@ -1840,8 +1840,7 @@ Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)
     }
   } END_FOR;
 
-  //  if (!bCellsPlaced) {
-  if (0) {
+  if (!bCellsPlaced) {
     /* Place the boundary cells of the cluster here */
     if (debug) {
       cout << "--------------------------------------" << endl;
@@ -1923,3 +1922,28 @@ Design::DesignUnclusterCell(Cell *clusterCell, bool noDissolve)
   debug = false;
 }
 
+/* Top level function to accept a vector of cells and form shapes */
+void
+Design::DesignClusterCellsFormShapes(vector<Cell *> &clusterCells) 
+{
+  /* STEPS TO BE FOLLOWED */
+  /* Identify the size of the cluster for an aspect ratio close to 1.0 */
+  /* Identify two other aspect ratios which are +0.30% of the number of rows
+     and -0.30% the number of rows. */
+  /* Write out new designs for the aspect ratios 1, +30% height, -30% height
+     and try placing it using NTUplace */
+}
+
+void
+Design::DesignFormClusters(vector<vector<Cell *> > &clusters)
+{
+  uint idx;
+  uint numClusters;
+  
+  numClusters = clusters.size();
+  
+  for (idx = 0; idx < numClusters; idx++) {
+    vector<Cell *> &clusterCells = clusters[idx];
+    DesignClusterCellsFormShapes(clusterCells);
+  }
+}

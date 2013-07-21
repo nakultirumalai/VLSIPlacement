@@ -192,6 +192,16 @@ Cell::CellSetIsFixed(const bool & isFixed)
 }
 
 void
+Cell::CellSetIsClusterFixed(const bool & isClusterFixed) 
+{
+  //  if (this->name == "o1419" || this->name == "o2033" 
+  //      || this->name == "o1612") {
+    //    cout << "break here" << endl;
+  //  }
+  this->isClusterFixed = isClusterFixed;
+}
+
+void
 Cell::CellSetClusterLevel(unsigned int clusterLevel)
 {
   this->clusterLevel = clusterLevel;
@@ -226,6 +236,12 @@ void
 Cell::CellSetYIsLegal(const bool & isYLegal)
 {
   this->isYLegal = isYLegal;
+}
+
+void
+Cell::CellSetAdjacentToPort(const bool &adjToPort) 
+{
+  this->adjacentToPort = adjToPort;
 }
 
 void
@@ -590,6 +606,12 @@ Cell::CellIsFixed(void)
 }
 
 bool
+Cell::CellIsClusterFixed(void)
+{
+  return (isClusterFixed);
+}
+
+bool
 Cell::CellIsSequential(void)
 {
   return (isSequential);
@@ -617,6 +639,12 @@ bool
 Cell::CellYIsLegal(void)
 {
   return isYLegal;
+}
+
+bool
+Cell::CellIsAdjacentToPort(void)
+{
+  return adjacentToPort;
 }
 
 string
@@ -704,6 +732,7 @@ Cell::Cell()
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -712,6 +741,7 @@ Cell::Cell()
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -727,6 +757,7 @@ Cell::Cell(int Height, int Width)
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -735,6 +766,7 @@ Cell::Cell(int Height, int Width)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -751,6 +783,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -759,6 +792,7 @@ Cell::Cell(int Height, int Width, string Name)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -776,6 +810,7 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -784,6 +819,7 @@ Cell::Cell(int Height, int Width, string Name, bool terminalCell)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -798,6 +834,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetIsCluster(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -806,6 +843,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -822,6 +860,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -830,6 +869,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -847,6 +887,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -855,6 +896,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, string Name,
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -870,6 +912,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -878,6 +921,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation)
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -894,6 +938,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -902,6 +947,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 
@@ -918,6 +964,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetIsClusterChild(false);
   CellSetIsMacro(false);
   CellSetIsFixed(false);
+  CellSetIsClusterFixed(false);
   CellSetIsSequential(false);
   CellSetIsPort(false);
   CellSetIsHidden(false);
@@ -926,6 +973,7 @@ Cell::Cell(int Height, int Width, int Xpos, int Ypos, objOrient Orientation, str
   CellSetClusterLevel(0);
   CellSetXIsLegal(false);
   CellSetYIsLegal(false);
+  CellSetAdjacentToPort(false);
   CellSetBin(NIL(Bin*));
 }
 

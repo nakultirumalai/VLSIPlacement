@@ -22,6 +22,7 @@
 # include <sys/stat.h>
 # include <sys/utsname.h>
 # include <unistd.h>
+# include <signal.h>
 # include <google/profiler.h>
 
 # define NIL(type) (type)0
@@ -149,5 +150,6 @@ void changeDir(string dirName);
 string getPlatformString(void);
 string getUserName(void);
 string getHostName(void);
+int executeCommand(string);
 
 #endif

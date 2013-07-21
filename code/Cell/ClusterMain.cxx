@@ -4,6 +4,7 @@ Cluster::Cluster()
 {
   ClusterSetNumCells(0);
   ClusterSetBCellsPlaced(false);
+  ClusterSetPlacementTime(0);
   ClusterSetRowBased(false);
 }
 
@@ -12,6 +13,7 @@ Cluster::Cluster(vector<Cell *> &cellsOfCluster)
   ClusterSetNumCells(cellsOfCluster.size());
   ClusterSetCellsOfCluster(cellsOfCluster);
   ClusterSetBCellsPlaced(false);
+  ClusterSetPlacementTime(0);
   ClusterSetRowBased(false);
 }
 
@@ -28,6 +30,7 @@ Cluster::Cluster(vector<Cell *> &cellsOfCluster,
   ClusterSetXPosInRows(xPosInRow);
   ClusterSetPinMap(pinMap);
   ClusterSetBCellsPlaced(false);
+  ClusterSetPlacementTime(0);
   ClusterSetRowBased(false);
 }
 
@@ -87,13 +90,49 @@ Cluster::ClusterSetBCellsPlaced(bool bCellsPlaced)
 void
 Cluster::ClusterSetRowBased(bool clusterRowBased)
 {
-  this->rowBased = rowBased;
+  this->rowBased = clusterRowBased;
 }
 
 void
 Cluster::ClusterSetClusterLevel(char clusterLevel)
 {
   this->clusterLevel = clusterLevel;
+}
+
+void
+Cluster::ClusterSetCellArea(double clusterCellArea)
+{
+  this->clusterCellArea = clusterCellArea;
+}
+
+void
+Cluster::ClusterSetPlacementTime(double clusterPlacementTime)
+{
+  this->clusterPlacementTime = clusterPlacementTime;
+}
+
+void
+Cluster::ClusterSetNumBoundaryCells(uint numBoundaryCells)
+{
+  this->numBoundaryCells = numBoundaryCells;
+}
+
+void
+Cluster::ClusterSetCellPositions(vector<vector<double> > &cellPositions)
+{
+  this->cellPositions = cellPositions;
+}
+
+void
+Cluster::ClusterSetDimensions(vector<pair<uint, uint> > &dimensions)
+{
+  this->dimensions = dimensions;
+}
+
+void
+Cluster::ClusterSetHeightVariations(vector<double> &heightVariations)
+{
+  this->heightVariations = heightVariations;
 }
 
 uint
@@ -154,6 +193,42 @@ char
 Cluster::ClusterGetClusterLevel(void)
 {
   return (this->clusterLevel);
+}
+
+double
+Cluster::ClusterGetCellArea(void)
+{
+  return (this->clusterCellArea);
+}
+
+double
+Cluster::ClusterGetPlacementTime(void)
+{
+  return (this->clusterPlacementTime);
+}
+
+uint
+Cluster::ClusterGetNumBoundaryCells(void)
+{
+  return (this->numBoundaryCells);
+}
+
+vector<vector<double> >&
+Cluster::ClusterGetCellPositions(void)
+{
+  return (this->cellPositions);
+}
+
+vector<pair<uint, uint> >&
+Cluster::ClusterGetDimensions(void)
+{
+  return (this->dimensions);
+}
+
+vector<double>&
+Cluster::ClusterGetHeightVariations(void)
+{
+  return (this->heightVariations);
 }
 
 void

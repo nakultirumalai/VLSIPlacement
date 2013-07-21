@@ -16,13 +16,14 @@
 ***************************************************/
 /* Define the global placer type */
 typedef enum {
+  ENV_NO_PLACEMENT,
   ENV_NO_EXTERNAL_GP,
   ENV_NTUPLACE_GP,
   ENV_FAST_PLACE_GP,
   ENV_MPL6_GP,
   NUM_ENV_GLOBAL_PLACERS
 } EnvGlobalPlacerType;
-# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NTUPLACE_GP
+# define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
 
 /* Define the solver type to be used in the design */
 typedef enum {
@@ -32,6 +33,7 @@ typedef enum {
   ENV_SOLVER_QUADRATICXY_CONJ_GRAD,
   ENV_SOLVER_NON_LINEAR,
   ENV_SOLVER_NON_LINEAR_CONJ_GRAD,
+  ENV_SOLVER_FORCE_DIRECTED,
   NUM_ENV_SOLVERS
 } EnvSolverType;
 # define DEFAULT_ENV_SOLVER_TYPE ENV_SOLVER_QUADRATIC_CONJ_GRAD
@@ -59,9 +61,11 @@ typedef enum {
   ENV_SIMPLE_LEGALIZER = 0,
   ENV_BIN_BASED_LEGALIZER,
   ENV_FAST_PLACE_LEGALIZER,
+  ENV_NTUPLACE_LEGALIZER,
+  ENV_MPL6_LEGALIZER,
   NUM_LEGALIZERS
 } EnvLegalizer;
-# define DEFAULT_ENV_LEGALIZER ENV_BIN_BASED_LEGALIZER
+# define DEFAULT_ENV_LEGALIZER ENV_NTUPLACE_LEGALIZER
 
 /* Define the detailed placer used in the placement tool  */
 typedef enum {
@@ -82,6 +86,7 @@ typedef enum {
 /* Define the type of clustering desired in the placement tool  */
 typedef enum {
   ENV_NO_CLUSTERING = 0,
+  ENV_LARGE_CLUSTERING,
   ENV_FIRST_CHOICE_CLUSTERING,
   ENV_BEST_CHOICE_CLUSTERING,
   ENV_NET_CLUSTERING,
@@ -128,6 +133,9 @@ typedef enum {
 # define DEFAULT_CLUSTER_MAX_WIDTH 0.25
 # define DEFAULT_CLUSTER_BOUND_PENALTY 1
 # define DEFAULT_CLUSTER_NUM_ROWS 0
+# define DEFAULT_NUM_CLUSTERS 100
+# define DEFAULT_IMBALANCE_FACTOR 5
+# define DEFAULT_NUM_KHMETIS_RUNS 3
 # define DEFAULT_ENV_OUTPUT_FILE_NAME ./DEFAULT/defaultplacement
 
 /***************************************************
@@ -209,6 +217,15 @@ class Env {
   /* Total number of rows that need to be allotted to 
      a cluster */
   uint ClusterNumRows;
+  /* Variable to indicate the number of partitions the k-way
+     partitioner should distribute the cells into */
+  uint NumClusters;
+  /* Variable to indicate the Imbalance factor 
+     ranges from 5-49 */
+  uint ImbalanceFactor;
+  /* Variable to indicate the number of runs of khmetis that 
+     needs to run */
+  uint NumKHmetisRuns;
 
   /***************************************/
   /* BOOLEAN VARIABLES                   */
@@ -226,7 +243,12 @@ class Env {
      should consider the cluster width to be an integral 
      multiple of site width */
   bool DiscreteWidth;
-  
+  /* Flag to determine if the k-way paritioner should use 
+     recursive bi-partitioning or direct k-way partitioning */
+  bool RecursiveBiPartitioning;
+  /* Flag to indicate if placement has to be inside the 
+     cluster */
+  bool PlaceCellsInCluster;
 
   /***************************************/
   /* FLOAT/DOUBLE VARIABLES              */
@@ -266,6 +288,12 @@ class Env {
   EnvOptType OptType;
   /* Decide what the clustering algorithm type should be */
   EnvClusterType ClusterType;
+  /* Decide what type of global placer to use to place cells 
+     inside clusters */
+  EnvGlobalPlacerType ClusterGlobalPlacer;
+  /* Decide what type of Legalizer/detailed placer to use to place cells 
+     inside clusters */
+  EnvLegalizer ClusterLegalizer;
   /* Decide what the cluster placement type should be */
   EnvClusterPlacementType ClusterPlacementType;
   /* Decide what the unclustering type should be */
@@ -315,6 +343,7 @@ class Env {
   double EnvGetHyperGraphBuildTime(void);
 
   void EnvRecordClusteringTime(void);
+  void EnvRecordClusteringTime(double);
   double EnvGetClusteringTime(void);
 
   void EnvRecordGlobalPlacementTime(void);
@@ -371,6 +400,15 @@ class Env {
   void EnvSetClusterNumRows(uint);
   uint EnvGetClusterNumRows(void);
 
+  void EnvSetNumClusters(uint);
+  uint EnvGetNumClusters(void);
+
+  void EnvSetImbalanceFactor(uint);
+  uint EnvGetImbalanceFactor(void);
+
+  void EnvSetNumKHmetisRuns(uint);
+  uint EnvGetNumKHmetisRuns(void);
+
   void EnvSetUseVarBounds(bool);
   bool EnvGetUseVarBounds(void);
 
@@ -382,6 +420,12 @@ class Env {
 
   void EnvSetDiscreteWidth(bool);
   bool EnvGetDiscreteWidth(void);
+
+  void EnvSetRecursiveBiPartitioning(bool);
+  bool EnvGetRecursiveBiPartitioning(void);
+
+  void EnvSetPlaceCellsInCluster(bool);
+  bool EnvGetPlaceCellsInCluster(void);
 
   void EnvSetMaxUtilPhaseI(double);
   double EnvGetMaxUtilPhaseI(void);
@@ -421,6 +465,12 @@ class Env {
   
   void EnvSetClusterType(EnvClusterType);
   EnvClusterType EnvGetClusterType(void);
+
+  void EnvSetClusterGlobalPlacerType(EnvGlobalPlacerType);
+  EnvGlobalPlacerType EnvGetClusterGlobalPlacerType(void);
+  
+  void EnvSetClusterLegalizerType(EnvLegalizer);
+  EnvLegalizer EnvGetClusterLegalizerType(void);
 
   void EnvSetClusterPlacementType(EnvClusterPlacementType);
   EnvClusterPlacementType EnvGetClusterPlacementType(void);

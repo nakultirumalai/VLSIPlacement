@@ -19,6 +19,7 @@
 # include <Env.h>
 # include <ConjGradSolver.h>
 # include <PriorityQueue.h>
+# include <FDP.h>
 
 # define MAX_PATHS 1000000
 
@@ -225,7 +226,10 @@ class Design {
   uint NumPaths;
   uint NumTopNets;
   uint NumPhysRows;
+  uint NumMaxPins;
+  uint MaxWidth;
   uint singleRowHeight;
+  uint singleSiteWidth;
   int maxx, maxy;
   int preShiftLeft, preShiftBot, preShiftRight, preShiftTop;
 
@@ -265,6 +269,7 @@ class Design {
 
   /* Average cell width */
   double averageStdCellHeight, averageStdCellWidth;
+  double averageClusterHeight, averageClusterWidth;
   uint ILRMultiple;
 
   void DesignSetVarsPostRead(void);
@@ -408,9 +413,12 @@ class Design {
   void DesignBuildGraph(void);
   void DesignDeleteGraph(void);
   void DesignRebuildGraph(void);
-
+ 
+  uint DesignGetMaxCellWidth(void);
   int DesignGetSingleRowHeight();
+  uint DesignGetSingleSiteWidth();
   uint DesignGetNumCells(void);
+  uint DesignGetNumMaxCellPins(void);
   uint DesignGetNumClusters(void);
   uint DesignGetNumClustersSeenSoFar(void);
   uint DesignGetNumTopCells(void);
@@ -444,30 +452,40 @@ class Design {
   void DesignSolveForAllCellsConjGradIter(void);
   void DesignSolveForCellsNoHyperGraph(vector<Cell *> &cellsToSolve);
   void DesignSolveForAllCellsConjGradWnLibIter(void);
+  void DesignSolveForAllCellsForceDirected(void);
   void DesignSetCellsToSolve(vector<Cell *>);
   void DesignAdjustCells(void);
 
   /* Calling internal and external placers */
   void DesignRunExternalPlacer(EnvGlobalPlacerType);
   void DesignRunInternalPlacer(EnvSolverType);
-  int DesignRunNTUPlace(string, string);
-  int DesignRunFastPlace(string, string);
-  int DesignRunFastPlaceLegalizer(string, string);
-  int DesignRunFastPlaceDetailedPlacer(string, string);
-  int DesignRunMPL6(string, string);
+  int DesignRunKHMetis(string, uint, uint, uint, uint, uint, uint, uint);
+  int DesignRunNTUPlace(string, string, double &, bool, bool, bool, string&);
+  int DesignRunFastPlace(string, string, double &, bool, bool, bool, string&);
+  int DesignRunFastPlaceLegalizer(string, string, bool, bool);
+  int DesignRunFastPlaceLegalizerForCluster(string, string, string);
+  int DesignRunFastPlaceDetailedPlacer(string, string, bool, bool);
+  int DesignRunMPL6(string, string, double &, bool, bool);
 
   /* Clustering functions */
   //void DesignClusterCells(HyperGraph&, clusteringType);
   //  void DesignCollapseCluster(Cell& MasterCell);
-  bool DesignValidateClusterParams(double, double, double, double, uint);
+  bool DesignPrintClusterParams(double, double, double, double, uint);
   bool DesignDoDefaultCluster(HyperGraph&);
   bool DesignDoTimingDrivenCluster(HyperGraph&);
+  /* Functions for best choice clustering */
   bool DesignDoBestChoiceClustering(HyperGraph&, double);
   bool DesignDoBestChoiceClusteringPenalty(HyperGraph &, double, bool, double);
   bool DesignDoBestChoiceClusteringCstr(HyperGraph &, double, double, bool, double);
+  /* Functions for net cluster clustering */
+  bool DesignDoNetCluster(HyperGraph&, double, double);
   bool DesignDoFirstChoiceClustering(HyperGraph&);
   bool DesignDoClusterTest(void);
-
+  /* Functions for k-way partitioning based clustering */
+  void DesignWriteHGraphFile(HyperGraph &, uint, string, string);
+  void DesignReadAndCreateClusters(HyperGraph &, string, uint);
+  void DesignDoKWayClustering(HyperGraph &);
+  
   //  bool DesignDoFCCluster(HyperGraph&);
   //  bool DesignDoNetCluster(HyperGraph&);
   //  bool DesignDoESCCluster(HyperGraph&);
@@ -500,6 +518,21 @@ class Design {
   void DesignUnclusterCellRowBased(Cell*, Cluster *);
   void DesignUnclusterCell(Cell*, bool);
 
+  /* Large cluster formation functions */
+  void DesignPlotClusterLarge(string, string, Cell *, map<Cell *, uint> &,
+			      vector<Cell *> &);
+  void DesignDeduceHeightAndWidth(vector<Cell *> &, double, double, double, 
+				  uint &, uint &, double &);
+  void DesignCreateClusterObject(vector<Cell *> &, double);
+  void DesignUnclusterLargeCluster(Cell*, bool);
+  void DesignClusterCellsFormShapes(vector<Cell *> &);
+  void DesignFormClusters(vector<vector<Cell *> > &);
+  void DesignPlaceCellsInClusterNew(vector<Cell *> &, map<Cell *, bool> &,
+				    map<string, Cell*> &, vector<Net *> &, 
+				    string, uint, uint, double &);
+  void DesignReadPlacerOutput(string, map<string, Cell*> &);
+  void DesignDumpClusterInfo(string);
+
   /* Constraint functions */
   void DesignSetClockPeriod(double);
   double DesignGetClockPeriod(void);
@@ -509,6 +542,10 @@ class Design {
   bool DesignCheckSolvedCellsProperty(vector<Cell*>);
   double DesignGetAverageStdCellWidth(void);
   double DesignGetAverageStdCellHeight(void);
+  void DesignSetAverageClusterCellWidth(double);
+  void DesignSetAverageClusterCellHeight(double);
+  double DesignGetAverageClusterCellWidth(void);
+  double DesignGetAverageClusterCellHeight(void);
   uint DesignGetNumStdCells(void);
 
   /* Spreading related : pseudo net add / get functions */
@@ -597,6 +634,8 @@ extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
 extern void DesignWriteOutputPlacement(Design& myDesign);
 extern void DesignWriteOutputPlacement(Design& myDesign, string outputFileName);
 extern void DesignWriteBookShelfOutput(Design& myDesign, string opName);
+extern void DesignWriteClusterData(vector<Cell *> &, vector<Net *> &, 
+				   map<Cell *, bool> &, string, 
+				   uint, uint, uint, uint, bool);
 extern vector<Cell*> DesignGetConnectedCells(HyperGraph &, Cell *);
-
 #endif

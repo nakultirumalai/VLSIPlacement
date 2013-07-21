@@ -15,6 +15,8 @@ Env::Env()
   EnvSetDumpHessian(false);  /* WATCH: Default value is true */
   EnvSetDiscreteWidth(true); /* WATCH: Default value is true */
   EnvSetDiscreteHeight(true); /* WATCH: Default value is true */
+  EnvSetRecursiveBiPartitioning(false);
+  EnvSetPlaceCellsInCluster(true);
   EnvSetGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
   EnvSetSolverType(DEFAULT_ENV_SOLVER_TYPE);
   EnvSetNetModel(DEFAULT_ENV_NET_MODEL);
@@ -23,6 +25,8 @@ Env::Env()
   EnvSetDetailedPlacer(DEFAULT_ENV_DETAIL_PLACEMENT);
   EnvSetOptType(DEFAULT_ENV_OPT_TYPE);
   EnvSetClusterType(DEFAULT_ENV_CLUSTER_TYPE);
+  EnvSetClusterGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
+  EnvSetClusterLegalizerType(DEFAULT_ENV_LEGALIZER);
   EnvSetClusterPlacementType(DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE);
   EnvSetUnclusterType(DEFAULT_ENV_UNCLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
@@ -34,6 +38,9 @@ Env::Env()
   EnvSetClusterBoundPenalty(DEFAULT_CLUSTER_BOUND_PENALTY);
   /* Initialization of other integer variables */
   EnvSetClusterNumRows(DEFAULT_CLUSTER_NUM_ROWS);
+  EnvSetNumClusters(DEFAULT_NUM_CLUSTERS);
+  EnvSetImbalanceFactor(DEFAULT_IMBALANCE_FACTOR);
+  EnvSetNumKHmetisRuns(DEFAULT_NUM_KHMETIS_RUNS);
   /* Time related variables */
   /* Initialize start times to 0 */
   NetlistReadStartTime = 0;
@@ -169,6 +176,12 @@ double
 Env::EnvGetHyperGraphBuildTime(void)
 {
   return (this->HyperGraphBuildTime);
+}
+
+void
+Env::EnvRecordClusteringTime(double clusteringTime)
+{
+  this->ClusteringTime = clusteringTime;
 }
 
 void
@@ -400,6 +413,42 @@ Env::EnvGetClusterNumRows(void)
 }
 
 void 
+Env::EnvSetNumClusters(uint NumClusters)
+{
+  this->NumClusters = NumClusters;
+}
+
+uint
+Env::EnvGetNumClusters(void)
+{
+  return (this->NumClusters);
+}
+
+void
+Env::EnvSetImbalanceFactor(uint ImbalanceFactor)
+{
+  this->ImbalanceFactor = ImbalanceFactor;
+}
+
+uint
+Env::EnvGetImbalanceFactor(void)
+{
+  return (this->ImbalanceFactor);
+}
+
+void
+Env::EnvSetNumKHmetisRuns(uint NumKHmetisRuns) 
+{
+  this->NumKHmetisRuns = NumKHmetisRuns;
+}
+
+uint
+Env::EnvGetNumKHmetisRuns(void)
+{
+  return (this->NumKHmetisRuns);
+}
+
+void 
 Env::EnvSetUseVarBounds(bool UseVarBounds)
 {
   this->UseVarBounds = UseVarBounds;
@@ -445,6 +494,30 @@ bool
 Env::EnvGetDiscreteWidth(void)
 {
   return DiscreteWidth;
+}
+
+void
+Env::EnvSetRecursiveBiPartitioning(bool RecursiveBiPartitioning)
+{
+  this->RecursiveBiPartitioning = RecursiveBiPartitioning;
+}
+
+bool
+Env::EnvGetRecursiveBiPartitioning(void) 
+{
+  return (this->RecursiveBiPartitioning);
+}
+
+void
+Env::EnvSetPlaceCellsInCluster(bool PlaceCellsInCluster) 
+{
+  this->PlaceCellsInCluster = PlaceCellsInCluster;
+}
+
+bool
+Env::EnvGetPlaceCellsInCluster(void)
+{
+  return (this->PlaceCellsInCluster);
 }
 
 void
@@ -600,6 +673,30 @@ EnvClusterType
 Env::EnvGetClusterType(void)
 {
   return ClusterType;
+}
+
+void
+Env::EnvSetClusterGlobalPlacerType(EnvGlobalPlacerType ClusterGlobalPlacer) 
+{
+  this->ClusterGlobalPlacer = ClusterGlobalPlacer;
+}
+
+EnvGlobalPlacerType
+Env::EnvGetClusterGlobalPlacerType(void)
+{
+  return (this->ClusterGlobalPlacer);
+}
+
+void
+Env::EnvSetClusterLegalizerType(EnvLegalizer ClusterLegalizer)
+{
+  this->ClusterLegalizer = ClusterLegalizer;
+}
+
+EnvLegalizer
+Env::EnvGetClusterLegalizerType(void)
+{
+  return (this->ClusterLegalizer);
 }
 
 void 

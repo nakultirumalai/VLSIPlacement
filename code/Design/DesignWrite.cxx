@@ -59,6 +59,9 @@ void DesignWriteNets(Design &myDesign, string fname)
       }
       Cell &cellOfPin = (*pinPtr).PinGetParentCell();
       cellName = cellOfPin.CellGetName();
+      if (cellName == "o2385") {
+	cout << "break here" << endl;
+      }
       pinXOffset = (*pinPtr).PinGetXOffset();
       pinYOffset = (*pinPtr).PinGetYOffset();
       pinXOffset -= cellOfPin.CellGetWidth();

@@ -427,7 +427,8 @@ RectGetStyleString(Rect &thisRect)
   rectStyle = thisRect.RectGetStyle();
   switch (rectStyle) {
   case NORMAL_RECT: 
-    styleString = "fs empty border lc rgb \"blue\"";
+    //    styleString = "fs empty border lc rgb \"blue\"";
+    styleString = "fc rgb \"green\"";
     break;
   case HIGHLIGHTED_RECT: 
     styleString = "fs empty border lc rgb \"red\"";

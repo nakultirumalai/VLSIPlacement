@@ -21,13 +21,12 @@ class Cell {
   bool terminalCell;
   bool isClustered, isCluster, isClusterChild;
   bool isPort, isMacro, isFixed;
-  bool isSequential;
+  bool isSequential, isHidden, adjacentToPort;
   bool isXLegal, isYLegal;
-  bool isHidden;
+  bool isClusterFixed;
   vector<Pin*> Pins;
   vector<Cell*> childCells;
   map<uint, map<uint, double > > arcDelays;
-
   string name;
   string origName;
   string libCellName;
@@ -77,12 +76,14 @@ class Cell {
   void CellSetIsClustered(const bool&);
   void CellSetIsMacro(const bool &);
   void CellSetIsFixed(const bool &);
+  void CellSetIsClusterFixed(const bool &);
   void CellSetClusterLevel(uint);
   void CellSetIsSequential(const bool &);
   void CellSetIsPort(const bool &);
   void CellSetIsHidden(const bool &);
   void CellSetXIsLegal(const bool&);
   void CellSetYIsLegal(const bool&);
+  void CellSetAdjacentToPort(const bool &);
   void CellMarkNetsDirty(void);
   void CellAddChildCell(Cell &thisCell);
   void CellAddPin(Pin *);
@@ -115,11 +116,13 @@ class Cell {
   bool CellIsClustered(void);
   bool CellIsMacro(void);
   bool CellIsFixed(void);
+  bool CellIsClusterFixed(void);
   bool CellIsSequential(void);
   bool CellIsPort(void);
   bool CellIsHidden(void);
   bool CellXIsLegal(void);
   bool CellYIsLegal(void);
+  bool CellIsAdjacentToPort(void);
   string CellGetName(void);
   string CellGetOrigName(void);
   string CellGetLibCellName(void);
@@ -145,6 +148,11 @@ class Cluster {
  private:
   /* Requires N * 64-bit + VECT_CONTAINER_OVERHEAD */
   vector<Cell *> cellsOfCluster; 
+  /* Store the coordinates of cells in different configurations */
+  /* Array corresponds with the array of cells in the cluster */
+  vector<vector<double> > cellPositions;
+  /* Array corresponds to different dimensions of the cluster */
+  vector<pair<uint, uint> > dimensions;
   /* Requires N * 64-bit + VECT_CONTAINER_OVERHEAD */
   vector<Net *> internalNets;
   /* Requires N * 32-bit + VECT_CONTAINER_OVERHEAD */
@@ -153,10 +161,23 @@ class Cluster {
   vector<uint> xPosInRow;
   /* Requires N * 128-bit + MAP_CONTAINER_OVERHEAD */
   map<Pin *, Pin *> pinMap;
+  /* Record variations from the attempted square clusters */
+  vector<double> heightVariations;
+  /* Area of the cluster for each configuration */
+  vector<double> clusterArea;
+  /* Area of the cells inside the cluster for each configuration */
+  double clusterCellArea;
+  /* Time to place the cells inside the cluster */
+  double clusterPlacementTime;
+  /* Store the number of cells connected to nets which span 
+     across the boundary of the cluster */
+  uint numBoundaryCells;
   /* Indicate if the boundary cells are placed */
   bool bCellsPlaced;
   /* Indicate if this is a row based cluster */
   bool rowBased;
+  /* Indicate if this is a row based cluster */
+  bool largeCluster;
   /* Indicate the level of the cluster */
   char clusterLevel;
 
@@ -181,6 +202,12 @@ class Cluster {
   void ClusterSetBCellsPlaced(bool);
   void ClusterSetRowBased(bool);
   void ClusterSetClusterLevel(char);
+  void ClusterSetCellArea(double);
+  void ClusterSetPlacementTime(double);
+  void ClusterSetNumBoundaryCells(uint);
+  void ClusterSetCellPositions(vector<vector<double> > &);
+  void ClusterSetDimensions(vector<pair<uint, uint> > &);
+  void ClusterSetHeightVariations(vector<double> &);
 
   /* Get functions */
   uint ClusterGetNumCells(void);
@@ -193,6 +220,12 @@ class Cluster {
   bool ClusterGetBCellsPlaced(void);
   bool ClusterGetRowBased(void);
   char ClusterGetClusterLevel(void);
+  double ClusterGetCellArea(void);
+  double ClusterGetPlacementTime(void);
+  uint ClusterGetNumBoundaryCells(void);
+  vector<vector<double> >& ClusterGetCellPositions(void);
+  vector<pair<uint, uint> >& ClusterGetDimensions(void);
+  vector<double>& ClusterGetHeightVariations(void);
   
   /* Debug functions */
   void PlotCluster(void);
