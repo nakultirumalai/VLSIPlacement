@@ -71,6 +71,9 @@ FDPGetOptLocation(vector<void*> &connectedNodes, vector<Cell*> &movableCells,
       Xj = (int)(*thisCell).CellGetXpos();
       Yj = (int)(*thisCell).CellGetYpos();
       edgeIdx = myGraph.NodesAreAdjacent(thisNode, seedNode);
+      if (edgeIdx == -1){
+	cout << "ERROR: No edge found " << endl;
+      }
       edgeWeight = myGraph.GetEdgeWeight(edgeIdx);
       sumWDX += (Xj * edgeWeight);
       sumWDY += (Yj * edgeWeight);
@@ -96,14 +99,14 @@ FDPGetFourNeighbours(int siteNum, int rowNum, int numSitesInRow, int numRows,
   topY = rowNum + 1;
   rightX = siteNum + 1;
   botY = rowNum - 1;
-
+  
   if (leftX >= 0) {
     /* Insert the left neighbour */
     fourNeighbours.push_back(leftX);
     fourNeighbours.push_back(rowNum);
   } 
   
-  if (topY <= (numRows - 1)) {
+  if (topY < numRows) {
     /* Insert the top neighbour */
     fourNeighbours.push_back(siteNum);
     fourNeighbours.push_back(topY);
@@ -124,28 +127,98 @@ FDPGetFourNeighbours(int siteNum, int rowNum, int numSitesInRow, int numRows,
   
 FDPSite*
 FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix, 
-		     int numSitesInRow, int numRows)
+			int numSitesInRow, int numRows, Cell *&nextCell)
 {
   queue<FDPSite*> myQueue;
+  map<FDPSite*, bool> visitedSites;
+  vector<int> fourNeighbours;
+  FDPSite *selectedSite;
+  bool foundVacantSite;
+  bool foundOccupied;
+  int siteNum, rowNum;
+  int newSiteNum, newRowNum;
+  int i;
+  
+  foundOccupied = false;
+  visitedSites[thisSite] = true;
+  siteNum = (*thisSite).FDPSiteGetSiteNum();
+  rowNum = (*thisSite).FDPSiteGetRowNum();
+  foundVacantSite = false;
+  FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
+  while (fourNeighbours.size()) {
+    for (i = 0; i < fourNeighbours.size(); i+=2) {
+      newSiteNum = fourNeighbours[i];
+      newRowNum = fourNeighbours[i+1];
+      selectedSite = gridMatrix[newRowNum][newSiteNum];
+      if ((*selectedSite).FDPSiteGetHasCell()) {
+	if ((*selectedSite).FDPSiteGetIsLocked()) {
+	  _KEY_EXISTS(visitedSites, selectedSite) {
+	  } else {
+	    visitedSites[selectedSite] = true;
+	    myQueue.push(selectedSite);
+	  }
+	} else {
+	  foundVacantSite = true;
+	  foundOccupied = true;
+	  nextCell = (*selectedSite).FDPSiteGetHasCell();
+	  break;
+	}
+      } else {
+	foundVacantSite = true;
+	break;
+      }
+    }
+
+    if (foundVacantSite) {
+      break;
+    } 
+    thisSite = myQueue.front();
+    myQueue.pop();
+    siteNum = (*thisSite).FDPSiteGetSiteNum();
+    rowNum = (*thisSite).FDPSiteGetRowNum();    
+    fourNeighbours.clear();
+    FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
+  }
+  if (foundVacantSite && foundOccupied) {
+    return selectedSite;
+  } else if (foundVacantSite && !foundOccupied) {
+    nextCell = NIL(Cell*);
+    return selectedSite;
+  } else {
+    return NIL(FDPSite*);
+  }
+}
+
+FDPSite*
+FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix, 
+			int numSitesInRow, int numRows)
+{
+  queue<FDPSite*> myQueue;
+  map<FDPSite*, bool> visitedSites;
   vector<int> fourNeighbours;
   FDPSite *selectedSite;
   bool foundVacantSite;
   int siteNum, rowNum;
   int newSiteNum, newRowNum;
   int i;
+  
 
+  visitedSites[thisSite] = true;
   siteNum = (*thisSite).FDPSiteGetSiteNum();
   rowNum = (*thisSite).FDPSiteGetRowNum();
   foundVacantSite = false;
   FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
-  while (!(fourNeighbours.size())) {
+  while (fourNeighbours.size()) {
     for(i = 0; i < fourNeighbours.size(); i+=2) {
       newSiteNum = fourNeighbours[i];
       newRowNum = fourNeighbours[i+1];
       selectedSite = gridMatrix[newRowNum][newSiteNum];
-      //if ((*selectedSite).FDPSiteGetIsLocked()) {
       if ((*selectedSite).FDPSiteGetHasCell()) {
-	myQueue.push(selectedSite);
+	_KEY_EXISTS(visitedSites, selectedSite) {
+	} else {
+	  visitedSites[selectedSite] = true;
+	  myQueue.push(selectedSite);
+	}
       } else {
 	foundVacantSite = true;
 	break;
@@ -156,6 +229,9 @@ FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix
       break;
     } 
     thisSite = myQueue.front();
+    if (myQueue.empty()) {
+      _ASSERT_TRUE("Queue is empty");
+    }
     myQueue.pop();
     siteNum = (*thisSite).FDPSiteGetSiteNum();
     rowNum = (*thisSite).FDPSiteGetRowNum();    
@@ -171,7 +247,7 @@ FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix
 
 void
 FDPClearAllLocks(vector<Cell*> &movableCells, vector<vector<FDPSite*> > &gridMatrix,
-		 int siteWidth, int rowHeight)
+		 int rowHeight, int siteWidth)
 {
   Cell *thisCell;
   FDPSite *thisSite;
@@ -185,6 +261,12 @@ FDPClearAllLocks(vector<Cell*> &movableCells, vector<vector<FDPSite*> > &gridMat
     thisSite = gridMatrix[rowNum][siteNum];
     (*thisSite).FDPSiteSetIsLocked(0);
   } END_FOR;
+}
+
+void
+printQueueSize(queue<FDPSite*> &myQueue)
+{
+  cout << "Size is " << myQueue.size() << endl;
 }
  
 /* Top level function to place the cells using a force-directed heuristic */
@@ -221,6 +303,8 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &movableCells,
   uint fixedCellNum;
   uint cellNum;
   bool end_ripple;
+  bool optimizeFind;
+  optimizeFind = false;
   
   rowCapInRow = numSitesInRow * siteWidth;
   rowEnd = numSitesInRow * siteWidth;
@@ -292,10 +376,20 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &movableCells,
 	} 
       }
     }
+  } else if(topLevel) {
+    VECTOR_FOR_ALL_ELEMS(movableCells, Cell*, thisCell) {
+      cellXpos = (*thisCell).CellGetXpos();
+      cellYpos = (*thisCell).CellGetYpos();
+      siteNum = cellXpos / siteWidth;
+      rowNum = cellYpos / rowHeight;
+      thisSite = gridMatrix[rowNum][siteNum];
+      (*thisSite).FDPSiteSetHasCell(thisCell);
+    } END_FOR;
   }
   
   iter_count = 0;
-  iter_limit = 10;
+  iter_limit = 1200;
+  abort_limit = 5;
   abort_count = 0;
   /* Do iterative refinement on the initial placement using a force directed heuristic */
   counter = 0;
@@ -315,38 +409,76 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &movableCells,
       /* Change the location of that cell to vacant */
       thisSite = FDPGetSiteOfCell(gridMatrix, thisCell, siteWidth, rowHeight);
       (*thisSite).FDPSiteRemoveCell();
+
+
       while(!end_ripple) {
 	thisNode = (void*)thisCell;
 	connectedNodes = myGraph.GetConnectedNodes(thisNode);
-      
+	
 	/* Get equilibrium position of cell */
 	FDPGetOptLocation(connectedNodes, movableCells, fixedCells, mapOfCells,
 			  myGraph, rowHeight, siteWidth, thisCell, siteXpos, siteYpos);
 	siteNum = siteXpos / siteWidth;
 	rowNum = siteYpos / rowHeight;
 	thisSite = gridMatrix[rowNum][siteNum];
-      
+	
 	if ((*thisSite).FDPSiteGetIsLocked()) {
 	  /* The equilibrium position for the cell is locked. So choose a vacant
 	     site nearby 
 	  */
-	  nearestSite = FDPGetNearestVacantSite(thisSite, gridMatrix, numSitesInRow, numRows);
-	  if (nearestSite == NIL(FDPSite*)) {
-	    _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
-	  } else {
-	    (*nearestSite).FDPSiteSetHasCell(thisCell);
-	    (*nearestSite).FDPSiteSetIsLocked(1);
-	    siteX = (*nearestSite).FDPSiteGetXpos();
-	    siteY = (*nearestSite).FDPSiteGetYpos();
-	    (*thisCell).CellSetXpos(siteX);
-	    (*thisCell).CellSetYpos(siteY);
-	    end_ripple = true;
-	    abort_count++;
-	    if (abort_count > abort_limit) {
-	      FDPClearAllLocks(movableCells, gridMatrix, rowHeight, siteWidth);
-	      iter_count++;
+	  if (optimizeFind) {
+	    nearestSite = FDPGetNearestVacantSite(thisSite, gridMatrix, numSitesInRow, numRows, nextCell);
+	    if (nearestSite == NIL(FDPSite*)) {
+	      _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
+	    } else {
+	      (*nearestSite).FDPSiteSetHasCell(thisCell);
+	      (*nearestSite).FDPSiteSetIsLocked(1);
+	      siteX = (*nearestSite).FDPSiteGetXpos();
+	      siteY = (*nearestSite).FDPSiteGetYpos();
+	      (*thisCell).CellSetXpos(siteX);
+	      (*thisCell).CellSetYpos(siteY);
+	      if (nextCell != NIL(Cell*)) {
+		end_ripple = false;
+		usedCells[thisCell] = true;
+		thisCell = nextCell;
+	      }
+	      abort_count++;
+	      FDPSite *prevNearestSite = nearestSite;
+	      if (abort_count > abort_limit) {
+		if (nextCell != NIL(Cell*)) {
+		  nearestSite = FDPGetNearestVacantSite(prevNearestSite, gridMatrix, numSitesInRow, numRows);
+		  if (nearestSite == NIL(FDPSite*)) {
+		    _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
+		  } else {
+		    (*nearestSite).FDPSiteSetHasCell(thisCell);
+		    siteX = (*nearestSite).FDPSiteGetXpos();
+		    siteY = (*nearestSite).FDPSiteGetYpos();
+		    (*thisCell).CellSetXpos(siteX);
+		    (*thisCell).CellSetYpos(siteY);
+		  }
+		}
+		FDPClearAllLocks(movableCells, gridMatrix, rowHeight, siteWidth);
+		iter_count++;
+	      }
 	    }
-	    
+	  } else {
+	    nearestSite = FDPGetNearestVacantSite(thisSite, gridMatrix, numSitesInRow, numRows);
+	    if (nearestSite == NIL(FDPSite*)) {
+	      _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
+	    } else {
+	      (*nearestSite).FDPSiteSetHasCell(thisCell);
+	      (*nearestSite).FDPSiteSetIsLocked(1);
+	      siteX = (*nearestSite).FDPSiteGetXpos();
+	      siteY = (*nearestSite).FDPSiteGetYpos();
+	      (*thisCell).CellSetXpos(siteX);
+	      (*thisCell).CellSetYpos(siteY);
+	      end_ripple = true;
+	      abort_count++;
+	      if (abort_count > abort_limit) {
+		FDPClearAllLocks(movableCells, gridMatrix, rowHeight, siteWidth);
+		iter_count++;
+	      }
+	    }
 	  }
 	} else {
 	  /* If Site is occupied or vacant but not locked. First place the cell
@@ -359,7 +491,7 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &movableCells,
 	  siteY = (*thisSite).FDPSiteGetYpos();
 	  (*thisCell).CellSetXpos(siteX);
 	  (*thisCell).CellSetYpos(siteY);
-	
+	  usedCells[thisCell] = true;
 	  if (nextCell != NIL(Cell*)) {
 	    /* Indicates site is occupied. So choose the displaced cell to moved next */
 	    thisCell = nextCell;
@@ -372,6 +504,7 @@ FDPTopLevel(vector<Cell*> &fixedCells, vector<Cell*> &movableCells,
 	  }
 	}
       }
+      end_ripple = false;
     }
   }
 }

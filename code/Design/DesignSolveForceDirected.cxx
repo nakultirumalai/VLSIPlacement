@@ -5,8 +5,6 @@ getSitesAndBlocksForDesign(uint maxx, uint maxy, double averageClusterWidth,
 			   double averageClusterHeight, uint &numSites, 
 			   uint &numRows)
 {
-  numSites = floor(maxx / averageClusterWidth);
-  numRows = floor(maxy / averageClusterHeight);
   
   /* Add two rows and two sites for the ports */
   //  numSites = 2;
@@ -22,9 +20,11 @@ Design::DesignSolveForAllCellsForceDirected(void)
   Cell *clusterCellPtr;
   vector<Cell *> clusterCells, fixedCells;
   uint averageClusterWidth, averageClusterHeight;
+  double clusterXpos, clusterYpos;
+  int siteWidth, rowHeight;
   string cellName;
   uint siteNum, rowNum;
-  uint numSites, numRows;
+  uint numSites, numRows, numClusters;
   uint maxx, maxy;
   
   /* STEP : CREATE PLACEABLE BLOCKS IN THE DESIGN */
@@ -33,27 +33,36 @@ Design::DesignSolveForAllCellsForceDirected(void)
   averageClusterHeight = (uint)DesignGetAverageClusterCellHeight();
   getSitesAndBlocksForDesign(maxx, maxy, averageClusterWidth, 
 			     averageClusterHeight, numSites, numRows);
-
+  numClusters = DesignGetNumClusters();
+  numRows = floor(maxy / averageClusterHeight);
+  numSites = ceil(((double)numClusters) / numRows);
+  siteWidth = floor(maxx / numSites);
+  rowHeight = averageClusterHeight;
   /* STEP : PLACE THE CELLS IN A CONSTRUCTIVE FASHION 
             INTO THE BLOCKS OF THE DESIGN */
-  siteNum = 1;
-  rowNum = 1;
+  siteNum = 0;
+  rowNum = 0;
+  uint count = 0;
   DESIGN_FOR_ALL_CLUSTERS((*this), cellName, clusterCellPtr) {
-    (*clusterCellPtr).CellSetXpos((siteNum-1) * averageClusterWidth); siteNum++;
-    (*clusterCellPtr).CellSetYpos((rowNum -1) * averageClusterHeight); 
-    if (siteNum == (numSites - 1)) {
-      siteNum = 1;
+    clusterXpos = siteNum * siteWidth;
+    clusterYpos = rowNum * rowHeight;
+    (*clusterCellPtr).CellSetXpos(clusterXpos); 
+    siteNum++;
+    (*clusterCellPtr).CellSetYpos(clusterYpos); 
+    //cout << "Count: " << count << "X: " << clusterXpos << "  Y: " << clusterYpos << endl;
+    if (siteNum == numSites) {
+      siteNum = 0;
       rowNum++;
     }
     clusterCells.push_back(clusterCellPtr);
+    count++;
   } DESIGN_END_FOR;
 
   /* STEP : EXECUTE THE FORCE DIRECTED SOLVER TO MINIMIZE 
             THE WIRELENGTH */
   HyperGraph &myGraph = DesignGetGraph();
   FDPTopLevel(fixedCells, clusterCells, (int)numRows, (int)numSites,
-	      (int)averageClusterHeight, (int)averageClusterWidth, 
-	      true, myGraph);
+   	      rowHeight, siteWidth, true, myGraph);
 
   /* STEP : FINISH */
 }

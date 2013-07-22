@@ -487,6 +487,9 @@ HyperGraph::GetConnectedNodes(void* nodePtr)
   vector<void *> rtvCells;
   Node *resultNode;
   
+  if (nodePtr == NIL(void *)) {
+    _ASSERT_TRUE("Error: Cell of whose connected nodes have to be found is NULL!");
+  }
   subjectIdx = obj2idx[nodePtr];
   connectedNodeIndices = GetConnectedNodeIndices(subjectIdx);
   vectorRemoveDuplicates(connectedNodeIndices);
