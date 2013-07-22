@@ -165,6 +165,8 @@ class Cluster {
   vector<double> heightVariations;
   /* Area of the cluster for each configuration */
   vector<double> clusterArea;
+  /* HPWL of each shape of the cluster */
+  vector<double> shapeHPWL;
   /* Area of the cells inside the cluster for each configuration */
   double clusterCellArea;
   /* Time to place the cells inside the cluster */
@@ -208,6 +210,7 @@ class Cluster {
   void ClusterSetCellPositions(vector<vector<double> > &);
   void ClusterSetDimensions(vector<pair<uint, uint> > &);
   void ClusterSetHeightVariations(vector<double> &);
+  void ClusterSetShapeHPWL(vector<double> &);
 
   /* Get functions */
   uint ClusterGetNumCells(void);
@@ -226,6 +229,7 @@ class Cluster {
   vector<vector<double> >& ClusterGetCellPositions(void);
   vector<pair<uint, uint> >& ClusterGetDimensions(void);
   vector<double>& ClusterGetHeightVariations(void);
+  vector<double>& ClusterGetShapeHPWL(void);
   
   /* Debug functions */
   void PlotCluster(void);

@@ -315,32 +315,6 @@ getMPL6GlobalPlacementTime(string DesignName, double &globalPlacementTime)
   ifile.close();
 }
 
-void
-getKHmetisRunTime(string DesignName, double &clusteringTime)
-{
-  ifstream ifile;
-  string line, garbage;
-  string inputFileName;
-  bool foundCPU;
-
-  clusteringTime = 0;
-  inputFileName = DesignName + "_KHmetisLog";
-  ifile.open(inputFileName.data());
-
-  foundCPU = false;
-  while (!ifile.eof()) {
-    getline(ifile, line);
-    if (line.find("  Partitioning Time:") == 0) {
-      istringstream stream(line, istringstream::in);
-      stream >> garbage;
-      stream >> garbage;
-      stream >> garbage;
-      break;
-    }
-  }
-  ifile.close();
-}
-
 int 
 Design::DesignRunKHMetis(string graphFileName, uint numWays, uint UBfactor,
 			 uint Nruns, uint CType, uint OType, uint VCycle, 
@@ -350,7 +324,6 @@ Design::DesignRunKHMetis(string graphFileName, uint numWays, uint UBfactor,
   char *hmetisPath; 
   string hmetisCommand;
   string DesignName;
-  double clusteringTime;
   char path[PATH_MAX];
   FILE *progRun;
 
@@ -375,8 +348,6 @@ Design::DesignRunKHMetis(string graphFileName, uint numWays, uint UBfactor,
   hmetisCommand += " | tee " + DesignName + "_KHmetisLog";
   cout << "Executing khmetis command: " << hmetisCommand << endl;
   status = executeCommand(hmetisCommand);
-  getKHmetisRunTime(DesignName, clusteringTime);
-  DesignEnv.EnvRecordClusteringTime(clusteringTime);
 
   /* READ THE CLUSTERS HERE */
   //  oldPlFileName = this->DesignPlFileName;
@@ -398,6 +369,7 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName,
   int status;
   char *placerPath; 
   string placerCommand, oldPlFileName;
+  string placerTimeLogFile;
   string DesignName;
   Env &DesigEnv = DesignGetEnv();
 
@@ -406,17 +378,20 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName,
     changeDir(clusterDirName);
   }
 
+  placerCommand = "{ time ";
   if (placerPath == NIL(char *)) {
-    placerCommand = "~/Downloads/ntuplace/NTUPlace3/ntuplace3";
+    placerCommand += "~/Downloads/ntuplace/NTUPlace3/ntuplace3";
   } else {
-    placerCommand = placerPath;
+    string pathFromEnv(placerPath);
+    placerCommand += pathFromEnv;
   }
 
   placerLogFile = clusterDesName + "_NTUPlaceLog";
+  placerTimeLogFile = clusterDesName + "_NTUPlaceTimeLog";
   if (silent) {
-    placerCommand += " -aux ./" + clusterDesName + ".aux > " + placerLogFile;
+    placerCommand += " -aux ./" + clusterDesName + ".aux > " + placerLogFile + "; } 2> " + placerTimeLogFile;
   } else {
-    placerCommand += " -aux ./" + clusterDesName + ".aux | tee " + placerLogFile;
+    placerCommand += " -aux ./" + clusterDesName + ".aux | tee " + placerLogFile + "; } 2> " + placerTimeLogFile;
   }
   status = executeCommand(placerCommand);
   
@@ -448,30 +423,34 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName,
   clock_t start, end;
   time_t timer1, timer2;
   double cpuTimeSpent;
+  string placerTimeLogFile;
 
   placerPath = getenv("FASTPLACE_GP_FULL_PATH");
   if (changeDirectory) {
     changeDir(clusterDirName);
   }
 
+  placerCommand = "{ time ";
   if (placerPath == NIL(char *)) {
-    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_GP";
+    placerCommand += "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_GP";
   } else {
-    placerCommand = placerPath;
+    string pathFromEnv(placerPath);
+    placerCommand += pathFromEnv;
   }
 
   placerLogFile = clusterDesName + "_FastPlaceLog";
+  placerTimeLogFile = clusterDesName + "_FastPlaceTimeLog";
   time(&timer1);
   if (silent) {
-    placerCommand += " . " + clusterDesName + ".aux . > " + placerLogFile;
+    placerCommand += " . " + clusterDesName + ".aux . > " + placerLogFile + "; } 2> " + placerTimeLogFile ;
   } else {
     //    placerCommand += " . " + clusterDesName + ".aux . | tee " + DesignName + "_FastPlaceGPLog";
-    placerCommand += " . " + clusterDesName + ".aux .";
+    //    placerCommand += " . " + clusterDesName + ".aux .";
+    placerCommand += " . " + clusterDesName + ".aux . | tee " + DesignName + "_FastPlaceGPLog" + "; } 2> " + placerTimeLogFile;
   }
   status = executeCommand(placerCommand);
   time(&timer2);
   globalPlacementTime = difftime(timer2, timer1);
-  //DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
   if (readPlacementTime) {
     oldPlFileName = this->DesignPlFileName;
     this->DesignPlFileName = clusterDesName + "_FP_gp.pl";

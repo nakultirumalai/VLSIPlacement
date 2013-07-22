@@ -483,8 +483,10 @@ class Design {
   bool DesignDoClusterTest(void);
   /* Functions for k-way partitioning based clustering */
   void DesignWriteHGraphFile(HyperGraph &, uint, string, string);
-  void DesignReadAndCreateClusters(HyperGraph &, string, uint);
-  void DesignDoKWayClustering(HyperGraph &);
+  void DesignReadAndCreateClusters(HyperGraph &, string, int*, uint, double &);
+  void DesignDoKWayClustering(HyperGraph &, bool, double &);
+  void DesignPartitionKWayHmetis(HyperGraph &, int, int, int, int*,
+				 bool, bool, bool, double &);
   
   //  bool DesignDoFCCluster(HyperGraph&);
   //  bool DesignDoNetCluster(HyperGraph&);
@@ -523,13 +525,13 @@ class Design {
 			      vector<Cell *> &);
   void DesignDeduceHeightAndWidth(vector<Cell *> &, double, double, double, 
 				  uint &, uint &, double &);
-  void DesignCreateClusterObject(vector<Cell *> &, double);
+  void DesignCreateClusterObject(vector<Cell *> &, double, double, uint, double &);
   void DesignUnclusterLargeCluster(Cell*, bool);
   void DesignClusterCellsFormShapes(vector<Cell *> &);
-  void DesignFormClusters(vector<vector<Cell *> > &);
+  void DesignFormClusters(vector<vector<Cell *> > &, double &);
   void DesignPlaceCellsInClusterNew(vector<Cell *> &, map<Cell *, bool> &,
 				    map<string, Cell*> &, vector<Net *> &, 
-				    string, uint, uint, double &);
+				    string, uint, uint, double &, double &);
   void DesignReadPlacerOutput(string, map<string, Cell*> &);
   void DesignDumpClusterInfo(string);
 
@@ -638,4 +640,9 @@ extern void DesignWriteClusterData(vector<Cell *> &, vector<Net *> &,
 				   map<Cell *, bool> &, string, 
 				   uint, uint, uint, uint, bool);
 extern vector<Cell*> DesignGetConnectedCells(HyperGraph &, Cell *);
+
+extern void HMETIS_PartRecursive(int, int, int *, int*, int*, int*, int,
+				 int, int*, int*, int*);
+extern void HMETIS_PartKway(int, int, int *, int*, int*, int*, int,
+			    int, int*, int*, int*);
 #endif

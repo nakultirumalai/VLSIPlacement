@@ -1,16 +1,5 @@
 # include <Design.h>
 
-inline void
-getSitesAndBlocksForDesign(uint maxx, uint maxy, double averageClusterWidth, 
-			   double averageClusterHeight, uint &numSites, 
-			   uint &numRows)
-{
-  
-  /* Add two rows and two sites for the ports */
-  //  numSites = 2;
-  //  numRows += 2;
-}
-
 /* A force-directed solver at the top level. The force 
    directed solver is used instead of an analytical solver
    because the number of cells in the top level is small */
@@ -31,12 +20,10 @@ Design::DesignSolveForAllCellsForceDirected(void)
   DesignGetBoundingBox(maxx, maxy);
   averageClusterWidth = (uint)DesignGetAverageClusterCellWidth();
   averageClusterHeight = (uint)DesignGetAverageClusterCellHeight();
-  getSitesAndBlocksForDesign(maxx, maxy, averageClusterWidth, 
-			     averageClusterHeight, numSites, numRows);
   numClusters = DesignGetNumClusters();
-  numRows = floor(maxy / averageClusterHeight);
+  numRows = floor(((double)maxy) / averageClusterHeight);
   numSites = ceil(((double)numClusters) / numRows);
-  siteWidth = floor(maxx / numSites);
+  siteWidth = floor(((double)maxx) / numSites);
   rowHeight = averageClusterHeight;
   /* STEP : PLACE THE CELLS IN A CONSTRUCTIVE FASHION 
             INTO THE BLOCKS OF THE DESIGN */
@@ -49,7 +36,6 @@ Design::DesignSolveForAllCellsForceDirected(void)
     (*clusterCellPtr).CellSetXpos(clusterXpos); 
     siteNum++;
     (*clusterCellPtr).CellSetYpos(clusterYpos); 
-    //cout << "Count: " << count << "X: " << clusterXpos << "  Y: " << clusterYpos << endl;
     if (siteNum == numSites) {
       siteNum = 0;
       rowNum++;
@@ -62,7 +48,6 @@ Design::DesignSolveForAllCellsForceDirected(void)
             THE WIRELENGTH */
   HyperGraph &myGraph = DesignGetGraph();
   FDPTopLevel(fixedCells, clusterCells, (int)numRows, (int)numSites,
-   	      rowHeight, siteWidth, true, myGraph);
-
+     	      rowHeight, siteWidth, true, myGraph);
   /* STEP : FINISH */
 }

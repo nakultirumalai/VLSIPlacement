@@ -149,7 +149,13 @@ printTimeUsage(Env &topEnv)
 
 -numclusters: Indicates the number of clusters that need to 
               be created for the design
-
+ -hvariation: Percentage in double that indicates the maximum percentage
+              of height variation of the cluster to be formed
+ -addarea:    Percentage in double that indicates the minimum percentage
+              of additional area that should be allocated to the area of 
+              the cluster
+ -numvarsteps: Number of steps in which the hvariation percentage must be 
+              achieved
 -imbalance_factor: The imbalance factor for the k-way partitioning engine
 
        -num_runs: The number of runs of khmetis to produce the k-way partitions
@@ -337,6 +343,18 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     rtv = true;
     uint numClusters = strToInt(switchValue);
     topEnv.EnvSetNumClusters(numClusters);
+  } else if (switchName == "hvariation") {
+    rtv = true;
+    double hVariationPercentage = strToDouble(switchValue);
+    topEnv.EnvSetClusterHVariationPercentage(hVariationPercentage);
+  } else if (switchName == "addarea") {
+    rtv = true;
+    double addAreaPercentage = strToDouble(switchValue);
+    topEnv.EnvSetClusterAddAreaPercentage(addAreaPercentage);
+  } else if (switchName == "numvarsteps") {
+    rtv = true;
+    uint numHVariationSteps = strToDouble(switchValue);
+    topEnv.EnvSetNumHVariationSteps(numHVariationSteps);
   } else if (switchName == "imbalance_factor") {
     rtv = true;
     uint imbalanceFactor = strToInt(switchValue);

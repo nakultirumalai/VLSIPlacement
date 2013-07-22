@@ -3,15 +3,16 @@ MAKE=make
 MAKEFLAGS += -j1
 OBJDIR=$(CODE_ROOT)/objdir
 INCLUDE_DIR=$(CODE_ROOT)/include
+LIB_DIR=$(CODE_ROOT)/libs
 
 #LIBSOOQP= -lblas /usr/local/lib/libma27.a -lgfortran -lprofiler
-LIBSOOQP= -lblas -lgfortran -lprofiler
+LIBSOOQP= -lblas -lgfortran -lprofiler 
 
 LIBQUADPROG= #-lQuadProgpp
 LIBMOSEK= -lmosek64 -pthread
 
 #LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
-LIBS= -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
+LIBS= -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP) ./libs/libhmetis.a
 
 SRCDIRS:= Pin Cell Net Design HyperGraph common Stat PhysData \
 	Flags Legalize TimingModels Bin \

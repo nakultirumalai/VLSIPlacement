@@ -98,42 +98,100 @@ Design::DesignReadPlacerOutput(string outputName, map<string, Cell*> &mapOfCells
   }
 }
 
-//inline 
-double getNTUPlacePlacementTime(string fileName)
+inline 
+void getNTUPlacePlacementData(string placerLog, string placerTimeLog,
+			      double &globalPlacementTime,
+			      double &HPWL)
 {
   ifstream ifile;
-  double globalPlacementTime;
-  string line, garbage;
+  string line, garbage, timeSubStr;
+  double globalHPWL, legalHPWL, detailHPWL;
+  int pos;
 
   globalPlacementTime = 0;
-  if (fileName != "") {
-    ifile.open(fileName.data());
+  globalHPWL = -1;
+  legalHPWL = -1;
+  detailHPWL = -1;
+  HPWL = 0;
+  if (placerTimeLog != "") {
+    ifile.open(placerTimeLog.data());
     while (!ifile.eof()) {
       getline(ifile, line);
-      if (line.find("GLOBAL") == 0) {
+      pos = line.find("user");
+      if (pos != line.npos) {
+	timeSubStr = line.substr(0, pos);
 	istringstream stream(line, istringstream::in);
-	stream >> garbage;
-	stream >> garbage;
-	stream >> garbage;
 	stream >> globalPlacementTime;
 	break;
       }
     }
     ifile.close();
   }
-  return (globalPlacementTime);
+  if (placerLog != "") {
+    ifile.open(placerLog.data());
+    while (!ifile.eof()) {
+      getline(ifile, line);
+      if (line.find("GLOBAL: Pin") == 0) {
+	istringstream stream(line, istringstream::in);
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> globalHPWL;
+      } else if (line.find("LEGAL:") == 0) {
+	istringstream stream(line, istringstream::in);
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> legalHPWL;
+      } else if (line.find("         HPWL=") == 0) {
+	istringstream stream(line, istringstream::in);
+	stream >> garbage;
+	stream >> detailHPWL;
+      }
+    }
+    ifile.close();
+  }
+  if (detailHPWL > -1) {
+    HPWL = detailHPWL;
+  } else if (legalHPWL > -1) {
+    HPWL = legalHPWL;
+  } else if (globalHPWL > -1) {
+    HPWL = globalHPWL;
+  }
 }
 
-//inline 
-double getFastPlacePlacementTime(string fileName)
+inline 
+void getFastPlacePlacementData(string placerLog, string placerTimeLog,
+			       double &globalPlacementTime,
+			       double &HPWL)
 {
   ifstream ifile;
-  string line, garbage;
-  double globalPlacementTime;
+  string line, garbage, timeSubStr;
+  double xHPWL, yHPWL;
+  int pos;
 
   globalPlacementTime = 0;
-  if (fileName == "") {
-    ifile.open(fileName.data());
+  xHPWL = -1;
+  yHPWL = -1;
+  HPWL = 0;
+  if (placerTimeLog != "") {
+    ifile.open(placerTimeLog.data());
+    while (!ifile.eof()) {
+      getline(ifile, line);
+      pos = line.find("user");
+      if (pos != line.npos) {
+	timeSubStr = line.substr(0, pos);
+	istringstream stream(line, istringstream::in);
+	stream >> globalPlacementTime;
+	break;
+      }
+    }
+    ifile.close();
+  }
+  if (placerLog == "") {
+    ifile.open(placerLog.data());
     while (!ifile.eof()) {
       getline(ifile, line);
       if (line.find("# Total Global Placement Time") == 0) {
@@ -145,12 +203,26 @@ double getFastPlacePlacementTime(string fileName)
 	stream >> garbage;
 	stream >> garbage;
 	stream >> globalPlacementTime;
-	break;
+      } else if (line.find("# Global Placement Wirelength") == 0) {
+	istringstream stream(line, istringstream::in);
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> xHPWL;
+	stream >> garbage;
+	stream >> garbage;
+	stream >> yHPWL;
       }
     }
     ifile.close();
   }
-  return (globalPlacementTime);
+  if (xHPWL > 0 && yHPWL > 0) {
+    HPWL = xHPWL + yHPWL;
+  }
 }
 
 void
@@ -158,13 +230,13 @@ getPlacerToPlaceCellsInCluster(string designName,
 			       EnvGlobalPlacerType &placerType)
 {
   if (designName == "usb_sie") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_FAST_PLACE_GP;
   } else if (designName == "avr_core") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_FAST_PLACE_GP;
   } else if (designName == "RISC") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_FAST_PLACE_GP;
   } else if (designName == "openfpu64") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_FAST_PLACE_GP;
   } else if (designName == "cordic") {
     placerType = ENV_NTUPLACE_GP;
   } else if (designName == "reedsoldec") {
@@ -192,12 +264,14 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
 				     map<string, Cell*> &mapOfCellsStr,
 				     vector<Net *> &affectedNets,
 				     string clusterCellName, uint clusterWidth, 
-				     uint clusterHeight, double &clusterPlacementTime)
+				     uint clusterHeight, double &clusterPlacementTime,
+				     double &HPWL)
 {
   double globalPlacementTime;
   uint singleRowHeight, singleSiteWidth;
   string benchName, globalPlacerOpFile, finalOpFile;
   string designName, placerLogFile, placerName;
+  string placerTimeLogFile;
   string msg;
   Env &DesignEnv = DesignGetEnv();
   EnvGlobalPlacerType globalPlacer;
@@ -208,6 +282,7 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
   benchName = "__" + clusterCellName;
   globalPlacementTime = 0;
   clusterPlacementTime = 0;
+  HPWL = 0;
   designName = DesignEnv.EnvGetDesignName();
 
   getPlacerToPlaceCellsInCluster(designName, globalPlacer);
@@ -216,9 +291,11 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
   if (globalPlacer == ENV_NTUPLACE_GP) {
     globalPlacerOpFile = benchName + ".ntup.pl";
     placerLogFile = benchName + "_NTUPlaceLog";
+    placerTimeLogFile = benchName + "_NTUPlaceTimeLog";
   } else if (globalPlacer == ENV_FAST_PLACE_GP) {
     globalPlacerOpFile = benchName + "_FP_gp.pl";
     placerLogFile = benchName + "_FastPlaceLog";
+    placerTimeLogFile = benchName + "_FastPlaceTimeLog";
   }
 
   if (!dirExists(benchName)) {
@@ -262,10 +339,13 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
       } 
     }
   }
+
   if (globalPlacer == ENV_NTUPLACE_GP) {
-    clusterPlacementTime = getNTUPlacePlacementTime(placerLogFile);
+    getNTUPlacePlacementData(placerLogFile, placerTimeLogFile,
+			     clusterPlacementTime, HPWL);
   } else if (globalPlacer == ENV_FAST_PLACE_GP) {
-    clusterPlacementTime = getFastPlacePlacementTime(placerLogFile);
+    getFastPlacePlacementData(placerLogFile, placerTimeLogFile,
+			      clusterPlacementTime, HPWL);
   }
   /* If control of program reaches here, we have to assume that the 
      placement of this cluster is done */
@@ -902,14 +982,35 @@ void getNetsAndCellsOfCluster(HyperGraph &myGraph,
   }
 }
 
+inline
+void populateShapeVariations(vector<double> &heightVariations, double hPercent, 
+			     uint numSteps)
+{
+  uint idx;
+  double stepPercent, percentageChange;
+  stepPercent = hPercent / numSteps;
+  
+  for (idx = numSteps; idx > 0; idx--) {
+    percentageChange = stepPercent * idx;
+    heightVariations.push_back(-percentageChange);
+  }
+  for (idx = numSteps; idx > 0; idx--) {
+    percentageChange = stepPercent * idx;
+    heightVariations.push_back(+percentageChange);
+  }
+}
+
 void
-Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
+Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
+				  double hPercent, uint numSteps, 
+				  double &clusterPlacementTime)
 {
   Cell *cellPtr, *clusterCell;
   Pin *clusterPinPtr, *pinPtr;
   Net *netPtr;
   double cellArea, clusterArea;
-  double clusterPlacementTime, stepTime, heightVariation;
+  double stepTime, heightVariation;
+  double shapeHPWL;
   map<Net *, bool> internalNets, externalNets;
   vector<Net *> internalNetVec;
   map<Cell *, bool> internalCells; 
@@ -917,6 +1018,7 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
   map<Pin *, Pin *> pinMap;
   vector<Net *> affectedNets;
   vector<double> heightVariations;
+  vector<double> shapeHPWLVec;
   vector<double> clusterAreas;
   vector<pair<uint, uint> > dimensions;
   HyperGraph &myGraph = DesignGetGraph();
@@ -937,28 +1039,28 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
   /* Create a new cell */
   clusterCell = new Cell(0, 0, clusterCellName);
   (*clusterCell).CellSetIsCluster(true);
+  clusterPlacementTime = 0;
 
   /* STEP : IDENTIFY INTERNAL NETS, EXTERNAL NETS, INTERNAL CELLS, BOUNDARY CELLS 
      ALSO COMMIT THE CLUSTER IN THE HYPERGRAPH IN THIS STEP. PINS ARE ALSO
      CREATED HERE */
-  ProfilerStart("BoundaryCellPlacement");
+  stepTime = getCPUTime();
   getNetsAndCellsOfCluster(myGraph, clusterCell, cellArea, clusterCells, internalCells, 
 			   boundaryCells, internalNets, externalNets, affectedNets,
 			   pinMap);
-
-  //  heightVariations.push_back(hPercent);
-  //  heightVariations.push_back(-hPercent);
+  clusterPlacementTime += getCPUTime() - stepTime;
+  populateShapeVariations(heightVariations, hPercent, numSteps);
+  /* ADD THE VARIATION FOR THE SQUARE CLUSTER */ 
   heightVariations.push_back(0);
   numHeightVariations = heightVariations.size();
-  clusterPlacementTime = 0;
-  cout << "Creating cluster " << clusterCellName << " and generating shapes.." << endl;
   for (idx = 0; idx < numHeightVariations; idx++) {
     map<Cell *, bool> mapOfCells;
     map<string, Cell*> mapOfCellsString;
     heightVariation = heightVariations[idx];
+    shapeHPWL = 0;
     clusterShapeName = clusterCellName + "_" + getStrFromInt(idx);
     /* STEP : DEDUCE THE HEIGHT AND WIDTH OF THE CLUSTER */
-    DesignDeduceHeightAndWidth(clusterCells, 15, heightVariations[idx],
+    DesignDeduceHeightAndWidth(clusterCells, xPercent, heightVariations[idx],
 			       cellArea, clusterHeight, clusterWidth,
 			       clusterArea);
     clusterAreas.push_back(clusterArea);
@@ -978,25 +1080,17 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
     DesignGetBoundingBox(designMaxx, designMaxy);
     singleRowHeight = DesignGetSingleRowHeight();
     singleSiteWidth = DesignGetSingleSiteWidth();
-    //    cout << "*************************************" << endl;
-    //    cout << "Placing boundary cells for cluster : " << clusterShapeName << endl;
-    //    cout << "*************************************" << endl;
-    cout << "BEGIN: Place boundary cells.. TIME: " << getCPUTime() << endl;
     placeBoundaryCells(clusterCells, boundaryCells,
 		       clusterHeight, clusterWidth,
 		       designMaxx, designMaxy, singleRowHeight, 
 		       singleSiteWidth, stepTime);
-    cout << "END: Place boundary cells.. TIME: " << getCPUTime() << endl;
-    //    cout << "Time for placing boundary cells for cluster with height variation: " << heightVariation 
-    //	 << " is " << stepTime << endl;
     clusterPlacementTime += stepTime;
 
     /* STEP : EXECUTE A PLACER TO OBTAIN THE PLACEMENT OF ALL CELLS FOR THE CLUSTER */
     DesignPlaceCellsInClusterNew(clusterCells, mapOfCells, mapOfCellsString, affectedNets, 
 				 clusterShapeName, clusterWidth, clusterHeight, 
-				 stepTime);
-    //    cout << "Time for placing other cells for cluster with height variation: " << heightVariation 
-    //	 << " is " << stepTime << endl;
+				 stepTime, shapeHPWL);
+    shapeHPWLVec.push_back(shapeHPWL);
     clusterPlacementTime += stepTime;
     /* STEP : RECORD THE PLACEMENTS OF THE PLACED CELLS */
     for (cellNum = 0; cellNum < numCells; cellNum++) {
@@ -1010,6 +1104,7 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
 			   boundaryCells, clusterCells);
 
     /* STEP : ASSIGN PIN OFFSETS FOR THE CLUSTER */
+    stepTime = getCPUTime();
     if (heightVariations[idx] == 0) {
       MAP_FOR_ALL_ELEMS(pinMap, Pin*, Pin*, clusterPinPtr, pinPtr) {
 	Cell &thisCell = (*pinPtr).PinGetParentCell();
@@ -1019,15 +1114,14 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
 	Net &connectedNet = (*pinPtr).PinGetNet();
 	(*clusterPinPtr).Connect(connectedNet);
 	connectedNet.NetAddPin(*clusterPinPtr);
-	if (thisCell.CellGetName() == "o2385") {
-	  cout << "break here" << endl;
-	}
 	(*pinPtr).PinSetIsHidden(true);
       } END_FOR;
     }
+    clusterPlacementTime += getCPUTime() - stepTime;
   }
-  ProfilerStop();
-  
+  cout << "Created cluster with " << numHeightVariations 
+       << " shapes for: " << clusterCellName << endl;
+  stepTime = getCPUTime();
   /* STEP : HIDE INTERNAL NETS, CELLS OF THE CLUSTER */
   MAP_FOR_ALL_KEYS(internalNets, Net*, bool, netPtr) {
     DesignHideNet(netPtr);
@@ -1040,8 +1134,10 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
     cellPtr = (Cell *)clusterCells[idx];
     //    cout << "Hiding cell: " << (*cellPtr).CellGetName() << endl;
     DesignHideCell(cellPtr);
-    count++;
+    //    count++;
   }
+  clusterPlacementTime += getCPUTime() - stepTime;
+
   //  cout << "Hiding " << count << " cells" << endl;
   /* Create the cluster object for the list of cells */
   vector<uint> bCellIndices, rowNum, xPosInRow;
@@ -1054,13 +1150,11 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double hPercent)
   (*clusterOfCell).ClusterSetCellPositions(cellPositions);
   (*clusterOfCell).ClusterSetDimensions(dimensions);
   (*clusterOfCell).ClusterSetHeightVariations(heightVariations);
+  (*clusterOfCell).ClusterSetShapeHPWL(shapeHPWLVec);
   (*clusterOfCell).ClusterSetNumBoundaryCells(boundaryCells.size());
   (*clusterOfCell).ClusterSetPlacementTime(clusterPlacementTime);
   CellSetCluster(clusterCell, clusterOfCell);
 
-  cout << "Created cluster for " << numCells 
-       << " objects. Time: " << clusterPlacementTime 
-       << endl;
   /* STEP : ADD THE CLUSTER OBJECT TO THE TOP LEVEL */
   DesignAddOneClusterToDesignDB(clusterCell);
 }
@@ -1078,6 +1172,113 @@ Design::DesignClusterCellsFormShapes(vector<Cell *> &clusterCells)
 }
 
 
+inline void
+getNeighborClusterSize(Cell *clusterCell, HyperGraph &myGraph, double &minArea,
+		       double &maxArea, uint &numConnectedClusters)
+{
+  Cell *connectedCluster;
+  void *connectedNode;
+  vector<void *> connectedNodes;
+  double clusterHeight, clusterWidth, clusterArea;
+  uint clusterNodeIdx;
+  
+  connectedNodes = myGraph.GetConnectedNodes((void*)clusterCell);
+  minArea = DBL_MAX;
+  maxArea = 0;
+  numConnectedClusters = connectedNodes.size();
+  VECTOR_FOR_ALL_ELEMS(connectedNodes, void *, connectedNode) {
+    connectedCluster = (Cell *)connectedNode;
+    clusterHeight = (*connectedCluster).CellGetHeight();
+    clusterWidth = (*connectedCluster).CellGetWidth();
+    clusterArea = clusterHeight * clusterWidth;
+    if (clusterArea > maxArea) maxArea = clusterArea;
+    else if (clusterArea < minArea) minArea = clusterArea;
+  } END_FOR;
+}
+
+inline uint
+getNumSequentialCells(vector<Cell *> &cellsOfCluster)
+{
+  Cell *thisCell;
+  uint seqCellCount;
+
+  seqCellCount = 0;
+  VECTOR_FOR_ALL_ELEMS(cellsOfCluster, Cell *, thisCell) {
+    if ((*thisCell).CellIsSequential()) {
+      seqCellCount++;
+    }
+  } END_FOR;
+  
+  return (seqCellCount);
+}
+
+inline
+double getOverLap(double L1, double R1, double L2, double R2)
+{
+  double left, right;
+  double overlap;
+
+  right = R2;
+  if (R1 < R2) right = R1;
+  left = L2;
+  if (L1 > L2) left = L1;
+
+  overlap = (int)(right - left);
+  if (overlap < 0) overlap = 0.0;
+
+  return (overlap);
+}
+
+inline void
+getTotalClusterOverLap(Design &myDesign, double &totalOverlap, double &peakOverlap,
+		       double &percentageOverlap)
+{
+  Cell *clust1, *clust2;
+  map<string, Cell *> DesignClustersCopy = myDesign.DesignGetClusters();
+  map<string, Cell *> &DesignClusters = myDesign.DesignGetClusters();
+  map<Cell *, bool> visitedNodes;
+  string cellName1, cellName2;
+  double cellLeft1, cellRight1, cellTop1, cellBot1;
+  double cellLeft2, cellRight2, cellTop2, cellBot2;
+  double overlapx, overlapy;
+  double overlapArea, chipArea;
+  uint maxx, maxy;
+  
+  totalOverlap = 0;
+  peakOverlap = 0;
+  percentageOverlap = 0;
+  MAP_FOR_ALL_ELEMS(DesignClustersCopy, string, Cell *, cellName1, clust1) {
+    overlapArea = 0;
+    cellLeft1 = (*clust1).CellGetXpos();
+    cellRight1 = cellLeft1 + (*clust1).CellGetWidth();
+    cellBot1 = (*clust1).CellGetYpos();
+    cellTop1 = cellBot1 + (*clust1).CellGetHeight();
+    _KEY_DOES_NOT_EXIST(visitedNodes, clust1) {
+      visitedNodes[clust1] = 0;
+    }
+    MAP_FOR_ALL_ELEMS(DesignClusters, string, Cell *, cellName2, clust2) {
+      _KEY_EXISTS(visitedNodes, clust2) {
+	continue;
+      }
+      cellLeft2 = (*clust2).CellGetXpos();
+      cellRight2 = cellLeft2 + (*clust2).CellGetWidth();
+      cellBot2 = (*clust2).CellGetYpos();
+      cellTop2 = cellBot2 + (*clust2).CellGetHeight();
+      overlapx = getOverLap(cellLeft1, cellRight1, cellLeft2, cellRight2);
+      overlapy = getOverLap(cellBot1, cellTop1, cellBot2, cellTop2);
+      overlapArea += overlapx * overlapy;
+    } END_FOR;
+    totalOverlap += overlapArea;
+    if (overlapArea > peakOverlap) {
+      peakOverlap = overlapArea;
+    }
+  } END_FOR;
+  
+  myDesign.DesignGetBoundingBox(maxx, maxy);
+  chipArea = ((double)maxx) * maxy;
+  percentageOverlap = (totalOverlap / chipArea) * 100;
+}
+
 /* FUNCTION TO DUMP THE FOLLOWING INFORMATION FOR EACH CLUSTER:
    - TOTAL AREA 
    - TOTAL ROWS
@@ -1092,19 +1293,24 @@ Design::DesignDumpClusterInfo(string fileName)
   Cluster *clusterOfCell;
   Cell *clusterCellPtr;
   string cellName;
-  uint numBoundaryCells, numClusters;
+  uint numBoundaryCells, numClusters, numCells;
+  uint numSeqCells, numConnectedClusters;
   uint maxx, maxy;
   double chipArea;
   double clusterArea, cellArea, totalClusterArea;
+  double minNeighborArea, maxNeighborArea;
   double clusterHeight, clusterWidth;
   double clusterPlacementTime, totalClusterPlacementTime;
+  double totalOverlap, peakOverlap, percentOverlap;
   ulong totalClusterHeight, totalClusterWidth;
   double averageClusterWidth, averageClusterHeight;
   ofstream opFile;
   HyperGraph &myGraph = DesignGetGraph();
   
   opFile.open(fileName.data());
-  opFile << "# ClusterName\tcellArea\tclusterArea\tNumInternalNets\tNumBoundaryCells\tNumOtherClusterConnections" << endl; 
+  //  opFile << "# ClusterName\tcellArea\tclusterArea\tNumInternalNets\tNumBoundaryCells\tNumOtherClusterConnections" << endl; 
+  opFile << "#ClusterName\tNumCells\tNumSeqCells\tCellArea\tClusterArea\tNumInternalNets\tNumBoundCells\t";
+  opFile << "NumConnClusters\tLargestConnClustArea\tSmallestConnClustArea\tWirelength\tPlacementTime\t";
   totalClusterHeight = 0;
   totalClusterWidth = 0;
   numClusters = 0;
@@ -1113,7 +1319,13 @@ Design::DesignDumpClusterInfo(string fileName)
   totalClusterArea = 0;
   DESIGN_FOR_ALL_CLUSTERS((*this), cellName, clusterCellPtr) {
     clusterOfCell = (Cluster *)CellGetCluster(clusterCellPtr);
+    getNeighborClusterSize(clusterCellPtr, myGraph, minNeighborArea, maxNeighborArea, 
+			   numConnectedClusters);
     vector<Net *> &internalNets = (*clusterOfCell).ClusterGetInternalNets();
+    vector<Cell *> &cellsOfCluster = (*clusterOfCell).ClusterGetCellsOfCluster();
+    vector<double> &shapeHPWL = (*clusterOfCell).ClusterGetShapeHPWL();
+    numCells = cellsOfCluster.size();
+    numSeqCells = getNumSequentialCells(cellsOfCluster);
     numBoundaryCells = (*clusterOfCell).ClusterGetNumBoundaryCells();
     cellArea = (*clusterOfCell).ClusterGetCellArea();
     clusterHeight = (*clusterCellPtr).CellGetHeight();
@@ -1125,10 +1337,16 @@ Design::DesignDumpClusterInfo(string fileName)
     clusterPlacementTime = (*clusterOfCell).ClusterGetPlacementTime();
     totalClusterPlacementTime += clusterPlacementTime;
     opFile << cellName << "\t"
+	   << numCells << "\t"
+	   << numSeqCells << "\t"
 	   << cellArea << "\t"
 	   << clusterArea << "\t"
 	   << internalNets.size() << "\t"
 	   << numBoundaryCells << "\t"
+	   << numConnectedClusters << "\t"
+	   << maxNeighborArea << "\t"
+	   << minNeighborArea << "\t"
+	   << shapeHPWL[shapeHPWL.size() - 1] << "\t"
 	   << clusterPlacementTime << "\t"
 	   << endl;
     numClusters++;
@@ -1139,13 +1357,15 @@ Design::DesignDumpClusterInfo(string fileName)
   averageClusterHeight = ((double)totalClusterHeight) / numClusters;
   DesignSetAverageClusterCellWidth(averageClusterWidth);
   DesignSetAverageClusterCellHeight(averageClusterHeight);  
+  getTotalClusterOverLap((*this), totalOverlap, peakOverlap, percentOverlap);
   cout << "Total cluster placement time : " << totalClusterPlacementTime << endl;
   cout << "       Average cluster height: " << averageClusterHeight << endl;
   cout << "       Average cluster width : " << averageClusterWidth << endl;
-  cout << "                 Chip Height : " << maxy << endl;
-  cout << "                  Chip Width : " << maxx << endl;  
   cout << "                Cluster Area : " << totalClusterArea << endl;
   cout << "                   Chip Area : " << chipArea << endl;
+  cout << "      Total overlapping area : " << totalOverlap << endl;
+  cout << " Percentage overlapping area : " << percentOverlap << endl;
+  cout << "       Peak overlapping area : " << peakOverlap << endl;
   cout << "           Final Utilization : " << ((double)totalClusterArea)/chipArea << endl;
   opFile.close();
 }
@@ -1225,26 +1445,28 @@ Design::DesignUnclusterLargeCluster(Cell *clusterCell, bool noDissolve)
 }
 
 void
-Design::DesignFormClusters(vector<vector<Cell *> > &clusters)
+Design::DesignFormClusters(vector<vector<Cell *> > &clusters, double &totalTime)
 {
-  uint idx;
-  uint numClusters;
+  double actualTime, clusterPlacementTime;
+  uint idx, numClusters;
   int status;
-  
+  Env &DesignEnv = DesignGetEnv();
+  double hVariationPercent = 
+    DesignEnv.EnvGetClusterHVariationPercentage();
+  double xPercent = 
+    DesignEnv.EnvGetClusterAddAreaPercentage();
+  uint numSteps = 
+    DesignEnv.EnvGetNumHVariationSteps();
   numClusters = clusters.size();
-  if (0) {
-  cout << "BEGINNING TO RUN EXEC:" << getCPUTime() << endl;
-  status = executeCommand("ls");
-  cout << "FINISHED RUN EXEC:" << getCPUTime() << endl;
-  if (status == -1) {
-    cout << "Error in executing the command" << endl;
-  }
-  exit(0);
-  }
+  totalTime = 0;
+  actualTime = getCPUTime();
   for (idx = 0; idx < numClusters; idx++) {
     vector<Cell *> &clusterCells = clusters[idx];
-    DesignCreateClusterObject(clusterCells, 50);
+    DesignCreateClusterObject(clusterCells, xPercent, hVariationPercent,
+			      numSteps, clusterPlacementTime);
+    totalTime += clusterPlacementTime;
     //    if (idx == 10) break;
     //  break;
   }
+  actualTime = getCPUTime() - actualTime;
 }

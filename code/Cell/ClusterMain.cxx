@@ -135,6 +135,12 @@ Cluster::ClusterSetHeightVariations(vector<double> &heightVariations)
   this->heightVariations = heightVariations;
 }
 
+void
+Cluster::ClusterSetShapeHPWL(vector<double> &shapeHPWL)
+{
+  this->shapeHPWL = shapeHPWL;
+}
+
 uint
 Cluster::ClusterGetNumCells(void)
 {
@@ -229,6 +235,12 @@ vector<double>&
 Cluster::ClusterGetHeightVariations(void)
 {
   return (this->heightVariations);
+}
+
+vector<double>&
+Cluster::ClusterGetShapeHPWL(void)
+{
+  return (this->shapeHPWL);
 }
 
 void

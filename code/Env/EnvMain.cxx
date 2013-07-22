@@ -36,11 +36,15 @@ Env::Env()
   EnvSetClusterMaxArea(DEFAULT_CLUSTER_MAX_AREA);
   EnvSetClusterMaxWidth(DEFAULT_CLUSTER_MAX_WIDTH);
   EnvSetClusterBoundPenalty(DEFAULT_CLUSTER_BOUND_PENALTY);
+  EnvSetClusterHVariationPercentage(DEFAULT_CLUSTER_HVARIATION_PERCENTAGE);
+  EnvSetClusterAddAreaPercentage(DEFAULT_CLUSTER_ADDITIONAL_SPACE_PERCENT);
   /* Initialization of other integer variables */
   EnvSetClusterNumRows(DEFAULT_CLUSTER_NUM_ROWS);
   EnvSetNumClusters(DEFAULT_NUM_CLUSTERS);
   EnvSetImbalanceFactor(DEFAULT_IMBALANCE_FACTOR);
   EnvSetNumKHmetisRuns(DEFAULT_NUM_KHMETIS_RUNS);
+  EnvSetNumHVariationSteps(DEFAULT_NUM_HVARIATION_STEPS);
+
   /* Time related variables */
   /* Initialize start times to 0 */
   NetlistReadStartTime = 0;
@@ -448,6 +452,18 @@ Env::EnvGetNumKHmetisRuns(void)
   return (this->NumKHmetisRuns);
 }
 
+void
+Env::EnvSetNumHVariationSteps(uint NumHVariationSteps) 
+{
+  this->NumHVariationSteps = NumHVariationSteps;
+}
+
+uint
+Env::EnvGetNumHVariationSteps(void)
+{
+  return (this->NumHVariationSteps);
+}
+
 void 
 Env::EnvSetUseVarBounds(bool UseVarBounds)
 {
@@ -578,6 +594,30 @@ double
 Env::EnvGetClusterBoundPenalty(void) 
 {
   return (ClusterBoundPenalty);
+}
+
+void
+Env::EnvSetClusterHVariationPercentage(double ClusterHVariationPercentage) 
+{
+  this->ClusterHVariationPercentage = ClusterHVariationPercentage;
+}
+
+double
+Env::EnvGetClusterHVariationPercentage(void) 
+{
+  return (ClusterHVariationPercentage);
+}
+
+void
+Env::EnvSetClusterAddAreaPercentage(double ClusterAddAreaPercentage) 
+{
+  this->ClusterAddAreaPercentage = ClusterAddAreaPercentage;
+}
+
+double
+Env::EnvGetClusterAddAreaPercentage(void) 
+{
+  return (ClusterAddAreaPercentage);
 }
 
 void 

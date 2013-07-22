@@ -50,16 +50,15 @@ Design::DesignCoarsenNetlist(void)
   inputMaxWidth = floor(maxWidth * maxx);
   inputMaxArea = maxArea * ((double)maxx * maxy);
 
-  clusteringStartTime = getCPUTime();
   achievedClusteringRatio = DesignGetNumCells();
-  cout << "CLUSTERING BEGIN... CPU: " << getCPUTime() << "s" << endl;
   switch (clusterType) {
   case ENV_NO_CLUSTERING: 
     cout << "Clustering: No clustering " << endl;
     break;
   case ENV_LARGE_CLUSTERING:
     cout << "Clustering: Performing k-way clustering " << endl;
-    DesignDoKWayClustering(myGraph);
+    DesignDoKWayClustering(myGraph, true, clusteringTime);
+    DesignEnv.EnvRecordClusteringTime(clusteringTime);
     break;
   case ENV_FIRST_CHOICE_CLUSTERING:
     cout << "Clustering: First choice clustering. Not ready yet " << endl;
@@ -88,13 +87,12 @@ Design::DesignCoarsenNetlist(void)
     break;
   }
 
+  DesignEnv.EnvRecordClusteringTime(clusteringTime);
   achievedClusteringRatio = DesignGetNumTopCells() / achievedClusteringRatio;
-  clusteringTime = getCPUTime() - clusteringStartTime;
   cout << "CLUSTERING DONE. CPU: " << clusteringTime << "s" << endl;
   cout << "CLUSTERING RATIO ACHIEVED: " << achievedClusteringRatio << endl;
-  cout << "Dumping cluster information.....";
-  DesignDumpClusterInfo(DesignName);
-  cout << "Done" << endl;
+  cout << "Dumping cluster information: PRE-TOP LEVEL PLACEMENT" << endl;
+  DesignDumpClusterInfo((DesignName + ".csv"));
   //  DesignWriteBookShelfOutput((*this), "usb_sie_clust");
 }
 
@@ -109,32 +107,12 @@ Design::DesignCollapseClusters(void)
   string clustDir;
   HyperGraph &myGraph = DesignGetGraph();
 
-  //  return;
-  if (0) {
-    cellPtr = DesignGetNode("c2405");
-    cellsToSolve.push_back(cellPtr);
-    DesignPlotDataSelected("Before unclustering", "before.plt", cellsToSolve);
-    clusterOfCell = (Cluster *) CellGetCluster(cellPtr);
-    (*clusterOfCell).PrintCluster();
-    cellsToSolve = (*clusterOfCell).ClusterGetCellsOfCluster();
-    DesignUnclusterCell(cellPtr, /* noDissolve = false */false);
-    DesignPlotDataSelected("After unclustering", "after.plt", cellsToSolve);
-    return;
-  } else {
-    //    if (0) {
-      map<string, Cell*> DesignClusterMap = DesignGetClusters();
-      map<string, Cell*>::iterator mapIter;
-      for (mapIter = DesignClusterMap.begin(); mapIter != DesignClusterMap.end(); mapIter++) {
-	cellName = mapIter->first;
-	cellPtr = mapIter->second;
-
-	//    cout << "Unclustering cell " << cellName << endl;
-	//    if (cellName == "c205") {
-	//      cout << "Break here" << endl;
-	//    }
-	DesignUnclusterLargeCluster(cellPtr, /* noDissolve = false */false);
-      }
-      //    }
+  map<string, Cell*> DesignClusterMap = DesignGetClusters();
+  map<string, Cell*>::iterator mapIter;
+  for (mapIter = DesignClusterMap.begin(); mapIter != DesignClusterMap.end(); mapIter++) {
+    cellName = mapIter->first;
+    cellPtr = mapIter->second;
+    DesignUnclusterLargeCluster(cellPtr, /* noDissolve */false);
   }
 }
 
@@ -240,15 +218,13 @@ Design::DesignDoGlobalPlacement(void)
   
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
   solverType = DesignEnv.EnvGetSolverType();
-  
+  string DesignName = DesignEnv.EnvGetDesignName();
   /***************************/
   /* Optional: Do clustering */
   /***************************/
   /* Record start time of clustering */
-  DesignEnv.EnvSetClusteringStartTime();
   DesignCoarsenNetlist();
   /* Record end time of clustering */
-  DesignEnv.EnvRecordClusteringTime();
 
   if (globalPlacerType == ENV_NO_PLACEMENT) {
     return;
@@ -278,6 +254,8 @@ Design::DesignDoGlobalPlacement(void)
     //    cout << "Time taken: " << cpuTimeSpent << endl;
     //DesignEnv.EnvRecordGlobalPlacementTime(cpuTimeSpent);
   }
+  cout << "Dumping cluster information: POST-TOP LEVEL PLACEMENT" << endl;
+  DesignDumpClusterInfo((DesignName + ".csv"));
   //  ProfilerStart("Unclustering");
   DesignCollapseClusters();
   //  ProfilerStop();

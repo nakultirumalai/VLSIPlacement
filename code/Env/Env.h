@@ -132,6 +132,9 @@ typedef enum {
 # define DEFAULT_CLUSTER_MAX_AREA 0.25
 # define DEFAULT_CLUSTER_MAX_WIDTH 0.25
 # define DEFAULT_CLUSTER_BOUND_PENALTY 1
+# define DEFAULT_CLUSTER_HVARIATION_PERCENTAGE 50
+# define DEFAULT_CLUSTER_ADDITIONAL_SPACE_PERCENT 15
+# define DEFAULT_NUM_HVARIATION_STEPS 0
 # define DEFAULT_CLUSTER_NUM_ROWS 0
 # define DEFAULT_NUM_CLUSTERS 100
 # define DEFAULT_IMBALANCE_FACTOR 5
@@ -226,6 +229,9 @@ class Env {
   /* Variable to indicate the number of runs of khmetis that 
      needs to run */
   uint NumKHmetisRuns;
+  /* Variable to indicate the number of steps in which the 
+     height variation must be performed */
+  uint NumHVariationSteps;
 
   /***************************************/
   /* BOOLEAN VARIABLES                   */
@@ -264,7 +270,14 @@ class Env {
   double ClusterMaxWidth;
   /* Double cluster bound penalty */
   double ClusterBoundPenalty;
-    
+  /* The maximum percentage in height that the height 
+     must be varied */
+  double ClusterHVariationPercentage;
+  /* The percentage of additional space that must 
+     be alloted when allocating space for placing
+     cells inside the cluster */
+  double ClusterAddAreaPercentage;
+  
   /***************************************/
   /* CUSTOM ENUM VARIABLES               */
   /* ALL VALUES ARE DEFAULTED TO DEFAULT */
@@ -409,6 +422,9 @@ class Env {
   void EnvSetNumKHmetisRuns(uint);
   uint EnvGetNumKHmetisRuns(void);
 
+  void EnvSetNumHVariationSteps(uint);
+  uint EnvGetNumHVariationSteps(void);
+
   void EnvSetUseVarBounds(bool);
   bool EnvGetUseVarBounds(void);
 
@@ -441,6 +457,12 @@ class Env {
   
   void EnvSetClusterBoundPenalty(double);
   double EnvGetClusterBoundPenalty(void);
+
+  void EnvSetClusterHVariationPercentage(double);
+  double EnvGetClusterHVariationPercentage(void);
+
+  void EnvSetClusterAddAreaPercentage(double);
+  double EnvGetClusterAddAreaPercentage(void);
 
   void EnvSetGlobalPlacerType(EnvGlobalPlacerType);
   EnvGlobalPlacerType EnvGetGlobalPlacerType(void);
