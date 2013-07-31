@@ -25,7 +25,6 @@
 # define CELL_FOR_ALL_NETS(CellObj, Dir, NetPtr) {	\
   vector<Pin*> CellPins = CellObj.CellGetPins();	\
   Pin* PinPtr;						\
-  Net* NetPtr;						\
   map<Net*, bool> netHash;				\
   for (int n=0; n<CellPins.size(); n++) {		\
     PinPtr = CellPins[n];                               \

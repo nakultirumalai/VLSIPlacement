@@ -47,7 +47,7 @@ Design::DesignSolveForAllCellsForceDirected(void)
   /* STEP : EXECUTE THE FORCE DIRECTED SOLVER TO MINIMIZE 
             THE WIRELENGTH */
   HyperGraph &myGraph = DesignGetGraph();
-  FDPTopLevel(fixedCells, clusterCells, (int)numRows, (int)numSites,
-     	      rowHeight, siteWidth, true, myGraph);
+  FDPTopLevel(clusterCells, (int)numRows, (int)numSites,
+     	      rowHeight, siteWidth, myGraph);
   /* STEP : FINISH */
 }

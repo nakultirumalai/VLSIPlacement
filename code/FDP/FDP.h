@@ -50,8 +50,8 @@ class FDPSite{
   void FDPSiteRemoveCell(void);
 };
 
-extern void FDPTopLevel(vector<Cell*> &, vector<Cell*> &, int, int, 
-			 int, int, bool, HyperGraph &);
+extern void FDPTopLevel(vector<Cell*> &, int, int, 
+			 int, int, HyperGraph &);
 
 
 # endif
