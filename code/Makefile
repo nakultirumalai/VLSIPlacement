@@ -6,10 +6,10 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 LIB_DIR=$(CODE_ROOT)/libs
 
 #LIBSOOQP= -lblas /usr/local/lib/libma27.a -lgfortran -lprofiler
-LIBSOOQP= -lblas -lgfortran -lprofiler 
+LIBSOOQP= -lblas -lgfortran #-lprofiler 
 
 LIBQUADPROG= #-lQuadProgpp
-LIBMOSEK= -lmosek64 -pthread
+LIBMOSEK= -lmosek64
 
 #LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
 LIBS= -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
@@ -58,6 +58,9 @@ COMPILE_ALL: $(SRCDIRS)
 	done	
 
 GEN_EXEC: main.cxx $(OBJFILES) 
+#	$(CC) -c main.cxx -o $(OBJDIR)/main.o -I $(INCLUDE_DIR)
+#	$(CC) -c variables.cxx -o $(OBJDIR)/variables.o -I $(INCLUDE_DIR)
+#	ld -r $(OBJDIR)/main.o $(OBJDIR)/variables.o ./libs/libhmetis.a -o $(OFILE)
 	$(CC) $(CFLAGS) $(LFLAGS) $(OBJFILES) main.cxx variables.cxx -o $(OFILE) -I $(INCLUDE_DIR) $(LIBS)
 
 GEN_EXEC-g: main.cxx $(OBJFILES) 

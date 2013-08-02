@@ -114,7 +114,6 @@ Design::DesignTestCellMovement(void)
     //  curHPWL = DesignGetHPWL();
     cellPtr = DesignGetNode("o72");
     CELL_FOR_ALL_NETS((*cellPtr), PIN_DIR_ALL, netPtr) {
-      (*netPtr).NetComputeHPWL(oldxHPWL, oldyHPWL, curxHPWL, curyHPWL);
       totalXHPWL += curxHPWL;
       totalYHPWL += curyHPWL;
     } CELL_END_FOR;
@@ -137,7 +136,7 @@ Design::DesignTestCellMovement(void)
     totalXHPWL = 0;
     totalYHPWL = 0;
     CELL_FOR_ALL_NETS((*cellPtr), PIN_DIR_ALL, netPtr) {
-      (*netPtr).NetComputeHPWL(oldxHPWL, oldyHPWL, curxHPWL, curyHPWL);
+      //      (*netPtr).NetComputeHPWL(oldxHPWL, oldyHPWL, curxHPWL, curyHPWL);
       totalXHPWL += curxHPWL;
       totalYHPWL += curyHPWL;
     } CELL_END_FOR;
@@ -183,7 +182,7 @@ Design::DesignDoILRIter(void)
   uint maxIter = 20;
   string plotFileName = DesignName + "_ILR_" + getStrFromInt(ilrItrCount) + ".plt";
   DesignPlotData("Title", plotFileName);
-  ProfilerStart("ILR");
+  //  ProfilerStart("ILR");
   while (1) {
     prevHPWL2 = prevHPWL1;
     prevHPWL1 = curHPWL;
@@ -200,7 +199,7 @@ Design::DesignDoILRIter(void)
     }
     DesignRefreshBins();
   }
-  ProfilerStop();
+  //  ProfilerStop();
   plotFileName = DesignName + "_ILR_" + getStrFromInt(ilrItrCount) + ".plt";
   DesignPlotData("Title", plotFileName);
 }

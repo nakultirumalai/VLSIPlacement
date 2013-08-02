@@ -11,18 +11,24 @@
   map<string, Pin*>::iterator mapIter; \
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
     pinPtr = (Pin*)(mapIter->second);					\
-    if ((*pinPtr).PinIsHidden()) continue;                              \
+    if ((*pinPtr).isHidden) continue;					\
     Cell &ParentCell = (*pinPtr).PinGetParentCell();			\
     CellPtr = &ParentCell;
 
-# define NET_FOR_ALL_PINS(Net, PinPtr) \
+# define NET_FOR_ALL_PINS(Net, PinPtr)			\
+  {							\
+  vector<Pin*> &netPins = Net.NetGetAllPinsVector();	\
+  uint __numPins = netPins.size();			\
+  for (uint idx = 0; idx < __numPins; idx++) {		\
+  PinPtr = netPins[idx];				\
+  if ((*PinPtr).isHidden) continue;                                
+
+# define NET_FOR_ALL_PINS_NO_FILT(Net, PinPtr) \
   {						\
   map<string, Pin*> NetPins = Net.NetGetPins();	\
   map<string, Pin*>::iterator mapIter; \
   for (mapIter = NetPins.begin(); mapIter != NetPins.end(); mapIter++) { \
   PinPtr = mapIter->second;						\
-  if ((*PinPtr).PinIsHidden()) continue;                                
-  
 
 # define NET_FOR_ALL_PINS_DIR(Net, direction, PinPtr)	\
   {								\

@@ -1,6 +1,7 @@
 # include <common.h>
 # include <NetIter.h>
 # include <Pin.h>
+# include <Cell.h>
 
 # ifndef NET_H
 # define NET_H
@@ -21,6 +22,7 @@ class Net {
   map<string, Pin*> outPins;
   map<string, Pin*> Pins;
   vector<Pin *> PinsVecX, PinsVecY;
+  vector<Pin *> PinList;
   uint maxx, maxy, minx, miny;
   uint xhpwl, yhpwl;
   Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;
@@ -55,13 +57,12 @@ class Net {
   string NetGetName(void);
   bool NetGetDirtyHPWL(void);
   bool NetIsUnderCluster(void);
-  void NetComputeHPWL(uint &, uint &, uint &, uint &);
   void NetComputeHPWL(uint &, uint &);
   bool NetIsHidden(void);
-  void NetGetHPWL(uint &, uint&);
   
   map<string, Pin*>& NetGetPins(void);
   map<string, Pin*>& NetGetPins(char);
+  vector<Pin *> &NetGetAllPinsVector(void);
   ~Net();
 };
 

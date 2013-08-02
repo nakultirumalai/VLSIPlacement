@@ -121,6 +121,7 @@ void common_error(string);
 void common_message(string);
 
 string getStrFromInt(int);
+string getStrFromDouble(double);
 
 double dround(double);
 int dtoi(double);

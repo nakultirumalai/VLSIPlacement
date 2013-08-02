@@ -7,7 +7,6 @@
   vector<Pin*> CellPins = CellObj.CellGetPins();	\
   for (int n=0; n<CellPins.size(); n++) {		\
     PinPtr = CellPins[n];				\
-    if (PinIsPseudo(PinPtr)) continue;			\
     if (Dir != PIN_DIR_ALL &&				\
 	Dir != (*PinPtr).PinGetDirection()) {		\
       continue;						\
@@ -25,15 +24,20 @@
 # define CELL_FOR_ALL_NETS(CellObj, Dir, NetPtr) {	\
   vector<Pin*> CellPins = CellObj.CellGetPins();	\
   Pin* PinPtr;						\
-  map<Net*, bool> netHash;				\
   for (int n=0; n<CellPins.size(); n++) {		\
     PinPtr = CellPins[n];                               \
-    if (PinIsPseudo(PinPtr)) continue;			\
     if (Dir != PIN_DIR_ALL &&				\
 	Dir != (*PinPtr).PinGetDirection()) {		\
       continue;						\
     }							\
     NetPtr = &((*PinPtr).PinGetNet());			
+
+# define CELL_FOR_ALL_NETS_NO_DIR(CellObj, NetPtr) {	\
+  vector<Pin*> CellPins = CellObj.CellGetPins();	\
+  Pin* PinPtr;						\
+  for (int n=0; n<CellPins.size(); n++) {		\
+  PinPtr = CellPins[n];					\
+  NetPtr = &((*PinPtr).PinGetNet());			
 
 # define CELL_END_FOR }}
 

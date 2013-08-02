@@ -18,13 +18,22 @@ common_message(std::string MessageString)
 # endif 
 }
 
-
 string 
 getStrFromInt(int thisInt)
 {
   stringstream oss;
   
   oss << thisInt;
+  
+  return oss.str();
+}
+
+string 
+getStrFromDouble(double thisDouble)
+{
+  stringstream oss;
+  
+  oss << thisDouble;
   
   return oss.str();
 }
@@ -70,8 +79,8 @@ int dtoi(double thisDouble)
   int upper, lower;
   int rtv;
   
-  upper = ceil(thisDouble);
   lower = floor(thisDouble);
+  upper = lower + 1;
   
   rtv = thisDouble;
   if ((((double)upper) - thisDouble) >= (((double)thisDouble) - lower)) {

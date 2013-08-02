@@ -51,7 +51,7 @@ void DesignWriteNets(Design &myDesign, string fname)
   DESIGN_FOR_ALL_NETS(myDesign, netName, netPtr) {
     numNetPins = 0;
     string netString;
-    NET_FOR_ALL_PINS((*netPtr), pinPtr) {
+    NET_FOR_ALL_PINS_NO_FILT((*netPtr), pinPtr) {
       if ((*pinPtr).PinGetDirection() == PIN_DIR_INPUT) {
 	pinDir = "I";
       } else {
@@ -59,9 +59,6 @@ void DesignWriteNets(Design &myDesign, string fname)
       }
       Cell &cellOfPin = (*pinPtr).PinGetParentCell();
       cellName = cellOfPin.CellGetName();
-      if (cellName == "o2385") {
-	cout << "break here" << endl;
-      }
       pinXOffset = (*pinPtr).PinGetXOffset();
       pinYOffset = (*pinPtr).PinGetYOffset();
       pinXOffset -= cellOfPin.CellGetWidth();

@@ -130,6 +130,7 @@ Net::NetAddPin(Pin& pinToAdd)
   Pins[Name] = (Pin *) pinPtr;
   PinsVecX.push_back(pinPtr);
   PinsVecY.push_back(pinPtr);
+  PinList.push_back(pinPtr);
   this->pinCount++;
   if (pinToAdd.PinGetDirection() == PIN_DIR_INPUT) {
     inPins[Name] = (Pin *) &pinToAdd;
@@ -222,73 +223,50 @@ Net::NetIsUnderCluster(void)
   return (this->isUnderCluster);
 }
 
-
-void
-Net::NetComputeHPWL(uint &xOldHPWL, uint &yOldHPWL, uint &xNewHPWL, uint &yNewHPWL)
-{
-  Pin *pinPtr;
-  //  struct cmpPinXposStruct cmpPinXpos;
-  //  struct cmpPinYposStruct cmpPinYpos;
-
-  xOldHPWL = xhpwl;
-  yOldHPWL = yhpwl;
-  
-  if (NetGetDirtyHPWL()) {
-    //    cout << name << " is dirty" << endl;
-    //    std::sort(PinsVecX.begin(), PinsVecX.end(), cmpPinXpos);
-    //    std::sort(PinsVecY.begin(), PinsVecY.end(), cmpPinYpos);
-    maxx = (*PinsVecX[0]).PinGetAbsXPos();
-    maxy = (*PinsVecY[0]).PinGetAbsYPos();
-    minx = (*PinsVecX[pinCount - 1]).PinGetAbsXPos();
-    miny = (*PinsVecY[pinCount - 1]).PinGetAbsYPos();
-    NetSetDirtyHPWL(false);
-  }
-  xNewHPWL = maxx - minx; xhpwl = xNewHPWL;
-  yNewHPWL = maxy - miny; yhpwl = yNewHPWL;
-}
-
 void
 Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
 {
   Pin *pinPtr;
   Cell *cellPtr;
   uint cellXpos, cellYpos;
-  uint pinXPos, pinYPos;
-  //  struct cmpPinXposStruct cmpPinXpos;
-  //  struct cmpPinYposStruct cmpPinYpos;
+  uint pinXpos, pinYpos;
   uint idx;
+  
+  maxx = 0;
+  maxy = 0;
+  minx = INT_MAX;
+  miny = INT_MAX;
 
-  if (NetGetDirtyHPWL()) {
-    maxx = 0;
-    maxy = 0;
-    minx = INT_MAX;
-    miny = INT_MAX;
-    for (idx = 0; idx < pinCount; idx++) {
-      pinPtr = PinsVecX[idx];
-      pinXPos = (*pinPtr).PinGetAbsXPos();
-      pinYPos = (*pinPtr).PinGetAbsYPos();
-      if (maxx < pinXPos) maxx = pinXPos;
-      if (minx > pinXPos) minx = pinXPos;
-      if (maxy < pinYPos) maxy = pinYPos;
-      if (miny > pinYPos) miny = pinYPos;
-      idx++;
-      if (idx == pinCount) continue;
-      pinPtr = PinsVecX[idx];
-      pinXPos = (*pinPtr).PinGetAbsXPos();
-      pinYPos = (*pinPtr).PinGetAbsYPos();
-      if (maxx < pinXPos) maxx = pinXPos;
-      if (minx > pinXPos) minx = pinXPos;
-      if (maxy < pinYPos) maxy = pinYPos;
-      if (miny > pinYPos) miny = pinYPos;
+  //  cout << "HPWL: Net: " << name << endl;
+  for (idx = 0; idx < pinCount; idx++) {
+    pinPtr = PinsVecX[idx];
+    if ((*pinPtr).PinIsHidden()) {
+      continue;
     }
-    /*    maxx = (*PinsVecX[0]).PinGetAbsXPos();
-    maxy = (*PinsVecY[0]).PinGetAbsYPos();
-    minx = (*PinsVecX[pinCount - 1]).PinGetAbsXPos();
-    miny = (*PinsVecY[pinCount - 1]).PinGetAbsYPos();
-    */
-    NetSetDirtyHPWL(false);
+    cellPtr = (*pinPtr).PinGetParentCellPtr();
+    pinXpos = pinPtr->xOffset + cellPtr->x;
+    pinYpos = pinPtr->yOffset + cellPtr->y;
+    //    cout << "Cell: " << (*cellPtr).CellGetName() << " X: " << cellPtr->x << " Y: " << cellPtr->y 
+    //	 << " Abs: X: " << pinXpos << " Y: " << pinYpos << endl;
+    if (maxx < pinXpos) {
+      maxx = pinXpos;
+      pinMaxx = pinPtr;
+    }
+    if (maxy < pinYpos) {
+      maxy = pinYpos;
+      pinMaxy = pinPtr;
+    }
+    if (minx > pinXpos) {
+      minx = pinXpos;
+      pinMinx = pinPtr;
+    }
+    if (miny > pinYpos) {
+      miny = pinYpos;
+      pinMiny = pinPtr;
+    }
   }
-
+  //  cout << "     Maxx : " << maxx << "   Maxy : " << maxy << endl;
+  //  cout << "     Minx : " << minx << "   Miny : " << miny << endl;
   xHPWL = maxx - minx; 
   yHPWL = maxy - miny; 
 }
@@ -312,4 +290,9 @@ map<string, Pin*>& Net::NetGetPins(char direction)
   if (direction == PIN_DIR_OUTPUT) {
     return this->outPins;
   }
+}
+
+vector<Pin *> & Net::NetGetAllPinsVector(void)
+{
+  return (this->PinList);
 }

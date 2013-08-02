@@ -2,9 +2,9 @@
 
 /* Set functions */
 void
-FDPSite::FDPSiteSetHasCell(Cell *thisCell)
+FDPSite::FDPSiteSetCell(Cell *thisCell)
 {
-  this->siteHasCell = thisCell;
+  this->siteCell = thisCell;
 }
 
 void
@@ -41,15 +41,35 @@ FDPSite::FDPSiteSetRowNum(int rowNum)
 /* Get Functions */
 
 Cell*
-FDPSite::FDPSiteGetHasCell(void) 
+FDPSite::FDPSiteGetCell(void) 
 {
-  return this->siteHasCell;
+  return this->siteCell;
 }
 
 bool
 FDPSite::FDPSiteGetIsLocked(void)
 {
   return this->siteIsLocked;
+}
+
+bool
+FDPSite::FDPSiteIsOccupied(void)
+{
+  bool rtv;
+
+  rtv = (this->siteCell != NIL(Cell *));
+  
+  return (rtv);
+}
+
+bool
+FDPSite::FDPSiteIsVacant(void)
+{
+  bool rtv;
+
+  rtv = (this->siteCell == NIL(Cell *));
+  
+  return (rtv);
 }
 
 int
@@ -80,14 +100,14 @@ FDPSite::FDPSiteGetRowNum(void)
 void
 FDPSite::FDPSiteRemoveCell(void)
 {
-  this->siteHasCell = NIL(Cell*);
+  this->siteCell = NIL(Cell*);
 }
 
 /* Constructors and Destructors */
 FDPSite::FDPSite()
 {
   Cell *nullCell = NIL(Cell*);
-  FDPSiteSetHasCell(nullCell);
+  FDPSiteSetCell(nullCell);
   FDPSiteSetIsLocked(0);
   FDPSiteSetXpos(0);
   FDPSiteSetYpos(0);

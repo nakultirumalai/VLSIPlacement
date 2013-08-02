@@ -19,13 +19,13 @@ class Pin {
   double cellXpos, cellYpos;
   char dir; 
   bool isClock;
-  bool isHidden;
   string libPinName;
   string Name;
  public:
   Cell *ParentCell;
   Net *ConnectedNet;
   int xOffset, yOffset;
+  bool isHidden;
 
   /* Constructors */
   Pin();

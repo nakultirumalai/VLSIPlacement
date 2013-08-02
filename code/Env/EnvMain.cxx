@@ -17,6 +17,8 @@ Env::Env()
   EnvSetDiscreteHeight(true); /* WATCH: Default value is true */
   EnvSetRecursiveBiPartitioning(false);
   EnvSetPlaceCellsInCluster(true);
+  EnvSetPlaceCellsInClusterPostTop(true);
+  EnvSetUseFDPlacer(DEFAULT_USE_FD_PLACER);
   EnvSetGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
   EnvSetSolverType(DEFAULT_ENV_SOLVER_TYPE);
   EnvSetNetModel(DEFAULT_ENV_NET_MODEL);
@@ -30,6 +32,7 @@ Env::Env()
   EnvSetClusterPlacementType(DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE);
   EnvSetUnclusterType(DEFAULT_ENV_UNCLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
+  EnvSetFlowType(DEFAULT_ENV_FLOW_TYPE);
   /* Initilization of double variables */
   EnvSetMaxUtilPhaseI(DEFAULT_MAX_UTILIZATION_PHASEI);
   EnvSetClusteringRatio(DEFAULT_CLUSTERING_RATIO);
@@ -537,6 +540,30 @@ Env::EnvGetPlaceCellsInCluster(void)
 }
 
 void
+Env::EnvSetUseFDPlacer(bool UseFDPlacer) 
+{
+  this->UseFDPlacer = UseFDPlacer;
+}
+
+bool
+Env::EnvGetUseFDPlacer(void)
+{
+  return (this->UseFDPlacer);
+}
+
+void
+Env::EnvSetPlaceCellsInClusterPostTop(bool PlaceCellsInClusterPostTop)
+{
+  this->PlaceCellsInClusterPostTop = PlaceCellsInClusterPostTop;
+}
+
+bool
+Env::EnvGetPlaceCellsInClusterPostTop(void)
+{
+  return (this->PlaceCellsInClusterPostTop);
+}
+
+void
 Env::EnvSetMaxUtilPhaseI(double MaxUtilPhaseI) 
 {
   this->MaxUtilPhaseI = MaxUtilPhaseI;
@@ -773,6 +800,19 @@ Env::EnvGetShapeSelectionType(void)
 {
   return ShapeSelectionType;
 }
+
+void 
+Env::EnvSetFlowType(EnvFlowType FlowType)
+{
+  this->FlowType = FlowType;
+}
+
+EnvFlowType 
+Env::EnvGetFlowType(void)
+{
+  return (FlowType);
+}
+
 
 void
 Env::EnvSetOutputFileName(string OutputFileName)

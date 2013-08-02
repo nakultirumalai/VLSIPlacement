@@ -262,19 +262,24 @@ Design::DesignComputeHPWL()
   ulong totalXHPWL, totalYHPWL;
   ulong totalHPWL;
   uint xHPWL, yHPWL;
+  uint netCount;
   
   totalXHPWL = 0.0;
   totalYHPWL = 0.0;
   totalHPWL = 0.0;
+  netCount = 0;
   DESIGN_FOR_ALL_NETS((*this), netName, netPtr) {
     (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
     totalXHPWL += xHPWL;
     totalYHPWL += yHPWL;
     totalHPWL += (xHPWL + yHPWL);
+    //    cout << "Computed HPWL of Net: " << (xHPWL + yHPWL) << endl;
+    netCount++;
   } DESIGN_END_FOR;
   this->DesignXHPWL = totalXHPWL;
   this->DesignYHPWL = totalYHPWL;
   this->DesignHPWL = totalHPWL;
+  //  cout << "Computed HPWL for : " << netCount << endl;
 }
 
 ulong 
@@ -307,35 +312,6 @@ Design::DesignSetYHPWL(ulong DesignYHPWL)
   this->DesignYHPWL = DesignYHPWL;
 }
 
-void
-Design::DesignCellGetMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, 
-				  long &diffXHPWL, long &diffYHPWL)
-{
-  Net *netPtr;
-  long oldXHPWL, oldYHPWL;
-  long newXHPWL, newYHPWL;
-  uint xPos, yPos;
-  uint netXHPWL, netYHPWL;
-  uint newNetXHPWL, newNetYHPWL;
-
-  Cell &thisCell = (*cellPtr);
-  thisCell.CellGetPos(xPos, yPos);
-  thisCell.CellSetPos(newXpos, newYpos);
-  oldXHPWL = 0; oldYHPWL = 0;
-  newXHPWL = 0; newYHPWL = 0;
-
-  CELL_FOR_ALL_NETS(thisCell, PIN_DIR_ALL, netPtr) {
-    (*netPtr).NetSetDirtyHPWL(true);
-    (*netPtr).NetComputeHPWL(netXHPWL, netYHPWL, newNetXHPWL, newNetYHPWL);
-    oldXHPWL += netXHPWL; oldYHPWL += netYHPWL;
-    newXHPWL += newNetXHPWL; newYHPWL += newNetYHPWL;
-  } CELL_END_FOR;
-
-  diffXHPWL = oldXHPWL - newXHPWL;
-  diffYHPWL = oldYHPWL - newYHPWL;
-  thisCell.CellGetPos(xPos, yPos);
-}
-
 inline void
 getCellMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, long &diffXHPWL, 
 		    long &diffYHPWL)
@@ -363,7 +339,6 @@ getCellMoveCostHPWL(Cell *cellPtr, uint newXpos, uint newYpos, long &diffXHPWL,
   newXHPWL = 0; newYHPWL = 0;
   oldXHPWL = 0; oldYHPWL = 0;
   CELL_FOR_ALL_NETS(thisCell, PIN_DIR_ALL, netPtr) {
-    (*netPtr).NetComputeHPWL(netOldXHPWL, netOldYHPWL, newNetXHPWL, newNetYHPWL);
     oldXHPWL += netOldXHPWL; oldYHPWL += netOldYHPWL;
     newXHPWL += newNetXHPWL; newYHPWL += newNetYHPWL;
     //    newXHPWL += netXHPWL; newYHPWL += netYHPWL;

@@ -20,6 +20,7 @@
 # include <ConjGradSolver.h>
 # include <PriorityQueue.h>
 # include <FDP.h>
+# include <metis.h>
 
 # define MAX_PATHS 1000000
 
@@ -338,10 +339,6 @@ class Design {
   void DesignSetHPWL(ulong);
   void DesignRemoveFromHPWL(ulong);
   void DesignAddToHPWL(ulong);
-  void DesignComputeHPWL(void);
-  ulong DesignGetHPWL(void);
-  ulong DesignGetXHPWL(void);
-  ulong DesignGetYHPWL(void);
   void DesignSetXHPWL(ulong);
   void DesignSetYHPWL(ulong);
 
@@ -384,6 +381,12 @@ class Design {
   void DesignReadPinsMapFile();
   void DesignReadCellDelaysFile();
   void DesignReadPathDelays();
+
+  /* HPWL functions */
+  void DesignComputeHPWL(void);
+  ulong DesignGetHPWL(void);
+  ulong DesignGetXHPWL(void);
+  ulong DesignGetYHPWL(void);
 
   void DesignComputeBinSize(bool);
   void DesignComputeBinSize(uint, uint);
@@ -460,12 +463,13 @@ class Design {
   void DesignRunExternalPlacer(EnvGlobalPlacerType);
   void DesignRunInternalPlacer(EnvSolverType);
   int DesignRunKHMetis(string, uint, uint, uint, uint, uint, uint, uint);
+  int DesignRunKHMetis2(string, bool, string, string, string, double, uint, uint, uint);
   int DesignRunNTUPlace(string, string, double &, bool, bool, bool, string&);
   int DesignRunFastPlace(string, string, double &, bool, bool, bool, string&);
   int DesignRunFastPlaceLegalizer(string, string, bool, bool);
   int DesignRunFastPlaceLegalizerForCluster(string, string, string);
   int DesignRunFastPlaceDetailedPlacer(string, string, bool, bool);
-  int DesignRunMPL6(string, string, double &, bool, bool);
+  int DesignRunMPL6(string, string, double &, bool, bool, bool);
 
   /* Clustering functions */
   //void DesignClusterCells(HyperGraph&, clusteringType);
@@ -487,6 +491,7 @@ class Design {
   void DesignDoKWayClustering(HyperGraph &, bool, double &);
   void DesignPartitionKWayHmetis(HyperGraph &, int, int, int, int*,
 				 bool, bool, bool, double &);
+  void DesignFillCellsInCluster(void);
   
   //  bool DesignDoFCCluster(HyperGraph&);
   //  bool DesignDoNetCluster(HyperGraph&);
@@ -526,12 +531,15 @@ class Design {
   void DesignDeduceHeightAndWidth(vector<Cell *> &, double, double, double, 
 				  uint &, uint &, double &);
   void DesignCreateClusterObject(vector<Cell *> &, double, double, uint, double &);
+  void DesignClusterPlaceCells(Cell *);
   void DesignUnclusterLargeCluster(Cell*, bool);
   void DesignClusterCellsFormShapes(vector<Cell *> &);
   void DesignFormClusters(vector<vector<Cell *> > &, double &);
   void DesignPlaceCellsInClusterNew(vector<Cell *> &, map<Cell *, bool> &,
 				    map<string, Cell*> &, vector<Net *> &, 
-				    string, uint, uint, double &, double &);
+				    vector<Net *> &, vector<pair<double, double> > &,
+				    vector<double> &, string, uint, uint, double &, 
+				    double &);
   void DesignReadPlacerOutput(string, map<string, Cell*> &);
   void DesignDumpClusterInfo(string);
 
@@ -637,12 +645,8 @@ extern void DesignWriteOutputPlacement(Design& myDesign);
 extern void DesignWriteOutputPlacement(Design& myDesign, string outputFileName);
 extern void DesignWriteBookShelfOutput(Design& myDesign, string opName);
 extern void DesignWriteClusterData(vector<Cell *> &, vector<Net *> &, 
-				   map<Cell *, bool> &, string, 
-				   uint, uint, uint, uint, bool);
+				   vector<Net *> &, vector<pair<double, double> > &,
+				   vector<double> &netWeights, map<Cell *, bool> &, 
+				   string, uint, uint, uint, uint, bool, bool);
 extern vector<Cell*> DesignGetConnectedCells(HyperGraph &, Cell *);
-
-extern void HMETIS_PartRecursive(int, int, int *, int*, int*, int*, int,
-				 int, int*, int*, int*);
-extern void HMETIS_PartKway(int, int, int *, int*, int*, int*, int,
-			    int, int*, int*, int*);
 #endif

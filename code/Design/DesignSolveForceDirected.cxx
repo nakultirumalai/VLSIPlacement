@@ -15,6 +15,7 @@ Design::DesignSolveForAllCellsForceDirected(void)
   uint siteNum, rowNum;
   uint numSites, numRows, numClusters;
   uint maxx, maxy;
+  Env &DesignEnv = DesignGetEnv();
   
   /* STEP : CREATE PLACEABLE BLOCKS IN THE DESIGN */
   DesignGetBoundingBox(maxx, maxy);
@@ -25,6 +26,7 @@ Design::DesignSolveForAllCellsForceDirected(void)
   numSites = ceil(((double)numClusters) / numRows);
   siteWidth = floor(((double)maxx) / numSites);
   rowHeight = averageClusterHeight;
+
   /* STEP : PLACE THE CELLS IN A CONSTRUCTIVE FASHION 
             INTO THE BLOCKS OF THE DESIGN */
   siteNum = 0;
@@ -46,8 +48,21 @@ Design::DesignSolveForAllCellsForceDirected(void)
 
   /* STEP : EXECUTE THE FORCE DIRECTED SOLVER TO MINIMIZE 
             THE WIRELENGTH */
+  DesignComputeHPWL();
+  cout << "PRE-GLOBAL Placement : X-HPWL: " << DesignGetXHPWL() 
+       << " Y-HPWL: " << DesignGetYHPWL() 
+       << " TOTAL: " << DesignGetHPWL() << endl;
+
   HyperGraph &myGraph = DesignGetGraph();
-  FDPTopLevel(clusterCells, (int)numRows, (int)numSites,
-     	      rowHeight, siteWidth, myGraph);
+  if (DesignEnv.EnvGetUseFDPlacer()) {
+    FDPTopLevel((*this), clusterCells, numRows, numSites, rowHeight, siteWidth, 
+		(clusterCells.size()), (clusterCells.size() / 2));
+  }
+
   /* STEP : FINISH */
+  DesignComputeHPWL();
+  cout << "Quality : X-HPWL: " << DesignGetXHPWL() 
+       << " Y-HPWL: " << DesignGetYHPWL() 
+       << " TOTAL: " << DesignGetHPWL() << endl;
+
 }

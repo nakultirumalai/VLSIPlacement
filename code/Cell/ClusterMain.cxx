@@ -52,9 +52,27 @@ Cluster::ClusterSetCellsOfCluster(vector<Cell *> &cellsOfCluster)
 }
 
 void
+Cluster::ClusterSetBoundaryCells(map<Cell *, uint> &boundaryCells)
+{
+  this->boundaryCells = boundaryCells;
+}
+
+void
 Cluster::ClusterSetInternalNets(vector<Net *> &internalNets) 
 {
   this->internalNets = internalNets;
+}
+
+void
+Cluster::ClusterSetExternalNets(vector<Net *> &externalNets) 
+{
+  this->externalNets = externalNets;
+}
+
+void
+Cluster::ClusterSetAffectedNets(vector<Net *> &affectedNets) 
+{
+  this->affectedNets = affectedNets;
 }
 
 void
@@ -153,10 +171,28 @@ Cluster::ClusterGetCellsOfCluster(void)
   return (this->cellsOfCluster);
 }
 
+map<Cell *, uint>&
+Cluster::ClusterGetBoundaryCells(void)
+{
+  return (this->boundaryCells);
+}
+
 vector<Net *> &
 Cluster::ClusterGetInternalNets(void) 
 {
   return (this->internalNets);
+}
+
+vector<Net *> &
+Cluster::ClusterGetExternalNets(void) 
+{
+  return (this->externalNets);
+}
+
+vector<Net *> &
+Cluster::ClusterGetAffectedNets(void) 
+{
+  return (this->affectedNets);
 }
 
 vector<uint> &
@@ -248,16 +284,6 @@ Cluster::PlotCluster(void)
 {
 
 }
-
-  uint ClusterGetNumCells(void);
-  vector<Cell *>& ClusterGetCellsOfCluster(void);
-  vector<Net *>& ClusterGetInternalNets(void);
-  vector<uint>& ClusterGetBCellIndices(void);
-  vector<uint>& ClusterGetRowNums(void);
-  vector<uint>& ClusterGetXPosInRows(void);
-  map<Pin*, Pin*>& ClusterGetPinMap(void);
-  bool ClusterGetBCellsPlaced(void);
-  char ClusterGetClusterLevel(void);
 
 void
 Cluster::PrintCluster(void)

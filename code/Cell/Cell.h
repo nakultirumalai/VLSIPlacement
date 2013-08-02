@@ -146,15 +146,23 @@ class Cell {
 
 class Cluster {
  private:
-  /* Requires N * 64-bit + VECT_CONTAINER_OVERHEAD */
+  /* Vector to store the cells of the cluster */
   vector<Cell *> cellsOfCluster; 
+  /* Vector to store the boundary cells, i.e. cells which 
+     are connected to cells outside the cluster */
+  map<Cell *, uint> boundaryCells;
   /* Store the coordinates of cells in different configurations */
   /* Array corresponds with the array of cells in the cluster */
   vector<vector<double> > cellPositions;
   /* Array corresponds to different dimensions of the cluster */
   vector<pair<uint, uint> > dimensions;
-  /* Requires N * 64-bit + VECT_CONTAINER_OVERHEAD */
+  /* Array corresponding to the internal nets of the cluster */
   vector<Net *> internalNets;
+  /* Array corresponding to the external nets of the cluster */
+  vector<Net *> externalNets;
+  /* Array corresponding to all the nets that are affected 
+     by the clustering scheme */
+  vector<Net *> affectedNets;
   /* Requires N * 32-bit + VECT_CONTAINER_OVERHEAD */
   vector<uint> BCellIndices; 
   vector<uint> rowNum;
@@ -196,7 +204,10 @@ class Cluster {
   /* Set functions */
   void ClusterSetNumCells(uint);
   void ClusterSetCellsOfCluster(vector<Cell *>&);
+  void ClusterSetBoundaryCells(map<Cell *, uint>&);
   void ClusterSetInternalNets(vector<Net *> &);
+  void ClusterSetExternalNets(vector<Net *> &);
+  void ClusterSetAffectedNets(vector<Net *> &);
   void ClusterSetBCellIndices(vector<uint> &);
   void ClusterSetRowNums(vector<uint> &);
   void ClusterSetXPosInRows(vector<uint> &);
@@ -215,7 +226,10 @@ class Cluster {
   /* Get functions */
   uint ClusterGetNumCells(void);
   vector<Cell *>& ClusterGetCellsOfCluster(void);
+  map<Cell *, uint>& ClusterGetBoundaryCells(void);
   vector<Net *>& ClusterGetInternalNets(void);
+  vector<Net *>& ClusterGetExternalNets(void);
+  vector<Net *>& ClusterGetAffectedNets(void);
   vector<uint>& ClusterGetBCellIndices(void);
   vector<uint>& ClusterGetRowNums(void);
   vector<uint>& ClusterGetXPosInRows(void);

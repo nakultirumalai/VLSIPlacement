@@ -170,11 +170,11 @@ Design::DesignPartitionKWayHmetis(HyperGraph &myGraph, int nRuns, int nParts, in
                    printed by hmetis. Default value is 0 */
   options[8] = 24;
   if (recursiveBiPartition) {
-    //     HMETIS_PartRecursive(nvtxs, nhedges, vwgts, eptr, eind, hewgts, nParts,
-    //    			 UbFactor, options, part, &edgecut);
+    //    HMETIS_PartRecursive(nvtxs, nhedges, vwgts, eptr, eind, hewgts, nParts,
+    //       			 UbFactor, options, part, &edgecut);
   } else {
-    //       HMETIS_PartKway(nvtxs, nhedges, vwgts, eptr, eind, hewgts, nParts,
-    //    		    UbFactor, options, part, &edgecut);
+    //    HMETIS_PartKway(nvtxs, nhedges, vwgts, eptr, eind, hewgts, nParts,
+    //       		    UbFactor, options, part, &edgecut);
   }
   
 }

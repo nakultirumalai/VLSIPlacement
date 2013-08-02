@@ -1,5 +1,7 @@
-#include <FDP.h>
-# define Dir PIN_DIR_ALL
+# include <FDP.h>
+
+unsigned int row_height, site_width;
+bool fdpDebug = false;
 
 FDPSite*
 FDPGetSiteOfCell(vector<vector<FDPSite*> > &gridMatrix, Cell *thisCell, 
@@ -17,251 +19,169 @@ FDPGetSiteOfCell(vector<vector<FDPSite*> > &gridMatrix, Cell *thisCell,
   return (thisSite);
 }
 
-void
-FDPGetRoundedSiteLocation(double tempX, double tempY, int rowHeight, 
-			  int siteWidth, int &X, int &Y, int numRows,
-			  int numSitesInRow)
+inline 
+void printSite(FDPSite *site)
 {
-  int modVal, halfVal;
-  double quotient;
+  uint siteNum, rowNum;
   
-  /* Optimal rounded off value for X */
-  X = dtoi(tempX / siteWidth);
-  if (X == numSitesInRow) {
-    X = numSitesInRow;
-  }
-  X = X * siteWidth;
+  siteNum = (*site).FDPSiteGetSiteNum();
+  rowNum = (*site).FDPSiteGetRowNum();
 
-  /* Optimal rounded off value for Y */
-  Y = dtoi(tempY / rowHeight);
-  if (Y == numRows) {
-    Y = numRows - 1;
-  }
-  Y = Y * rowHeight;
+  cout << "Visited:" << endl;
+  cout << "  Site: " << siteNum << " Row: " << rowNum << endl;
 }
 
-void
-FDPGetOptLocation(vector<void*> &connectedNodes, vector<Cell*> &movableCells,
-		  vector<Cell*> &fixedCells, map<Cell *, bool> &mapOfCells,
-		  HyperGraph &myGraph, int rowHeight, int siteWidth, Cell *thisCell, 
-		  int &x, int &y, int numRows, int numSitesInRow, bool topLevel)
+inline
+bool siteAvailableForPlacement(FDPSite *thisSite, bool vacantOnly)
 {
-  void *thisNode;
-  void *seedNode;
-  long int edgeIdx;
-  map<Cell*, bool> cellsInCluster;
-  double edgeWeight;
-  double sumWDX, sumWDY, sumW;
-  double tempX, tempY;
-  int Xj, Yj;
-    
+  bool rtv;
 
-  seedNode = (void*)thisCell;
-  sumWDX = 0;
-  sumWDY = 0;
-  sumW = 0;
-  
-  if (!(connectedNodes.size())) {
-    _ASSERT_TRUE("Unconnected cell is found");
-  }
-  
-
-  VECTOR_FOR_ALL_ELEMS(connectedNodes, void*, thisNode) {
-    thisCell = (Cell*)thisNode;
-    if (!topLevel) {
-      _KEY_DOES_NOT_EXIST(mapOfCells, thisCell) {
-	continue;
-      }
-    } else {
-      Xj = (int)(*thisCell).CellGetXpos();
-      Yj = (int)(*thisCell).CellGetYpos();
-      edgeIdx = myGraph.NodesAreAdjacent(thisNode, seedNode);
-      if (edgeIdx == -1){
-	_ASSERT_TRUE("ERROR: No edge found between connected cells");
-      }
-      edgeWeight = myGraph.GetEdgeWeight(edgeIdx);
-      if (edgeWeight < 0) {
-	_ASSERT_TRUE("ERROR: Negative edge weight found");
-      }
-
-      /* Summation WiXi */
-      sumWDX += ((double)Xj * edgeWeight);
-      /* Summation WiYi */
-      sumWDY += ((double)Yj * edgeWeight);
-      /* Summation Wi */
-      sumW += edgeWeight;
-    }
-  } END_FOR;
-  
-  tempX = sumWDX / sumW;
-  tempY = sumWDY /sumW;
-  
-  /* round off the x and y values to the nearest site location */
-  FDPGetRoundedSiteLocation(tempX, tempY, rowHeight, siteWidth, x, y, numRows, numSitesInRow);
-}
-
-void
-FDPGetFourNeighbours(int siteNum, int rowNum, int numSitesInRow, int numRows,
-		      vector<int> &fourNeighbours)
-{
-  int leftX, rightX;
-  int topY, botY;
-  
-  leftX = siteNum - 1;
-  topY = rowNum + 1;
-  rightX = siteNum + 1;
-  botY = rowNum - 1;
-  
-  if (leftX >= 0) {
-    /* Insert the left neighbour */
-    fourNeighbours.push_back(leftX);
-    fourNeighbours.push_back(rowNum);
-  } 
-  
-  if (topY < numRows) {
-    /* Insert the top neighbour */
-    fourNeighbours.push_back(siteNum);
-    fourNeighbours.push_back(topY);
+  rtv = true;
+  if ((*thisSite).FDPSiteGetIsLocked()) {
+    rtv = false;
+  } else if (vacantOnly) {
+    if (!((*thisSite).FDPSiteIsVacant())) rtv = false;
   }
 
-  if (rightX < numSitesInRow) {
-    /* Insert the right neighbour */
-    fourNeighbours.push_back(rightX);
-    fourNeighbours.push_back(rowNum);
-  }
-
-  if (botY >= 0) {
-    /* Insert the right neighbour */
-    fourNeighbours.push_back(siteNum);
-    fourNeighbours.push_back(botY);
-  }
-}
-  
-FDPSite*
-FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix, 
-			int numSitesInRow, int numRows, Cell *&nextCell)
-{
-  queue<FDPSite*> myQueue;
-  map<FDPSite*, bool> visitedSites;
-  vector<int> fourNeighbours;
-  FDPSite *selectedSite;
-  bool foundVacantSite;
-  bool foundOccupied;
-  int siteNum, rowNum;
-  int newSiteNum, newRowNum;
-  int i;
-  
-  foundOccupied = false;
-  visitedSites[thisSite] = true;
-  siteNum = (*thisSite).FDPSiteGetSiteNum();
-  rowNum = (*thisSite).FDPSiteGetRowNum();
-  foundVacantSite = false;
-  /* Get the four neighbouring sites to the present site, top, right, bot, left and check
-     if they are unlocked 
-  */
-  FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
-  while (fourNeighbours.size()) {
-    for (i = 0; i < fourNeighbours.size(); i += 2) {
-      newSiteNum = fourNeighbours[i];
-      newRowNum = fourNeighbours[i+1];
-      /* Get the neighbouring site object */
-      selectedSite = gridMatrix[newRowNum][newSiteNum];
-      if ((*selectedSite).FDPSiteGetHasCell()) {
-	if ((*selectedSite).FDPSiteGetIsLocked()) {
-	  _KEY_EXISTS(visitedSites, selectedSite) {
-	  } else {
-	    visitedSites[selectedSite] = true;
-	    myQueue.push(selectedSite);
-	  }
-	} else {
-	  foundVacantSite = true;
-	  foundOccupied = true;
-	  nextCell = (*selectedSite).FDPSiteGetHasCell();
-	  break;
-	}
-      } else {
-	foundVacantSite = true;
-	break;
-      }
-    }
-
-    if (foundVacantSite) {
-      break;
-    } 
-    thisSite = myQueue.front();
-    if (myQueue.empty()) {
-      _ASSERT_TRUE("Queue is empty");
-    }
-    myQueue.pop();
-    siteNum = (*thisSite).FDPSiteGetSiteNum();
-    rowNum = (*thisSite).FDPSiteGetRowNum();    
-    fourNeighbours.clear();
-    FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
-  }
-  if (foundVacantSite && foundOccupied) {
-    return selectedSite;
-  } else if (foundVacantSite && !foundOccupied) {
-    nextCell = NIL(Cell*);
-    return selectedSite;
-  } else {
-    return NIL(FDPSite*);
-  }
+  return (rtv);
 }
 
 FDPSite*
 FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix, 
-			int numSitesInRow, int numRows)
+			int numSites, int numRows, bool vacantOnly)
 {
+  if (fdpDebug) 
+    cout << " BEGIN: CALL TO GET NEAREST VACANT SITE: VACANT ONLY: " << vacantOnly << endl;
   queue<FDPSite*> myQueue;
   map<FDPSite*, bool> visitedSites;
-  vector<int> fourNeighbours;
-  FDPSite *selectedSite;
-  bool foundVacantSite;
-  int siteNum, rowNum;
-  int newSiteNum, newRowNum;
-  int i;
+  FDPSite *topSite, *selectedSite;
+  uint siteNum, rowNum;
+  uint nextSiteNum, nextRowNum;
   
-  visitedSites[thisSite] = true;
   siteNum = (*thisSite).FDPSiteGetSiteNum();
   rowNum = (*thisSite).FDPSiteGetRowNum();
-  foundVacantSite = false;
-  FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
-  while (fourNeighbours.size()) {
-    for(i = 0; i < fourNeighbours.size(); i+=2) {
-      newSiteNum = fourNeighbours[i];
-      newRowNum = fourNeighbours[i+1];
-      selectedSite = gridMatrix[newRowNum][newSiteNum];
-      if ((*selectedSite).FDPSiteGetHasCell()) {
-	_KEY_EXISTS(visitedSites, selectedSite) {
-	  /* Don't do anything */
-	} else {
-	  visitedSites[selectedSite] = true;
-	  myQueue.push(selectedSite);
-	}
-      } else {
-	foundVacantSite = true;
+  topSite = thisSite;
+  selectedSite = NIL(FDPSite *);
+  do {
+    visitedSites[topSite] = true;
+    if (siteNum > 0) {
+      nextSiteNum = siteNum - 1;
+      nextRowNum = rowNum;
+      if (fdpDebug) 
+	cout << "EXPLORING NEIGHBORING SITE: (" << nextSiteNum << ", " << nextRowNum << ")" << endl;
+      topSite = gridMatrix[nextRowNum][nextSiteNum];
+      if (siteAvailableForPlacement(topSite, vacantOnly)) {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : YES " << endl;
+	selectedSite = topSite;
 	break;
+      } else {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : NO " << endl;
+	_KEY_DOES_NOT_EXIST(visitedSites, topSite) {
+	  if (fdpDebug) 
+	    cout << "\t ADDING TO QUEUE" << endl;
+	  myQueue.push(topSite);
+	  //	  printSite(topSite);
+	} else {
+	  if (fdpDebug) 
+	    cout << "\t VISITED.. SKIP" << endl;
+	}
       }
     } 
-
-    if (foundVacantSite) {
-      break;
-    } 
-    thisSite = myQueue.front();
-    if (myQueue.empty()) {
-      _ASSERT_TRUE("Queue is empty");
+    if (siteNum < (numSites - 1)) {
+      nextSiteNum = siteNum + 1;
+      nextRowNum = rowNum;
+      if (fdpDebug) 
+	cout << "EXPLORING NEIGHBORING SITE: (" << nextSiteNum << ", " << nextRowNum << ")" << endl;
+      topSite = gridMatrix[nextRowNum][nextSiteNum];
+      if (siteAvailableForPlacement(topSite, vacantOnly)) {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : YES " << endl;
+	selectedSite = topSite;
+	break;
+      } else {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : NO" << endl;
+	_KEY_DOES_NOT_EXIST(visitedSites, topSite) {
+	  if (fdpDebug) 
+	    cout << "\t ADDING TO QUEUE" << endl;
+	  myQueue.push(topSite);
+	  //	  printSite(topSite);
+	} else {
+	  if (fdpDebug) 
+	    cout << "\t VISITED.. SKIP" << endl;
+	}
+      }
     }
-    myQueue.pop();
-    siteNum = (*thisSite).FDPSiteGetSiteNum();
-    rowNum = (*thisSite).FDPSiteGetRowNum();    
-    fourNeighbours.clear();
-    FDPGetFourNeighbours(siteNum, rowNum, numSitesInRow, numRows, fourNeighbours);
-  }
-  if (foundVacantSite) {
-    return selectedSite;
+    if (rowNum > 0) {
+      nextSiteNum = siteNum;
+      nextRowNum = rowNum - 1;
+      topSite = gridMatrix[nextRowNum][nextSiteNum];
+      if (fdpDebug) 
+	cout << "EXPLORING NEIGHBORING SITE: (" << nextSiteNum << ", " << nextRowNum << ")" << endl;
+      if (siteAvailableForPlacement(topSite, vacantOnly)) {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : YES " << endl;
+	selectedSite = topSite;
+	break;
+      } else {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : NO" << endl;
+	_KEY_DOES_NOT_EXIST(visitedSites, topSite) {
+	  if (fdpDebug) 
+	    cout << "\t ADDING TO QUEUE" << endl;
+	  myQueue.push(topSite);
+	  //	  printSite(topSite);
+	} else {
+	  if (fdpDebug) 
+	    cout << "\t VISITED.. SKIP" << endl;
+	}
+      }
+    } 
+    if (rowNum < (numRows - 1)) {
+      nextSiteNum = siteNum;
+      nextRowNum = rowNum + 1;
+      topSite = gridMatrix[nextRowNum][nextSiteNum];
+      if (fdpDebug) 
+	cout << "EXPLORING NEIGHBORING SITE: (" << nextSiteNum << ", " << nextRowNum << ")" << endl;
+      if (siteAvailableForPlacement(topSite, vacantOnly)) {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : YES " << endl;
+	selectedSite = topSite;
+	break;
+      } else {
+	if (fdpDebug) 
+	  cout << "\t SITE (" << nextSiteNum << ", " << nextRowNum << ") : NO" << endl;
+	_KEY_DOES_NOT_EXIST(visitedSites, topSite) {
+	  if (fdpDebug) 
+	    cout << "\t ADDING TO QUEUE" << endl;
+	  myQueue.push(topSite);
+	  //	  printSite(topSite);
+	} else {
+	  if (fdpDebug) 
+	    cout << "\t VISITED.. SKIP" << endl;
+	}
+      }
+    }
+    topSite = myQueue.front(); myQueue.pop();
+    siteNum = (*topSite).FDPSiteGetSiteNum();
+    rowNum = (*topSite).FDPSiteGetRowNum();
+    if (fdpDebug) 
+      cout << "POPPED SITE: (" << siteNum << ", " << rowNum << ")" 
+	   << "QUEUE SIZE: " << myQueue.size() << endl;
+  } while (!myQueue.empty());
+
+  if (fdpDebug) 
+    cout << " END: CALL TO GET NEAREST VACANT SITE: VACANT ONLY: " << vacantOnly << endl;
+  if (selectedSite == NIL(FDPSite *)) {
+    _ASSERT_TRUE("Error: Finding a site for a cell failed");
   } else {
-    return NIL(FDPSite*);
+    if (fdpDebug) 
+      cout << "RETURNING SITE: (" << (*selectedSite).FDPSiteGetSiteNum() 
+	   << ", " << (*selectedSite).FDPSiteGetRowNum() << ")" << endl;
   }
+  return (selectedSite);
 }
 
 void
@@ -297,8 +217,9 @@ printVacantSites(vector<vector<FDPSite*> > &gridMatrix)
   count = 0;
   VECTOR_FOR_ALL_ELEMS(gridMatrix, vector<FDPSite*>, sitesInRow) {
     VECTOR_FOR_ALL_ELEMS(sitesInRow, FDPSite*, thisSite) {
-      if ((*thisSite).FDPSiteGetHasCell() == NIL(Cell*)) {
-	cout << "[" << (*thisSite).FDPSiteGetSiteNum() << "," << (*thisSite).FDPSiteGetRowNum() << "]" << endl;
+      if ((*thisSite).FDPSiteIsVacant()) {
+	cout << "[" << (*thisSite).FDPSiteGetSiteNum() << "," 
+	     << (*thisSite).FDPSiteGetRowNum() << "]" << endl;
 	count++;
       }
     } END_FOR;
@@ -320,69 +241,183 @@ FDPPrintAllConnectedNodes(vector<void*> &connectedNodes)
 }
 
 void
-FDPGetSiteInfo(vector<vector<FDPSite*> > &gridMatrix) 
+FDPFixCellsInSites(vector<vector<FDPSite*> > &gridMatrix,
+		   vector<Cell *> &allCells, uint siteWidth, 
+		   uint rowHeight) 
 {
-  FDPSite *thisSite;
-  vector<FDPSite*> rowSites;
-  
+  Cell *thisCell;
+  FDPSite *thisSite; 
+  double siteNum, rowNum;
+  double cellXpos, cellYpos;
+
+  VECTOR_FOR_ALL_ELEMS(allCells, Cell*, thisCell) {
+    cellXpos = (*thisCell).CellGetXpos();
+    cellYpos = (*thisCell).CellGetYpos();
+    siteNum = ((double)cellXpos) / siteWidth;
+    rowNum = ((double)cellYpos) / rowHeight;
+    thisSite = gridMatrix[rowNum][siteNum];
+    (*thisSite).FDPSiteSetCell(thisCell);
+  } END_FOR;
+
+  if (fdpDebug) {
+    cout << "FDP DEBUG: Fixed " << allCells.size() 
+	 << " cells in their respective sites" << endl;
+  }
 }
 
-/* Top level function to place the cells using a force-directed heuristic */
-void 
-FDPTopLevel(vector<Cell*> &allCells, int numRows, int numSitesInRow, 
-	    int rowHeight, int siteWidth, HyperGraph &myGraph)
+Cell*
+FDPGetNextCellToPlace(vector<Cell *> &allCells, 
+		      map<Cell *, bool> &usedCells, 
+		      uint &counter)
 {
-  map<Cell*, bool> usedCells;
-  map<Cell*, bool> mapOfCells;
-  vector<vector<FDPSite*> > gridMatrix;
-  vector<FDPSite*> oneRow;
-  vector<int> rowCap;
-  vector<void*> connectedNodes;
-  Cell *thisCell;
-  Cell *nextCell;
-  FDPSite *thisSite;
-  FDPSite *nearestSite;
-  Net *NetPtr;
-  double netWeight;
-  double sumWx, sumWy;
-  double sumW;
-  double tempX, tempY;
-  void *thisNode;
-  int siteXpos, siteYpos;
-  int cellXpos, cellYpos;
-  int cellWidth, cellEndX, rowEnd;
-  int siteX, siteY;
-  int xOpt, yOpt;
-  int siteNum, rowNum;
-  int vacantSiteBegin, vacantSiteEnd;
-  int numVacantSites, siteCount;
-  int numSitesOfCell;
-  int lastPlacedCell, nextSiteBegin;
-  int rowCapInRow;
-  int iter_count, abort_count;
-  int counter, abort_limit, iter_limit;
-  int oldSiteNum, oldRowNum;
-  uint i, j;
-  uint fixedCellNum;
-  uint cellNum;
-  bool end_ripple;
-  bool optimizeFind;
-  bool debugMode;
-  debugMode = false;
-  
-  uint stepCount;
-  siteCount = 1;
-  stepCount = 1;
+  Cell *thisCell, *selectedCell;
+  uint sizeOfVector;
 
-  optimizeFind = true;
+  thisCell = NIL(Cell *);
+  selectedCell = NIL(Cell *);
+  sizeOfVector = allCells.size();
+  /* No sorting is done based on connectivity */
+  while (1) {
+    if (counter == sizeOfVector) {
+      break;
+    }
+    thisCell = allCells[counter++];
+    _KEY_EXISTS(usedCells, thisCell) {
+      if (fdpDebug) {
+	cout << "Cell " << (*thisCell).CellGetName() 
+	     << " had already been selected earlier. " << endl;
+      }
+      continue;
+    } else {
+      usedCells[thisCell] = true;
+      if (fdpDebug) {
+	cout << "FDP_DEBUG: SELECTED CELL: " << (*thisCell).CellGetName() << endl;
+      }
+      selectedCell = thisCell;
+      break;
+    }
+  }
   
+  return (selectedCell);
+}
+
+void
+FDPGetOptLocationForCell(Cell *thisCell, uint siteWidth, uint rowHeight,
+			 uint numSitesInRow, uint numRows, uint &siteNum, uint &rowNum)
+{
+  Net *netPtr;
+  Pin *pinPtr;
+  Cell *nextCell;
+  double sumWx, sumWy, sumW;
+  double cellXpos, cellYpos;
+  double netWeight;
+
+  cellXpos = (*thisCell).CellGetXpos();
+  cellYpos = (*thisCell).CellGetYpos();
+  if (fdpDebug) {
+    cout << endl << "FDP DEBUG: Cell: " << (*thisCell).CellGetName() 
+	 << " Old position: (" << cellXpos
+	 << ", " << cellYpos << ")" << endl
+	 << " Site : " << (cellXpos / siteWidth) 
+	 << " Row  : " << (cellYpos / rowHeight) << endl;
+  }
+
+  sumWx = 0; sumWy = 0; sumW = 0;
+  CELL_FOR_ALL_NETS_NO_DIR((*thisCell), netPtr) {
+    netWeight = (*netPtr).NetGetWeight();
+    NET_FOR_ALL_PINS((*netPtr), pinPtr) {
+      nextCell = (*pinPtr).ParentCell;
+      if (nextCell == thisCell) {
+	continue;
+      }
+      cellXpos = (*nextCell).x;
+      cellYpos = (*nextCell).y;
+      sumWx += (netWeight * cellXpos);
+      sumWy += (netWeight * cellYpos);
+      sumW += netWeight;
+    } NET_END_FOR;
+  } CELL_END_FOR;
+
+# if 0
+  vector<Pin*> &CellPins = CellObj.CellGetPins();
+  uint numPins = CellPins.size();
+  Pin *pinPtr1, *pinPtr2;
+  Net *netPtr1, *netPtr2;
+  for (int n = 0; n < numPins; n++) {               
+    pinPtr1 = CellPins[n];
+    netPtr1 = (*pinPtr1).ConnectedNet;
+    if (n < (numPins - 1)) {
+      pinPtr2 = CellPins[n + 1];
+      netPtr2 = (*pinPtr).ConnectedNet;
+    }
+  }
+# endif 
+  sumWx /= sumW;
+  sumWy /= sumW;
+
+  /* Optimal rounded off value for X */
+  sumWx = dtoi(sumWx / siteWidth);
+  if (sumWx == numSitesInRow) {
+    sumWx = numSitesInRow;
+  }
+  sumWx = sumWx * siteWidth;
+
+  /* Optimal rounded off value for Y */
+  sumWy = dtoi(sumWy / rowHeight);
+  if (sumWy == numRows) {
+    sumWy = numRows - 1;
+  }
+  sumWy = sumWy * rowHeight;
+  siteNum = sumWx / siteWidth;
+  rowNum = sumWy / rowHeight;
+
+  if (fdpDebug) {
+    cout <<  "FDP DEBUG: Cell: " << (*thisCell).CellGetName() 
+	 << " Optimal position: (" << sumWx
+	 << ", " << sumWy << ")" << endl
+	 << " Site : " << (sumWx / siteWidth) 
+	 << " Row  : " << (sumWy / rowHeight) << endl;
+  }
+}
+
+void
+FDPPlaceAndLockCellInSite(FDPSite *thisSite, Cell *thisCell)
+{
+  uint siteX, siteY;
+  if (fdpDebug) {
+    cout << "FDP DEBUG: Cell: " << (*thisCell).CellGetName() 
+	 << " Old position: (" << (*thisCell).CellGetXpos() 
+	 << ", " << (*thisCell).CellGetYpos() << ")" << endl;
+  }
+  (*thisSite).FDPSiteSetCell(thisCell);
+  (*thisSite).FDPSiteSetIsLocked(true);
+  siteX = (*thisSite).FDPSiteGetXpos();
+  siteY = (*thisSite).FDPSiteGetYpos();
+  (*thisCell).CellSetXpos(siteX);
+  (*thisCell).CellSetYpos(siteY);
+
+  if (fdpDebug) {
+    cout <<  "FDP DEBUG: Placed and locked Cell: " << (*thisCell).CellGetName() 
+	 << " in position : (" << siteX
+	 << ", " << siteY << ")" << endl
+	 << " Site : " << (siteX / site_width) 
+	 << " Row  : " << (siteY / row_height) 
+	 << endl;
+  }
+}
+
+void
+FDPCreateGrid(vector<vector<FDPSite*> > &gridMatrix, vector<uint> &rowCap,
+	      uint numSitesInRow, uint numRows, uint siteWidth, uint rowHeight)
+{
+  vector<FDPSite*> oneRow;
+  FDPSite *thisSite;
+  uint i, j, rowCapInRow;
+  uint siteXpos, siteYpos;
+  uint siteCount;
+
   rowCapInRow = numSitesInRow * siteWidth;
-  rowEnd = numSitesInRow * siteWidth;
-  
-  /**********************************************************/
-  /*  STEP 1. Create a grid for the cells to be placed */
-  /**********************************************************/
-  
+  siteCount = 0;
   for (i = 0; i < numRows; i++) {
     siteYpos = i * rowHeight;
     for (j = 0; j < numSitesInRow; j++) {
@@ -399,270 +434,201 @@ FDPTopLevel(vector<Cell*> &allCells, int numRows, int numSitesInRow,
     rowCap.push_back(rowCapInRow);
     oneRow.clear();
   }
-  
-  cout << "STEP " << stepCount++ << ". " << (siteCount - 1) << " SITE OBJECTS CREATED. " << endl;
+  if (fdpDebug) {
+    cout << "FDP DEBUG: Created grid with " << (siteCount + 1) 
+	 << " sites" << endl;
+  }
+}
 
-  cout << "STATS: Number of cells to be placed - " << allCells.size() << endl;
-  VECTOR_FOR_ALL_ELEMS(allCells, Cell*, thisCell) {
-    cellXpos = (*thisCell).CellGetXpos();
-    cellYpos = (*thisCell).CellGetYpos();
-    siteNum = cellXpos / siteWidth;
-    rowNum = cellYpos / rowHeight;
-    thisSite = gridMatrix[rowNum][siteNum];
-    (*thisSite).FDPSiteSetHasCell(thisCell);
-  } END_FOR;
-  cout << "STEP " << stepCount++ << ". ASSIGNED CELLS TO THEIR RESPECTIVE SITEs. Intial Placement" << endl;
+inline
+void saveBestCellPositions(vector<Cell *> &allCells, vector<uint> &cellXPositions, 
+			   vector<uint> &cellYPositions)
+{
+  Cell *thisCell;
+  uint numCells;
+  uint idx;
   
-  /************************************************************/
-  /* STEP 2. Do iterative refinement on the initial solution */
-  /***********************************************************/
+  numCells = allCells.size();
+  for (idx = 0; idx < numCells; idx++) {
+    thisCell = allCells[idx];
+    cellXPositions[idx] = thisCell->x;
+    cellYPositions[idx] = thisCell->y;
+  } 
+}
+
+inline
+void restoreBestCellPositions(vector<Cell *> &allCells, vector<uint> &cellXPositions, 
+			      vector<uint> &cellYPositions)
+{
+  Cell *thisCell;
+  uint numCells;
+  uint idx;
   
-  cout << "STEP " << stepCount++ << ". FORCE DIRECTED ITERATIVE REFINEMENT BEGINS HERE." << endl;
-  
+  numCells = allCells.size();
+  for (idx = 0; idx < numCells; idx++) {
+    thisCell = allCells[idx];
+    thisCell->x = cellXPositions[idx];
+    thisCell->y = cellYPositions[idx];
+  } 
+}
+
+/* Top level function to place the cells using a force-directed heuristic */
+void 
+FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSitesInRow, 
+	    uint rowHeight, uint siteWidth, uint iterLimit, uint abortLimit)
+{
+  Cell *thisCell, *nextCell;
+  Net *NetPtr;
+  FDPSite *nearestSite, *prevSite;
+  FDPSite *cellSite, *newSite;
+  map<Cell*, bool> usedCells;
+  vector<vector<FDPSite*> > gridMatrix;
+  vector<uint> rowCap;
+  uint siteNum, rowNum, siteCount, stepCount;
+  uint oldSiteNum, oldRowNum;
+  uint iterCount, abortCount;
+  uint counter, numCells;
+  ulong HPWL, prevHPWL, bestHPWL;
+  ulong prevHPWL1, prevHPWL2, prevHPWL3;
+  bool end_ripple, iterationComplete;
+
+  numCells = allCells.size();
+  vector<uint> cellXPositions(numCells);
+  vector<uint> cellYPositions(numCells);
+
+  if (numCells == 0) {
+    _ASSERT_TRUE(" FD-SOLVER: NO CELLS PROVIDED");
+  }
+
+  cout << "Invoking force directed solver for : " << iterLimit 
+       << " iterations with abort limit: " << abortLimit << endl;
+  cout << "BEGIN: CPU TIME: " << getCPUTime() << "s" << endl;
+  HPWL = 0;
+  prevHPWL = 0;
+  prevHPWL1 = 0;
+  prevHPWL2 = 0;
+  prevHPWL3 = 0;
+  bestHPWL = myDesign.DesignGetHPWL();
+  row_height = rowHeight;
+  site_width = siteWidth;
+  FDPCreateGrid(gridMatrix, rowCap, numSitesInRow, numRows, siteWidth, rowHeight);
+  FDPFixCellsInSites(gridMatrix, allCells, siteWidth, rowHeight);
+  iterCount = 0; 
   /* MAIN ALGORITHM FORCE DIRECTED PLACEMENT STARTS HERE */
-  iter_count = 0;
-  iter_limit = 100;
-  abort_limit = 3;
-  abort_count = 0;
+  uint dotLimit = 50;
+  uint dotCount = 0;
+  while(iterCount < iterLimit) {
+    iterationComplete = false;
+    abortCount = 0;  
+    prevSite = NIL(FDPSite *);
+    for (counter = 0; counter < numCells; counter++) {
+      thisCell = FDPGetNextCellToPlace(allCells, usedCells, counter);
+      if (thisCell == NIL(Cell *)) break;
 
-  /* Do iterative refinement on the initial placement using a force directed heuristic */
-  counter = 0;
-  while(iter_count < iter_limit) {
-    cout << "STATS: Iteration Number - " << iter_count << endl;
-    if (counter >= allCells.size()) {
-      cout << "ALL CELLS USED. RECYCLING CELLS " << endl;
-      counter = 0;
-      usedCells.clear();
-      iter_count++;
-    }
-    
-    /************************************************************/
-    /* STEP 3a. Select any cell from the list of cells that 
-                hasn't been used yet 
-    */
-    /***********************************************************/
-
-    /* No sorting is done based on connectivity */
-    thisCell = allCells[counter++];
-    _KEY_EXISTS(usedCells, thisCell) {
-      if (debugMode) {
-	cout << "Cell " << (*thisCell).CellGetName() << " had already been selected earlier. " << endl;
-      }
-      continue;
-    }
-    /* Add cell to a map to skip in next iteration */
-    usedCells[thisCell] = true;
-    if (debugMode) {
-      cout << "Added cell " << (*thisCell).CellGetName() << "to usedCells map " << endl;
-    }
-    
-    /************************************************************/
-    /* STEP 3b. Mark the site of the selected cell as empty and
-                remove the cell from the site
-    */
-    /***********************************************************/
-    if (debugMode) {
-      cout << "Cell " << (*thisCell).CellGetName() << "was at location(L) (" << (*thisCell).CellGetXpos() 
-	   << "," << (*thisCell).CellGetYpos() << ") " << endl;
-    }
-    thisSite = FDPGetSiteOfCell(gridMatrix, thisCell, siteWidth, rowHeight);
-    if (debugMode) {
-      cout << "So marking site at (" << (*thisSite).FDPSiteGetXpos() << "," << (*thisSite).FDPSiteGetYpos()
-	   << ") vacant " << endl;
-    }
-    (*thisSite).FDPSiteRemoveCell();
-    oldSiteNum = (*thisSite).FDPSiteGetSiteNum();
-    oldRowNum = (*thisSite).FDPSiteGetRowNum();
-    
-    while(!end_ripple) {
-      if (debugMode) {
-	cout << "SELECTED CELL FOR MOVEMENT - " << (*thisCell).CellGetName() << endl;
-      }
-      
-      /**********************************************************************/
-      /* STEP 3c. Get all the nets connected to this cell from the
-	          Hypergraph and from each such net, get all the cells 
-		  connected to it.
-      */
-      /*********************************************************************/
-
-      sumWx = 0;
-      sumWy = 0;
-      sumW = 0;
-      CELL_FOR_ALL_NETS((*thisCell), Dir, NetPtr) {
-	netWeight = (*NetPtr).NetGetWeight();
-	NET_FOR_ALL_CELLS((*NetPtr), nextCell) {
-	  if (nextCell == thisCell) {
-	    continue;
-	  }
-	  cellXpos = (*nextCell).CellGetXpos();
-	  cellYpos = (*nextCell).CellGetYpos();
-	  sumWx += (netWeight * cellXpos);
-	  sumWy += (netWeight * cellYpos);
-	  sumW += netWeight;
-	} NET_END_FOR;
-      } CELL_END_FOR;
-      
-      tempX = sumWx / sumW;
-      tempY = sumWy / sumW;
-      if (debugMode) {
-	cout << "Exact optimal location of cell before rounding off : (" << tempX << "," 
-	     << tempY << ")" << endl;
-      }
-      FDPGetRoundedSiteLocation(tempX, tempY, rowHeight, siteWidth, siteXpos, 
-				siteYpos, numRows, numSitesInRow);
-      if (debugMode) {
-	cout << "Optimal location(L') for cell: " << (*thisCell).CellGetName() << "is found to be (" 
-	     << siteXpos << "," << siteYpos << ")" << endl;
-      }
-      siteNum = siteXpos / siteWidth;
-      rowNum = siteYpos / rowHeight;
-      if ((siteNum == oldSiteNum) && (rowNum == oldRowNum)) {
-	if (debugMode) {
-	  cout << "OBSERVATION : (L' = L). Cell is already at its optimal location" << endl;
+      cellSite = FDPGetSiteOfCell(gridMatrix, thisCell, siteWidth, rowHeight);
+      oldSiteNum = (*cellSite).FDPSiteGetSiteNum();
+      oldRowNum = (*cellSite).FDPSiteGetRowNum();
+      FDPGetOptLocationForCell(thisCell, siteWidth, rowHeight, numSitesInRow, numRows, 
+			       siteNum, rowNum);
+      /* This is the optimal site for the cell */
+      newSite = gridMatrix[rowNum][siteNum];
+      if (cellSite == newSite) {
+	if (fdpDebug) {
+	  cout << "FDP DEBUG: Not moving cell " << (*thisCell).CellGetName() 
+	       << " as it has the same new position " << endl;
 	}
-	/* Reassign the site to the cell */
-	(*thisSite).FDPSiteSetHasCell(thisCell);
-	end_ripple = true;
 	continue;
       }
-      
-      /* Get the site object associated with the cell */
-      thisSite = gridMatrix[rowNum][siteNum];
-      
-      /*******************************************************************/
-      /* Three different conditions are possible with the optimal location
-	 1. LOCKED: In this case the cell under consideration
-	    is placed at the nearest unlocked site in the grid(vacant 
-	    or occupied). 
-	      If the site is occupied, the cell belonging to that site is
-	      selected next for movement.
-	 2. OCCUPIED: In this case the selected cell is placed in the 
-	    optimal location and the cell that was already present is 
-	    selected next for movement.
-	 3. VACANT: Cell is placed in its optimal location.
-      */
-      /*******************************************************************/
-	 
-      /* CASE : LOCKED */
-      if ((*thisSite).FDPSiteGetIsLocked()) {
-	if (optimizeFind) {
-	  /* Overloaded function to also give the next cell to be placed */
-	  nearestSite = FDPGetNearestVacantSite(thisSite, gridMatrix, numSitesInRow, numRows, nextCell);
-	  if (nearestSite == NIL(FDPSite*)) {
-	    _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
+      end_ripple = false;
+      (*cellSite).FDPSiteRemoveCell();
+      while(!end_ripple) {
+	if ((*newSite).FDPSiteGetIsLocked()) {
+	  /* LOCKED CASE */
+	  if (fdpDebug) cout << "LOCKED CASE" << endl;
+	  abortCount++; nextCell = NIL(Cell *);
+	  if (abortCount == abortLimit) {
+	    /* FIND THE NEAREST VACANT SITE */
+	    newSite = FDPGetNearestVacantSite(prevSite, gridMatrix, numSitesInRow, numRows, true);
+	    iterationComplete = true;
 	  } else {
-	    (*nearestSite).FDPSiteSetHasCell(thisCell);
-	    (*nearestSite).FDPSiteSetIsLocked(1);
-	    siteX = (*nearestSite).FDPSiteGetXpos();
-	    siteY = (*nearestSite).FDPSiteGetYpos();
-	    (*thisCell).CellSetXpos(siteX);
-	    (*thisCell).CellSetYpos(siteY);
-	    if (debugMode) {
-	      cout << "Cell " << (*thisCell).CellGetName() << " is placed at (" << siteX << "," << siteY 
-		   << ") " << "[ " << (*nearestSite).FDPSiteGetSiteNum() << "," << (*nearestSite).FDPSiteGetRowNum() 
-		   << "]" << endl;
-	    }
-	    
-	    if (nextCell != NIL(Cell*)) {
-	      if (debugMode) {
-		cout << "Nearest site found is occupied " << endl;
-		cout << "Next cell to be placed " << (*nextCell).CellGetName() << endl;
-	      }
-	      end_ripple = false;
-	      usedCells[thisCell] = true;
-	      thisCell = nextCell;
-	    }
-	    if (nextCell == NIL(Cell*)) {
-	      end_ripple = true;
-	      usedCells[thisCell] = true;
-	    } 
-	    abort_count++;
-	    FDPSite *prevSite = nearestSite;
-	    if (abort_count > abort_limit) {
-	      /* When there is still a cell left to be placed, as it was bumped out
-		 of its site in the previous iteration, and the abort_count has crossed
-		 abort limit then place the cell in nearest vacant location 
-	      */
-	      
-	      if (nextCell != NIL(Cell*)) {
-		nearestSite = FDPGetNearestVacantSite(prevSite, gridMatrix, numSitesInRow, numRows);
-		if (nearestSite == NIL(FDPSite*)) {
-		  _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
-		} else {
-		  (*nearestSite).FDPSiteSetHasCell(thisCell);
-		  siteX = (*nearestSite).FDPSiteGetXpos();
-		  siteY = (*nearestSite).FDPSiteGetYpos();
-		  (*thisCell).CellSetXpos(siteX);
-		  (*thisCell).CellSetYpos(siteY);
-		}
-	      }
-	      FDPClearAllLocks(allCells, gridMatrix, rowHeight, siteWidth);
-	      iter_count++;
-	      usedCells.clear();
-	      end_ripple = true;
-	      abort_count++;
-	    }
+	    /* FIND THE NEAREST VACANT / OCCUPIED SITE */
+	    newSite = FDPGetNearestVacantSite(newSite, gridMatrix, numSitesInRow, numRows, false);
+	    nextCell = (*newSite).FDPSiteGetCell();
 	  }
-	} else {
-	  nearestSite = FDPGetNearestVacantSite(thisSite, gridMatrix, numSitesInRow, numRows);
-	  if (nearestSite == NIL(FDPSite*)) {
-	    _ASSERT_TRUE("ERROR: Cannot find a vacant site for cell to be placed");
-	  } else {
-	    (*nearestSite).FDPSiteSetHasCell(thisCell);
-	    (*nearestSite).FDPSiteSetIsLocked(1);
-	    siteX = (*nearestSite).FDPSiteGetXpos();
-	    siteY = (*nearestSite).FDPSiteGetYpos();
-	    (*thisCell).CellSetXpos(siteX);
-	    (*thisCell).CellSetYpos(siteY);
-	    if (debugMode) {
-	      cout << "Cell " << (*thisCell).CellGetName() << " is placed at (" << siteX << "," << siteY 
-		   << ") " << "[ " << (*nearestSite).FDPSiteGetSiteNum() << "," << (*nearestSite).FDPSiteGetRowNum() 
-		   << "]" << endl;
-	    }
+	  prevSite = newSite;
+	  FDPPlaceAndLockCellInSite(newSite, thisCell);
+	  if (nextCell == NIL(Cell *)) {
+	    if (fdpDebug) cout << "END RIPPLE" << endl;
 	    end_ripple = true;
-	    abort_count++;
-	    if (abort_count > abort_limit) {
-	      FDPClearAllLocks(allCells, gridMatrix, rowHeight, siteWidth);
-	      usedCells.clear();
-	      iter_count++;
+	  } else {
+	    thisCell = nextCell;
+	    if (fdpDebug) {
+	      cout << " Nearest site occupied by cell:  " << (*nextCell).CellGetName() << endl;
 	    }
-	  }
-	}
-      } else {
-	/* If Site is occupied or vacant but not locked. First place the cell
-	   at its equilibrium position 
-	*/
-	nextCell = (*thisSite).FDPSiteGetHasCell();
-	(*thisSite).FDPSiteSetHasCell(thisCell);
-	(*thisSite).FDPSiteSetIsLocked(1);
-	siteX = (*thisSite).FDPSiteGetXpos();
-	siteY = (*thisSite).FDPSiteGetYpos();
-	(*thisCell).CellSetXpos(siteX);
-	(*thisCell).CellSetYpos(siteY);
-	if (debugMode) {
-	  cout << "Cell " << (*thisCell).CellGetName() << " is placed at (" << siteX << "," << siteY 
-	       << ") " << "[ " << (*thisSite).FDPSiteGetSiteNum() << "," << (*thisSite).FDPSiteGetRowNum() 
-	       << "]" << endl;
-	}
-
-	usedCells[thisCell] = true;
-	if (nextCell != NIL(Cell*)) {
-	  /* Indicates site is occupied. So choose the displaced cell to moved next */
-	  if (debugMode) {
-	    cout << "Next cell to be placed " << (*nextCell).CellGetName() << endl;
-	  }
-	  thisCell = nextCell;
-	  end_ripple = false;
-	  abort_count = 0;
+	    usedCells[thisCell] = true;
+	  } 
 	} else {
-	  /* Indicates site is vacant. So place the cell in the site and lock it */
-	  end_ripple = true;
-	  abort_count = 0;
+	  /* OCCUPIED / VACANT CASE */
+	  if (fdpDebug) cout << "OCCUPIED CASE" << endl;
+	  abortCount = 0;
+	  if ((*newSite).FDPSiteIsVacant()) {
+	    FDPPlaceAndLockCellInSite(newSite, thisCell);
+	    if (fdpDebug) cout << "END RIPPLE" << endl;
+	    end_ripple = true;
+	  } else {
+	    nextCell = (*newSite).FDPSiteGetCell();
+	    if (fdpDebug) {
+	      cout << " Obtained next cell: " << (*nextCell).CellGetName() << endl;
+	    }
+	    FDPPlaceAndLockCellInSite(newSite, thisCell);
+	    if (nextCell == NIL(Cell*)) {
+	      _ASSERT_TRUE("Error: No cell obtained from an occupied site");
+	    }
+	    thisCell = nextCell;
+	    usedCells[thisCell] = true;
+	  }
+	}
+	if (iterationComplete) { 
+	  break;
+	} else if (!end_ripple) {
+	  FDPGetOptLocationForCell(thisCell, siteWidth, rowHeight, numSitesInRow, numRows, 
+				   siteNum, rowNum);
+	  newSite = gridMatrix[rowNum][siteNum];
 	}
       }
+      if (iterationComplete) break;
     }
-    end_ripple = false;
+    FDPClearAllLocks(allCells, gridMatrix, rowHeight, siteWidth);
+    usedCells.clear();
+    myDesign.DesignComputeHPWL();
+    HPWL = (ulong)myDesign.DesignGetHPWL();
+    if (prevHPWL3 != 0 && prevHPWL2 != 0 && prevHPWL1 != 0) {
+      if (HPWL == prevHPWL3 && prevHPWL3 == prevHPWL2 && prevHPWL2 == prevHPWL1) {
+	cout << endl << "ITER COUNT: " << iterCount << " HPWL: " << HPWL << endl;
+	break;
+      }
+    }
+    if (HPWL < bestHPWL) {
+      bestHPWL = HPWL;
+      cout << "*" << flush;
+      cout << "ITER COUNT: " << iterCount << " HPWL: " << HPWL << " CPU: " << getCPUTime() << endl;
+      saveBestCellPositions(allCells, cellXPositions, cellYPositions);
+    }
+
+    dotCount++;
+    if (dotCount == dotLimit) {
+      dotCount = 0;
+      cout << endl;
+    } else if (((HPWL - bestHPWL) / bestHPWL) < 0.2) {
+      cout << "." << flush;
+    } else {
+      cout << "-" << flush;
+    }
+    prevHPWL3 = prevHPWL2; prevHPWL2 = prevHPWL1; prevHPWL1 = HPWL;
+    iterCount++;
   }
+  restoreBestCellPositions(allCells, cellXPositions, cellYPositions);
+  cout << endl;
+  cout << "END: CPU TIME: " << getCPUTime() << "s" << endl;
 }
 

@@ -116,6 +116,9 @@ printTimeUsage(Env &topEnv)
 -global_placer: If this option is specified, an external global placer 
               is selected to perform global placement
 
+-use_fd_placer: If this option is specified, the force directed top level
+              placer is selected to perform global placement
+
 -cluster_strategy: If this option is specified, the appropriate strategy
               to perform clustering is selected. The options as of now 
               are : 
@@ -126,6 +129,7 @@ printTimeUsage(Env &topEnv)
               e) tdcluster2
               f) largecluster
               g) nocluster
+
 -cluster_global_placer: The global placer used for placing cells
               inside large clusters. Option values are:
               a) ntuplace
@@ -149,18 +153,25 @@ printTimeUsage(Env &topEnv)
 
 -numclusters: Indicates the number of clusters that need to 
               be created for the design
+
  -hvariation: Percentage in double that indicates the maximum percentage
               of height variation of the cluster to be formed
+
  -addarea:    Percentage in double that indicates the minimum percentage
               of additional area that should be allocated to the area of 
               the cluster
+
  -numvarsteps: Number of steps in which the hvariation percentage must be 
               achieved
+
 -imbalance_factor: The imbalance factor for the k-way partitioning engine
 
        -num_runs: The number of runs of khmetis to produce the k-way partitions
 
 -recursive_biparititon: Use recursive bi-partitioning to produce k-paritions
+
+-fill_clusters_post_top: Perform placement inside clusters after global 
+              placement
 
 -cluster_maxarea: Indicates the maximum area of clusters that should 
               be formed.
@@ -175,6 +186,13 @@ printTimeUsage(Env &topEnv)
               inside the cluster. The options as of now are:
               a) boundaryonly
               b) placefull
+
+      -flow_type : This option can be used to decide what flow should be 
+              used to do the full placement. The options are:
+              a) placeclustersfirst
+              b) placeclustersfixports
+              c) placeclustersfixcells
+              d) placeclustersfixbound
 
 -uncluster_strategy: This option specifies how the unclustering of cells
               should be done. 
@@ -294,6 +312,13 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       cout << "Error: Global placers supported are \"ntuplace\", \"fastplace\" and \"mpl6\""
 	   << endl;
     }
+  } else if (switchName == "use_fd_placer") {
+    rtv = true;
+    if (switchValue == "true") {
+      topEnv.EnvSetUseFDPlacer(true);
+    } else if (switchValue == "false") {
+      topEnv.EnvSetUseFDPlacer(false);
+    }
   } else if (switchName == "cluster_strategy") {
     rtv = true;
     if (switchValue == "bestchoice") {
@@ -370,6 +395,13 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     } else {
       topEnv.EnvSetRecursiveBiPartitioning(false);
     }
+  } else if (switchName == "fill_clusters_post_top") {
+    rtv = true;
+    if (switchValue == "true") {
+      topEnv.EnvSetPlaceCellsInClusterPostTop(true);
+    } else {
+      topEnv.EnvSetPlaceCellsInClusterPostTop(false);
+    }
   } else if (switchName == "cluster_maxarea") {
     rtv = true;
     //    if (switchValue == "") {
@@ -406,6 +438,17 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     } else {
       rtv = false;
       cout << "Error: Valid options for \"cluster_placement\" are \"boundaryonly\" or \"placefull\"" << endl;
+    }
+  } else if (switchName == "flow_type") {
+    rtv = true;
+    if (switchValue == "placeclustersfirst") {
+      topEnv.EnvSetFlowType(ENV_PLACE_CLUSTERS_PRE_TOP);
+    } else if (switchValue == "placeclustersfixports") {
+      topEnv.EnvSetFlowType(ENV_PLACE_CLUSTERS_POST_TOP_WITH_PORTS);
+    } else if (switchValue == "placeclustersfixcells") {
+      topEnv.EnvSetFlowType(ENV_PLACE_CLUSTERS_POST_TOP_FIX_CELLS);
+    } else if (switchValue == "placeclustersfixbound") {
+      topEnv.EnvSetFlowType(ENV_PLACE_CLUSTERS_POST_TOP_BOUND);      
     }
   } else if (switchName == "uncluster_strategy") {
     
@@ -487,9 +530,9 @@ int placeMain(Env &topEnv)
   /****************************************************
    *  DO GLOBAL PLACEMENT                             *
    ****************************************************/
-  ProfilerStart("GlobalPlacement");
+  //  ProfilerStart("GlobalPlacement");
   myDesign.DesignDoGlobalPlacement();
-  ProfilerStart("GlobalPlacement");
+  //  ProfilerStop();
     
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
   if (globalPlacerType != ENV_NO_PLACEMENT) {

@@ -36,7 +36,8 @@ typedef enum {
   ENV_SOLVER_FORCE_DIRECTED,
   NUM_ENV_SOLVERS
 } EnvSolverType;
-# define DEFAULT_ENV_SOLVER_TYPE ENV_SOLVER_QUADRATIC_CONJ_GRAD
+//# define DEFAULT_ENV_SOLVER_TYPE ENV_SOLVER_QUADRATIC_CONJ_GRAD
+# define DEFAULT_ENV_SOLVER_TYPE ENV_SOLVER_FORCE_DIRECTED
 
 /* Define the net model used for hypernets of the placement tool  */
 typedef enum {
@@ -96,7 +97,7 @@ typedef enum {
   ENV_GLOBAL_PLACEMENT_TIMING_DRIVEN_CLUSTERING,
   ENV_NUM_CLUSTERING_TYPES,
 } EnvClusterType;
-# define DEFAULT_ENV_CLUSTER_TYPE ENV_NO_CLUSTERING
+# define DEFAULT_ENV_CLUSTER_TYPE ENV_LARGE_CLUSTERING
 
 /* Define the way in which boundary cells are placed inside 
    the cluster */
@@ -107,6 +108,15 @@ typedef enum {
 } EnvClusterPlacementType;
 # define DEFAULT_ENV_CLUSTER_PLACEMENT_TYPE ENV_CLUSTER_PLACE_BOUNDARY
 
+typedef enum {
+  ENV_PLACE_CLUSTERS_PRE_TOP,
+  ENV_PLACE_CLUSTERS_POST_TOP_WITH_PORTS,
+  ENV_PLACE_CLUSTERS_POST_TOP_FIX_CELLS,
+  ENV_PLACE_CLUSTERS_POST_TOP_BOUND,
+  ENV_NUM_FLOWS,
+} EnvFlowType;
+//# define DEFAULT_ENV_FLOW_TYPE ENV_PLACE_CLUSTERS_PRE_TOP
+# define DEFAULT_ENV_FLOW_TYPE ENV_PLACE_CLUSTERS_POST_TOP_FIX_CELLS
 /* Define the way in which the unclustering can be done within the 
    cluster */
 typedef enum {
@@ -139,6 +149,7 @@ typedef enum {
 # define DEFAULT_NUM_CLUSTERS 100
 # define DEFAULT_IMBALANCE_FACTOR 5
 # define DEFAULT_NUM_KHMETIS_RUNS 3
+# define DEFAULT_USE_FD_PLACER true
 # define DEFAULT_ENV_OUTPUT_FILE_NAME ./DEFAULT/defaultplacement
 
 /***************************************************
@@ -255,6 +266,12 @@ class Env {
   /* Flag to indicate if placement has to be inside the 
      cluster */
   bool PlaceCellsInCluster;
+  /* Flag to indicate if force directed placement has to be 
+     executed */
+  bool UseFDPlacer;
+  /* Flag to indicate if placement inside the clusters have
+     to be postponed until top level is done */
+  bool PlaceCellsInClusterPostTop;
 
   /***************************************/
   /* FLOAT/DOUBLE VARIABLES              */
@@ -313,6 +330,8 @@ class Env {
   EnvUnclusterType UnclusterType;
   /* Decide what the shape selection algorithm type should be */
   EnvShapeSelectionType ShapeSelectionType;
+  /* Decide what the flow should be */
+  EnvFlowType FlowType;
 
  public:
   /****************************************/
@@ -442,6 +461,12 @@ class Env {
 
   void EnvSetPlaceCellsInCluster(bool);
   bool EnvGetPlaceCellsInCluster(void);
+  
+  void EnvSetUseFDPlacer(bool);
+  bool EnvGetUseFDPlacer(void);
+
+  void EnvSetPlaceCellsInClusterPostTop(bool);
+  bool EnvGetPlaceCellsInClusterPostTop(void);
 
   void EnvSetMaxUtilPhaseI(double);
   double EnvGetMaxUtilPhaseI(void);
@@ -503,6 +528,9 @@ class Env {
   void EnvSetShapeSelectionType(EnvShapeSelectionType);
   EnvShapeSelectionType EnvGetShapeSelectionType(void);
   
+  void EnvSetFlowType(EnvFlowType);
+  EnvFlowType EnvGetFlowType(void);
+
   void EnvSetOutputFileName(string);
   string EnvGetOutputFileName(void);
 };

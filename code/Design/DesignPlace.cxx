@@ -22,6 +22,24 @@ Design::DesignPrintClusterParams(double clusterRatio, double maxArea, double max
 }
 
 void
+Design::DesignFillCellsInCluster(void)
+{
+  Cell *clusterCell;
+  string clusterCellName;
+  uint count;
+  
+  count = 0;
+  Env &DesignEnv = DesignGetEnv();
+  EnvFlowType flowType = DesignEnv.EnvGetFlowType();
+  if (flowType != ENV_PLACE_CLUSTERS_PRE_TOP) {
+    DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCell) {
+      DesignClusterPlaceCells(clusterCell);
+      count++;
+    } DESIGN_END_FOR;
+  }
+}
+
+void
 Design::DesignCoarsenNetlist(void)
 {
   Cell *cellPtr;
@@ -151,6 +169,8 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     break;
   case ENV_SOLVER_FORCE_DIRECTED:
     DesignSolveForAllCellsForceDirected();
+    //    return;
+    DesignFillCellsInCluster();
     break;
   default: cout << "Unknown solver type provided" << endl;
   };
@@ -196,7 +216,7 @@ Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType)
        MPL6_FULL_PATH has to be set for mPL6 to 
        run successfully */
     statusCode = DesignRunMPL6("." + clusterDesignName, clusterDesignName,
-			       globalPlacementTime, true, true);
+			       globalPlacementTime, true, true, false);
     topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: mPL6 ... Returned status: " 
 	 << statusCode << endl;
@@ -259,6 +279,10 @@ Design::DesignDoGlobalPlacement(void)
   //  ProfilerStart("Unclustering");
   DesignCollapseClusters();
   //  ProfilerStop();
+  DesignComputeHPWL();
+  cout << "Quality : X-HPWL: " << DesignGetXHPWL() 
+       << " Y-HPWL: " << DesignGetYHPWL() 
+       << " TOTAL: " << DesignGetHPWL() << endl;
 
   _STEP_END("Global placement");  
 }

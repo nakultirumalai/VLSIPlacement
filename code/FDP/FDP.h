@@ -18,7 +18,7 @@ using namespace std;
 
 class FDPSite{
  private:
-  Cell *siteHasCell;
+  Cell *siteCell;
   bool siteIsLocked;
   int siteX;
   int siteY;
@@ -30,17 +30,18 @@ class FDPSite{
   FDPSite();
   
   /* Set Functions */
-  void FDPSiteSetHasCell(Cell*);
+  void FDPSiteSetCell(Cell*);
   void FDPSiteSetIsLocked(bool);
   void FDPSiteSetXpos(int);
   void FDPSiteSetYpos(int);
   void FDPSiteSetSiteNum(int);
   void FDPSiteSetRowNum(int);
   
-
   /* Get functions */
-  Cell* FDPSiteGetHasCell(void);
+  Cell* FDPSiteGetCell(void);
   bool FDPSiteGetIsLocked(void);
+  bool FDPSiteIsOccupied(void);
+  bool FDPSiteIsVacant(void);
   int FDPSiteGetXpos(void);
   int FDPSiteGetYpos(void);
   int FDPSiteGetSiteNum(void);
@@ -50,8 +51,8 @@ class FDPSite{
   void FDPSiteRemoveCell(void);
 };
 
-extern void FDPTopLevel(vector<Cell*> &, int, int, 
-			 int, int, HyperGraph &);
+extern void FDPTopLevel(Design &, vector<Cell*> &, uint, uint, uint, uint,
+			uint, uint);
 
 
 # endif

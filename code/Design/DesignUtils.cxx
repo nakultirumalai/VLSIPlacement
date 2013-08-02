@@ -361,6 +361,59 @@ Design::DesignRunKHMetis(string graphFileName, uint numWays, uint UBfactor,
 }
 
 int 
+Design::DesignRunKHMetis2(string graphFileName, bool recursiveBisection,
+			  string rType, string cType, string oType,
+			  double UBfactor, uint Nruns, uint NVCycle, 
+			  uint dbglvl)
+{
+  int status;
+  char *hmetisPath; 
+  string hmetisCommand;
+  string DesignName;
+  char path[PATH_MAX];
+  FILE *progRun;
+
+  Env &DesignEnv = DesignGetEnv();
+  hmetisPath = getenv("KHMETIS2_FULL_PATH");
+
+  if (hmetisPath == NIL(char *)) {
+    hmetisCommand = "~/Downloads/Tools/Partitioning/hmetis-2.0/hmetis-2.0";
+  } else {
+    hmetisCommand = hmetisPath;
+  }
+
+  DesignName = DesignGetName();
+  hmetisCommand += " -ptype";
+  if (recursiveBisection == true) {
+    hmetisCommand += " rb";
+  } else {
+    hmetisCommand += "kway";
+  }
+  hmetisCommand += " -ctype " + cType;
+  hmetisCommand += " -rtype " + rType;
+  hmetisCommand += " -otype " + oType;
+  hmetisCommand += " -ufactor " + getStrFromDouble(UBfactor);
+  hmetisCommand += " -nruns " + getStrFromInt(Nruns);
+  hmetisCommand += " -nvcycles " + getStrFromInt(NVCycle);
+  hmetisCommand += " -seed 5 ";
+  hmetisCommand += " " + getStrFromInt(dbglvl);
+  hmetisCommand += " ./" + graphFileName;
+  hmetisCommand += " | tee " + DesignName + "_KHmetis2Log";
+  cout << "Executing khmetis command: " << hmetisCommand << endl;
+  status = executeCommand(hmetisCommand);
+
+  /* READ THE CLUSTERS HERE */
+  //  oldPlFileName = this->DesignPlFileName;
+  //  this->DesignPlFileName = clusterDesName + ".gp.pl";
+  //  DesignReadCellPlacement(true);
+  //  this->DesignPlFileName = oldPlFileName;
+
+  //  changeDir("..");
+
+  return (status);
+}
+
+int 
 Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName, 
 			  double &globalPlacementTime, bool changeDirectory,
 			  bool readPlacementTime, bool silent,
@@ -467,28 +520,37 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName,
 int 
 Design::DesignRunMPL6(string clusterDirName, string clusterDesName,
 		      double &globalPlacementTime, bool changeDirectory,
-		      bool readPlacement)
+		      bool readPlacement, bool silent)
 {
   int status;
   char *placerPath; 
   string placerCommand, oldPlFileName;
+  string placerLogFile, placerTimeLogFile;
   string DesignName;
 
   placerPath = getenv("MPL6_FULL_PATH");
   if (changeDirectory) {
     changeDir(clusterDirName);
   }
-
+  placerCommand = "{ time ";
   if (placerPath == NIL(char *)) {
-    placerCommand = "~/Downloads/mPL6-release/mPL6";
+    placerCommand += "~/Downloads/mPL6-release/mPL6";
   } else {
-    placerCommand = placerPath;
+    string pathFromEnv(placerPath);
+    placerCommand += pathFromEnv;
   }
   
   DesignName = DesignGetName();
-  placerCommand += " -d ./" + clusterDesName + ".aux . | tee " + DesignName + "_mPL6GPLog";
+  placerLogFile = clusterDesName + "_MPL6Log";
+  placerTimeLogFile = clusterDesName + "_MPL6TimeLog";
+  if (silent) {
+    placerCommand += " -d ./" + clusterDesName + ".aux > " + placerLogFile + "; } 2> " + placerTimeLogFile;
+  } else {
+    placerCommand += " -d ./" + clusterDesName + ".aux | tee " + placerLogFile + "; } 2> " + placerTimeLogFile;
+  }
+  //  cout << "PLACER COMMAND: " << placerCommand << endl;
   status = executeCommand(placerCommand);
-  getMPL6GlobalPlacementTime(DesignName, globalPlacementTime);
+  //  getMPL6GlobalPlacementTime(DesignName, globalPlacementTime);
   //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
   if (readPlacement) {
     oldPlFileName = this->DesignPlFileName;
@@ -577,7 +639,7 @@ Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName,
   }
 
   if (placerPath == NIL(char *)) {
-    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -legalize ";
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -window 10 ";
   } else {
     placerCommand = placerPath;
   }
