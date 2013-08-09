@@ -40,6 +40,80 @@ Design::DesignFillCellsInCluster(void)
 }
 
 void
+Design::DesignDoClusterFlipping(void)
+{
+  bool improved;
+  while (1) {
+    improved = DesignFlipClusters(true);
+    if (!improved) break;
+  }
+  while (1) {
+    improved = DesignFlipClusters(false);
+    if (!improved) break;
+  }
+}
+
+void
+Design::DesignDoClusterSwapping(void)
+{
+  Cell *clusterCell1, *clusterCell2;
+  string clusterCellName1, clusterCellName2;
+  double cell1Xpos, cell2Xpos, cell1Ypos, cell2Ypos;
+  ulong totalHPWL, bestHPWL;
+  uint dotCount, dotLimit, iterCount;
+  bool improved;
+  
+  DesignComputeHPWL();
+  totalHPWL = DesignGetHPWL();
+  bestHPWL = totalHPWL;
+  dotCount = 0; dotLimit = 200;
+  iterCount = 1;
+  while (1) {
+    improved = false;
+    cout << "BEGIN: Cluster swapping ITER: " << iterCount << " HPWL: " << totalHPWL << endl;
+    DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName1, clusterCell1) {
+      DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName2, clusterCell2) {
+	cell1Xpos = (*clusterCell1).CellGetXpos();
+	cell1Ypos = (*clusterCell1).CellGetYpos();
+	cell2Xpos = (*clusterCell2).CellGetXpos();
+	cell2Ypos = (*clusterCell2).CellGetYpos();
+	(*clusterCell1).CellSetXpos(cell2Xpos);
+	(*clusterCell1).CellSetYpos(cell2Ypos);
+	(*clusterCell2).CellSetXpos(cell1Xpos);
+	(*clusterCell2).CellSetYpos(cell1Ypos);
+	DesignComputeHPWL();
+	totalHPWL = DesignGetHPWL();
+	if (totalHPWL < bestHPWL) {
+	  bestHPWL = totalHPWL;
+	  dotCount++;
+	  cout << "*" << flush;
+	  improved = true;
+	  //	cout << endl << "Best HPWL: " << totalHPWL << endl;
+	} else {
+	  (*clusterCell1).CellSetXpos(cell1Xpos);
+	  (*clusterCell1).CellSetYpos(cell1Ypos);
+	  (*clusterCell2).CellSetXpos(cell2Xpos);
+	  (*clusterCell2).CellSetYpos(cell2Ypos);
+	  //	cout << "" << flush;
+	}
+	if (dotCount > dotLimit) {
+	  dotCount = 0;
+	  cout << endl;
+	}
+      } DESIGN_END_FOR;
+    } DESIGN_END_FOR;
+    cout << endl 
+	 << "END: Cluster swapping ITER: " << iterCount++ 
+	 << "  HPWL:" << totalHPWL << endl;
+    if (!improved) {
+      break;
+    }
+  }
+  DesignComputeHPWL();
+  totalHPWL = DesignGetHPWL();
+}
+
+void
 Design::DesignCoarsenNetlist(void)
 {
   Cell *cellPtr;
@@ -169,8 +243,10 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     break;
   case ENV_SOLVER_FORCE_DIRECTED:
     DesignSolveForAllCellsForceDirected();
-    //    return;
     DesignFillCellsInCluster();
+    DesignDoClusterFlipping();
+    DesignDoClusterSwapping();
+    //    return;
     break;
   default: cout << "Unknown solver type provided" << endl;
   };

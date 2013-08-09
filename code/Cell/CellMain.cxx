@@ -339,6 +339,59 @@ Cell::CellMoveCell(double xPos, double yPos)
 }
 
 void
+Cell::CellFindModifiedHPWL(ulong &oldXHPWL, ulong &oldYHPWL,
+			   ulong &newXHPWL, ulong &newYHPWL)
+{
+  Net *netPtr;
+  Pin *pinPtr, *connPinPtr;
+  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;
+  Cell *cellPtr;
+  map<Net*, bool> visitedNets;
+  double pinAbsX, pinAbsY;
+  double maxx, maxy, minx, miny;
+  
+  oldXHPWL = 0; oldYHPWL = 0;
+  newXHPWL = 0; newYHPWL = 0;
+  maxx = 0; maxy = 0; minx = DBL_MAX; miny = DBL_MAX;
+  VECTOR_FOR_ALL_ELEMS(Pins, Pin*, pinPtr) {
+    netPtr = (*pinPtr).ConnectedNet;
+    _KEY_EXISTS(visitedNets, netPtr) {
+      continue;
+    }
+    visitedNets[netPtr] = true;
+    oldXHPWL += (netPtr->maxx - netPtr->minx);
+    oldYHPWL += (netPtr->maxy - netPtr->miny);
+    NET_FOR_ALL_PINS((*netPtr), connPinPtr) {
+      cellPtr = (*connPinPtr).ParentCell;
+      pinAbsX = cellPtr->x + connPinPtr->xOffset;
+      pinAbsY = cellPtr->y + connPinPtr->yOffset;
+      if (pinAbsX > maxx) {
+	maxx = pinAbsX; 
+	netPtr->maxx = pinAbsX;
+	pinMaxx = connPinPtr;
+      } 
+      if (pinAbsX < minx) {
+	minx = pinAbsX; 
+	netPtr->minx = pinAbsX;
+	pinMinx = connPinPtr;
+      }
+      if (pinAbsY > maxy) {
+	maxy = pinAbsY; 
+	netPtr->maxy = pinAbsY;
+	pinMaxy = connPinPtr;
+      }
+      if (pinAbsY < miny) {
+	miny = pinAbsY; 
+	netPtr->miny = pinAbsY;
+	pinMiny = connPinPtr;
+      }
+    } NET_END_FOR;
+    newXHPWL += (netPtr->maxx - netPtr->minx);
+    newYHPWL += (netPtr->maxy - netPtr->miny);
+  } END_FOR;
+}
+
+void
 Cell::CellMoveCellComputeHPWL(double newXpos, double newYpos,
 			      ulong &oldXHPWL, ulong &oldYHPWL,
 			      ulong &newXHPWL, ulong &newYHPWL)

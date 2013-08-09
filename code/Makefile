@@ -6,7 +6,7 @@ INCLUDE_DIR=$(CODE_ROOT)/include
 LIB_DIR=$(CODE_ROOT)/libs
 
 #LIBSOOQP= -lblas /usr/local/lib/libma27.a -lgfortran -lprofiler
-LIBSOOQP= -lblas -lgfortran #-lprofiler 
+LIBSOOQP= -lblas -lgfortran -lprofiler 
 
 LIBQUADPROG= #-lQuadProgpp
 LIBMOSEK= -lmosek64

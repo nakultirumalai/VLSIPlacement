@@ -56,7 +56,7 @@ Design::DesignSolveForAllCellsForceDirected(void)
   HyperGraph &myGraph = DesignGetGraph();
   if (DesignEnv.EnvGetUseFDPlacer()) {
     FDPTopLevel((*this), clusterCells, numRows, numSites, rowHeight, siteWidth, 
-		(clusterCells.size()), (clusterCells.size() / 2));
+		1000, (clusterCells.size()));
   }
 
   /* STEP : FINISH */
@@ -64,5 +64,5 @@ Design::DesignSolveForAllCellsForceDirected(void)
   cout << "Quality : X-HPWL: " << DesignGetXHPWL() 
        << " Y-HPWL: " << DesignGetYHPWL() 
        << " TOTAL: " << DesignGetHPWL() << endl;
-
+  //  exit(0);
 }

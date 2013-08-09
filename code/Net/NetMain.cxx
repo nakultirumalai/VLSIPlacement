@@ -246,8 +246,11 @@ Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
     cellPtr = (*pinPtr).PinGetParentCellPtr();
     pinXpos = pinPtr->xOffset + cellPtr->x;
     pinYpos = pinPtr->yOffset + cellPtr->y;
-    //    cout << "Cell: " << (*cellPtr).CellGetName() << " X: " << cellPtr->x << " Y: " << cellPtr->y 
-    //	 << " Abs: X: " << pinXpos << " Y: " << pinYpos << endl;
+    /*
+    if ((*cellPtr).CellIsHidden()) {
+      cout << "Cell: " << (*cellPtr).CellGetName() << " X: " << cellPtr->x << " Y: " << cellPtr->y 
+	   << " Abs: X: " << pinXpos << " Y: " << pinYpos << endl;
+	   }*/
     if (maxx < pinXpos) {
       maxx = pinXpos;
       pinMaxx = pinPtr;

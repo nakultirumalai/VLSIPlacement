@@ -2079,10 +2079,10 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
     VECTOR_FOR_ALL_ELEMS(clusterCells, Cell *, cellPtr) {
       mapOfCells[cellPtr] = true;
       mapOfCellsString[(*cellPtr).CellGetName()] = cellPtr;
-      //      cellXpos = (clusterWidth/2) - ((*cellPtr).CellGetWidth() / 2);
-      //      cellYpos = (clusterHeight/2) - ((*cellPtr).CellGetHeight() / 2);
-      cellXpos = 0;
-      cellYpos = 0;
+      cellXpos = (clusterWidth/2) - ((*cellPtr).CellGetWidth() / 2);
+      cellYpos = (clusterHeight/2) - ((*cellPtr).CellGetHeight() / 2);
+      //      cellXpos = 0;
+      //      cellYpos = 0;
       (*cellPtr).CellSetPosDbl(cellXpos, cellYpos);
       (*cellPtr).CellSetIsClusterFixed(false);
     } END_FOR;
@@ -2283,21 +2283,25 @@ Design::DesignClusterPlaceCells(Cell *clusterCell)
 
   /* STEP : RE-ASSIGN PIN OFFSETS FOR THE CLUSTER */
   stepTime = getCPUTime();
-  if (hVariations[idx] == 0) {
+  if (hVariations[idx - 1] == 0) {
     MAP_FOR_ALL_ELEMS(pinMap, Pin*, Pin*, clusterPinPtr, pinPtr) {
       Cell &thisCell = (*pinPtr).PinGetParentCell();
       (*clusterPinPtr).PinSetXOffset(thisCell.CellGetXpos() + (*pinPtr).PinGetXOffset());
       (*clusterPinPtr).PinSetYOffset(thisCell.CellGetYpos() + (*pinPtr).PinGetYOffset());
-      /* Hide the pin again */
-      (*pinPtr).PinSetIsHidden(true);
     } END_FOR;
   }
+  MAP_FOR_ALL_ELEMS(pinMap, Pin*, Pin*, clusterPinPtr, pinPtr) {
+    /* Hide the pin again */
+    (*pinPtr).PinSetIsHidden(true);
+  } END_FOR;
   clusterPlacementTime += getCPUTime() - stepTime;
 
   /* Set the parameters of the cluster of the cell */
   (*clusterOfCell).ClusterSetShapeHPWL(shapeHPWLVec);
   (*clusterOfCell).ClusterSetCellPositions(cellPositions);
   (*clusterOfCell).ClusterSetPlacementTime(clusterPlacementTime);
+  DesignComputeHPWL();
+  cout << " TOTAL HPWL: " << DesignGetHPWL() << endl;
 }
 
 /* FUNCTION TO DUMP THE FOLLOWING INFORMATION FOR EACH CLUSTER:
@@ -2490,4 +2494,251 @@ Design::DesignFormClusters(vector<vector<Cell *> > &clusters, double &totalTime)
     //  break;
   }
   actualTime = getCPUTime() - actualTime;
+}
+
+inline
+void resetPinOffsets(map<Pin*, Pin*> &pinMap) 
+{
+  Pin *clusterPinPtr, *pinPtr;
+  static uint tempInt;
+
+  string opFileName;
+  ofstream opFile;
+
+  tempInt++;
+  // opFileName = "reset_pin_" + getStrFromInt(tempInt);
+  // opFile.open(opFileName.data());
+  
+  MAP_FOR_ALL_ELEMS(pinMap, Pin*, Pin*, clusterPinPtr, pinPtr) {
+    Cell &thisCell = (*pinPtr).PinGetParentCell();
+    /*
+    opFile << thisCell.CellGetName() 
+	   << " " << thisCell.CellGetXpos() 
+	   << " " << (*pinPtr).PinGetXOffset() 
+	   << " " << (thisCell.CellGetXpos() + (*pinPtr).PinGetXOffset())
+	   << " " << thisCell.CellGetYpos() 
+	   << " " << (*pinPtr).PinGetYOffset() 
+	   << " " << (thisCell.CellGetYpos() + (*pinPtr).PinGetYOffset())
+	   << endl;
+    */
+    (*clusterPinPtr).PinSetXOffset(thisCell.CellGetXpos() + (*pinPtr).PinGetXOffset());
+    (*clusterPinPtr).PinSetYOffset(thisCell.CellGetYpos() + (*pinPtr).PinGetYOffset());
+  } END_FOR;
+
+  /*
+  opFile.close();
+  */
+}
+
+void
+Design::DesignFlipClusterHorizontal(Cell *clusterCell)
+{
+  Cell *thisCell;
+  uint midPoint;
+  double cellXpos, cellWidth, clusterWidth;
+  string clusterCellName;
+  bool left, right;
+
+  clusterWidth = (*clusterCell).CellGetWidth();
+  midPoint = clusterWidth / 2;
+
+  clusterCellName = (*clusterCell).CellGetName();
+  /* Get the cluster structure corresponding to the current cluster cell */
+  Cluster *clusterCellPtr = (Cluster *)CellGetCluster(clusterCell);
+  Cluster &thisCluster = *clusterCellPtr;
+  vector<Cell*> &cellsOfCluster = thisCluster.ClusterGetCellsOfCluster();
+  //  map<Cell*, uint> &boundaryCells = thisCluster.ClusterGetBoundaryCells();
+  map<Pin*, Pin*> &pinMap = thisCluster.ClusterGetPinMap();
+
+  //  DesignPlotClusterLarge((clusterCellName + "_before"), 
+  //			 (clusterCellName + "_before"),
+  //			 clusterCell, boundaryCells, cellsOfCluster);
+  /* ITERATE OVER ALL CELLS OF THE CLUSTER */
+  VECTOR_FOR_ALL_ELEMS(cellsOfCluster, Cell*, thisCell) {
+    cellXpos = (*thisCell).CellGetXpos();
+    cellWidth = (*thisCell).CellGetWidth();
+    cellXpos = clusterWidth - cellXpos - cellWidth;
+    (*thisCell).CellSetXpos(cellXpos);
+    # if 0
+    left = false; right = false;
+    if (cellXpos < midPoint) {
+      left = true;
+    }
+    if (cellRight > midPoint) {
+      right = true;
+    }
+    _ASSERT("Error: Left and right both are false", !left && !right);
+    if (left != right) {
+      /* Cell is completely to the left or right of the mid point line */
+      cellXpos = clusterWidth - cellXpos - cellWidth;
+    } else {
+      /* Mid point passes through the cell */
+      cellXpos = clusterWidth - cellXpos - cellWidth;
+    }
+    # endif
+  } END_FOR;
+
+  resetPinOffsets(pinMap);
+  //  DesignPlotClusterLarge((clusterCellName + "_after"), 
+  //			 (clusterCellName + "_after"),
+  //			 clusterCell, boundaryCells, cellsOfCluster);
+}
+
+void
+Design::DesignFlipClusterVertical(Cell *clusterCell)
+{
+  Cell *thisCell;
+  uint  midPoint;
+  double cellYpos, cellHeight, clusterHeight;
+  string clusterCellName;
+  bool left, right;
+
+  clusterHeight = (*clusterCell).CellGetHeight();
+  clusterCellName = (*clusterCell).CellGetName();
+  midPoint = clusterHeight / 2;
+
+  /* Get the cluster structure corresponding to the current 
+     cluster cell */
+  Cluster *clusterCellPtr = (Cluster *)CellGetCluster(clusterCell);
+  Cluster &thisCluster = *clusterCellPtr;
+
+  vector<Cell *> &cellsOfCluster = thisCluster.ClusterGetCellsOfCluster();
+  map<Cell*, uint> &boundaryCells = thisCluster.ClusterGetBoundaryCells();
+  map<Pin*, Pin*> &pinMap = thisCluster.ClusterGetPinMap();
+
+  //  DesignPlotClusterLarge((clusterCellName + "_before_vertical_flip"), 
+  //  			 (clusterCellName + "_before_vertical_flip"),
+  //			 clusterCell, boundaryCells, cellsOfCluster);
+
+  VECTOR_FOR_ALL_ELEMS(cellsOfCluster, Cell*, thisCell) {
+    cellYpos = (*thisCell).CellGetYpos();
+    cellHeight = (*thisCell).CellGetHeight();
+    cellYpos = clusterHeight - cellYpos - cellHeight;
+    (*thisCell).CellSetYpos(cellYpos);
+  } END_FOR;
+
+  //  DesignPlotClusterLarge((clusterCellName + "_after_vertical_flip"), 
+  //  			 (clusterCellName + "_after_vertical_flip"),
+  //			 clusterCell, boundaryCells, cellsOfCluster);
+  
+  resetPinOffsets(pinMap);
+}
+
+void
+writeCellsOfCluster(Cell *clusterCell, string opFileName) 
+{
+  Cell *thisCell;
+  Cluster *clusterCellPtr = (Cluster *)CellGetCluster(clusterCell);
+  Cluster &thisCluster = *clusterCellPtr;
+
+  vector<Cell*> &cellsOfCluster = thisCluster.ClusterGetCellsOfCluster();
+  ofstream opFile;
+  
+  opFile.open(opFileName.data());
+
+  VECTOR_FOR_ALL_ELEMS(cellsOfCluster, Cell*, thisCell) {
+    opFile << (*thisCell).CellGetName() << " " 
+	   << (*thisCell).CellGetXpos() << " " 
+	   << (*thisCell).CellGetYpos() << endl;
+  } END_FOR;
+  
+  opFile.close();
+}
+
+void
+writePinOffsets(Cell *clusterCell, string opFileName) 
+{
+  Cell *thisCell;
+  Pin *clusterPinPtr, *pinPtr;
+  double pinXOffset, pinYOffset;
+  Cluster *clusterCellPtr = (Cluster *)CellGetCluster(clusterCell);
+  Cluster &thisCluster = *clusterCellPtr;
+
+  vector<Cell*> &cellsOfCluster = thisCluster.ClusterGetCellsOfCluster();
+  map<Pin*, Pin*> &pinMap = thisCluster.ClusterGetPinMap();
+  ofstream opFile;
+  
+  opFile.open(opFileName.data());
+
+  MAP_FOR_ALL_ELEMS(pinMap, Pin*, Pin*, clusterPinPtr, pinPtr) {
+    Cell &thisCell = (*pinPtr).PinGetParentCell();
+    opFile << thisCell.CellGetName() 
+	   << " " << thisCell.CellGetXpos() 
+	   << " " << (*pinPtr).PinGetXOffset() 
+	   << " " << (thisCell.CellGetXpos() + (*pinPtr).PinGetXOffset())
+	   << " " << thisCell.CellGetYpos() 
+	   << " " << (*pinPtr).PinGetYOffset() 
+	   << " " << (thisCell.CellGetYpos() + (*pinPtr).PinGetYOffset())
+	   << endl;
+  } END_FOR;
+  
+  opFile.close();
+}
+
+bool
+Design::DesignFlipClusters(bool horizontal)
+{
+  Cell *clusterCell;
+  string clusterCellName;
+  ulong oldXHPWL, oldYHPWL;
+  ulong newXHPWL, newYHPWL;
+  ulong totalXHPWL, totalYHPWL;
+  ulong totalHPWL, bestHPWL;
+  uint dotCount, dotLimit;
+  bool improved;
+  
+  totalXHPWL = DesignGetXHPWL();
+  totalYHPWL = DesignGetYHPWL();
+  totalHPWL = DesignGetHPWL();
+  bestHPWL = totalHPWL;
+  cout << endl;
+  if (horizontal) {
+    cout << "BEGIN: Horizontal Flipping of cluster cells. HPWL: " << totalHPWL << endl;
+  } else {
+    cout << "BEGIN: Vertical Flipping of cluster cells. HPWL: " << totalHPWL << endl;
+  }
+  improved = false;
+  dotCount = 0;
+  dotLimit = 50;
+  DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCell) {
+    if (horizontal) {
+      DesignFlipClusterHorizontal(clusterCell);
+    } else {
+      DesignFlipClusterVertical(clusterCell);
+    }
+    DesignComputeHPWL();
+    totalHPWL = DesignGetHPWL();
+    if (totalHPWL >= bestHPWL) {
+      if (horizontal) {
+	DesignFlipClusterHorizontal(clusterCell);
+      } else {
+	DesignFlipClusterVertical(clusterCell);
+      }
+      if (dotCount > dotLimit) {
+	dotCount = 0;
+	cout << endl;
+      }
+      cout << "." << flush;
+      dotCount++;
+    } else {
+      bestHPWL = totalHPWL;
+      cout << "*" << flush;
+      dotCount = 0;
+      cout << endl << "Flipped cluster " << clusterCellName 
+	   << " HPWL:" << totalHPWL 
+	   << " Best HPWL: " << bestHPWL << endl;
+      improved = true;
+    }
+  } DESIGN_END_FOR;
+  DesignComputeHPWL();
+  totalHPWL = DesignGetHPWL();
+  cout << endl;
+  if (horizontal) {
+    cout << "END: Horizontal Flipping of cluster cells. HPWL: " << totalHPWL << endl;
+  } else {
+    cout << "END: Vertical Flipping of cluster cells. HPWL: " << totalHPWL << endl;
+  }
+  cout << endl;
+
+  return (improved);
 }

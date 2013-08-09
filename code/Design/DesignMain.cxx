@@ -280,6 +280,78 @@ Design::DesignComputeHPWL()
   this->DesignYHPWL = totalYHPWL;
   this->DesignHPWL = totalHPWL;
   //  cout << "Computed HPWL for : " << netCount << endl;
+  //  DesignPrintNetsHPWL();
+}
+
+void
+Design::DesignPrintNetsHPWL(void)
+{
+  Net *netPtr;
+  string netName;
+  string opFileName;
+  ulong totalXHPWL, totalYHPWL;
+  ulong totalHPWL;
+  uint xHPWL, yHPWL;
+  static uint num;
+
+  ofstream opFile;
+
+  num++;
+  opFileName = "net_hpwl_" + getStrFromInt(num);
+  opFile.open(opFileName.data());
+  
+  totalXHPWL = 0.0;
+  totalYHPWL = 0.0;
+  totalHPWL = 0.0;
+  DESIGN_FOR_ALL_NETS((*this), netName, netPtr) {
+    opFile << "Net: " << netName 
+	   << " maxx: " << netPtr->maxx
+	   << " minx: " << netPtr->minx
+	   << " maxy: " << netPtr->maxy
+	   << " miny: " << netPtr->miny
+	   << endl;
+    //    opFile << "  pin: " << (netPtr->pinMaxx->xOffset + netPtr->pinMaxx->ParentCell->x)
+    //	   << "  pin: " << (netPtr->pinMinx->xOffset + netPtr->pinMinx->ParentCell->x)
+    //	   << "  pin: " << (netPtr->pinMaxy->yOffset + netPtr->pinMaxy->ParentCell->y)
+    //	   << "  pin: " << (netPtr->pinMiny->yOffset + netPtr->pinMiny->ParentCell->y)
+    //	   << endl;
+    if (netPtr->pinMaxx->isHidden) {
+      cout << "break here" << endl;
+    }
+    if (netPtr->pinMinx->isHidden) {
+      cout << "break here" << endl;
+    }
+    if (netPtr->pinMaxy->isHidden) {
+      cout << "break here" << endl;
+    }
+    if (netPtr->pinMiny->isHidden) {
+      cout << "break here" << endl;
+    }
+    opFile << "  Pin: " << (netPtr->pinMaxx->Name) << " xoff: " << (netPtr->pinMaxx->xOffset)
+	   << " Cell: " << (netPtr->pinMaxx->ParentCell->name) << " x: " << (netPtr->pinMaxx->ParentCell->x) 
+	   << "  Abs: " << (netPtr->pinMaxx->xOffset + netPtr->pinMaxx->ParentCell->x)
+	   << endl
+	   << "  Pin: " << (netPtr->pinMinx->Name) << " xoff: " << (netPtr->pinMinx->xOffset)
+	   << " Cell: " << (netPtr->pinMinx->ParentCell->name) << " x: " << (netPtr->pinMinx->ParentCell->x) 
+	   << "  Abs: " << (netPtr->pinMinx->xOffset + netPtr->pinMinx->ParentCell->x)
+	   << endl
+	   << "  Pin: " << (netPtr->pinMaxy->Name) << " yoff: " << (netPtr->pinMaxy->yOffset)
+	   << " Cell: " << (netPtr->pinMaxy->ParentCell->name) << " y: " << (netPtr->pinMaxy->ParentCell->y) 
+	   << "  Abs: " << (netPtr->pinMaxy->yOffset + netPtr->pinMaxy->ParentCell->y)
+	   << endl
+	   << "  Pin: " << (netPtr->pinMiny->Name) << " yoff: " << (netPtr->pinMiny->yOffset)
+	   << " Cell: " << (netPtr->pinMiny->ParentCell->name) << " y: " << (netPtr->pinMiny->ParentCell->y) 
+	   << "  Abs: " << (netPtr->pinMiny->yOffset + netPtr->pinMiny->ParentCell->y)
+	   << endl;
+
+    (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    totalXHPWL += xHPWL;
+    totalYHPWL += yHPWL;
+    totalHPWL += (xHPWL + yHPWL);
+    //    opFile << "Computed HPWL of Net " << netName << " : " << (xHPWL + yHPWL) << endl;
+  } DESIGN_END_FOR;
+
+  opFile.close();
 }
 
 ulong 
@@ -1725,117 +1797,3 @@ Design::Design(string DesignPath, string DesignName, Env &designEnv)
   DesignReadDesign(DesignPath, DesignName);
 }
 
-/* Calculate WMax for each PhysRow */
-/*
-  vector<PhysRow*> allPhysRows = DesignGetRows();
-  PhysRow* Obj;
-  VECTOR_FOR_ALL_ELEMS(allPhysRows, PhysRow*, Obj){
-    Obj->PhysRowCalculateWMax();
-  }END_FOR;
-*/
-# if 0
-void
-Design::DesignAddCellToPhysRow(Cell *cell)
-{
-  /* Getting cell bounds */
-
-  int cellX = cell->CellGetXpos();
-  int cellY = cell->CellGetYpos();
-  int cellHeight = cell->CellGetHeight();
-  int cellWidth = cell->CellGetWidth();
-  
-  vector< unsigned int> Obj;
-  int rowIndex;
-  unsigned int subRowIndex;
-  int cellCount;
-  rowOrientation rowType = allPhysRows[0]->PhysRowGetType();
-  
-  VECTOR_FOR_ALL_ELEMS(allRowBounds, vector<unsigned int>, Obj){
-    rowIndex = i;
-    if (Obj.size() > 4){
-      if (rowType == HORIZONTAL){
-	int cellXend = cellX + cellWidth;
-	int cellYend = cellY + cellHeight;
-	
-	for (int i = 0; i < Obj.size(); i+=4){
-	  
-	  int botX = Obj[i];
-	  int botY = Obj[i+1];
-	  int topX = Obj[i+2];
-	  int topY = Obj[i+3];
- 
-	  /* Cell found in subrow */
-	  if((cellX >= botX) && (cellX < topX) && (cellXend > cellX) && 
-	     (cellXend <= topX) && (cellY == botY) && (cellYend > botY) && 
-	     ((cellHeight % (topY - botY)) == 0)){
-	    subRowIndex = (i % 4);
-	    //cout<<"subRowIndex="<<subRowIndex<<endl;
-	    (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
-	    //cout<<"Added "<<cellCount++<<"cell"<<endl;
-	    break; /* No more checks required */
-	  }
-	}
-      }
-      else if(rowType == VERTICAL){
-	int cellXend = cellX + cellHeight;
-	int cellYend = cellY + cellWidth;
-	
-	for(int i = 0; i < Obj.size(); i += 4){
-	  int botX = Obj[i];
-	  int botY = Obj[i+1];
-	  int topX = Obj[i+2];
-	  int topY = Obj[i+3];
-	  
-	  if((cellX == botX) && (cellXend > botX) && 
-	     ((cellHeight % (topX - botX)) == 0) && (cellY >= botY) && 
-	     (cellY < topY) && (cellYend > cellY) && (cellYend <= topY)){
-	    subRowIndex = (i % 4);
-	    (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
-	    //cout<<"Added "<<cellCount++<<"cell"<<endl;
-	    break;
-	  }
-	}
-      }
-    }
-    /* Indicates one subRow present in the entire row */
-    
-    else if ((Obj.size() == 4)){
-      if (rowType == HORIZONTAL){
-	int botX = Obj[0];
-	int botY = Obj[1];
-	int topX = Obj[2];
-	int topY = Obj[3];
-	int cellXend = cellX + cellWidth;
-	int cellYend = cellY + cellHeight;
-	
-	if ((cellX >= botX) && (cellX < topX) && (cellXend > cellX) && 
-	   (cellXend <= topX) && (cellY == botY) && (cellYend > botY) && 
-	   ((cellHeight % (topY - botY)) == 0)){
-	  
-	  //cout<<"Will add cell: "<<cell->CellGetName()<<endl;
-	  //cout<<"rowIndex :"<<rowIndex<<endl;
-	  //cout<<allPhysRows[rowIndex]->PhysRowGetCoordinate()<<endl;
-	  (allPhysRows[rowIndex])->PhysRowAddCellToRow(cell);
-	  
-	  //cout<<"Added "<<cellCount++<<"cell"<<endl;
-	}
-      }
-      else if (rowType == VERTICAL){
-	int botX = Obj[0];
-	int botY = Obj[1];
-	int topX = Obj[2];
-	int topY = Obj[3];
-	int cellXend = cellX + cellHeight;
-	int cellYend = cellY + cellWidth;
-	if ((cellX == botX) && (cellXend > botX) && 
-	   ((cellHeight % (topX-botX)) == 0) && (cellY >= botY) &&
-	    (cellY < topY) && (cellYend > cellY) && (cellYend <= topY)){
-	  allPhysRows[rowIndex]->PhysRowAddCellToRow(cell);
-	  //cout<<"Added "<<cellCount++<<"cell"<<endl;
-	}
-      }
-    }
-  } END_FOR;
-}
-
-# endif

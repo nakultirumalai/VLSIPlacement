@@ -295,8 +295,9 @@ Design::DesignDoKWayClustering(HyperGraph &myGraph, bool useExec, double &cluste
 {
   int *part;
   double clusterPlacementTime, partitioningTime;
-  uint numCells, numClusters, numNodes;
+  uint numCells, numClusters, numNodes, nVcycles;
   uint UBfactor, Nruns, CType, OType, VCycle, dbglvl;
+  string cType, rType, vType, oType;
   string graphFileName, designName, opFileName;
   string logFileName;
   bool recursiveBiPartition;
@@ -312,17 +313,29 @@ Design::DesignDoKWayClustering(HyperGraph &myGraph, bool useExec, double &cluste
   UBfactor = DesignEnv.EnvGetImbalanceFactor();
   Nruns = DesignEnv.EnvGetNumKHmetisRuns();
   recursiveBiPartition = DesignEnv.EnvGetRecursiveBiPartitioning();
-  CType = 2;
-  OType = 1;
+  CType = 2; 
+  OType = 1; 
   VCycle = 3;
   dbglvl = 24;
+  /* These are string variables for the hmetis2.0 engine */
+  cType = "h1";
+  if (recursiveBiPartition) {
+    rType = "slow";
+  } else {
+    rType = "kpslow"; 
+  }
+  oType = "soed";
+  nVcycles = 4;
+
   if (useExec) {
     opFileName = graphFileName + ".part." + getStrFromInt(numClusters);
     logFileName = designName + "_KHmetisLog";
     if (!(fileExists(opFileName) && fileExists(logFileName))) {
       DesignWriteHGraphFile(myGraph, numClusters, graphFileName, designName);
-      DesignRunKHMetis(graphFileName, numClusters, UBfactor, Nruns, CType, 
-		       OType, VCycle, dbglvl);
+      //      DesignRunKHMetis(graphFileName, numClusters, UBfactor, Nruns, CType, 
+      //		       OType, VCycle, dbglvl);
+      DesignRunKHMetis2(graphFileName, recursiveBiPartition, rType, cType, oType,
+			UBfactor, Nruns, nVcycles, numClusters, dbglvl);
     }
     getKHmetisRunTime(designName, partitioningTime);
   } else {

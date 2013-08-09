@@ -51,6 +51,24 @@ class FDPSite{
   void FDPSiteRemoveCell(void);
 };
 
+class FDPNet {
+ private:
+  Cell *firstCell, *secondCell;
+  double weight;
+ public:
+  FDPNet();
+  FDPNet(Cell*, Cell*);
+  FDPNet(Cell*, Cell*, double);
+  ~FDPNet();
+
+  void FDPNetSetFirstCell(Cell*);
+  void FDPNetSetSecondCell(Cell*);
+  void FDPNetSetWeight(double);
+
+  double FDPNetGetWeight(void);
+  Cell* FDPNetGetOtherCell(Cell*);
+};
+
 extern void FDPTopLevel(Design &, vector<Cell*> &, uint, uint, uint, uint,
 			uint, uint);
 

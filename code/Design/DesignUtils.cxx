@@ -364,7 +364,7 @@ int
 Design::DesignRunKHMetis2(string graphFileName, bool recursiveBisection,
 			  string rType, string cType, string oType,
 			  double UBfactor, uint Nruns, uint NVCycle, 
-			  uint dbglvl)
+			  uint Nparts, uint dbglvl)
 {
   int status;
   char *hmetisPath; 
@@ -383,21 +383,22 @@ Design::DesignRunKHMetis2(string graphFileName, bool recursiveBisection,
   }
 
   DesignName = DesignGetName();
-  hmetisCommand += " -ptype";
+  hmetisCommand += " -ptype ";
   if (recursiveBisection == true) {
     hmetisCommand += " rb";
   } else {
     hmetisCommand += "kway";
   }
   hmetisCommand += " -ctype " + cType;
-  hmetisCommand += " -rtype " + rType;
+  //  hmetisCommand += " -rtype " + rType;
   hmetisCommand += " -otype " + oType;
   hmetisCommand += " -ufactor " + getStrFromDouble(UBfactor);
   hmetisCommand += " -nruns " + getStrFromInt(Nruns);
   hmetisCommand += " -nvcycles " + getStrFromInt(NVCycle);
   hmetisCommand += " -seed 5 ";
-  hmetisCommand += " " + getStrFromInt(dbglvl);
+  hmetisCommand += " -dbglvl " + getStrFromInt(dbglvl);
   hmetisCommand += " ./" + graphFileName;
+  hmetisCommand += " " + getStrFromInt(Nparts);
   hmetisCommand += " | tee " + DesignName + "_KHmetis2Log";
   cout << "Executing khmetis command: " << hmetisCommand << endl;
   status = executeCommand(hmetisCommand);

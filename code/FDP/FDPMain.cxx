@@ -181,6 +181,7 @@ FDPGetNearestVacantSite(FDPSite *thisSite, vector<vector<FDPSite*> > &gridMatrix
       cout << "RETURNING SITE: (" << (*selectedSite).FDPSiteGetSiteNum() 
 	   << ", " << (*selectedSite).FDPSiteGetRowNum() << ")" << endl;
   }
+
   return (selectedSite);
 }
 
@@ -302,6 +303,50 @@ FDPGetNextCellToPlace(vector<Cell *> &allCells,
 }
 
 void
+FDPCreateFDPNetlist(vector<Cell*> &allCells, map<Cell*, vector<FDPNet*> > &fdpNetList)
+{
+  FDPNet *fdpNet;
+  Cell *cellPtr, *connCellPtr;
+  Net *netPtr;
+  //  map<Cell *, bool> visitedCells;
+  map<Cell *, vector<FDPNet*> >::iterator fdpNetListIter;
+  double netWeight;
+
+  cout << endl;
+  VECTOR_FOR_ALL_ELEMS(allCells, Cell*, cellPtr) {
+    map<Cell*, double> connectedCellMap;
+    map<Cell*, double>::iterator connectedCellMapItr;
+    //    visitedCells[cellPtr] = true;
+    CELL_FOR_ALL_NETS_NO_DIR((*cellPtr), netPtr) {
+      netWeight = (*netPtr).NetGetWeight();
+      NET_FOR_ALL_CELLS((*netPtr), connCellPtr) {
+	if (connCellPtr == cellPtr) {
+	  continue;
+	}
+	_KEY_EXISTS_WITH_VAL(connectedCellMap, connCellPtr, connectedCellMapItr) {
+	  connectedCellMapItr->second += netWeight;
+	} else {
+	  connectedCellMap[connCellPtr] = netWeight;
+	}
+      } NET_END_FOR;
+    } CELL_END_FOR;
+    MAP_FOR_ALL_ELEMS(connectedCellMap, Cell*, double, connCellPtr, netWeight) {
+      fdpNet = new FDPNet(cellPtr, connCellPtr, netWeight);
+      _KEY_EXISTS_WITH_VAL(fdpNetList, cellPtr, fdpNetListIter) {
+	vector<FDPNet*> &netList = fdpNetListIter->second;
+	netList.push_back(fdpNet);
+      } else {
+	vector<FDPNet*> netList;
+	netList.push_back(fdpNet);
+	fdpNetList[cellPtr] = netList;
+      }
+    } END_FOR;
+    cout << "." << flush;
+  } END_FOR;
+  cout << endl;
+}
+
+void
 FDPGetOptLocationForCell(Cell *thisCell, uint siteWidth, uint rowHeight,
 			 uint numSitesInRow, uint numRows, uint &siteNum, uint &rowNum)
 {
@@ -356,27 +401,84 @@ FDPGetOptLocationForCell(Cell *thisCell, uint siteWidth, uint rowHeight,
   sumWy /= sumW;
 
   /* Optimal rounded off value for X */
-  sumWx = dtoi(sumWx / siteWidth);
-  if (sumWx == numSitesInRow) {
-    sumWx = numSitesInRow;
+  siteNum = dtoi(sumWx / siteWidth);
+  if (siteNum == numSitesInRow) {
+    siteNum -= 1;
   }
-  sumWx = sumWx * siteWidth;
 
   /* Optimal rounded off value for Y */
-  sumWy = dtoi(sumWy / rowHeight);
-  if (sumWy == numRows) {
-    sumWy = numRows - 1;
+  rowNum = dtoi(sumWy / rowHeight);
+  if (rowNum == numRows) {
+    rowNum -= 1;
   }
-  sumWy = sumWy * rowHeight;
-  siteNum = sumWx / siteWidth;
-  rowNum = sumWy / rowHeight;
 
   if (fdpDebug) {
     cout <<  "FDP DEBUG: Cell: " << (*thisCell).CellGetName() 
 	 << " Optimal position: (" << sumWx
 	 << ", " << sumWy << ")" << endl
-	 << " Site : " << (sumWx / siteWidth) 
-	 << " Row  : " << (sumWy / rowHeight) << endl;
+	 << " Site : " << siteNum
+	 << " Row  : " << rowNum << endl;
+  }
+}
+
+void
+FDPGetOptLocationForCellUsingFDPNetList(Cell *thisCell, map<Cell *, vector<FDPNet*> > &fdpNetList,
+					uint siteWidth, uint rowHeight,
+					uint numSitesInRow, uint numRows, 
+					uint &siteNum, uint &rowNum)
+{
+  FDPNet *fdpNet;
+  Net *netPtr;
+  Pin *pinPtr;
+  Cell *connCell;
+  double sumWx, sumWy, sumW;
+  double cellXpos, cellYpos;
+  double netWeight;
+
+  cellXpos = (*thisCell).CellGetXpos();
+  cellYpos = (*thisCell).CellGetYpos();
+  _KEY_DOES_NOT_EXIST(fdpNetList, thisCell) {
+    _ASSERT_TRUE("Error: FDP netlist passed does not contain cell pointer");
+  }
+  if (fdpDebug) {
+    cout << endl << "FDP DEBUG: Cell: " << (*thisCell).CellGetName() 
+	 << " Old position: (" << cellXpos
+	 << ", " << cellYpos << ")" << endl
+	 << " Site : " << (cellXpos / siteWidth) 
+	 << " Row  : " << (cellYpos / rowHeight) << endl;
+  }
+  vector<FDPNet*> &fdpNets = fdpNetList[thisCell];
+  sumWx = 0; sumWy = 0; sumW = 0;
+  VECTOR_FOR_ALL_ELEMS(fdpNets, FDPNet*, fdpNet) {
+    connCell = (*fdpNet).FDPNetGetOtherCell(thisCell);
+    netWeight = (*fdpNet).FDPNetGetWeight();
+    cellXpos = (*connCell).x;
+    cellYpos = (*connCell).y;
+    sumWx += (netWeight * cellXpos);
+    sumWy += (netWeight * cellYpos);
+    sumW += netWeight;
+  } END_FOR;
+  sumWx /= sumW;
+  sumWy /= sumW;
+
+  /* Optimal rounded off value for X */
+  siteNum = dtoi(sumWx / siteWidth);
+  if (siteNum == numSitesInRow) {
+    siteNum -= 1;
+  }
+
+  /* Optimal rounded off value for Y */
+  rowNum = dtoi(sumWy / rowHeight);
+  if (rowNum == numRows) {
+    rowNum -= 1;
+  }
+
+  if (fdpDebug) {
+    cout <<  "FDP DEBUG: Cell: " << (*thisCell).CellGetName() 
+	 << " Optimal position: (" << sumWx
+	 << ", " << sumWy << ")" << endl
+	 << " Site : " << siteNum
+	 << " Row  : " << rowNum << endl;
   }
 }
 
@@ -483,6 +585,7 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   FDPSite *cellSite, *newSite;
   map<Cell*, bool> usedCells;
   vector<vector<FDPSite*> > gridMatrix;
+  map<Cell*, vector<FDPNet*> > fdpNetList;
   vector<uint> rowCap;
   uint siteNum, rowNum, siteCount, stepCount;
   uint oldSiteNum, oldRowNum;
@@ -490,8 +593,10 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   uint counter, numCells;
   ulong HPWL, prevHPWL, bestHPWL;
   ulong prevHPWL1, prevHPWL2, prevHPWL3;
-  bool end_ripple, iterationComplete;
+  bool endRipple, iterationComplete;
+  bool useFDPNetlist;
 
+  useFDPNetlist = true;
   numCells = allCells.size();
   vector<uint> cellXPositions(numCells);
   vector<uint> cellYPositions(numCells);
@@ -504,13 +609,15 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
        << " iterations with abort limit: " << abortLimit << endl;
   cout << "BEGIN: CPU TIME: " << getCPUTime() << "s" << endl;
   HPWL = 0;
-  prevHPWL = 0;
-  prevHPWL1 = 0;
-  prevHPWL2 = 0;
-  prevHPWL3 = 0;
+  prevHPWL = 0; prevHPWL1 = 0; prevHPWL2 = 0; prevHPWL3 = 0;
   bestHPWL = myDesign.DesignGetHPWL();
   row_height = rowHeight;
   site_width = siteWidth;
+  if (useFDPNetlist) {
+    FDPCreateFDPNetlist(allCells, fdpNetList);
+  }
+  cout << "Created intermediate netlist for force-directed solver. CPU TIME: " 
+       << getCPUTime() << endl;
   FDPCreateGrid(gridMatrix, rowCap, numSitesInRow, numRows, siteWidth, rowHeight);
   FDPFixCellsInSites(gridMatrix, allCells, siteWidth, rowHeight);
   iterCount = 0; 
@@ -528,8 +635,14 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
       cellSite = FDPGetSiteOfCell(gridMatrix, thisCell, siteWidth, rowHeight);
       oldSiteNum = (*cellSite).FDPSiteGetSiteNum();
       oldRowNum = (*cellSite).FDPSiteGetRowNum();
-      FDPGetOptLocationForCell(thisCell, siteWidth, rowHeight, numSitesInRow, numRows, 
-			       siteNum, rowNum);
+      if (useFDPNetlist) {
+	FDPGetOptLocationForCellUsingFDPNetList(thisCell, fdpNetList, siteWidth,
+						rowHeight, numSitesInRow, numRows, siteNum,
+						rowNum);
+      } else {
+	FDPGetOptLocationForCell(thisCell, siteWidth, rowHeight, numSitesInRow, numRows, 
+				 siteNum, rowNum);
+      }
       /* This is the optimal site for the cell */
       newSite = gridMatrix[rowNum][siteNum];
       if (cellSite == newSite) {
@@ -539,9 +652,9 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
 	}
 	continue;
       }
-      end_ripple = false;
+      endRipple = false;
       (*cellSite).FDPSiteRemoveCell();
-      while(!end_ripple) {
+      while(!endRipple) {
 	if ((*newSite).FDPSiteGetIsLocked()) {
 	  /* LOCKED CASE */
 	  if (fdpDebug) cout << "LOCKED CASE" << endl;
@@ -553,13 +666,15 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
 	  } else {
 	    /* FIND THE NEAREST VACANT / OCCUPIED SITE */
 	    newSite = FDPGetNearestVacantSite(newSite, gridMatrix, numSitesInRow, numRows, false);
+	    //	    cout << "OBTAINED NEAREST VACANT SITE:" << endl;
+	    //	    printSite(newSite);
 	    nextCell = (*newSite).FDPSiteGetCell();
 	  }
 	  prevSite = newSite;
 	  FDPPlaceAndLockCellInSite(newSite, thisCell);
 	  if (nextCell == NIL(Cell *)) {
 	    if (fdpDebug) cout << "END RIPPLE" << endl;
-	    end_ripple = true;
+	    endRipple = true;
 	  } else {
 	    thisCell = nextCell;
 	    if (fdpDebug) {
@@ -574,7 +689,7 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
 	  if ((*newSite).FDPSiteIsVacant()) {
 	    FDPPlaceAndLockCellInSite(newSite, thisCell);
 	    if (fdpDebug) cout << "END RIPPLE" << endl;
-	    end_ripple = true;
+	    endRipple = true;
 	  } else {
 	    nextCell = (*newSite).FDPSiteGetCell();
 	    if (fdpDebug) {
@@ -590,9 +705,15 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
 	}
 	if (iterationComplete) { 
 	  break;
-	} else if (!end_ripple) {
-	  FDPGetOptLocationForCell(thisCell, siteWidth, rowHeight, numSitesInRow, numRows, 
-				   siteNum, rowNum);
+	} else if (!endRipple) {
+	  if (useFDPNetlist) {
+	    FDPGetOptLocationForCellUsingFDPNetList(thisCell, fdpNetList, siteWidth,
+						    rowHeight, numSitesInRow, numRows, siteNum,
+						    rowNum);
+	  } else {
+	    FDPGetOptLocationForCell(thisCell, siteWidth, rowHeight, numSitesInRow, numRows, 
+				     siteNum, rowNum);
+	  }
 	  newSite = gridMatrix[rowNum][siteNum];
 	}
       }
@@ -611,7 +732,8 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
     if (HPWL < bestHPWL) {
       bestHPWL = HPWL;
       cout << "*" << flush;
-      cout << "ITER COUNT: " << iterCount << " HPWL: " << HPWL << " CPU: " << getCPUTime() << endl;
+      cout << "\nITER COUNT: " << iterCount << " HPWL: " << HPWL << " CPU: " << getCPUTime() << endl;
+      dotCount = 0;
       saveBestCellPositions(allCells, cellXPositions, cellYPositions);
     }
 

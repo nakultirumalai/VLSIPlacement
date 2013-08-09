@@ -47,6 +47,18 @@ Env::Env()
   EnvSetImbalanceFactor(DEFAULT_IMBALANCE_FACTOR);
   EnvSetNumKHmetisRuns(DEFAULT_NUM_KHMETIS_RUNS);
   EnvSetNumHVariationSteps(DEFAULT_NUM_HVARIATION_STEPS);
+  /* Initialization of HPWL */
+  EnvSetHPWLAfterConstructive(0);
+  EnvSetHPWLAfterFDPlacement(0);
+  EnvSetHPWLAfterClusterSwapping(0);
+  EnvSetHPWLTotalInternal(0);
+  EnvSetHPWLTotalGlobal(0);
+  EnvSetHPWLAfterClusterFill(0);
+  EnvSetHPWLAfterUnclustering(0);
+  EnvSetHPWLAfterLegalization(0);
+  EnvSetHPWLAfterDetailedPlacement(0);
+  EnvSetHPWLAfterUnclustering(0);
+  EnvSetHPWLFinal(0);
 
   /* Time related variables */
   /* Initialize start times to 0 */
@@ -284,6 +296,127 @@ Env::EnvGetDetailedPlacementTime(void)
   return (this->DetailedPlacementTime);
 }
 
+/* HPWL Recording functions */
+void
+Env::EnvSetHPWLAfterConstructive(ulong HPWLAfterConstructive)
+{
+  this->HPWLAfterConstructive = HPWLAfterConstructive;
+}
+
+ulong
+Env::EnvGetHPWLAfterConstructive(void)
+{
+  return (HPWLAfterConstructive);
+}
+
+void 
+Env::EnvSetHPWLAfterFDPlacement(ulong HPWLAfterFDPlacement)
+{
+  this->HPWLAfterFDPlacement = HPWLAfterFDPlacement;
+}
+
+ulong 
+Env::EnvGetHPWLAfterFDPlacement(void)
+{
+  return (HPWLAfterFDPlacement);
+}
+
+void
+Env::EnvSetHPWLAfterClusterSwapping(ulong HPWLAfterClusterSwapping)
+{
+  this->HPWLAfterClusterSwapping = HPWLAfterClusterSwapping;
+}
+
+ulong
+Env::EnvGetHPWLAfterClusterSwapping(void)
+{
+  return (HPWLAfterClusterSwapping);
+}
+
+void
+Env::EnvSetHPWLTotalInternal(ulong HPWLTotalInternal)
+{
+  this->HPWLTotalInternal = HPWLTotalInternal;
+}
+
+ulong
+Env::EnvGetHPWLTotalInternal(void)
+{
+  return (HPWLTotalInternal);
+}
+
+void
+Env::EnvSetHPWLTotalGlobal(ulong HPWLTotalGlobal)
+{
+  this->HPWLTotalGlobal;
+}
+
+ulong
+Env::EnvGetHPWLTotalGlobal(void)
+{
+  return (HPWLTotalGlobal);
+}
+
+void
+Env::EnvSetHPWLAfterClusterFill(ulong HPWLAfterClusterFill)
+{
+  this->HPWLAfterClusterFill = HPWLAfterClusterFill;
+}
+
+ulong
+Env::EnvGetHPWLAfterClusterFill(void)
+{
+  return (HPWLAfterClusterFill);
+}
+
+void
+Env::EnvSetHPWLAfterLegalization(ulong HPWLAfterLegalization)
+{
+  this->HPWLAfterLegalization = HPWLAfterLegalization;
+}
+
+ulong
+Env::EnvGetHPWLAfterLegalization(void)
+{
+  return (HPWLAfterLegalization);
+}
+
+void
+Env::EnvSetHPWLAfterDetailedPlacement(ulong HPWLAfterDetailedPlacement)
+{
+  this->HPWLAfterDetailedPlacement = HPWLAfterDetailedPlacement;
+}
+
+ulong
+Env::EnvGetHPWLAfterDetailedPlacement(void)
+{
+  return (HPWLAfterDetailedPlacement);
+}
+
+void
+Env::EnvSetHPWLAfterUnclustering(ulong HPWLAfterUnclustering)
+{
+  this->HPWLAfterUnclustering = HPWLAfterUnclustering;
+}
+
+ulong
+Env::EnvGetHPWLAfterUnclustering(void)
+{
+  return (HPWLAfterUnclustering);
+}
+
+void
+Env::EnvSetHPWLFinal(ulong HPWLFinal)
+{
+  this->HPWLFinal = HPWLFinal;
+}
+
+ulong
+Env::EnvGetHPWLFinal(void)
+{
+  return (HPWLFinal);
+}
+
 void 
 Env::EnvSetDesignName(string DesignName)
 {
@@ -301,6 +434,7 @@ Env::EnvSetDesignPath(string DesignPath)
 {
   this->DesignPath = DesignPath;
 }
+
 string 
 Env::EnvGetDesignPath(void)
 {

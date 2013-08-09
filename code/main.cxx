@@ -384,7 +384,7 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     rtv = true;
     uint imbalanceFactor = strToInt(switchValue);
     topEnv.EnvSetImbalanceFactor(imbalanceFactor);
-  } else if (switchName == "numruns") {
+  } else if (switchName == "num_runs") {
     rtv = true;
     uint numRuns = strToInt(switchValue);
     topEnv.EnvSetNumKHmetisRuns(numRuns);
@@ -530,9 +530,9 @@ int placeMain(Env &topEnv)
   /****************************************************
    *  DO GLOBAL PLACEMENT                             *
    ****************************************************/
-  //  ProfilerStart("GlobalPlacement");
+  ProfilerStart("GlobalPlacement");
   myDesign.DesignDoGlobalPlacement();
-  //  ProfilerStop();
+  ProfilerStop();
     
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
   if (globalPlacerType != ENV_NO_PLACEMENT) {

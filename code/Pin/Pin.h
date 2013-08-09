@@ -20,11 +20,11 @@ class Pin {
   char dir; 
   bool isClock;
   string libPinName;
-  string Name;
  public:
   Cell *ParentCell;
   Net *ConnectedNet;
   int xOffset, yOffset;
+  string Name;
   bool isHidden;
 
   /* Constructors */

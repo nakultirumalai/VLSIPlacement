@@ -384,6 +384,7 @@ class Design {
 
   /* HPWL functions */
   void DesignComputeHPWL(void);
+  void DesignPrintNetsHPWL(void);
   ulong DesignGetHPWL(void);
   ulong DesignGetXHPWL(void);
   ulong DesignGetYHPWL(void);
@@ -463,7 +464,7 @@ class Design {
   void DesignRunExternalPlacer(EnvGlobalPlacerType);
   void DesignRunInternalPlacer(EnvSolverType);
   int DesignRunKHMetis(string, uint, uint, uint, uint, uint, uint, uint);
-  int DesignRunKHMetis2(string, bool, string, string, string, double, uint, uint, uint);
+  int DesignRunKHMetis2(string, bool, string, string, string, double, uint, uint, uint, uint);
   int DesignRunNTUPlace(string, string, double &, bool, bool, bool, string&);
   int DesignRunFastPlace(string, string, double &, bool, bool, bool, string&);
   int DesignRunFastPlaceLegalizer(string, string, bool, bool);
@@ -492,7 +493,10 @@ class Design {
   void DesignPartitionKWayHmetis(HyperGraph &, int, int, int, int*,
 				 bool, bool, bool, double &);
   void DesignFillCellsInCluster(void);
-  
+  bool DesignFlipClusters(bool);
+  void DesignDoClusterFlipping(void);
+  void DesignDoClusterSwapping(void);
+
   //  bool DesignDoFCCluster(HyperGraph&);
   //  bool DesignDoNetCluster(HyperGraph&);
   //  bool DesignDoESCCluster(HyperGraph&);
@@ -542,6 +546,8 @@ class Design {
 				    double &);
   void DesignReadPlacerOutput(string, map<string, Cell*> &);
   void DesignDumpClusterInfo(string);
+  void DesignFlipClusterHorizontal(Cell*);
+  void DesignFlipClusterVertical(Cell*);
 
   /* Constraint functions */
   void DesignSetClockPeriod(double);

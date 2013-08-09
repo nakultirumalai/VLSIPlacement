@@ -27,13 +27,13 @@ class Cell {
   vector<Pin*> Pins;
   vector<Cell*> childCells;
   map<uint, map<uint, double > > arcDelays;
-  string name;
   string origName;
   string libCellName;
   string libName;
 
  public:
   double x, y;
+  string name;
   Bin *cellBin;
 
   /* Constructor & Destructor */
@@ -141,6 +141,7 @@ class Cell {
   void CellMoveCell(double, double);
   void CellMoveCellComputeHPWL(double, double, ulong &, ulong &, 
 			       ulong &, ulong &);
+  void CellFindModifiedHPWL(ulong&, ulong&, ulong&, ulong&);
   Pin* CellGetPinByName(const string &PinName);
 };
 

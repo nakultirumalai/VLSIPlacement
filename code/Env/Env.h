@@ -176,11 +176,32 @@ class Env {
   /***************************************/
   double NetlistReadTime;
   double HyperGraphBuildTime;
+  double KWayPartitioningTime;
   double ClusteringTime;
+  double FDNetlistBuildTime;
+  double FDSolverTime;
+  double ClusterSwappingTime;
+  double ClusterMirroringTime;
+  double UnclusteringTime;
   double GlobalPlacementTime;
   double LegalizationTime;
   double ShapeSelectionTime;
   double DetailedPlacementTime;
+  double TotalGlobalPlacementTime;
+
+  /***************************************/
+  /* VARIABLES FOR RECORDING HPWL        */
+  /***************************************/
+  ulong HPWLAfterConstructive;
+  ulong HPWLAfterFDPlacement;
+  ulong HPWLAfterClusterSwapping;
+  ulong HPWLAfterClusterFill;
+  ulong HPWLTotalInternal;
+  ulong HPWLTotalGlobal;
+  ulong HPWLAfterUnclustering;
+  ulong HPWLAfterLegalization;
+  ulong HPWLAfterDetailedPlacement;
+  ulong HPWLFinal;
 
   /***************************************/
   /* VARIABLES FOR SOME NET STATS        */
@@ -393,6 +414,37 @@ class Env {
   void EnvRecordDetailedPlacementTime(double);
   double EnvGetDetailedPlacementTime(void);
 
+  /* Functions for recording HPWL */
+  void EnvSetHPWLAfterConstructive(ulong);
+  ulong EnvGetHPWLAfterConstructive(void);
+
+  void EnvSetHPWLAfterFDPlacement(ulong);
+  ulong EnvGetHPWLAfterFDPlacement(void);
+
+  void EnvSetHPWLAfterClusterSwapping(ulong);
+  ulong EnvGetHPWLAfterClusterSwapping(void);
+
+  void EnvSetHPWLAfterClusterFill(ulong);
+  ulong EnvGetHPWLAfterClusterFill(void);
+  
+  void EnvSetHPWLTotalInternal(ulong);
+  ulong EnvGetHPWLTotalInternal(void);
+
+  void EnvSetHPWLTotalGlobal(ulong);
+  ulong EnvGetHPWLTotalGlobal(void);
+
+  void EnvSetHPWLAfterUnclustering(ulong);
+  ulong EnvGetHPWLAfterUnclustering(void);
+
+  void EnvSetHPWLAfterLegalization(ulong);
+  ulong EnvGetHPWLAfterLegalization(void);
+
+  void EnvSetHPWLAfterDetailedPlacement(ulong);
+  ulong EnvGetHPWLAfterDetailedPlacement(void);
+  
+  void EnvSetHPWLFinal(ulong);
+  ulong EnvGetHPWLFinal(void);
+  
   /* Functions to set netlist statistics */
   /* Set and get functions in pairs since its */
   /* easy to specify it that way              */
