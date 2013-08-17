@@ -57,6 +57,7 @@ class Net {
   string NetGetName(void);
   bool NetGetDirtyHPWL(void);
   bool NetIsUnderCluster(void);
+  void NetGetHPWL(uint &, uint &);
   void NetComputeHPWL(uint &, uint &);
   bool NetIsHidden(void);
   

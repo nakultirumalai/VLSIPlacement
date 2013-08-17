@@ -355,3 +355,14 @@ executeCommand(string command)
   
   return status;
 }
+
+/* Compute x / y * 100 */
+double
+getPercent(double x, double y)
+{
+  double rtv;
+  
+  rtv = (x / y) * 100;
+  
+  return rtv;
+}

@@ -354,6 +354,40 @@ Design::DesignPrintNetsHPWL(void)
   opFile.close();
 }
 
+void
+Design::DesignFindModifiedHPWL(Cell *thisCell)
+{
+  Net *netPtr;
+  Pin *pinPtr, *connPinPtr;
+  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;
+  Cell *cellPtr;
+  map<Net*, bool> visitedNets;
+  uint xHPWL, yHPWL;
+  ulong oldXHPWL, oldYHPWL, newXHPWL, newYHPWL;
+
+  oldXHPWL = 0; oldYHPWL = 0;
+  newXHPWL = 0; newYHPWL = 0;
+  CELL_FOR_ALL_NETS_NO_DIR((*thisCell), netPtr) {
+    _KEY_EXISTS(visitedNets, netPtr) {
+      continue;
+    }
+    visitedNets[netPtr] = true;
+    (*netPtr).NetGetHPWL(xHPWL, yHPWL);
+    oldXHPWL += xHPWL;
+    oldYHPWL += yHPWL;
+    (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    newXHPWL += xHPWL;
+    newYHPWL += yHPWL;
+  } CELL_END_FOR;
+  
+  this->DesignXHPWL -= oldXHPWL;
+  this->DesignYHPWL -= oldYHPWL;
+  this->DesignHPWL -= (oldXHPWL + oldYHPWL);
+  this->DesignXHPWL += newXHPWL;
+  this->DesignYHPWL += newYHPWL;
+  this->DesignHPWL += (newXHPWL + newYHPWL);
+}
+
 ulong 
 Design::DesignGetHPWL(void)
 {

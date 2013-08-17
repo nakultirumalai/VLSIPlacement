@@ -10,8 +10,7 @@ typedef enum boundaryDirectionType {
 /* Inlined functions start here */
 inline 
 void getMPL6PlacementData(string placerLog, string placerTimeLog,
-			  double &globalPlacementTime,
-			  double &HPWL)
+			  double &globalPlacementTime, double &HPWL)
 {
   ifstream ifile;
   string line, garbage, timeSubStr;
@@ -195,6 +194,8 @@ getPlacerToPlaceCellsInCluster(string designName,
     placerType = ENV_NTUPLACE_GP;
   } else if (designName == "pairing") {
     placerType = ENV_NTUPLACE_GP;
+  } else {
+    placerType = ENV_MPL6_GP;
   }
 }
 
@@ -2000,7 +2001,8 @@ Design::DesignDeduceHeightAndWidth(vector<Cell *> &clusterCells, double xPercent
 void
 Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
 				  double hPercent, uint numSteps, 
-				  double &clusterPlacementTime)
+				  double &clusterPlacementTime, 
+				  double &clusterCreationTime)
 {
   Cell *cellPtr, *clusterCell;
   Pin *clusterPinPtr, *pinPtr;
@@ -2008,6 +2010,7 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
   double cellXpos, cellYpos;
   double cellArea, clusterArea;
   double stepTime, heightVariation;
+  double shapeCreationTime, totalShapeCreationTime;
   double shapeHPWL;
   map<Net *, bool> internalNets, externalNets;
   vector<Net *> internalNetVec, externalNetVec;
@@ -2031,7 +2034,10 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
   string clusterCellName, clusterShapeName;
   bool placeCellsInClusterPreTop;
   EnvFlowType flowType = DesignEnv.EnvGetFlowType();
-  
+
+  clusterCreationTime = 0;
+  clusterPlacementTime = 0;
+  stepTime = getCPUTime();
   placeCellsInClusterPreTop = false;
   if (flowType == ENV_PLACE_CLUSTERS_PRE_TOP) {
     placeCellsInClusterPreTop = true;
@@ -2046,22 +2052,24 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
   /* Create a new cell */
   clusterCell = new Cell(0, 0, clusterCellName);
   (*clusterCell).CellSetIsCluster(true);
-  clusterPlacementTime = 0;
 
   /* STEP : IDENTIFY INTERNAL NETS, EXTERNAL NETS, INTERNAL CELLS, BOUNDARY CELLS 
      ALSO COMMIT THE CLUSTER IN THE HYPERGRAPH IN THIS STEP. PINS ARE ALSO
      CREATED HERE */
-  stepTime = getCPUTime();
   getNetsAndCellsOfCluster(myGraph, clusterCell, cellArea, clusterCells, internalCells, 
 			   boundaryCells, internalNets, externalNets, affectedNets,
 			   pinMap);
-  clusterPlacementTime += getCPUTime() - stepTime;
   populateShapeVariations(heightVariations, hPercent, numSteps);
+  stepTime = getCPUTime() - stepTime;
+  clusterCreationTime += stepTime;
+
   /* ADD THE VARIATION FOR THE SQUARE CLUSTER */ 
   heightVariations.push_back(0);
   numHeightVariations = heightVariations.size();
+  
   for (idx = 0; idx < numHeightVariations; idx++) {
-    map<Cell *, bool> mapOfCells;
+    stepTime = getCPUTime();
+    map<Cell *, bool> mapOfCells; 
     map<string, Cell*> mapOfCellsString;
     heightVariation = heightVariations[idx];
     shapeHPWL = 0;
@@ -2086,7 +2094,7 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
       (*cellPtr).CellSetPosDbl(cellXpos, cellYpos);
       (*cellPtr).CellSetIsClusterFixed(false);
     } END_FOR;
-  
+    clusterCreationTime += getCPUTime() - stepTime;
     if (placeCellsInClusterPreTop) {
       /* STEP : PLACE THE BOUNDARY CELLS IN THE CLUSTER */
       DesignGetBoundingBox(designMaxx, designMaxy);
@@ -2102,13 +2110,17 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
 				   externalNetVec, fixedCellPositions, netWeights,
 				   clusterShapeName, clusterWidth, clusterHeight, 
 				   stepTime, shapeHPWL);
+
       clusterPlacementTime += stepTime;
+      stepTime = getCPUTime();
       /* STEP : RECORD THE PLACEMENTS OF THE PLACED CELLS */
       for (cellNum = 0; cellNum < numCells; cellNum++) {
 	cellPtr = clusterCells[cellNum];
 	cellPositions[cellNum].push_back((*cellPtr).CellGetXpos());
 	cellPositions[cellNum].push_back((*cellPtr).CellGetYpos());
       }
+      stepTime = getCPUTime() - stepTime;
+      clusterPlacementTime += stepTime;
       /* STEP : PLOT THE CLUSTER WHICH HAS THE BOUNDARY CELLS PLACED */
       DesignPlotClusterLarge(clusterShapeName, clusterShapeName, clusterCell, 
 			     boundaryCells, clusterCells);
@@ -2152,7 +2164,6 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
     DesignHideCell(cellPtr);
     //    count++;
   }
-  clusterPlacementTime += getCPUTime() - stepTime;
 
   //  cout << "Hiding " << count << " cells" << endl;
   /* Create the cluster object for the list of cells */
@@ -2176,11 +2187,13 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
 
   /* STEP : ADD THE CLUSTER OBJECT TO THE TOP LEVEL */
   DesignAddOneClusterToDesignDB(clusterCell);
+  clusterCreationTime += getCPUTime() - stepTime;
 }
 
 /* Top level function to accept a vector of cells and form shapes */
 void
-Design::DesignClusterPlaceCells(Cell *clusterCell)
+Design::DesignClusterPlaceCells(Cell *clusterCell, 
+				double &clusterPlacementTime)
 {
   Cell *cellPtr;
   Pin *pinPtr, *clusterPinPtr;
@@ -2199,7 +2212,7 @@ Design::DesignClusterPlaceCells(Cell *clusterCell)
   uint singleRowHeight, singleSiteWidth;
   uint numCells, cellNum;
   double cellXpos, cellYpos;
-  double HPWL, clusterPlacementTime;
+  double HPWL;
   double stepTime;
   EnvFlowType flowType;
   Env &DesignEnv = DesignGetEnv();
@@ -2328,9 +2341,11 @@ Design::DesignDumpClusterInfo(string fileName)
   double clusterPlacementTime, totalClusterPlacementTime;
   double totalOverlap, peakOverlap, percentOverlap;
   ulong totalClusterHeight, totalClusterWidth;
+  double totalInternalHPWL;
   double averageClusterWidth, averageClusterHeight;
   ofstream opFile;
   HyperGraph &myGraph = DesignGetGraph();
+  Env &DesignEnv = DesignGetEnv();
   
   opFile.open(fileName.data());
   //  opFile << "# ClusterName\tcellArea\tclusterArea\tNumInternalNets\tNumBoundaryCells\tNumOtherClusterConnections" << endl; 
@@ -2342,6 +2357,7 @@ Design::DesignDumpClusterInfo(string fileName)
   clusterPlacementTime = 0;
   totalClusterPlacementTime = 0;
   totalClusterArea = 0;
+  totalInternalHPWL = 0;
   DESIGN_FOR_ALL_CLUSTERS((*this), cellName, clusterCellPtr) {
     clusterOfCell = (Cluster *)CellGetCluster(clusterCellPtr);
     getNeighborClusterSize(clusterCellPtr, myGraph, minNeighborArea, maxNeighborArea, 
@@ -2361,6 +2377,7 @@ Design::DesignDumpClusterInfo(string fileName)
     totalClusterWidth += clusterWidth;
     clusterPlacementTime = (*clusterOfCell).ClusterGetPlacementTime();
     totalClusterPlacementTime += clusterPlacementTime;
+    totalInternalHPWL += shapeHPWL[shapeHPWL.size() - 1];
     opFile << cellName << "\t"
 	   << numCells << "\t"
 	   << numSeqCells << "\t"
@@ -2376,6 +2393,7 @@ Design::DesignDumpClusterInfo(string fileName)
 	   << endl;
     numClusters++;
   } DESIGN_END_FOR;
+  DesignEnv.EnvSetHPWLTotalInternal(totalInternalHPWL);
   DesignGetBoundingBox(maxx, maxy);
   chipArea = ((double)maxx) * maxy;
   averageClusterWidth = ((double)totalClusterWidth) / numClusters;
@@ -2470,9 +2488,11 @@ Design::DesignUnclusterLargeCluster(Cell *clusterCell, bool noDissolve)
 }
 
 void
-Design::DesignFormClusters(vector<vector<Cell *> > &clusters, double &totalTime)
+Design::DesignFormClusters(vector<vector<Cell *> > &clusters)
 {
-  double actualTime, clusterPlacementTime;
+  double actualTime;
+  double clusterPlacementTime, clusterCreationTime;
+  double placementTime, creationTime;
   uint idx, numClusters;
   int status;
   Env &DesignEnv = DesignGetEnv();
@@ -2483,17 +2503,20 @@ Design::DesignFormClusters(vector<vector<Cell *> > &clusters, double &totalTime)
   uint numSteps = 
     DesignEnv.EnvGetNumHVariationSteps();
   numClusters = clusters.size();
-  totalTime = 0;
-  actualTime = getCPUTime();
+  placementTime = 0;
+  creationTime = 0;
   for (idx = 0; idx < numClusters; idx++) {
     vector<Cell *> &clusterCells = clusters[idx];
     DesignCreateClusterObject(clusterCells, xPercent, hVariationPercent,
-			      numSteps, clusterPlacementTime);
-    totalTime += clusterPlacementTime;
+			      numSteps, clusterPlacementTime, 
+			      clusterCreationTime);
+    placementTime += clusterPlacementTime;
+    creationTime += clusterCreationTime;
     //    if (idx == 10) break;
     //  break;
   }
-  actualTime = getCPUTime() - actualTime;
+  DesignEnv.EnvRecordClusteringTime(creationTime);
+  DesignEnv.EnvRecordClusterFillingTime(placementTime);
 }
 
 inline

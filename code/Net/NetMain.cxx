@@ -240,7 +240,7 @@ Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
   //  cout << "HPWL: Net: " << name << endl;
   for (idx = 0; idx < pinCount; idx++) {
     pinPtr = PinsVecX[idx];
-    if ((*pinPtr).PinIsHidden()) {
+    if ((*pinPtr).isHidden) {
       continue;
     }
     cellPtr = (*pinPtr).PinGetParentCellPtr();
@@ -272,6 +272,13 @@ Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
   //  cout << "     Minx : " << minx << "   Miny : " << miny << endl;
   xHPWL = maxx - minx; 
   yHPWL = maxy - miny; 
+}
+
+void
+Net::NetGetHPWL(uint &xHPWL, uint &yHPWL)
+{
+  xHPWL = maxx - minx;
+  yHPWL = maxy - miny;
 }
 
 bool

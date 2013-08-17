@@ -152,5 +152,6 @@ string getPlatformString(void);
 string getUserName(void);
 string getHostName(void);
 int executeCommand(string);
+double getPercent(double, double);
 
 #endif

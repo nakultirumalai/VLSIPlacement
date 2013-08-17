@@ -33,6 +33,7 @@ Env::Env()
   EnvSetUnclusterType(DEFAULT_ENV_UNCLUSTER_TYPE);
   EnvSetShapeSelectionType(DEFAULT_ENV_SHAPE_SELECTION_TYPE);
   EnvSetFlowType(DEFAULT_ENV_FLOW_TYPE);
+
   /* Initilization of double variables */
   EnvSetMaxUtilPhaseI(DEFAULT_MAX_UTILIZATION_PHASEI);
   EnvSetClusteringRatio(DEFAULT_CLUSTERING_RATIO);
@@ -41,12 +42,16 @@ Env::Env()
   EnvSetClusterBoundPenalty(DEFAULT_CLUSTER_BOUND_PENALTY);
   EnvSetClusterHVariationPercentage(DEFAULT_CLUSTER_HVARIATION_PERCENTAGE);
   EnvSetClusterAddAreaPercentage(DEFAULT_CLUSTER_ADDITIONAL_SPACE_PERCENT);
+
   /* Initialization of other integer variables */
   EnvSetClusterNumRows(DEFAULT_CLUSTER_NUM_ROWS);
   EnvSetNumClusters(DEFAULT_NUM_CLUSTERS);
   EnvSetImbalanceFactor(DEFAULT_IMBALANCE_FACTOR);
   EnvSetNumKHmetisRuns(DEFAULT_NUM_KHMETIS_RUNS);
   EnvSetNumHVariationSteps(DEFAULT_NUM_HVARIATION_STEPS);
+  EnvSetIterCount(DEFAULT_ENV_ITER_COUNT);
+  EnvSetAbortLimit(DEFAULT_ENV_ABORT_LIMIT);
+
   /* Initialization of HPWL */
   EnvSetHPWLAfterConstructive(0);
   EnvSetHPWLAfterFDPlacement(0);
@@ -54,6 +59,7 @@ Env::Env()
   EnvSetHPWLTotalInternal(0);
   EnvSetHPWLTotalGlobal(0);
   EnvSetHPWLAfterClusterFill(0);
+  EnvSetHPWLAfterClusterMirroring(0);
   EnvSetHPWLAfterUnclustering(0);
   EnvSetHPWLAfterLegalization(0);
   EnvSetHPWLAfterDetailedPlacement(0);
@@ -61,6 +67,16 @@ Env::Env()
   EnvSetHPWLFinal(0);
 
   /* Time related variables */
+  EnvRecordKWayPartitioningTime(0);
+  EnvRecordClusteringTime(0);
+  EnvRecordFDNetlistBuildTime(0);
+  EnvRecordFDSolverTime(0);
+  EnvRecordClusterSwappingTime(0);
+  EnvRecordClusterMirroringTime(0);
+  EnvRecordClusterFillingTime(0);
+  EnvRecordUnclusteringTime(0);
+  EnvRecordShapeSelectionTime(0);
+  
   /* Initialize start times to 0 */
   NetlistReadStartTime = 0;
   HyperGraphBuildStartTime = 0;
@@ -198,6 +214,18 @@ Env::EnvGetHyperGraphBuildTime(void)
 }
 
 void
+Env::EnvRecordKWayPartitioningTime(double KWayPartitioningTime)
+{
+  this->KWayPartitioningTime = KWayPartitioningTime;
+}
+
+double
+Env::EnvGetKWayPartitioningTime(void)
+{
+  return (KWayPartitioningTime);
+}
+
+void
 Env::EnvRecordClusteringTime(double clusteringTime)
 {
   this->ClusteringTime = clusteringTime;
@@ -240,6 +268,78 @@ Env::EnvGetGlobalPlacementTime(void)
 }
 
 void
+Env::EnvRecordFDNetlistBuildTime(double FDNetlistBuildTime)
+{
+  this->FDNetlistBuildTime = FDNetlistBuildTime;
+}
+
+double
+Env::EnvGetFDNetlistBuildTime(void)
+{
+  return (FDNetlistBuildTime);
+}
+
+void
+Env::EnvRecordFDSolverTime(double FDSolverTime)
+{
+  this->FDSolverTime = FDSolverTime;
+}
+
+double
+Env::EnvGetFDSolverTime(void)
+{
+  return (FDSolverTime);
+}
+
+void
+Env::EnvRecordClusterSwappingTime(double ClusterSwappingTime)
+{
+  this->ClusterSwappingTime = ClusterSwappingTime;
+}
+
+double
+Env::EnvGetClusterSwappingTime(void)
+{
+  return (ClusterSwappingTime);
+}
+
+void
+Env::EnvRecordClusterMirroringTime(double ClusterMirroringTime)
+{
+  this->ClusterMirroringTime = ClusterMirroringTime;
+}
+
+double
+Env::EnvGetClusterMirroringTime(void)
+{
+  return (ClusterMirroringTime);
+}
+
+void
+Env::EnvRecordClusterFillingTime(double ClusterFillingTime)
+{
+  this->ClusterFillingTime = ClusterFillingTime;
+}
+
+double
+Env::EnvGetClusterFillingTime(void)
+{
+  return (ClusterFillingTime);
+}
+
+void
+Env::EnvRecordUnclusteringTime(double UnclusteringTime)
+{
+  this->UnclusteringTime = UnclusteringTime;
+}
+
+double
+Env::EnvGetUnclusteringTime(void)
+{
+  return (UnclusteringTime);
+}
+
+void
 Env::EnvRecordLegalizationTime(void)
 {
   double currTime = getCPUTime();
@@ -261,12 +361,9 @@ Env::EnvGetLegalizationTime(void)
 }
 
 void
-Env::EnvRecordShapeSelectionTime(void)
+Env::EnvRecordShapeSelectionTime(double ShapeSelectionTime)
 {
-  double currTime = getCPUTime();
-
-  this->ShapeSelectionTime = 
-    currTime - this->ShapeSelectionStartTime;
+  this->ShapeSelectionTime = ShapeSelectionTime;
 }
 
 double
@@ -348,7 +445,7 @@ Env::EnvGetHPWLTotalInternal(void)
 void
 Env::EnvSetHPWLTotalGlobal(ulong HPWLTotalGlobal)
 {
-  this->HPWLTotalGlobal;
+  this->HPWLTotalGlobal = HPWLTotalGlobal;
 }
 
 ulong
@@ -367,6 +464,18 @@ ulong
 Env::EnvGetHPWLAfterClusterFill(void)
 {
   return (HPWLAfterClusterFill);
+}
+
+void
+Env::EnvSetHPWLAfterClusterMirroring(ulong HPWLAfterClusterMirroring)
+{
+  this->HPWLAfterClusterMirroring = HPWLAfterClusterMirroring;
+}
+
+ulong
+Env::EnvGetHPWLAfterClusterMirroring(void)
+{
+  return (HPWLAfterClusterMirroring);
 }
 
 void
@@ -599,6 +708,30 @@ uint
 Env::EnvGetNumHVariationSteps(void)
 {
   return (this->NumHVariationSteps);
+}
+
+void
+Env::EnvSetIterCount(uint IterCount)
+{
+  this->IterCount = IterCount;
+}
+
+uint 
+Env::EnvGetIterCount(void)
+{
+  return (IterCount);
+}
+
+void
+Env::EnvSetAbortLimit(uint AbortLimit)
+{
+  this->AbortLimit = AbortLimit;
+}
+
+uint 
+Env::EnvGetAbortLimit(void)
+{
+  return (AbortLimit);
 }
 
 void 

@@ -69,9 +69,10 @@ class FDPNet {
   Cell* FDPNetGetOtherCell(Cell*);
 };
 
+//extern void FDPTopLevel(Design &, vector<Cell*> &, uint, uint, uint, uint,
+//			uint&, uint&, double &, double &);
 extern void FDPTopLevel(Design &, vector<Cell*> &, uint, uint, uint, uint,
-			uint, uint);
-
+			uint&, uint&);
 
 # endif
 

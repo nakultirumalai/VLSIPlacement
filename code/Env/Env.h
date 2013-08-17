@@ -149,6 +149,8 @@ typedef enum {
 # define DEFAULT_NUM_CLUSTERS 100
 # define DEFAULT_IMBALANCE_FACTOR 5
 # define DEFAULT_NUM_KHMETIS_RUNS 3
+# define DEFAULT_ENV_ITER_COUNT 500
+# define DEFAULT_ENV_ABORT_LIMIT 50
 # define DEFAULT_USE_FD_PLACER true
 # define DEFAULT_ENV_OUTPUT_FILE_NAME ./DEFAULT/defaultplacement
 
@@ -182,6 +184,7 @@ class Env {
   double FDSolverTime;
   double ClusterSwappingTime;
   double ClusterMirroringTime;
+  double ClusterFillingTime;
   double UnclusteringTime;
   double GlobalPlacementTime;
   double LegalizationTime;
@@ -196,6 +199,7 @@ class Env {
   ulong HPWLAfterFDPlacement;
   ulong HPWLAfterClusterSwapping;
   ulong HPWLAfterClusterFill;
+  ulong HPWLAfterClusterMirroring;
   ulong HPWLTotalInternal;
   ulong HPWLTotalGlobal;
   ulong HPWLAfterUnclustering;
@@ -264,6 +268,10 @@ class Env {
   /* Variable to indicate the number of steps in which the 
      height variation must be performed */
   uint NumHVariationSteps;
+  /* Iteration count and abort limit for the force directed
+     solver */
+  uint IterCount;
+  uint AbortLimit;
 
   /***************************************/
   /* BOOLEAN VARIABLES                   */
@@ -395,6 +403,9 @@ class Env {
   void EnvRecordHyperGraphBuildTime(void);
   double EnvGetHyperGraphBuildTime(void);
 
+  void EnvRecordKWayPartitioningTime(double);
+  double EnvGetKWayPartitioningTime(void);
+
   void EnvRecordClusteringTime(void);
   void EnvRecordClusteringTime(double);
   double EnvGetClusteringTime(void);
@@ -403,11 +414,29 @@ class Env {
   void EnvRecordGlobalPlacementTime(double);
   double EnvGetGlobalPlacementTime(void);
 
+  void EnvRecordFDNetlistBuildTime(double);
+  double EnvGetFDNetlistBuildTime(void);
+
+  void EnvRecordFDSolverTime(double);
+  double EnvGetFDSolverTime(void);
+
+  void EnvRecordClusterSwappingTime(double);
+  double EnvGetClusterSwappingTime(void);
+
+  void EnvRecordClusterFillingTime(double);
+  double EnvGetClusterFillingTime(void);
+
+  void EnvRecordUnclusteringTime(double);
+  double EnvGetUnclusteringTime(void);
+  
+  void EnvRecordClusterMirroringTime(double);
+  double EnvGetClusterMirroringTime(void);
+
   void EnvRecordLegalizationTime(void);
   void EnvRecordLegalizationTime(double);
   double EnvGetLegalizationTime(void);
 
-  void EnvRecordShapeSelectionTime(void);
+  void EnvRecordShapeSelectionTime(double);
   double EnvGetShapeSelectionTime(void);
 
   void EnvRecordDetailedPlacementTime(void);
@@ -427,6 +456,9 @@ class Env {
   void EnvSetHPWLAfterClusterFill(ulong);
   ulong EnvGetHPWLAfterClusterFill(void);
   
+  void EnvSetHPWLAfterClusterMirroring(ulong);
+  ulong EnvGetHPWLAfterClusterMirroring(void);
+
   void EnvSetHPWLTotalInternal(ulong);
   ulong EnvGetHPWLTotalInternal(void);
 
@@ -495,6 +527,12 @@ class Env {
 
   void EnvSetNumHVariationSteps(uint);
   uint EnvGetNumHVariationSteps(void);
+
+  void EnvSetIterCount(uint);
+  uint EnvGetIterCount(void);
+
+  void EnvSetAbortLimit(uint);
+  uint EnvGetAbortLimit(void);
 
   void EnvSetUseVarBounds(bool);
   bool EnvGetUseVarBounds(void);

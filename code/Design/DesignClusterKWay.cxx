@@ -11,19 +11,17 @@ DesignWriteHGraphFixFile(HyperGraph &myGraph)
 }
 
 inline void
-getKHmetisRunTime(string DesignName, double &clusteringTime)
+getKHmetisRunTime(string logFileName, double &clusteringTime)
 {
   ifstream ifile;
   string line, garbage;
-  string inputFileName;
   string timeStr;
   string intSubStr;
   bool foundCPU;
   int secPos;
 
   clusteringTime = 0;
-  inputFileName = DesignName + "_KHmetisLog";
-  ifile.open(inputFileName.data());
+  ifile.open(logFileName.data());
 
   foundCPU = false;
   while (!ifile.eof()) {
@@ -243,10 +241,10 @@ Design::DesignWriteHGraphFile(HyperGraph &myGraph, uint numClusters,
 
 void
 Design::DesignReadAndCreateClusters(HyperGraph &myGraph, string graphFileName, 
-				    int *part, uint numClusters, 
-				    double &clusterPlacementTime)
+				    int *part, uint numClusters)
 {
   Cell *thisCell;
+  double clusterCreationTime;
   ifstream partOutputFile;
   uint nodeIdx, partIdx, numNodes;
   vector<vector<Cell *> > clusters;
@@ -287,17 +285,17 @@ Design::DesignReadAndCreateClusters(HyperGraph &myGraph, string graphFileName,
       clusters[partIdx].push_back(thisCell);
     }
   }
-  DesignFormClusters(clusters, clusterPlacementTime);
+  DesignFormClusters(clusters);
 }
 
 void
-Design::DesignDoKWayClustering(HyperGraph &myGraph, bool useExec, double &clusteringTime)
+Design::DesignDoKWayClustering(HyperGraph &myGraph, bool useExec)
 {
   int *part;
   double clusterPlacementTime, partitioningTime;
   uint numCells, numClusters, numNodes, nVcycles;
   uint UBfactor, Nruns, CType, OType, VCycle, dbglvl;
-  string cType, rType, vType, oType;
+  string cType, rnType, vType, oType, rType;
   string graphFileName, designName, opFileName;
   string logFileName;
   bool recursiveBiPartition;
@@ -327,9 +325,11 @@ Design::DesignDoKWayClustering(HyperGraph &myGraph, bool useExec, double &cluste
   oType = "soed";
   nVcycles = 4;
 
+  partitioningTime = 0;
   if (useExec) {
     opFileName = graphFileName + ".part." + getStrFromInt(numClusters);
-    logFileName = designName + "_KHmetisLog";
+    //    logFileName = designName + "_KHmetisLog";
+    logFileName = designName + "_KHmetis2Log";
     if (!(fileExists(opFileName) && fileExists(logFileName))) {
       DesignWriteHGraphFile(myGraph, numClusters, graphFileName, designName);
       //      DesignRunKHMetis(graphFileName, numClusters, UBfactor, Nruns, CType, 
@@ -337,14 +337,13 @@ Design::DesignDoKWayClustering(HyperGraph &myGraph, bool useExec, double &cluste
       DesignRunKHMetis2(graphFileName, recursiveBiPartition, rType, cType, oType,
 			UBfactor, Nruns, nVcycles, numClusters, dbglvl);
     }
-    getKHmetisRunTime(designName, partitioningTime);
+    getKHmetisRunTime(logFileName, partitioningTime);
   } else {
     part = new int[numNodes];
     DesignPartitionKWayHmetis(myGraph, Nruns, numClusters, UBfactor, part,
 			      recursiveBiPartition, true, false, 
 			      partitioningTime);
   }
-  DesignReadAndCreateClusters(myGraph, graphFileName, part, numClusters, 
-			      clusterPlacementTime);
-  clusteringTime = partitioningTime + clusterPlacementTime;
+  DesignEnv.EnvRecordKWayPartitioningTime(partitioningTime);
+  DesignReadAndCreateClusters(myGraph, graphFileName, part, numClusters);
 }

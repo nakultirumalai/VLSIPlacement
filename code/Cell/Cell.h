@@ -128,7 +128,7 @@ class Cell {
   string CellGetLibCellName(void);
   string CellGetLibName(void);
   vector<Pin*> CellGetPins(int);
-  vector<Pin*> CellGetPins(void);
+  vector<Pin*>& CellGetPins(void);
   vector<Cell*> CellGetChildCells(void);
   double CellGetArcDelay(Pin *, Pin *);
   Bin *CellGetBin(void);

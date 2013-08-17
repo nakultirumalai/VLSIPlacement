@@ -10,11 +10,14 @@ Design::DesignSolveForAllCellsForceDirected(void)
   vector<Cell *> clusterCells, fixedCells;
   uint averageClusterWidth, averageClusterHeight;
   double clusterXpos, clusterYpos;
+  double fdpTime, fdpNetlistBuildTime;
   int siteWidth, rowHeight;
   string cellName;
   uint siteNum, rowNum;
   uint numSites, numRows, numClusters;
+  uint iterCount, abortLimit;
   uint maxx, maxy;
+  ulong totalHPWL;
   Env &DesignEnv = DesignGetEnv();
   
   /* STEP : CREATE PLACEABLE BLOCKS IN THE DESIGN */
@@ -49,20 +52,24 @@ Design::DesignSolveForAllCellsForceDirected(void)
   /* STEP : EXECUTE THE FORCE DIRECTED SOLVER TO MINIMIZE 
             THE WIRELENGTH */
   DesignComputeHPWL();
-  cout << "PRE-GLOBAL Placement : X-HPWL: " << DesignGetXHPWL() 
-       << " Y-HPWL: " << DesignGetYHPWL() 
-       << " TOTAL: " << DesignGetHPWL() << endl;
-
+  totalHPWL = DesignGetHPWL();
+  //  cout << "After constructive placement : X-HPWL: " << DesignGetXHPWL() 
+  //       << " Y-HPWL: " << DesignGetYHPWL() 
+  //       << " HPWL: " << totalHPWL << endl;
+  DesignEnv.EnvSetHPWLAfterConstructive(totalHPWL);
   HyperGraph &myGraph = DesignGetGraph();
   if (DesignEnv.EnvGetUseFDPlacer()) {
+    iterCount = DesignEnv.EnvGetIterCount();
+    abortLimit = DesignEnv.EnvGetAbortLimit();
     FDPTopLevel((*this), clusterCells, numRows, numSites, rowHeight, siteWidth, 
-		1000, (clusterCells.size()));
+		iterCount, abortLimit);
   }
 
   /* STEP : FINISH */
   DesignComputeHPWL();
-  cout << "Quality : X-HPWL: " << DesignGetXHPWL() 
-       << " Y-HPWL: " << DesignGetYHPWL() 
-       << " TOTAL: " << DesignGetHPWL() << endl;
-  //  exit(0);
+  totalHPWL = DesignGetHPWL();
+  DesignEnv.EnvSetHPWLAfterFDPlacement(totalHPWL);
+  //  cout << "After top level solver : X-HPWL: " << DesignGetXHPWL() 
+  //       << " Y-HPWL: " << DesignGetYHPWL() 
+  //       << " HPWL: " << DesignGetHPWL() << endl;
 }

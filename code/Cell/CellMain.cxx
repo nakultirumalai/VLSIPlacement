@@ -361,6 +361,8 @@ Cell::CellFindModifiedHPWL(ulong &oldXHPWL, ulong &oldYHPWL,
     visitedNets[netPtr] = true;
     oldXHPWL += (netPtr->maxx - netPtr->minx);
     oldYHPWL += (netPtr->maxy - netPtr->miny);
+    //    (*netPtr).NetComputeHPWL();
+    //    continue;
     NET_FOR_ALL_PINS((*netPtr), connPinPtr) {
       cellPtr = (*connPinPtr).ParentCell;
       pinAbsX = cellPtr->x + connPinPtr->xOffset;
@@ -741,12 +743,10 @@ Cell::CellGetPins(int pinDir)
   return (returnPins);
 }
 
-vector<Pin *>
+vector<Pin *>&
 Cell::CellGetPins(void)
 {
-  vector <Pin *> Pins = this->Pins;
-  
-  return (Pins);
+  return (this->Pins);
 }
 
 vector<Cell *>

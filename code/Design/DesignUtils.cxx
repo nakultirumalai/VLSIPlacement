@@ -403,6 +403,7 @@ Design::DesignRunKHMetis2(string graphFileName, bool recursiveBisection,
   cout << "Executing khmetis command: " << hmetisCommand << endl;
   status = executeCommand(hmetisCommand);
 
+  cout << "Finished executing k-way partitioning" << endl;
   /* READ THE CLUSTERS HERE */
   //  oldPlFileName = this->DesignPlFileName;
   //  this->DesignPlFileName = clusterDesName + ".gp.pl";

@@ -21,21 +21,134 @@ printSystemStat(void)
 void
 printTimeUsage(Env &topEnv)
 {
+  double kwayPartTime, clusteringTime;
+  double fdNetlistBuildTime, fdSolverTime;
+  double clusterSwappingTime, clusterMirroringTime;
+  double clusterFillTime, unclusteringTime;
+  double shapeSelectionTime, totalGPTime;
+  double legalizationTime, detailedPlacementTime;
+  double totalTime;
+  
+  kwayPartTime = topEnv.EnvGetKWayPartitioningTime();
+  clusteringTime = topEnv.EnvGetClusteringTime();
+  fdNetlistBuildTime = topEnv.EnvGetFDNetlistBuildTime();
+  fdSolverTime = topEnv.EnvGetFDSolverTime();
+  clusterSwappingTime = topEnv.EnvGetClusterSwappingTime();
+  clusterMirroringTime = topEnv.EnvGetClusterMirroringTime();
+  shapeSelectionTime = topEnv.EnvGetShapeSelectionTime();
+  clusteringTime = topEnv.EnvGetClusteringTime();
+  unclusteringTime = topEnv.EnvGetUnclusteringTime();
+  clusterFillTime = topEnv.EnvGetClusterFillingTime();
+  legalizationTime = topEnv.EnvGetLegalizationTime();
+  detailedPlacementTime = topEnv.EnvGetDetailedPlacementTime();
+
+  totalGPTime = kwayPartTime + clusteringTime + fdNetlistBuildTime + fdSolverTime;
+  totalGPTime += clusterSwappingTime + clusterMirroringTime + clusterFillTime;
+  totalGPTime += unclusteringTime;
+  totalTime = totalGPTime + legalizationTime + detailedPlacementTime;
+
   cout << "***************************************************" << endl;
-  cout << "   NETLIST READ TIME: " << topEnv.EnvGetNetlistReadTime() 
-       << "s" << endl;
-  cout << "   HYPERGRAPH BUILD TIME: " << topEnv.EnvGetHyperGraphBuildTime() 
-       << "s" << endl;
-  cout << "   CLUSTERING TIME: " << topEnv.EnvGetClusteringTime() 
-       << "s" << endl;
-  cout << "   GLOBAL PLACEMENT TIME: " << topEnv.EnvGetGlobalPlacementTime() 
-       << "s" << endl;
-  cout << "   SHAPE SELECTION TIME: " << topEnv.EnvGetShapeSelectionTime() 
-       << "s" << endl;
-  cout << "   LEGALIZATION TIME: " << topEnv.EnvGetLegalizationTime() 
-       << "s" << endl;
-  cout << "   DETAILED PLACEMENT TIME: " << topEnv.EnvGetDetailedPlacementTime() 
-       << "s" << endl;
+  cout << "   TIME RECORD THROUGH STEPS  " << endl;
+  cout << "   NETLIST READ       : " << topEnv.EnvGetNetlistReadTime() << " s" << endl;
+  cout << "   HYPERGRAPH BUILD   : " << topEnv.EnvGetHyperGraphBuildTime() << " s" << endl;
+  cout << "   KWAY PARITIONING   : " << kwayPartTime << " s" 
+       << "\t (" << getPercent(kwayPartTime, totalTime) << " %)" 
+       << endl;
+  cout << "   CLUSTERING         : " << clusteringTime << " s" 
+       << "\t (" << getPercent(clusteringTime, totalTime) << " %)" 
+       << endl;
+  cout << "   FDNETLIST BUILD    : " << fdNetlistBuildTime << " s" 
+       << "\t (" << getPercent(fdNetlistBuildTime, totalTime) << " %)" 
+       << endl;
+  cout << "   FDSOLVER           : " << fdSolverTime << " s" 
+       << "\t (" << getPercent(fdSolverTime, totalTime) << " %)" 
+       << endl;
+  cout << "   CLUSTER SWAPPING   : " << clusterSwappingTime << " s" 
+       << "\t (" << getPercent(clusterSwappingTime, totalTime) << " %)" 
+       << endl;
+  cout << "   CLUSTER FILL       : " << clusterFillTime << " s" 
+       << "\t (" << getPercent(clusterFillTime, totalTime) << " %)" 
+       << endl;
+  cout << "   CLUSTER MIRRORING  : " << clusterMirroringTime << " s" 
+       << "\t (" << getPercent(clusterMirroringTime, totalTime) << " %)" 
+       << endl;
+  cout << "   UNCLUSTERING       : " << unclusteringTime << " s" 
+       << "\t (" << getPercent(unclusteringTime, totalTime) << " %)" 
+       << endl;
+  cout << "   GLOBAL PLACEMENT   : " << totalGPTime << " s" 
+       << "\t (" << getPercent(totalGPTime, totalTime) << " %)" 
+       << endl;
+  cout << "   SHAPE SELECTION    : " << shapeSelectionTime << " s"
+       << "\t (" << getPercent(shapeSelectionTime, totalTime) << " %)" 
+       << endl;
+  cout << "   LEGALIZATION       : " << legalizationTime << " s" 
+       << "\t (" << getPercent(legalizationTime, totalTime) << " %)" 
+       << endl;
+  cout << "   DETAILED PLACEMENT : " << detailedPlacementTime << " s" 
+       << "\t (" << getPercent(detailedPlacementTime, totalTime) << " %)" 
+       << endl;
+  cout << "   TOTAL              : " << totalTime << " s" << endl;
+  cout << "***************************************************" << endl;
+
+  double hpwlAfterConstPlacement;
+  double hpwlAfterFDPlacement;
+  double hpwlAfterClusterSwapping;
+  double hpwlAfterClusterFill;
+  double hpwlAfterClusterMirroring;
+  double hpwlTotalInternal;
+  double hpwlTotalGlobal;
+  double hpwlAfterUnclustering;
+  double hpwlAfterLegalization;
+  double hpwlAfterDetailedPlacement;
+  double localImp, globalImp;
+
+  hpwlAfterConstPlacement = topEnv.EnvGetHPWLAfterConstructive();
+
+  hpwlAfterFDPlacement = topEnv.EnvGetHPWLAfterFDPlacement();
+  hpwlAfterClusterSwapping = topEnv.EnvGetHPWLAfterClusterSwapping();
+  hpwlAfterClusterFill = topEnv.EnvGetHPWLAfterClusterFill();
+  hpwlAfterClusterMirroring = topEnv.EnvGetHPWLAfterClusterMirroring();
+  hpwlTotalInternal = topEnv.EnvGetHPWLTotalInternal();
+  hpwlTotalGlobal = topEnv.EnvGetHPWLTotalGlobal();
+  hpwlAfterUnclustering = topEnv.EnvGetHPWLAfterUnclustering();
+  hpwlAfterLegalization = topEnv.EnvGetHPWLAfterLegalization();
+  hpwlAfterDetailedPlacement = topEnv.EnvGetHPWLAfterDetailedPlacement();
+
+  cout << "***************************************************" << endl;
+  cout << "   QUALITY (HPWL) RECORD THROUGH STEPS  " << endl;
+  cout << "   CONSTRUCTIVE PLACEMENT  : " << (ulong)hpwlAfterConstPlacement << endl;
+  localImp = ((hpwlAfterConstPlacement - hpwlAfterFDPlacement) / hpwlAfterConstPlacement) * 100;
+  globalImp = ((hpwlAfterConstPlacement - hpwlAfterFDPlacement) / hpwlAfterConstPlacement) * 100;
+  cout << "   AFTER FD PLACEMENT      : " << (ulong)hpwlAfterFDPlacement 
+       << "\tIMPL  : " << setprecision(3) << localImp 
+       << "\tIMPG : " << setprecision(3) << globalImp 
+       << endl;
+  localImp = ((hpwlAfterFDPlacement - hpwlAfterClusterSwapping) / hpwlAfterFDPlacement) * 100;
+  globalImp = ((hpwlAfterConstPlacement - hpwlAfterClusterSwapping) / hpwlAfterConstPlacement) * 100;
+  cout << "   AFTER SWAPPING          : " << (ulong)hpwlAfterClusterSwapping 
+       << "\tIMPL  : " << localImp 
+       << "\tIMPG : " << globalImp 
+       << endl;
+  localImp = ((hpwlAfterClusterSwapping - hpwlAfterClusterFill) / hpwlAfterClusterSwapping) * 100;
+  globalImp = ((hpwlAfterConstPlacement - hpwlAfterClusterFill) / hpwlAfterConstPlacement) * 100;
+  cout << "   AFTER FILLING           : " << (ulong)hpwlAfterClusterFill 
+       << "\tIMPL  : " << localImp 
+       << "\tIMPG : " << globalImp 
+       << endl;
+  localImp = ((hpwlAfterClusterFill - hpwlAfterClusterMirroring) / hpwlAfterClusterFill) * 100;
+  globalImp = ((hpwlAfterConstPlacement - hpwlAfterClusterMirroring) / hpwlAfterConstPlacement) * 100;
+  cout << "   AFTER MIRRORING         : " << (ulong)hpwlAfterClusterMirroring 
+       << "\tIMPL  : " << localImp 
+       << "\tIMPG : " << globalImp 
+       << endl;
+  cout << "   TOTAL INTERNAL          : " << (ulong)hpwlTotalInternal << endl;
+  cout << "   TOTAL GLOBAL            : " << (ulong)hpwlTotalGlobal << endl;
+  hpwlAfterUnclustering = topEnv.EnvGetHPWLAfterUnclustering();
+  hpwlAfterLegalization = topEnv.EnvGetHPWLAfterLegalization();
+  hpwlAfterDetailedPlacement = topEnv.EnvGetHPWLAfterDetailedPlacement();
+  cout << "   AFTER UNCLUSTERING      : " << (ulong)hpwlAfterUnclustering << endl;
+  cout << "   AFTER LEGALIZATION      : " << (ulong)hpwlAfterLegalization << endl;
+  cout << "   AFTER DETAILED PL.      : " << (ulong)hpwlAfterDetailedPlacement << endl;
   cout << "***************************************************" << endl;
 }
 

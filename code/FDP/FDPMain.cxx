@@ -7,15 +7,16 @@ FDPSite*
 FDPGetSiteOfCell(vector<vector<FDPSite*> > &gridMatrix, Cell *thisCell, 
 		 int siteWidth, int rowHeight)
 {
-  int cellXpos, cellYpos;
+  double cellXpos, cellYpos;
   int siteNum, rowNum;
   int cellWidth;
   FDPSite *thisSite;
-  cellXpos = (*thisCell).CellGetXpos();
-  cellYpos = (*thisCell).CellGetYpos();
+  cellXpos = (*thisCell).x;
+  cellYpos = (*thisCell).y;
   siteNum = cellXpos / siteWidth;
   rowNum = cellYpos / rowHeight;
   thisSite = gridMatrix[rowNum][siteNum];
+
   return (thisSite);
 }
 
@@ -316,9 +317,14 @@ FDPCreateFDPNetlist(vector<Cell*> &allCells, map<Cell*, vector<FDPNet*> > &fdpNe
   VECTOR_FOR_ALL_ELEMS(allCells, Cell*, cellPtr) {
     map<Cell*, double> connectedCellMap;
     map<Cell*, double>::iterator connectedCellMapItr;
-    //    visitedCells[cellPtr] = true;
+    map<Net *, bool> visitedNets;
     CELL_FOR_ALL_NETS_NO_DIR((*cellPtr), netPtr) {
       netWeight = (*netPtr).NetGetWeight();
+      _KEY_EXISTS(visitedNets, netPtr) {
+	continue;
+      } else {
+	visitedNets[netPtr] = true;
+      } 
       NET_FOR_ALL_CELLS((*netPtr), connCellPtr) {
 	if (connCellPtr == cellPtr) {
 	  continue;
@@ -577,7 +583,7 @@ void restoreBestCellPositions(vector<Cell *> &allCells, vector<uint> &cellXPosit
 /* Top level function to place the cells using a force-directed heuristic */
 void 
 FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSitesInRow, 
-	    uint rowHeight, uint siteWidth, uint iterLimit, uint abortLimit)
+	    uint rowHeight, uint siteWidth, uint &iterLimit, uint &abortLimit)
 {
   Cell *thisCell, *nextCell;
   Net *NetPtr;
@@ -593,9 +599,10 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   uint counter, numCells;
   ulong HPWL, prevHPWL, bestHPWL;
   ulong prevHPWL1, prevHPWL2, prevHPWL3;
+  double stepTime;
   bool endRipple, iterationComplete;
   bool useFDPNetlist;
-
+  Env &DesignEnv = myDesign.DesignGetEnv();
   useFDPNetlist = true;
   numCells = allCells.size();
   vector<uint> cellXPositions(numCells);
@@ -613,16 +620,20 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   bestHPWL = myDesign.DesignGetHPWL();
   row_height = rowHeight;
   site_width = siteWidth;
+  stepTime = getCPUTime();
   if (useFDPNetlist) {
     FDPCreateFDPNetlist(allCells, fdpNetList);
   }
-  cout << "Created intermediate netlist for force-directed solver. CPU TIME: " 
-       << getCPUTime() << endl;
+  stepTime = getCPUTime() - stepTime;
+  cout << "Created intermediate netlist for force-directed solver" << endl;
+  DesignEnv.EnvRecordFDNetlistBuildTime(stepTime);
+  cout << "Running force-directed solver" << endl;
+  stepTime = getCPUTime();
   FDPCreateGrid(gridMatrix, rowCap, numSitesInRow, numRows, siteWidth, rowHeight);
   FDPFixCellsInSites(gridMatrix, allCells, siteWidth, rowHeight);
   iterCount = 0; 
   /* MAIN ALGORITHM FORCE DIRECTED PLACEMENT STARTS HERE */
-  uint dotLimit = 50;
+  uint dotLimit = 75;
   uint dotCount = 0;
   while(iterCount < iterLimit) {
     iterationComplete = false;
@@ -750,7 +761,8 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
     iterCount++;
   }
   restoreBestCellPositions(allCells, cellXPositions, cellYPositions);
+  stepTime = getCPUTime() - stepTime;
+  DesignEnv.EnvRecordFDSolverTime(stepTime);
   cout << endl;
-  cout << "END: CPU TIME: " << getCPUTime() << "s" << endl;
 }
 

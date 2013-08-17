@@ -384,6 +384,7 @@ class Design {
 
   /* HPWL functions */
   void DesignComputeHPWL(void);
+  void DesignFindModifiedHPWL(Cell*);
   void DesignPrintNetsHPWL(void);
   ulong DesignGetHPWL(void);
   ulong DesignGetXHPWL(void);
@@ -488,8 +489,8 @@ class Design {
   bool DesignDoClusterTest(void);
   /* Functions for k-way partitioning based clustering */
   void DesignWriteHGraphFile(HyperGraph &, uint, string, string);
-  void DesignReadAndCreateClusters(HyperGraph &, string, int*, uint, double &);
-  void DesignDoKWayClustering(HyperGraph &, bool, double &);
+  void DesignReadAndCreateClusters(HyperGraph &, string, int*, uint);
+  void DesignDoKWayClustering(HyperGraph &, bool);
   void DesignPartitionKWayHmetis(HyperGraph &, int, int, int, int*,
 				 bool, bool, bool, double &);
   void DesignFillCellsInCluster(void);
@@ -534,11 +535,11 @@ class Design {
 			      vector<Cell *> &);
   void DesignDeduceHeightAndWidth(vector<Cell *> &, double, double, double, 
 				  uint &, uint &, double &);
-  void DesignCreateClusterObject(vector<Cell *> &, double, double, uint, double &);
-  void DesignClusterPlaceCells(Cell *);
+  void DesignCreateClusterObject(vector<Cell *> &, double, double, uint, double &, double &);
+  void DesignClusterPlaceCells(Cell *, double &);
   void DesignUnclusterLargeCluster(Cell*, bool);
   void DesignClusterCellsFormShapes(vector<Cell *> &);
-  void DesignFormClusters(vector<vector<Cell *> > &, double &);
+  void DesignFormClusters(vector<vector<Cell *> > &);
   void DesignPlaceCellsInClusterNew(vector<Cell *> &, map<Cell *, bool> &,
 				    map<string, Cell*> &, vector<Net *> &, 
 				    vector<Net *> &, vector<pair<double, double> > &,

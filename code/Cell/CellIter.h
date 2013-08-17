@@ -33,10 +33,11 @@
     NetPtr = &((*PinPtr).PinGetNet());			
 
 # define CELL_FOR_ALL_NETS_NO_DIR(CellObj, NetPtr) {	\
-  vector<Pin*> CellPins = CellObj.CellGetPins();	\
+  vector<Pin*> &CellPins = CellObj.CellGetPins();	\
   Pin* PinPtr;						\
   for (int n=0; n<CellPins.size(); n++) {		\
   PinPtr = CellPins[n];					\
+  if ((*PinPtr).isHidden) continue;                     \
   NetPtr = &((*PinPtr).PinGetNet());			
 
 # define CELL_END_FOR }}

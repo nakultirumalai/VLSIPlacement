@@ -26,23 +26,36 @@ Design::DesignFillCellsInCluster(void)
 {
   Cell *clusterCell;
   string clusterCellName;
+  double totalHPWL, totalClusterPlacementTime;
+  double clusterPlacementTime;
   uint count;
-  
+
   count = 0;
   Env &DesignEnv = DesignGetEnv();
   EnvFlowType flowType = DesignEnv.EnvGetFlowType();
+  totalClusterPlacementTime = 0;
   if (flowType != ENV_PLACE_CLUSTERS_PRE_TOP) {
     DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCell) {
-      DesignClusterPlaceCells(clusterCell);
+      DesignClusterPlaceCells(clusterCell, clusterPlacementTime);
+      totalClusterPlacementTime += clusterPlacementTime;
       count++;
     } DESIGN_END_FOR;
   }
+  clusterPlacementTime = DesignEnv.EnvGetClusterFillingTime();
+  clusterPlacementTime += totalClusterPlacementTime;
+  DesignEnv.EnvRecordClusterFillingTime(clusterPlacementTime);
+  totalHPWL = DesignGetHPWL();
+  DesignEnv.EnvSetHPWLAfterClusterFill(totalHPWL);
 }
 
 void
 Design::DesignDoClusterFlipping(void)
 {
+  double totalHPWL, stepTime;
   bool improved;
+  Env &DesignEnv = DesignGetEnv();
+
+  stepTime = getCPUTime();
   while (1) {
     improved = DesignFlipClusters(true);
     if (!improved) break;
@@ -51,6 +64,10 @@ Design::DesignDoClusterFlipping(void)
     improved = DesignFlipClusters(false);
     if (!improved) break;
   }
+  stepTime = getCPUTime() - stepTime;
+  DesignEnv.EnvRecordClusterMirroringTime(stepTime);
+  totalHPWL = DesignGetHPWL();
+  DesignEnv.EnvSetHPWLAfterClusterMirroring(totalHPWL);
 }
 
 void
@@ -59,10 +76,15 @@ Design::DesignDoClusterSwapping(void)
   Cell *clusterCell1, *clusterCell2;
   string clusterCellName1, clusterCellName2;
   double cell1Xpos, cell2Xpos, cell1Ypos, cell2Ypos;
+  double stepTime;
+  ulong oldXHPWL, newXHPWL, oldYHPWL, newYHPWL;
+  ulong newTotalHPWL;
   ulong totalHPWL, bestHPWL;
   uint dotCount, dotLimit, iterCount;
   bool improved;
+  Env &DesignEnv = DesignGetEnv();
   
+  stepTime = getCPUTime();
   DesignComputeHPWL();
   totalHPWL = DesignGetHPWL();
   bestHPWL = totalHPWL;
@@ -81,36 +103,36 @@ Design::DesignDoClusterSwapping(void)
 	(*clusterCell1).CellSetYpos(cell2Ypos);
 	(*clusterCell2).CellSetXpos(cell1Xpos);
 	(*clusterCell2).CellSetYpos(cell1Ypos);
-	DesignComputeHPWL();
+	DesignFindModifiedHPWL(clusterCell1);
+	DesignFindModifiedHPWL(clusterCell2);
 	totalHPWL = DesignGetHPWL();
 	if (totalHPWL < bestHPWL) {
 	  bestHPWL = totalHPWL;
-	  dotCount++;
-	  cout << "*" << flush;
 	  improved = true;
-	  //	cout << endl << "Best HPWL: " << totalHPWL << endl;
+	  cout << "*" << flush;
 	} else {
 	  (*clusterCell1).CellSetXpos(cell1Xpos);
 	  (*clusterCell1).CellSetYpos(cell1Ypos);
 	  (*clusterCell2).CellSetXpos(cell2Xpos);
 	  (*clusterCell2).CellSetYpos(cell2Ypos);
-	  //	cout << "" << flush;
-	}
-	if (dotCount > dotLimit) {
-	  dotCount = 0;
-	  cout << endl;
+	  DesignFindModifiedHPWL(clusterCell1);
+	  DesignFindModifiedHPWL(clusterCell2);
 	}
       } DESIGN_END_FOR;
     } DESIGN_END_FOR;
-    cout << endl 
-	 << "END: Cluster swapping ITER: " << iterCount++ 
-	 << "  HPWL:" << totalHPWL << endl;
-    if (!improved) {
+    iterCount++;
+    cout << endl;
+    if (iterCount > 2) {
+      break;
+    }
+    if (improved == false) {
       break;
     }
   }
-  DesignComputeHPWL();
+  stepTime = getCPUTime() - stepTime;
   totalHPWL = DesignGetHPWL();
+  DesignEnv.EnvSetHPWLAfterClusterSwapping(totalHPWL);
+  DesignEnv.EnvRecordClusterSwappingTime(stepTime);
 }
 
 void
@@ -136,8 +158,8 @@ Design::DesignCoarsenNetlist(void)
   clusterBoundPenalty = DesignEnv.EnvGetClusterBoundPenalty();
   clusterNumRows = DesignEnv.EnvGetClusterNumRows();
   DesignName = DesignEnv.EnvGetDesignName();
-  DesignPrintClusterParams(clusterRatio, maxArea, maxWidth, 
-			   clusterBoundPenalty, clusterNumRows);
+  //  DesignPrintClusterParams(clusterRatio, maxArea, maxWidth, 
+  //			   clusterBoundPenalty, clusterNumRows);
   DesignGetBoundingBox(maxx, maxy);
   inputMaxWidth = floor(maxWidth * maxx);
   inputMaxArea = maxArea * ((double)maxx * maxy);
@@ -149,8 +171,7 @@ Design::DesignCoarsenNetlist(void)
     break;
   case ENV_LARGE_CLUSTERING:
     cout << "Clustering: Performing k-way clustering " << endl;
-    DesignDoKWayClustering(myGraph, true, clusteringTime);
-    DesignEnv.EnvRecordClusteringTime(clusteringTime);
+    DesignDoKWayClustering(myGraph, true);
     break;
   case ENV_FIRST_CHOICE_CLUSTERING:
     cout << "Clustering: First choice clustering. Not ready yet " << endl;
@@ -160,12 +181,9 @@ Design::DesignCoarsenNetlist(void)
     if (clusterNumRows > 0) {
       DesignDoBestChoiceClusteringCstr(myGraph, inputMaxArea, inputMaxWidth,
 				       true, clusterRatio);
-      //      DesignDoBestChoiceClusteringPenalty(myGraph, clusterBoundPenalty,
-      //					  true, clusterRatio);
     } else {
       DesignDoBestChoiceClustering(myGraph, clusterRatio);
     }
-    //    (void)DesignValidateClusterCstrs(clusterRatio, maxArea, maxWidth, clusterNumRows);
     /* Rebuild hypergraph after coarsening */
     DesignRebuildGraph();
     cout << "Finished coarsening" << endl;
@@ -179,9 +197,8 @@ Design::DesignCoarsenNetlist(void)
     break;
   }
 
-  DesignEnv.EnvRecordClusteringTime(clusteringTime);
   achievedClusteringRatio = DesignGetNumTopCells() / achievedClusteringRatio;
-  cout << "CLUSTERING DONE. CPU: " << clusteringTime << "s" << endl;
+  cout << "CLUSTERING CPU: " << clusteringTime << "s" << endl;
   cout << "CLUSTERING RATIO ACHIEVED: " << achievedClusteringRatio << endl;
   cout << "Dumping cluster information: PRE-TOP LEVEL PLACEMENT" << endl;
   DesignDumpClusterInfo((DesignName + ".csv"));
@@ -193,12 +210,14 @@ Design::DesignCollapseClusters(void)
 {
   Cell *cellPtr;
   Cluster *clusterOfCell;
+  double totalHPWL, stepTime;
   vector<Cell*> cellsToSolve;
   Env &DesignEnv = this->DesignEnv;
   string DesignName, cellName;
   string clustDir;
   HyperGraph &myGraph = DesignGetGraph();
 
+  stepTime = getCPUTime();
   map<string, Cell*> DesignClusterMap = DesignGetClusters();
   map<string, Cell*>::iterator mapIter;
   for (mapIter = DesignClusterMap.begin(); mapIter != DesignClusterMap.end(); mapIter++) {
@@ -206,6 +225,11 @@ Design::DesignCollapseClusters(void)
     cellPtr = mapIter->second;
     DesignUnclusterLargeCluster(cellPtr, /* noDissolve */false);
   }
+  DesignComputeHPWL();
+  stepTime = getCPUTime() - stepTime;
+  totalHPWL = DesignGetHPWL();
+  DesignEnv.EnvSetHPWLAfterUnclustering(totalHPWL);
+  DesignEnv.EnvRecordUnclusteringTime(stepTime);
 }
 
 void
@@ -243,9 +267,11 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     break;
   case ENV_SOLVER_FORCE_DIRECTED:
     DesignSolveForAllCellsForceDirected();
+    ProfilerStart("ClusterSwapping");
+    DesignDoClusterSwapping();
+    ProfilerStop();
     DesignFillCellsInCluster();
     DesignDoClusterFlipping();
-    DesignDoClusterSwapping();
     //    return;
     break;
   default: cout << "Unknown solver type provided" << endl;
@@ -310,6 +336,7 @@ Design::DesignDoGlobalPlacement(void)
 {
   EnvGlobalPlacerType globalPlacerType;
   EnvSolverType solverType;
+  double totalHPWL;
   Env &DesignEnv = this->DesignEnv;
   
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
@@ -353,6 +380,8 @@ Design::DesignDoGlobalPlacement(void)
   cout << "Dumping cluster information: POST-TOP LEVEL PLACEMENT" << endl;
   DesignDumpClusterInfo((DesignName + ".csv"));
   //  ProfilerStart("Unclustering");
+  totalHPWL = DesignGetHPWL();
+  DesignEnv.EnvSetHPWLTotalGlobal(totalHPWL);
   DesignCollapseClusters();
   //  ProfilerStop();
   DesignComputeHPWL();
