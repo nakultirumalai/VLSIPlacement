@@ -1,26 +1,5 @@
 # include <Design.h>
 
-bool
-Design::DesignPrintClusterParams(double clusterRatio, double maxArea, double maxWidth, 
-				    double clusterBoundPenalty, uint clusterNumRows)
-{
-  bool rtv;
-
-  rtv = true;
-  /* Print all the clustering parameters first */
-  cout << "CLUSTER : Clustering ratio : " << clusterRatio << endl;
-  cout << "CLUSTER : Maximum Area     : " << maxArea << endl;
-  cout << "CLUSTER : Maximum Width    : " << maxWidth << endl;
-  cout << "CLUSTER : Bound penalty    : " << clusterBoundPenalty << endl;
-  if (clusterNumRows == 0) {
-    cout << "CLUSTER : Number of rows   : " << clusterNumRows << " : SQUARE CLUSTERS " << endl;
-  } else {
-    cout << "CLUSTER : Number of rows   : " << clusterNumRows << endl;
-  }
-
-  return (rtv);
-}
-
 void
 Design::DesignFillCellsInCluster(void)
 {
@@ -55,17 +34,19 @@ Design::DesignDoClusterFlipping(void)
   bool improved;
   Env &DesignEnv = DesignGetEnv();
 
-  stepTime = getCPUTime();
-  while (1) {
-    improved = DesignFlipClusters(true);
-    if (!improved) break;
+  if (DesignEnv.EnvGetClusterMirroring()) {
+    stepTime = getCPUTime();
+    while (1) {
+      improved = DesignFlipClusters(true);
+      if (!improved) break;
+    }
+    while (1) {
+      improved = DesignFlipClusters(false);
+      if (!improved) break;
+    }
+    stepTime = getCPUTime() - stepTime;
+    DesignEnv.EnvRecordClusterMirroringTime(stepTime);
   }
-  while (1) {
-    improved = DesignFlipClusters(false);
-    if (!improved) break;
-  }
-  stepTime = getCPUTime() - stepTime;
-  DesignEnv.EnvRecordClusterMirroringTime(stepTime);
   totalHPWL = DesignGetHPWL();
   DesignEnv.EnvSetHPWLAfterClusterMirroring(totalHPWL);
 }
@@ -83,56 +64,58 @@ Design::DesignDoClusterSwapping(void)
   uint dotCount, dotLimit, iterCount;
   bool improved;
   Env &DesignEnv = DesignGetEnv();
-  
-  stepTime = getCPUTime();
-  DesignComputeHPWL();
-  totalHPWL = DesignGetHPWL();
-  bestHPWL = totalHPWL;
-  dotCount = 0; dotLimit = 200;
-  iterCount = 1;
-  while (1) {
-    improved = false;
-    cout << "BEGIN: Cluster swapping ITER: " << iterCount << " HPWL: " << totalHPWL << endl;
-    DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName1, clusterCell1) {
-      DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName2, clusterCell2) {
-	cell1Xpos = (*clusterCell1).CellGetXpos();
-	cell1Ypos = (*clusterCell1).CellGetYpos();
-	cell2Xpos = (*clusterCell2).CellGetXpos();
-	cell2Ypos = (*clusterCell2).CellGetYpos();
-	(*clusterCell1).CellSetXpos(cell2Xpos);
-	(*clusterCell1).CellSetYpos(cell2Ypos);
-	(*clusterCell2).CellSetXpos(cell1Xpos);
-	(*clusterCell2).CellSetYpos(cell1Ypos);
-	DesignFindModifiedHPWL(clusterCell1);
-	DesignFindModifiedHPWL(clusterCell2);
-	totalHPWL = DesignGetHPWL();
-	if (totalHPWL < bestHPWL) {
-	  bestHPWL = totalHPWL;
-	  improved = true;
-	  cout << "*" << flush;
-	} else {
-	  (*clusterCell1).CellSetXpos(cell1Xpos);
-	  (*clusterCell1).CellSetYpos(cell1Ypos);
-	  (*clusterCell2).CellSetXpos(cell2Xpos);
-	  (*clusterCell2).CellSetYpos(cell2Ypos);
+
+  if (DesignEnv.EnvGetClusterSwapping()) {
+    stepTime = getCPUTime();
+    DesignComputeHPWL();
+    totalHPWL = DesignGetHPWL();
+    bestHPWL = totalHPWL;
+    dotCount = 0; dotLimit = 200;
+    iterCount = 1;
+    while (1) {
+      improved = false;
+      cout << "BEGIN: Cluster swapping ITER: " << iterCount << " HPWL: " << totalHPWL << endl;
+      DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName1, clusterCell1) {
+	DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName2, clusterCell2) {
+	  cell1Xpos = (*clusterCell1).CellGetXpos();
+	  cell1Ypos = (*clusterCell1).CellGetYpos();
+	  cell2Xpos = (*clusterCell2).CellGetXpos();
+	  cell2Ypos = (*clusterCell2).CellGetYpos();
+	  (*clusterCell1).CellSetXpos(cell2Xpos);
+	  (*clusterCell1).CellSetYpos(cell2Ypos);
+	  (*clusterCell2).CellSetXpos(cell1Xpos);
+	  (*clusterCell2).CellSetYpos(cell1Ypos);
 	  DesignFindModifiedHPWL(clusterCell1);
 	  DesignFindModifiedHPWL(clusterCell2);
-	}
+	  totalHPWL = DesignGetHPWL();
+	  if (totalHPWL < bestHPWL) {
+	    bestHPWL = totalHPWL;
+	    improved = true;
+	    cout << "*" << flush;
+	  } else {
+	    (*clusterCell1).CellSetXpos(cell1Xpos);
+	    (*clusterCell1).CellSetYpos(cell1Ypos);
+	    (*clusterCell2).CellSetXpos(cell2Xpos);
+	    (*clusterCell2).CellSetYpos(cell2Ypos);
+	    DesignFindModifiedHPWL(clusterCell1);
+	    DesignFindModifiedHPWL(clusterCell2);
+	  }
+	} DESIGN_END_FOR;
       } DESIGN_END_FOR;
-    } DESIGN_END_FOR;
-    iterCount++;
-    cout << endl;
-    if (iterCount > 2) {
-      break;
+      iterCount++;
+      cout << endl;
+      if (iterCount > 2) {
+	break;
+      }
+      if (improved == false) {
+	break;
+      }
     }
-    if (improved == false) {
-      break;
-    }
+    stepTime = getCPUTime() - stepTime;
+    DesignEnv.EnvRecordClusterSwappingTime(stepTime);
   }
-  stepTime = getCPUTime() - stepTime;
   totalHPWL = DesignGetHPWL();
   DesignEnv.EnvSetHPWLAfterClusterSwapping(totalHPWL);
-  DesignEnv.EnvRecordClusterSwappingTime(stepTime);
 }
 
 void
@@ -158,8 +141,6 @@ Design::DesignCoarsenNetlist(void)
   clusterBoundPenalty = DesignEnv.EnvGetClusterBoundPenalty();
   clusterNumRows = DesignEnv.EnvGetClusterNumRows();
   DesignName = DesignEnv.EnvGetDesignName();
-  //  DesignPrintClusterParams(clusterRatio, maxArea, maxWidth, 
-  //			   clusterBoundPenalty, clusterNumRows);
   DesignGetBoundingBox(maxx, maxy);
   inputMaxWidth = floor(maxWidth * maxx);
   inputMaxArea = maxArea * ((double)maxx * maxy);
@@ -198,7 +179,6 @@ Design::DesignCoarsenNetlist(void)
   }
 
   achievedClusteringRatio = DesignGetNumTopCells() / achievedClusteringRatio;
-  cout << "CLUSTERING CPU: " << clusteringTime << "s" << endl;
   cout << "CLUSTERING RATIO ACHIEVED: " << achievedClusteringRatio << endl;
   cout << "Dumping cluster information: PRE-TOP LEVEL PLACEMENT" << endl;
   DesignDumpClusterInfo((DesignName + ".csv"));
@@ -420,6 +400,8 @@ Design::DesignDoLegalization(void)
     DesignRunFastPlaceLegalizer(dirName, desName, true, true);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
+    DesignComputeHPWL();
+    DesignEnv.EnvSetHPWLAfterLegalization(DesignGetHPWL());
     DesignEnv.EnvRecordLegalizationTime(cpuTimeSpent);
     break;
   }
@@ -450,6 +432,8 @@ Design::DesignDoDetailedPlacement(void)
     DesignRunFastPlaceDetailedPlacer(dirName, desName, true, true);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
+    DesignComputeHPWL();
+    DesignEnv.EnvSetHPWLAfterDetailedPlacement(DesignGetHPWL());
     DesignEnv.EnvRecordDetailedPlacementTime(cpuTimeSpent);
     break;
   case ENV_OURPLACER_DP:

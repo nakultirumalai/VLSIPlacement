@@ -474,9 +474,6 @@ class Design {
   int DesignRunMPL6(string, string, double &, bool, bool, bool);
 
   /* Clustering functions */
-  //void DesignClusterCells(HyperGraph&, clusteringType);
-  //  void DesignCollapseCluster(Cell& MasterCell);
-  bool DesignPrintClusterParams(double, double, double, double, uint);
   bool DesignDoDefaultCluster(HyperGraph&);
   bool DesignDoTimingDrivenCluster(HyperGraph&);
   /* Functions for best choice clustering */

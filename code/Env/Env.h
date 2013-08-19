@@ -152,6 +152,8 @@ typedef enum {
 # define DEFAULT_ENV_ITER_COUNT 500
 # define DEFAULT_ENV_ABORT_LIMIT 50
 # define DEFAULT_USE_FD_PLACER true
+# define DEFAULT_DO_CLUSTER_SWAPPING true
+# define DEFAULT_DO_CLUSTER_MIRRORING true
 # define DEFAULT_ENV_OUTPUT_FILE_NAME ./DEFAULT/defaultplacement
 
 /***************************************************
@@ -301,6 +303,10 @@ class Env {
   /* Flag to indicate if placement inside the clusters have
      to be postponed until top level is done */
   bool PlaceCellsInClusterPostTop;
+  /* Flag to indicate if swapping of clusters has to be performed */
+  bool ClusterSwapping;
+  /* Flag to indicate if mirroring of clusters has to be performed */
+  bool ClusterMirroring;
 
   /***************************************/
   /* FLOAT/DOUBLE VARIABLES              */
@@ -558,6 +564,12 @@ class Env {
   void EnvSetPlaceCellsInClusterPostTop(bool);
   bool EnvGetPlaceCellsInClusterPostTop(void);
 
+  void EnvSetClusterSwapping(bool);
+  bool EnvGetClusterSwapping(void);
+  
+  void EnvSetClusterMirroring(bool);
+  bool EnvGetClusterMirroring(void);
+  
   void EnvSetMaxUtilPhaseI(double);
   double EnvGetMaxUtilPhaseI(void);
 

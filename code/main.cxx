@@ -320,6 +320,12 @@ printTimeUsage(Env &topEnv)
               a) fastplace
               b) ourplacer
 
+   -swapping: This option specifies whether swapping should be used as 
+            an optimization technique. Takes values "true" and "false"
+
+  -mirroring: This option specifies whether mirroring should be used as 
+            an optimization technique. Takes values "true" and "false"
+
 -break_util_phase1: This option is a temporary option which is used 
               for experimentation
 
@@ -591,6 +597,21 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
 	   << "\"fastplace\", \"ourplacer\"" 
 	   << endl;
     }
+  } else if (switchName == "swapping") {
+    rtv = true;
+    if (switchValue == "true") {
+      topEnv.EnvSetClusterSwapping(true);
+    } else if (switchValue == "false") {
+      topEnv.EnvSetClusterSwapping(false);
+    } else {
+    }
+  } else if (switchName == "mirroring") {
+    rtv = true;
+    if (switchValue == "true") {
+      topEnv.EnvSetClusterMirroring(true);
+    } else if (switchValue == "false") {
+      topEnv.EnvSetClusterMirroring(false);
+    }
   } else if (switchName == "break_util_phase1") {
     rtv = true;
     double value = strToDouble(switchValue);
@@ -653,7 +674,7 @@ int placeMain(Env &topEnv)
    *  DO LEGALIZATION                                 *
    ****************************************************/
     myDesign.DesignDoLegalization();
-
+    
   /****************************************************
    *  DO DETAILED PLACEMENT                           *
    ****************************************************/

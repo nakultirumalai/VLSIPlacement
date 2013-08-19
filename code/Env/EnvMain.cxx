@@ -18,6 +18,8 @@ Env::Env()
   EnvSetRecursiveBiPartitioning(false);
   EnvSetPlaceCellsInCluster(true);
   EnvSetPlaceCellsInClusterPostTop(true);
+  EnvSetClusterSwapping(DEFAULT_DO_CLUSTER_SWAPPING);
+  EnvSetClusterMirroring(DEFAULT_DO_CLUSTER_MIRRORING);
   EnvSetUseFDPlacer(DEFAULT_USE_FD_PLACER);
   EnvSetGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
   EnvSetSolverType(DEFAULT_ENV_SOLVER_TYPE);
@@ -828,6 +830,30 @@ bool
 Env::EnvGetPlaceCellsInClusterPostTop(void)
 {
   return (this->PlaceCellsInClusterPostTop);
+}
+
+void
+Env::EnvSetClusterSwapping(bool ClusterSwapping)
+{
+  this->ClusterSwapping = ClusterSwapping;
+}
+
+bool
+Env::EnvGetClusterSwapping(void)
+{
+  return (ClusterSwapping);
+}
+
+void
+Env::EnvSetClusterMirroring(bool ClusterMirroring)
+{
+  this->ClusterMirroring = ClusterMirroring;
+}
+
+bool
+Env::EnvGetClusterMirroring(void)
+{
+  return ClusterMirroring;
 }
 
 void
