@@ -247,9 +247,9 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     break;
   case ENV_SOLVER_FORCE_DIRECTED:
     DesignSolveForAllCellsForceDirected();
-    ProfilerStart("ClusterSwapping");
+    //ProfilerStart("ClusterSwapping");
     DesignDoClusterSwapping();
-    ProfilerStop();
+    //ProfilerStop();
     DesignFillCellsInCluster();
     DesignDoClusterFlipping();
     //    return;

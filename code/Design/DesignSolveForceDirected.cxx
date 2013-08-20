@@ -11,7 +11,7 @@ Design::DesignSolveForAllCellsForceDirected(void)
   uint averageClusterWidth, averageClusterHeight;
   double clusterXpos, clusterYpos;
   double fdpTime, fdpNetlistBuildTime;
-  int siteWidth, rowHeight;
+  uint siteWidth, rowHeight;
   string cellName;
   uint siteNum, rowNum;
   uint numSites, numRows, numClusters;

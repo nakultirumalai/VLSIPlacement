@@ -174,7 +174,7 @@ if ($execType eq "place" || $execType eq "both") {
     }
     close(inFile);
 
-   # print "....Command options file read successfully\n\n";
+    # print "....Command options file read successfully\n\n";
 
 
     foreach  $designName(@designs) {
@@ -281,8 +281,8 @@ if ($execType eq "place" || $execType eq "both") {
 		print "**** Results EXIST in ./$designName/PL_files/ *****\n";
 		print "To RE-RUN placer DELETE existing files or USE \'-force\' in Input file\n";
 	    }
-	 
-	
+	    
+	    
 	    ###############################################################
 	    # STEP 5. CALCULATE THE TOTAL HPWL OF THE PLACED FILE
 	    ###############################################################
@@ -302,7 +302,7 @@ if ($execType eq "place" || $execType eq "both") {
 	    print "STEP $stepCount: Removing the clusters created in an intermediate step\n"; $stepCount++;
 	    (system("rm -rf *__c*") == 0) || die ("Cannot remove the cluster directories created");
 	    (system("rm -f c*_*") == 0) || die ("Cannot remove the cluster files");
-  
+	    
 	    
 	    push(@designPLFiles, $currentFileName);
 	    $runControl = 1;
