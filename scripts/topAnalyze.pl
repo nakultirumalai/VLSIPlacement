@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 
+
 require "$ENV{SCRIPT_ROOT}/aliases.pl";
 use warnings;
 
@@ -26,8 +27,8 @@ my @allCommands;
 my %legend;
 my $designName;
 my %finalResults;
-
-
+my $foundOption;
+my $defaultCount;
 
 
 my $forceFlag = 0;
@@ -35,6 +36,7 @@ my $outputPath = $ENV{OUTPUT_PATH};
 my $execPath = $ENV{EXEC_FILE};
 my $designRoot = $ENV{BENCHMARK_ROOT};
 my $benchmarkRoot = $designRoot;
+my $utilsRoot = $ENV{UTILS_ROOT};
 my @designs = split(/\s+/,$ENV{DESIGNS});
 my $execType = $ENV{EXEC_TYPE};
 
@@ -50,6 +52,8 @@ $maxareaCount = 1;
 $maxcellCount = 1;
 
 my $stepCount = 0;
+$foundOption = 0;
+$defaultCount = 0;
 
 if ($execType eq "place" || $execType eq "both") {
 
@@ -66,7 +70,7 @@ if ($execType eq "place" || $execType eq "both") {
 	# Lines beginning with a '-' represent parameters to the placer
 	if (($line =~ /^-(.*)/) && ($setSelect)) {
 	    # Assuming parameters to be of the form -<param> <value>
-	    my @elems = split(/\t+/, $line);
+	    my @elems = split(/\s+/, $line);
 	    
 	    # These represent special cases to taken care of while 
 	    # generating uniq file names for the final result
@@ -115,6 +119,7 @@ if ($execType eq "place" || $execType eq "both") {
 		$plFileName .= "_";
 		next;
 	    }
+	    $foundOption = 1;
 
 	} elsif ($line =~ /^\$(.*)/) {
 	    # A line beginning with '$SELECT' is used to decide whether the 
@@ -150,6 +155,10 @@ if ($execType eq "place" || $execType eq "both") {
 		$setBegin = 0;
 		$setEnd = 1;
 		$setSelect = 0;
+		if (!$foundOption) {
+		    $plFileName = "DEFAULT_"."$defaultCount"."_";
+		    $defaultCount++;
+		}
 		push @allOptions, [ @thisRun ];
 		chop($plFileName);
 		push @plFiles, $plFileName;
@@ -211,7 +220,7 @@ if ($execType eq "place" || $execType eq "both") {
 	# Filenum creates a sync between file name and commands to be executed
 	my $fileNum = 0;
 	$runControl = 1;
-
+	
 	# Iterating over all the command blocks in the input file
 	foreach my $currentFileName(@plFiles){
 	    
@@ -238,7 +247,7 @@ if ($execType eq "place" || $execType eq "both") {
 	    if ($runControl == 1) {
 		# Create the complete executable string here
 		# print "EXECUTABLE: \n";
-		my $execString = "$execPath -des ${designRoot}/results/${designName}/bookshelf/$designName.aux -output $outputPath/$designName/PL_files/${designName}.${currentFileName}";
+		my $execString = "$execPath -des ${designRoot}/${designName}/bookshelf/$designName.aux -output $outputPath/$designName/PL_files/${designName}.${currentFileName}";
 		
 		
 		# Get the remaining exec string from allOptions array
@@ -282,8 +291,8 @@ if ($execType eq "place" || $execType eq "both") {
 		my $modStepCount = $stepCount - 1;
 		print "Skipping STEP ${modStepCount}. HPWL file exist\n";
 	    } else {
-		my $resultsPath = "$designRoot/results/${designName}/bookshelf";
-		(system("$designRoot/Utils/hpwl ${resultsPath}/${designName}.nodes ${resultsPath}/${designName}.pl ../PL_files/${designName}.${currentFileName}.pl ${resultsPath}/${designName}.nets > ../PL_files/${designName}.${currentFileName}.hpwl") == 0) || 
+		my $resultsPath = "$designRoot/${designName}/bookshelf";
+		(system("$utilsRoot/Utils/hpwl ${resultsPath}/${designName}.nodes ${resultsPath}/${designName}.pl ../PL_files/${designName}.${currentFileName}.pl ${resultsPath}/${designName}.nets > ../PL_files/${designName}.${currentFileName}.hpwl") == 0) || 
 		    die ("Cannot generate the hpwl file");
 	    }
 
@@ -329,7 +338,7 @@ if ($execType ne "place") {
 		my $modStepCount = $stepCount - 1;
 		print "Skipping STEP ${modStepCount}. DEF File exists\n";
 	    } else {
-		(system("cp ${designRoot}/results/${designName}/bookshelf/${designName}.def ../DEF/${designName}.${currentFileName}.def") == 0) || die ("Cannot make copy of the DEF file\n");
+		(system("cp ${designRoot}/${designName}/bookshelf/${designName}.def ../DEF/${designName}.${currentFileName}.def") == 0) || die ("Cannot make copy of the DEF file\n");
 		(system("mv ../DEF/${designName}.${currentFileName}.def ../DEF/${designName}.${currentFileName}.def.copy") == 0) || die ("Cannot make copy of the DEF file\n");
 		open(DEFFileCopy, "../DEF/${designName}.${currentFileName}.def.copy") ||
 		    die ("Cannot open copied DEF file\n");
@@ -364,7 +373,7 @@ if ($execType ne "place") {
 		print "Skipping STEP ${modStepCount}. PL File replaced with original cell names\n";
 	    } else {
 		(system("cp $outputPath/$designName/PL_files/${designName}.${currentFileName}.pl $outputPath/$designName/PL_files/${designName}.${currentFileName}.pl.orig") == 0) || die ("Cannot make copy of $outputPath/$designName/PL_files/${designName}.${currentFileName}.pl ");
-		(system("$scriptRoot/subPseudoFromMaps.pl $outputPath/$designName/PL_files/${designName}.${currentFileName}.pl $designRoot/results/${designName}/bookshelf/$designName.nodes.map") == 0) || die ("Cannot replace pseudo names in PL file");
+		(system("$scriptRoot/subPseudoFromMaps.pl $outputPath/$designName/PL_files/${designName}.${currentFileName}.pl $designRoot/${designName}/bookshelf/$designName.nodes.map") == 0) || die ("Cannot replace pseudo names in PL file");
 	    }
 	    
 
@@ -424,6 +433,7 @@ if ($execType ne "place") {
 	    
 	}
     }
+    if (0) {
     ###############################################################
     # STEP 12. COMPILE THE RESULTS OF ANALYSIS INTO A HASH OF   
     #          HASHES AND DUMP OUT THE RESULTS TO A FILE
@@ -453,7 +463,7 @@ if ($execType ne "place") {
 	    # Changing current directory to work
 	    my $workDirectory = "$outputPath/$designName/work_${currentFileName}";
 	    chdir($workDirectory) || die("Cannot chdir to $workDirectory $!");
-	    
+	    print "Output path : $workDirectory\n";
 	    $hpwlFile = "../PL_files/${designName}.${currentFileName}.hpwl";
 	    $logFile = "../logs/${designName}.${currentFileName}.log";
 	    $preTimingFile = "../Timing/${designName}.${currentFileName}_pre_route_timing.rpt";
@@ -471,6 +481,7 @@ if ($execType ne "place") {
 	}
     }
     close(resultFile);
+    }
 }
 
 
