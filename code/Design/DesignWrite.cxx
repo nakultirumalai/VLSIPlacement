@@ -61,8 +61,8 @@ void DesignWriteNets(Design &myDesign, string fname)
       cellName = cellOfPin.CellGetName();
       pinXOffset = (*pinPtr).PinGetXOffset();
       pinYOffset = (*pinPtr).PinGetYOffset();
-      pinXOffset -= cellOfPin.CellGetWidth();
-      pinYOffset -= cellOfPin.CellGetHeight();
+      pinXOffset -= (cellOfPin.CellGetWidth() / 2);
+      pinYOffset -= (cellOfPin.CellGetHeight() / 2);
       netString += "\t" + cellName + "  " + pinDir + "  : " +
 	getStrFromInt(pinXOffset) + "  " + getStrFromInt(pinYOffset) + " \n";
       numNetPins++;
@@ -134,8 +134,12 @@ DesignWritePlacement(Design &myDesign, string fname)
   opFile << endl;
 
   DESIGN_FOR_ALL_CELLS(myDesign, cellName, cellPtr) {
-    opFile << cellName << "\t" << (*cellPtr).CellGetXpos() << "\t" << (*cellPtr).CellGetYpos() << 
-      "\t:\t" << getStrForOrientation((*cellPtr).CellGetOrientation());
+    uint cellXpos;
+    uint cellYpos;
+    cellXpos = (*cellPtr).CellGetXpos();
+    cellYpos = (*cellPtr).CellGetYpos();
+    opFile << cellName << "\t" << cellXpos << "\t" << cellYpos 
+	   << "\t:\t" << getStrForOrientation((*cellPtr).CellGetOrientation());
     if ((*cellPtr).CellIsTerminal() && !(*cellPtr).CellIsPort()) {
       opFile << "\t" << "/FIXED";
     }

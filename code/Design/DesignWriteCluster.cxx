@@ -90,8 +90,8 @@ DesignWriteClusterNets(vector<Net *> &affectedNets, vector<Net *> &externalNets,
       cellName = cellOfPin.CellGetName();
       pinXOffset = (*pinPtr).PinGetXOffset();
       pinYOffset = (*pinPtr).PinGetYOffset();
-      pinXOffset -= cellOfPin.CellGetWidth();
-      pinYOffset -= cellOfPin.CellGetHeight();
+      pinXOffset -= (cellOfPin.CellGetWidth() / 2);
+      pinYOffset -= (cellOfPin.CellGetHeight() / 2);
       netString += "\t" + cellName + "  " + pinDir + "  : " +
 	getStrFromInt(pinXOffset) + "  " + getStrFromInt(pinYOffset) + " \n";
       numNetPins++;

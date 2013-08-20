@@ -322,13 +322,6 @@ Design::DesignDoGlobalPlacement(void)
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
   solverType = DesignEnv.EnvGetSolverType();
   string DesignName = DesignEnv.EnvGetDesignName();
-  /***************************/
-  /* Optional: Do clustering */
-  /***************************/
-  /* Record start time of clustering */
-  DesignCoarsenNetlist();
-  /* Record end time of clustering */
-
   if (globalPlacerType == ENV_NO_PLACEMENT) {
     return;
   }
@@ -338,6 +331,13 @@ Design::DesignDoGlobalPlacement(void)
      yet implemented in our placer */
   if (globalPlacerType == ENV_NO_EXTERNAL_GP) {
     //    ProfilerStart("Global placement");
+    /***************************/
+    /* Optional: Do clustering */
+    /***************************/
+    /* Record start time of clustering */
+    DesignCoarsenNetlist();
+    /* Record end time of clustering */
+
     /* Record start time of global placement */
     DesignEnv.EnvSetGlobalPlacementStartTime();
     DesignRunInternalPlacer(solverType);
@@ -360,11 +360,11 @@ Design::DesignDoGlobalPlacement(void)
   cout << "Dumping cluster information: POST-TOP LEVEL PLACEMENT" << endl;
   DesignDumpClusterInfo((DesignName + ".csv"));
   //  ProfilerStart("Unclustering");
+  DesignComputeHPWL();
   totalHPWL = DesignGetHPWL();
   DesignEnv.EnvSetHPWLTotalGlobal(totalHPWL);
   DesignCollapseClusters();
   //  ProfilerStop();
-  DesignComputeHPWL();
   cout << "Quality : X-HPWL: " << DesignGetXHPWL() 
        << " Y-HPWL: " << DesignGetYHPWL() 
        << " TOTAL: " << DesignGetHPWL() << endl;
@@ -400,11 +400,11 @@ Design::DesignDoLegalization(void)
     DesignRunFastPlaceLegalizer(dirName, desName, true, true);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
-    DesignComputeHPWL();
-    DesignEnv.EnvSetHPWLAfterLegalization(DesignGetHPWL());
     DesignEnv.EnvRecordLegalizationTime(cpuTimeSpent);
     break;
   }
+  DesignComputeHPWL();
+  DesignEnv.EnvSetHPWLAfterLegalization(DesignGetHPWL());
 }
 
 /*************************************************
@@ -432,12 +432,12 @@ Design::DesignDoDetailedPlacement(void)
     DesignRunFastPlaceDetailedPlacer(dirName, desName, true, true);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
-    DesignComputeHPWL();
-    DesignEnv.EnvSetHPWLAfterDetailedPlacement(DesignGetHPWL());
     DesignEnv.EnvRecordDetailedPlacementTime(cpuTimeSpent);
     break;
   case ENV_OURPLACER_DP:
     break;
   default: break;
   }
+  DesignComputeHPWL();
+  DesignEnv.EnvSetHPWLAfterDetailedPlacement(DesignGetHPWL());
 }

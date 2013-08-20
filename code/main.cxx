@@ -42,9 +42,13 @@ printTimeUsage(Env &topEnv)
   legalizationTime = topEnv.EnvGetLegalizationTime();
   detailedPlacementTime = topEnv.EnvGetDetailedPlacementTime();
 
-  totalGPTime = kwayPartTime + clusteringTime + fdNetlistBuildTime + fdSolverTime;
-  totalGPTime += clusterSwappingTime + clusterMirroringTime + clusterFillTime;
-  totalGPTime += unclusteringTime;
+  if (topEnv.EnvGetGlobalPlacerType() != ENV_NO_EXTERNAL_GP) {
+    totalGPTime = topEnv.EnvGetGlobalPlacementTime();
+  } else {
+    totalGPTime = kwayPartTime + clusteringTime + fdNetlistBuildTime + fdSolverTime;
+    totalGPTime += clusterSwappingTime + clusterMirroringTime + clusterFillTime;
+    totalGPTime += unclusteringTime;
+  }
   totalTime = totalGPTime + legalizationTime + detailedPlacementTime;
 
   cout << "***************************************************" << endl;

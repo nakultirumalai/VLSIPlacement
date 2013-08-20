@@ -260,26 +260,27 @@ getNTUPlaceGlobalPlacementTime(string DesignName, double &globalPlacementTime)
 {
   ifstream ifile;
   string line, garbage;
-  string inputFileName;
+  string placerTimeLog;
+  string timeSubStr;
+  int pos;
 
   globalPlacementTime = 0;
-  inputFileName = DesignName + "_NTUPlaceLog";
-  ifile.open(inputFileName.data());
+  placerTimeLog = DesignName + "_NTUPlaceTimeLog";
 
-  while (!ifile.eof()) {
-    getline(ifile, line);
-    if (line.find("GLOBAL") == 0) {
-      istringstream stream(line, istringstream::in);
-      /* Read the '3' from the following line */
-      /* GLOBAL: CPU = 3 sec = 0.1 min */
-      stream >> garbage;
-      stream >> garbage;
-      stream >> garbage;
-      stream >> globalPlacementTime;
-      break;
+  if (placerTimeLog != "") {
+    ifile.open(placerTimeLog.data());
+    while (!ifile.eof()) {
+      getline(ifile, line);
+      pos = line.find("user");
+      if (pos != line.npos) {
+        timeSubStr = line.substr(0, pos);
+        istringstream stream(line, istringstream::in);
+        stream >> globalPlacementTime;
+        break;
+      }
     }
+    ifile.close();
   }
-  ifile.close();
 }
 
 void
@@ -287,32 +288,27 @@ getMPL6GlobalPlacementTime(string DesignName, double &globalPlacementTime)
 {
   ifstream ifile;
   string line, garbage;
-  string inputFileName;
-  bool foundCPU;
+  string placerTimeLog;
+  string timeSubStr;
+  int pos;
 
   globalPlacementTime = 0;
-  inputFileName = DesignName + "_mPL6GPLog";
-  ifile.open(inputFileName.data());
+  placerTimeLog = DesignName + "_MPL6TimeLog";
 
-  foundCPU = false;
-  while (!ifile.eof()) {
-    getline(ifile, line);
-    if (line.find("CPU") == 0) {
-      foundCPU = true;
-    }
-    if (foundCPU) {
-      if (line.find("  Global placement runtime ") == 0) {
-	istringstream stream(line, istringstream::in);
-	stream >> garbage;
-	stream >> garbage;
-	stream >> garbage;
-	stream >> garbage;
-	stream >> globalPlacementTime;
-	break;
+  if (placerTimeLog != "") {
+    ifile.open(placerTimeLog.data());
+    while (!ifile.eof()) {
+      getline(ifile, line);
+      pos = line.find("user");
+      if (pos != line.npos) {
+        timeSubStr = line.substr(0, pos);
+        istringstream stream(line, istringstream::in);
+        stream >> globalPlacementTime;
+        break;
       }
     }
+    ifile.close();
   }
-  ifile.close();
 }
 
 int 
@@ -454,7 +450,7 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName,
   //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
   if (readPlacementTime) {
     oldPlFileName = this->DesignPlFileName;
-    this->DesignPlFileName = clusterDesName + ".gp.pl";
+    this->DesignPlFileName = clusterDesName + ".ntup.pl";
     DesignReadCellPlacement(true);
     this->DesignPlFileName = oldPlFileName;
   }
@@ -520,7 +516,7 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName,
 }
 
 int 
-Design::DesignRunMPL6(string clusterDirName, string clusterDesName,
+Design::DesignRunMPL6(string dirName, string designName,
 		      double &globalPlacementTime, bool changeDirectory,
 		      bool readPlacement, bool silent)
 {
@@ -532,7 +528,7 @@ Design::DesignRunMPL6(string clusterDirName, string clusterDesName,
 
   placerPath = getenv("MPL6_FULL_PATH");
   if (changeDirectory) {
-    changeDir(clusterDirName);
+    changeDir(dirName);
   }
   placerCommand = "{ time ";
   if (placerPath == NIL(char *)) {
@@ -543,20 +539,20 @@ Design::DesignRunMPL6(string clusterDirName, string clusterDesName,
   }
   
   DesignName = DesignGetName();
-  placerLogFile = clusterDesName + "_MPL6Log";
-  placerTimeLogFile = clusterDesName + "_MPL6TimeLog";
+  placerLogFile = designName + "_MPL6Log";
+  placerTimeLogFile = designName + "_MPL6TimeLog";
   if (silent) {
-    placerCommand += " -d ./" + clusterDesName + ".aux > " + placerLogFile + "; } 2> " + placerTimeLogFile;
+    placerCommand += " -d ./" + designName + ".aux > " + placerLogFile + "; } 2> " + placerTimeLogFile;
   } else {
-    placerCommand += " -d ./" + clusterDesName + ".aux | tee " + placerLogFile + "; } 2> " + placerTimeLogFile;
+    placerCommand += " -d ./" + designName + ".aux | tee " + placerLogFile + "; } 2> " + placerTimeLogFile;
   }
   //  cout << "PLACER COMMAND: " << placerCommand << endl;
   status = executeCommand(placerCommand);
-  //  getMPL6GlobalPlacementTime(DesignName, globalPlacementTime);
+  getMPL6GlobalPlacementTime(designName, globalPlacementTime);
   //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
   if (readPlacement) {
     oldPlFileName = this->DesignPlFileName;
-    this->DesignPlFileName = clusterDesName + "-mPL-gp.pl";
+    this->DesignPlFileName = designName + "-mPL.pl";
     DesignReadCellPlacement(true);
     this->DesignPlFileName = oldPlFileName;
   }
