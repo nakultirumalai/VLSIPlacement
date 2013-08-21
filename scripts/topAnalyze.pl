@@ -69,6 +69,7 @@ if ($execType eq "place" || $execType eq "both") {
 	next if (($line =~ /^\#/) || ($line eq ""));
 	# Lines beginning with a '-' represent parameters to the placer
 	if (($line =~ /^-(.*)/) && ($setSelect)) {
+	    $foundOption++;
 	    # Assuming parameters to be of the form -<param> <value>
 	    my @elems = split(/\s+/, $line);
 	    
@@ -119,14 +120,13 @@ if ($execType eq "place" || $execType eq "both") {
 		$plFileName .= "_";
 		next;
 	    }
-	    $foundOption = 1;
 
 	} elsif ($line =~ /^\$(.*)/) {
 	    # A line beginning with '$SELECT' is used to decide whether the 
 	    # block following that has to be executed for this run of
 	    # the tool or not. [1-Execute] [0-Don't Execute]
 
-	    my @select = split(/\t+/, $line);
+	    my @select = split(/\s+/, $line);
 	    $setSelect = $select[1];
 	    next;
 	} elsif (($line =~ /^\*BEGIN/) && ($setSelect)) {
@@ -155,8 +155,8 @@ if ($execType eq "place" || $execType eq "both") {
 		$setBegin = 0;
 		$setEnd = 1;
 		$setSelect = 0;
-		if (!$foundOption) {
-		    $plFileName = "DEFAULT_"."$defaultCount"."_";
+		if ($foundOption < 1) {
+		    $plFileName .= "DEFAULT_"."$defaultCount"."_";
 		    $defaultCount++;
 		}
 		push @allOptions, [ @thisRun ];
@@ -168,6 +168,7 @@ if ($execType eq "place" || $execType eq "both") {
 		$forceRun = 0;
 		$plFileName = "";
 		@thisRun = ();
+		$foundOption = 0;
 		next;
 	    }
 	}

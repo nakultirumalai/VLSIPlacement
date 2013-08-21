@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export BENCHMARK_ROOT=$HOME/Downloads/Benchmarks
+export BENCHMARK_ROOT=$HOME/results
 export SCRIPT_ROOT=$HOME/thesis/VLSIPlacement/scripts
+export UTILS_ROOT=$HOME/Downloads/Benchmarks
 export EXEC_FILE=$HOME/thesis/VLSIPlacement/code/the_exec
 export OUTPUT_PATH=$(pwd)
 export DESIGNS="pairing"
