@@ -462,16 +462,16 @@ class Design {
   void DesignAdjustCells(void);
 
   /* Calling internal and external placers */
-  void DesignRunExternalPlacer(EnvGlobalPlacerType);
+  void DesignRunExternalPlacer(EnvGlobalPlacerType, EnvFlatPlacerType);
   void DesignRunInternalPlacer(EnvSolverType);
   int DesignRunKHMetis(string, uint, uint, uint, uint, uint, uint, uint);
   int DesignRunKHMetis2(string, bool, string, string, string, double, uint, uint, uint, uint);
-  int DesignRunNTUPlace(string, string, double &, bool, bool, bool, string&);
-  int DesignRunFastPlace(string, string, double &, bool, bool, bool, string&);
+  int DesignRunNTUPlace(string, string, double &, bool, bool, bool, bool, string&);
+  int DesignRunFastPlace(string, string, double &, bool, bool, bool, bool, string&);
   int DesignRunFastPlaceLegalizer(string, string, bool, bool);
   int DesignRunFastPlaceLegalizerForCluster(string, string, string);
   int DesignRunFastPlaceDetailedPlacer(string, string, bool, bool);
-  int DesignRunMPL6(string, string, double &, bool, bool, bool);
+  int DesignRunMPL6(string, string, double &, bool, bool, bool, bool);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);

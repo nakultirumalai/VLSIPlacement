@@ -176,26 +176,28 @@ void getFastPlacePlacementData(string placerLog, string placerTimeLog,
 
 inline void
 getPlacerToPlaceCellsInCluster(string designName, 
-			       EnvGlobalPlacerType &placerType)
+			       EnvClusterPlacerType &placerType)
 {
   if (designName == "usb_sie") {
-    placerType = ENV_FAST_PLACE_GP;
+    placerType = ENV_FAST_PLACE_CP;
   } else if (designName == "avr_core") {
-    placerType = ENV_FAST_PLACE_GP;
+    placerType = ENV_FAST_PLACE_CP;
   } else if (designName == "RISC") {
-    placerType = ENV_FAST_PLACE_GP;
+    placerType = ENV_FAST_PLACE_CP;
   } else if (designName == "openfpu64") {
-    placerType = ENV_FAST_PLACE_GP;
+    placerType = ENV_FAST_PLACE_CP;
   } else if (designName == "cordic") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_NTUPLACE_CP;
   } else if (designName == "reedsoldec") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_NTUPLACE_CP;
   } else if (designName == "seq_align") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_NTUPLACE_CP;
   } else if (designName == "pairing") {
-    placerType = ENV_NTUPLACE_GP;
+    placerType = ENV_NTUPLACE_CP;
+  } else if (designName == "AES") {
+    placerType = ENV_MPL6_CP;
   } else {
-    placerType = ENV_MPL6_GP;
+    placerType = ENV_NTUPLACE_CP;
   }
 }
 
@@ -1825,14 +1827,14 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
 				     uint clusterHeight, double &clusterPlacementTime,
 				     double &HPWL)
 {
-  double globalPlacementTime;
+  double placementTime;
   uint singleRowHeight, singleSiteWidth;
-  string benchName, globalPlacerOpFile, finalOpFile;
+  string benchName, clusterPlacerOpFile, finalOpFile;
   string designName, placerLogFile, placerName;
   string placerTimeLogFile;
   string msg;
   Env &DesignEnv = DesignGetEnv();
-  EnvGlobalPlacerType globalPlacer;
+  EnvClusterPlacerType clusterPlacer;
   EnvLegalizer legalizer;
   EnvFlowType flowType;
   bool writeFixedPorts;
@@ -1842,7 +1844,7 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
   singleRowHeight = DesignGetSingleRowHeight();
   singleSiteWidth = DesignGetSingleSiteWidth();
   benchName = "__" + clusterCellName;
-  globalPlacementTime = 0;
+  placementTime = 0;
   clusterPlacementTime = 0;
   HPWL = 0;
   designName = DesignEnv.EnvGetDesignName();
@@ -1851,22 +1853,25 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
   if (flowType == ENV_PLACE_CLUSTERS_POST_TOP_WITH_PORTS) {
     writeFixedPorts = true;
   }
-  getPlacerToPlaceCellsInCluster(designName, globalPlacer);
+  clusterPlacer = DesignEnv.EnvGetClusterPlacerType();
+  if (clusterPlacer == ENV_DEFAULT_CP) {
+    getPlacerToPlaceCellsInCluster(designName, clusterPlacer);
+  }
   if (flowType == ENV_PLACE_CLUSTERS_POST_TOP_WITH_PORTS) {
-    globalPlacer = ENV_MPL6_GP;
+    clusterPlacer = ENV_MPL6_CP;
   }
 
   /* First try to place the cells using the given global placer */
-  if (globalPlacer == ENV_NTUPLACE_GP) {
-    globalPlacerOpFile = benchName + ".ntup.pl";
+  if (clusterPlacer == ENV_NTUPLACE_CP) {
+    clusterPlacerOpFile = benchName + ".ntup.pl";
     placerLogFile = benchName + "_NTUPlaceLog";
     placerTimeLogFile = benchName + "_NTUPlaceTimeLog";
-  } else if (globalPlacer == ENV_FAST_PLACE_GP) {
-    globalPlacerOpFile = benchName + "_FP_gp.pl";
+  } else if (clusterPlacer == ENV_FAST_PLACE_CP) {
+    clusterPlacerOpFile = benchName + "_FP_gp.pl";
     placerLogFile = benchName + "_FastPlaceLog";
     placerTimeLogFile = benchName + "_FastPlaceTimeLog";
-  } else if (globalPlacer == ENV_MPL6_GP) {
-    globalPlacerOpFile = benchName + "-mPL.pl";
+  } else if (clusterPlacer == ENV_MPL6_CP) {
+    clusterPlacerOpFile = benchName + "-mPL.pl";
     placerLogFile = benchName + "_MPL6Log";
     placerTimeLogFile = benchName + "_MPL6TimeLog";
   }
@@ -1888,51 +1893,51 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
   changeDir(benchName.data());
   msg = "Error: Placer not executed for cluster: " + benchName 
     + " of design " + designName;
-  if (!fileExists(globalPlacerOpFile)) {
-    if (globalPlacer == ENV_NTUPLACE_GP) {
-      DesignRunNTUPlace(benchName, benchName, globalPlacementTime, 
-			false, false, true, placerLogFile);
-      if (!fileExists(globalPlacerOpFile)) {
-	DesignRunFastPlace(benchName, benchName, globalPlacementTime, 
-			   false, false, true, placerLogFile);
-	globalPlacerOpFile = benchName + "_FP_gp.pl";
-	if (!fileExists(globalPlacerOpFile)) {
+  if (!fileExists(clusterPlacerOpFile)) {
+    if (clusterPlacer == ENV_NTUPLACE_CP) {
+      DesignRunNTUPlace(benchName, benchName, placementTime, 
+			false, false, true, true, placerLogFile);
+      if (!fileExists(clusterPlacerOpFile)) {
+	DesignRunFastPlace(benchName, benchName, placementTime, 
+			   false, false, true, true, placerLogFile);
+	clusterPlacerOpFile = benchName + "_FP_gp.pl";
+	if (!fileExists(clusterPlacerOpFile)) {
 	  _ASSERT_TRUE(msg);
 	}
       } 
-    } else if (globalPlacer == ENV_FAST_PLACE_GP) {
-      DesignRunFastPlace(benchName, benchName, globalPlacementTime, 
-			 false, false, true, placerLogFile);
-      if (!fileExists(globalPlacerOpFile)) {
-	DesignRunNTUPlace(benchName, benchName, globalPlacementTime, 
-			  false, false, true, placerLogFile);
-	globalPlacerOpFile = benchName + ".ntup.pl";
-	if (!fileExists(globalPlacerOpFile)) {
+    } else if (clusterPlacer == ENV_FAST_PLACE_CP) {
+      DesignRunFastPlace(benchName, benchName, placementTime, 
+			 false, false, true, true, placerLogFile);
+      if (!fileExists(clusterPlacerOpFile)) {
+	DesignRunNTUPlace(benchName, benchName, placementTime, 
+			  false, false, true, true, placerLogFile);
+	clusterPlacerOpFile = benchName + ".ntup.pl";
+	if (!fileExists(clusterPlacerOpFile)) {
 	  _ASSERT_TRUE(msg);
 	}
       } 
-    } else if (globalPlacer == ENV_MPL6_GP) {
-      DesignRunMPL6(benchName, benchName, globalPlacementTime, 
-		    false, false, true);
-      if (!fileExists(globalPlacerOpFile)) {
+    } else if (clusterPlacer == ENV_MPL6_CP) {
+      DesignRunMPL6(benchName, benchName, placementTime, false, false, 
+		    false, false);
+      if (!fileExists(clusterPlacerOpFile)) {
 	_ASSERT_TRUE(msg);
       }
     }
   }
 
-  if (globalPlacer == ENV_NTUPLACE_GP) {
+  if (clusterPlacer == ENV_NTUPLACE_CP) {
     getNTUPlacePlacementData(placerLogFile, placerTimeLogFile,
 			     clusterPlacementTime, HPWL);
-  } else if (globalPlacer == ENV_FAST_PLACE_GP) {
+  } else if (clusterPlacer == ENV_FAST_PLACE_CP) {
     getFastPlacePlacementData(placerLogFile, placerTimeLogFile,
 			      clusterPlacementTime, HPWL);
-  } else if (globalPlacer == ENV_MPL6_GP) {
+  } else if (clusterPlacer == ENV_MPL6_CP) {
     getMPL6PlacementData(placerLogFile, placerTimeLogFile, 
 			 clusterPlacementTime, HPWL);
   }
   /* If control of program reaches here, we have to assume that the 
      placement of this cluster is done */
-  DesignReadPlacerOutput(globalPlacerOpFile, mapOfCellsStr);
+  DesignReadPlacerOutput(clusterPlacerOpFile, mapOfCellsStr);
   changeDir("..");
   if (placeDebug) {
     cout << " Placed cells for cluster " << benchName 

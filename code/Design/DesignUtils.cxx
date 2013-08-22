@@ -414,7 +414,7 @@ Design::DesignRunKHMetis2(string graphFileName, bool recursiveBisection,
 int 
 Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName, 
 			  double &globalPlacementTime, bool changeDirectory,
-			  bool readPlacementTime, bool silent,
+			  bool readPlacementTime, bool silent, bool flat,
 			  string &placerLogFile)
 {
   int status;
@@ -450,7 +450,11 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName,
   //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
   if (readPlacementTime) {
     oldPlFileName = this->DesignPlFileName;
-    this->DesignPlFileName = clusterDesName + ".ntup.pl";
+    if (flat) {
+      this->DesignPlFileName = clusterDesName + ".ntup.pl";
+    } else {
+      this->DesignPlFileName = clusterDesName + ".gp.pl";
+    }
     DesignReadCellPlacement(true);
     this->DesignPlFileName = oldPlFileName;
   }
@@ -464,7 +468,8 @@ Design::DesignRunNTUPlace(string clusterDirName, string clusterDesName,
 int 
 Design::DesignRunFastPlace(string clusterDirName, string clusterDesName,
 			   double &globalPlacementTime, bool changeDirectory,
-			   bool readPlacementTime, bool silent, string &placerLogFile)
+			   bool readPlacementTime, bool silent, bool flat,
+			   string &placerLogFile)
 {
   int status;
   char *placerPath; 
@@ -518,7 +523,7 @@ Design::DesignRunFastPlace(string clusterDirName, string clusterDesName,
 int 
 Design::DesignRunMPL6(string dirName, string designName,
 		      double &globalPlacementTime, bool changeDirectory,
-		      bool readPlacement, bool silent)
+		      bool readPlacement, bool silent, bool flat)
 {
   int status;
   char *placerPath; 
@@ -552,7 +557,11 @@ Design::DesignRunMPL6(string dirName, string designName,
   //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
   if (readPlacement) {
     oldPlFileName = this->DesignPlFileName;
-    this->DesignPlFileName = designName + "-mPL.pl";
+    if (flat) {
+      this->DesignPlFileName = designName + "-mPL.pl";
+    } else {
+      this->DesignPlFileName = designName + "-mPL-gp.pl";
+    }
     DesignReadCellPlacement(true);
     this->DesignPlFileName = oldPlFileName;
   }
@@ -637,7 +646,7 @@ Design::DesignRunFastPlaceDetailedPlacer(string desDirName, string desName,
   }
 
   if (placerPath == NIL(char *)) {
-    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -window 10 ";
+    placerCommand = "~/Downloads/FastPlace/FastPlace3.1_Linux64/FastPlace3.1_Linux64_DP -window 10 -noFlipping ";
   } else {
     placerCommand = placerPath;
   }

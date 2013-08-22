@@ -16,6 +16,15 @@
 ***************************************************/
 /* Define the global placer type */
 typedef enum {
+  ENV_NO_EXTERNAL_FP,
+  ENV_NTUPLACE_FP,
+  ENV_FAST_PLACE_FP,
+  ENV_MPL6_FP,
+  NUM_ENV_FLAT_PLACERS
+} EnvFlatPlacerType;
+# define DEFAULT_ENV_FLAT_PLACER_TYPE ENV_NO_EXTERNAL_FP
+
+typedef enum {
   ENV_NO_PLACEMENT,
   ENV_NO_EXTERNAL_GP,
   ENV_NTUPLACE_GP,
@@ -24,6 +33,15 @@ typedef enum {
   NUM_ENV_GLOBAL_PLACERS
 } EnvGlobalPlacerType;
 # define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
+
+typedef enum {
+  ENV_DEFAULT_CP,
+  ENV_NTUPLACE_CP,
+  ENV_MPL6_CP,
+  ENV_FAST_PLACE_CP,
+  NUM_ENV_CLUSTER_PLACERS
+} EnvClusterPlacerType;
+# define DEFAULT_ENV_CLUSTER_PLACER_TYPE ENV_DEFAULT_CP
 
 /* Define the solver type to be used in the design */
 typedef enum {
@@ -337,6 +355,10 @@ class Env {
   /***************************************/
   /* Decide what type of global placer to use */
   EnvGlobalPlacerType GlobalPlacerType;
+  /* Decide what type of cluster placer to use */
+  EnvClusterPlacerType ClusterPlacerType;
+  /* Decide what type of flat placer to use */
+  EnvFlatPlacerType FlatPlacerType;
   /* Decide what the type of the solver to use */
   EnvSolverType SolverType;
   /* Decide what mode the tool has to be used in */
@@ -593,6 +615,12 @@ class Env {
 
   void EnvSetGlobalPlacerType(EnvGlobalPlacerType);
   EnvGlobalPlacerType EnvGetGlobalPlacerType(void);
+
+  void EnvSetClusterPlacerType(EnvClusterPlacerType);
+  EnvClusterPlacerType EnvGetClusterPlacerType(void);
+
+  void EnvSetFlatPlacerType(EnvFlatPlacerType);
+  EnvFlatPlacerType EnvGetFlatPlacerType(void);
 
   void EnvSetSolverType(EnvSolverType);
   EnvSolverType EnvGetSolverType(void);

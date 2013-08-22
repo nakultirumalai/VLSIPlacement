@@ -104,9 +104,6 @@ Design::DesignDoClusterSwapping(void)
       } DESIGN_END_FOR;
       iterCount++;
       cout << endl;
-      if (iterCount > 2) {
-	break;
-      }
       if (improved == false) {
 	break;
       }
@@ -259,46 +256,54 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
 }
 
 void
-Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType) 
+Design::DesignRunExternalPlacer(EnvGlobalPlacerType globalPlacerType, 
+				EnvFlatPlacerType flatPlacer) 
 {
   double globalPlacementTime;
   int statusCode;
   string placerPath, placerLogFile;
   string DesignName;
   string clusterDesignName, clustDir;
+  bool useFlatPlacer;
 
   Env &topEnv = DesignGetEnv();
   DesignName = topEnv.EnvGetDesignName();
   clusterDesignName = DesignName + "_clust";
   clustDir = "." + DesignName + "_clust";
   
+  useFlatPlacer = true;
+  if (flatPlacer == ENV_NO_EXTERNAL_FP) {
+    useFlatPlacer = false;    
+  }
+
   /* Write out the current clustered netlist into the folder .designName_clust */
   DesignWriteCurrentNetlist(clustDir, clusterDesignName);
-  if (globalPlacerType == ENV_NTUPLACE_GP) {
+  if (globalPlacerType == ENV_NTUPLACE_GP || flatPlacer == ENV_NTUPLACE_FP) {
     /* Run NTUPlace for global placement. The variable 
        NTUPLACE_FULL_PATH has to be set for NTUPlace to 
        run successfully */
     statusCode = DesignRunNTUPlace("." + clusterDesignName, clusterDesignName, 
-				   globalPlacementTime, true, true, false, placerLogFile);
+				   globalPlacementTime, true, true, false, useFlatPlacer,
+				   placerLogFile);
     topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: NTUPlace ... Returned status: " 
 	 << statusCode << endl;
-  } else if (globalPlacerType == ENV_FAST_PLACE_GP) {
+  } else if (globalPlacerType == ENV_FAST_PLACE_GP || flatPlacer == ENV_FAST_PLACE_FP) {
     /* Run FastPlace for global placement. The variable 
        FASTPLACE_FULL_PATH has to be set for FastPlace to 
        run successfully */
     statusCode = DesignRunFastPlace("." + clusterDesignName, clusterDesignName,
-				    globalPlacementTime, true, true, false, 
+				    globalPlacementTime, true, true, false, useFlatPlacer,
 				    placerLogFile);
     topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: FastPlace ... Returned status: " 
 	 << statusCode << endl;
-  } else if (globalPlacerType == ENV_MPL6_GP) {
+  } else if (globalPlacerType == ENV_MPL6_GP || flatPlacer == ENV_MPL6_FP) {
     /* Run MPL6 for global placement. The variable 
        MPL6_FULL_PATH has to be set for mPL6 to 
        run successfully */
     statusCode = DesignRunMPL6("." + clusterDesignName, clusterDesignName,
-			       globalPlacementTime, true, true, false);
+			       globalPlacementTime, true, true, false, useFlatPlacer);
     topEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
     cout << "Completed running placer: mPL6 ... Returned status: " 
 	 << statusCode << endl;
@@ -315,11 +320,13 @@ void
 Design::DesignDoGlobalPlacement(void)
 {
   EnvGlobalPlacerType globalPlacerType;
+  EnvFlatPlacerType flatPlacerType;
   EnvSolverType solverType;
   double totalHPWL;
   Env &DesignEnv = this->DesignEnv;
   
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
+  flatPlacerType = DesignEnv.EnvGetFlatPlacerType();
   solverType = DesignEnv.EnvGetSolverType();
   string DesignName = DesignEnv.EnvGetDesignName();
   if (globalPlacerType == ENV_NO_PLACEMENT) {
@@ -329,7 +336,8 @@ Design::DesignDoGlobalPlacement(void)
   /* While doing global placement, it might be necessary to run other 
      placers to do global placement since macro spreading is not 
      yet implemented in our placer */
-  if (globalPlacerType == ENV_NO_EXTERNAL_GP) {
+  if (globalPlacerType == ENV_NO_EXTERNAL_GP &&
+      flatPlacerType == ENV_NO_EXTERNAL_FP) {
     //    ProfilerStart("Global placement");
     /***************************/
     /* Optional: Do clustering */
@@ -345,13 +353,17 @@ Design::DesignDoGlobalPlacement(void)
     DesignEnv.EnvRecordGlobalPlacementTime();
     //    ProfilerStop();
   } else {
+    if (globalPlacerType != ENV_NO_EXTERNAL_GP &&
+	flatPlacerType != ENV_NO_EXTERNAL_FP) {
+      cout << "Error: Either the -global_placer option or the -flat_placer option must be specified" << endl;
+    }
     clock_t start, end;
     double cpuTimeSpent;
     time_t timer1;
     time_t timer2;
     time(&timer1);
     //    DesignEnv.EnvSetGlobalPlacementStartTime();
-    DesignRunExternalPlacer(globalPlacerType);
+    DesignRunExternalPlacer(globalPlacerType, flatPlacerType);
     time(&timer2);
     cpuTimeSpent = difftime(timer2, timer1);
     //    cout << "Time taken: " << cpuTimeSpent << endl;

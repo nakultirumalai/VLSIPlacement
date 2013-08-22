@@ -42,7 +42,8 @@ printTimeUsage(Env &topEnv)
   legalizationTime = topEnv.EnvGetLegalizationTime();
   detailedPlacementTime = topEnv.EnvGetDetailedPlacementTime();
 
-  if (topEnv.EnvGetGlobalPlacerType() != ENV_NO_EXTERNAL_GP) {
+  if (topEnv.EnvGetGlobalPlacerType() != ENV_NO_EXTERNAL_GP ||
+      topEnv.EnvGetFlatPlacerType() != ENV_NO_EXTERNAL_FP) {
     totalGPTime = topEnv.EnvGetGlobalPlacementTime();
   } else {
     totalGPTime = kwayPartTime + clusteringTime + fdNetlistBuildTime + fdSolverTime;
@@ -304,6 +305,14 @@ printTimeUsage(Env &topEnv)
               a) boundaryonly
               b) placefull
 
+-cluster_placer: This option specifies which placer must be used to place 
+              cells inside the cluster. The default placer to be used 
+              is NTUPlace
+
+   -flat_placer: This option specifies which placer must be used to place 
+              cells inside the cluster when doing flat placement. Useful
+              for comparing flows.
+
       -flow_type : This option can be used to decide what flow should be 
               used to do the full placement. The options are:
               a) placeclustersfirst
@@ -561,6 +570,26 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
     } else {
       rtv = false;
       cout << "Error: Valid options for \"cluster_placement\" are \"boundaryonly\" or \"placefull\"" << endl;
+    }
+  } else if (switchName == "cluster_placer") {
+    rtv = true;
+    if (switchValue == "ntuplace") {
+      topEnv.EnvSetClusterPlacerType(ENV_NTUPLACE_CP);
+    } else if (switchValue == "mpl6") {
+      topEnv.EnvSetClusterPlacerType(ENV_MPL6_CP);
+    } else {
+      cout << "Error: Options for cluster_placer are \"ntuplace\" and \"mpl6\"" << endl;
+      rtv = false;
+    }
+  } else if (switchName == "flat_placer") {
+    rtv = true;
+    if (switchValue == "ntuplace") {
+      topEnv.EnvSetFlatPlacerType(ENV_NTUPLACE_FP);
+    } else if (switchValue == "mpl6") {
+      topEnv.EnvSetFlatPlacerType(ENV_MPL6_FP);
+    } else {
+      rtv = false;
+      cout << "Error: Options for flat_placer are \"ntuplace\" and \"mpl6\"" << endl;
     }
   } else if (switchName == "flow_type") {
     rtv = true;

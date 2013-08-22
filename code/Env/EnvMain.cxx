@@ -22,6 +22,8 @@ Env::Env()
   EnvSetClusterMirroring(DEFAULT_DO_CLUSTER_MIRRORING);
   EnvSetUseFDPlacer(DEFAULT_USE_FD_PLACER);
   EnvSetGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
+  EnvSetClusterPlacerType(DEFAULT_ENV_CLUSTER_PLACER_TYPE);
+  EnvSetFlatPlacerType(DEFAULT_ENV_FLAT_PLACER_TYPE);
   EnvSetSolverType(DEFAULT_ENV_SOLVER_TYPE);
   EnvSetNetModel(DEFAULT_ENV_NET_MODEL);
   EnvSetToolMode(DEFAULT_ENV_TOOL_MODE);
@@ -950,6 +952,30 @@ EnvGlobalPlacerType
 Env::EnvGetGlobalPlacerType(void)
 {
   return GlobalPlacerType;
+}
+
+void
+Env::EnvSetClusterPlacerType(EnvClusterPlacerType ClusterPlacerType)
+{
+  this->ClusterPlacerType = ClusterPlacerType;
+}
+
+EnvClusterPlacerType
+Env::EnvGetClusterPlacerType(void)
+{
+  return ClusterPlacerType;
+}
+
+void
+Env::EnvSetFlatPlacerType(EnvFlatPlacerType FlatPlacerType)
+{
+  this->FlatPlacerType = FlatPlacerType;
+}
+
+EnvFlatPlacerType
+Env::EnvGetFlatPlacerType(void)
+{
+  return FlatPlacerType;
 }
 
 void 
