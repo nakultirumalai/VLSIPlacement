@@ -18,8 +18,9 @@
 typedef enum {
   ENV_NO_EXTERNAL_FP,
   ENV_NTUPLACE_FP,
-  ENV_FAST_PLACE_FP,
   ENV_MPL6_FP,
+  ENV_MPL6_NOCLUST_FP,
+  ENV_FAST_PLACE_FP,
   NUM_ENV_FLAT_PLACERS
 } EnvFlatPlacerType;
 # define DEFAULT_ENV_FLAT_PLACER_TYPE ENV_NO_EXTERNAL_FP
@@ -28,8 +29,9 @@ typedef enum {
   ENV_NO_PLACEMENT,
   ENV_NO_EXTERNAL_GP,
   ENV_NTUPLACE_GP,
-  ENV_FAST_PLACE_GP,
   ENV_MPL6_GP,
+  ENV_MPL6_NOCLUST_GP,
+  ENV_FAST_PLACE_GP,
   NUM_ENV_GLOBAL_PLACERS
 } EnvGlobalPlacerType;
 # define DEFAULT_ENV_GLOBAL_PLACER_TYPE ENV_NO_EXTERNAL_GP
@@ -38,6 +40,7 @@ typedef enum {
   ENV_DEFAULT_CP,
   ENV_NTUPLACE_CP,
   ENV_MPL6_CP,
+  ENV_MPL6_NOCLUST_CP,
   ENV_FAST_PLACE_CP,
   NUM_ENV_CLUSTER_PLACERS
 } EnvClusterPlacerType;
@@ -169,6 +172,7 @@ typedef enum {
 # define DEFAULT_NUM_KHMETIS_RUNS 3
 # define DEFAULT_ENV_ITER_COUNT 500
 # define DEFAULT_ENV_ABORT_LIMIT 50
+# define DEFAULT_USE_WEIGHTED_HPWL false
 # define DEFAULT_USE_FD_PLACER true
 # define DEFAULT_DO_CLUSTER_SWAPPING true
 # define DEFAULT_DO_CLUSTER_MIRRORING true
@@ -315,6 +319,9 @@ class Env {
   /* Flag to indicate if placement has to be inside the 
      cluster */
   bool PlaceCellsInCluster;
+  /* Flat to indicate if a weighted HPWL computation cost 
+     function must be used */
+  bool UseWeightedHPWL;
   /* Flag to indicate if force directed placement has to be 
      executed */
   bool UseFDPlacer;
@@ -579,6 +586,9 @@ class Env {
 
   void EnvSetPlaceCellsInCluster(bool);
   bool EnvGetPlaceCellsInCluster(void);
+
+  void EnvSetUseWeightedHPWL(bool);
+  bool EnvGetUseWeightedHPWL(void);
   
   void EnvSetUseFDPlacer(bool);
   bool EnvGetUseFDPlacer(void);

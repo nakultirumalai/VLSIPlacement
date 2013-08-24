@@ -71,6 +71,14 @@ our %optionMap = (
 	'ntuplace' => 'O1',
 	'mpl6' => 'O2',
     },
+    '-swapping' => {
+	'true' => 'P1',
+	'false' => 'P2',
+    },
+    '-mirroring' => {
+	'true' => 'Q1',
+	'false' => 'Q2',
+    },
     );
 
 1;

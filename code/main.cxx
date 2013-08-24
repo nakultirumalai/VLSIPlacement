@@ -234,6 +234,9 @@ printTimeUsage(Env &topEnv)
 -global_placer: If this option is specified, an external global placer 
               is selected to perform global placement
 
+  -use_wt_hpwl: A flow where the cost is computed using a weighted HPWL 
+                function: Wtd.HPWL of net = (HPWL of net) * (netweight)
+
 -use_fd_placer: If this option is specified, the force directed top level
               placer is selected to perform global placement
 
@@ -439,10 +442,22 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       topEnv.EnvSetGlobalPlacerType(ENV_FAST_PLACE_GP);
     } else if (switchValue == "mpl6") {
       topEnv.EnvSetGlobalPlacerType(ENV_MPL6_GP);
+    } else if (switchValue == "mpl6noclust") {
+      topEnv.EnvSetGlobalPlacerType(ENV_MPL6_NOCLUST_GP);
     } else {
       rtv = false;
       cout << "Error: Global placers supported are \"ntuplace\", \"fastplace\" and \"mpl6\""
 	   << endl;
+    }
+  } else if (switchName == "use_wt_hpwl") {
+    rtv = true;
+    if (switchValue == "true") {
+      topEnv.EnvSetUseWeightedHPWL(true);
+    } else if (switchValue == "false") {
+      topEnv.EnvSetUseWeightedHPWL(false);
+    } else {
+      cout << "Error: Option \"use_wt_hpwl\" can only take values \"true\" and \"false\"" << endl;
+      rtv = false;
     }
   } else if (switchName == "use_fd_placer") {
     rtv = true;
@@ -577,6 +592,8 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       topEnv.EnvSetClusterPlacerType(ENV_NTUPLACE_CP);
     } else if (switchValue == "mpl6") {
       topEnv.EnvSetClusterPlacerType(ENV_MPL6_CP);
+    } else if (switchValue == "mpl6noclust") {
+      topEnv.EnvSetClusterPlacerType(ENV_MPL6_NOCLUST_CP);
     } else {
       cout << "Error: Options for cluster_placer are \"ntuplace\" and \"mpl6\"" << endl;
       rtv = false;
@@ -587,6 +604,8 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
       topEnv.EnvSetFlatPlacerType(ENV_NTUPLACE_FP);
     } else if (switchValue == "mpl6") {
       topEnv.EnvSetFlatPlacerType(ENV_MPL6_FP);
+    } else if (switchValue == "mpl6noclust") {
+      topEnv.EnvSetFlatPlacerType(ENV_MPL6_NOCLUST_FP);
     } else {
       rtv = false;
       cout << "Error: Options for flat_placer are \"ntuplace\" and \"mpl6\"" << endl;

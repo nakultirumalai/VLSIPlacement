@@ -263,16 +263,28 @@ Design::DesignComputeHPWL()
   ulong totalHPWL;
   uint xHPWL, yHPWL;
   uint netCount;
-  
+  double netWeight;
+  double wtXHPWL, wtYHPWL;
+  bool useWeighted;
+  Env &DesignEnv = DesignGetEnv();
+
   totalXHPWL = 0.0;
   totalYHPWL = 0.0;
   totalHPWL = 0.0;
   netCount = 0;
+  useWeighted = DesignEnv.EnvGetUseWeightedHPWL();
+  
   DESIGN_FOR_ALL_NETS((*this), netName, netPtr) {
     (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
-    totalXHPWL += xHPWL;
-    totalYHPWL += yHPWL;
-    totalHPWL += (xHPWL + yHPWL);
+    netWeight = 1.0;
+    if (useWeighted) {
+      netWeight = (*netPtr).NetGetWeight();
+    }
+    wtXHPWL = netWeight * xHPWL;
+    wtYHPWL = netWeight * yHPWL;
+    totalXHPWL += wtXHPWL;
+    totalYHPWL += wtYHPWL;
+    totalHPWL +=  wtXHPWL + wtYHPWL;
     //    cout << "Computed HPWL of Net: " << (xHPWL + yHPWL) << endl;
     netCount++;
   } DESIGN_END_FOR;
