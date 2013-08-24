@@ -697,9 +697,9 @@ int placeMain(Env &topEnv)
   /****************************************************
    *  DO GLOBAL PLACEMENT                             *
    ****************************************************/
-  //ProfilerStart("GlobalPlacement");
+  //  ProfilerStart("GlobalPlacement");
   myDesign.DesignDoGlobalPlacement();
-  //ProfilerStop();
+  //  ProfilerStop();
     
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
   if (globalPlacerType != ENV_NO_PLACEMENT) {

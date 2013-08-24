@@ -77,6 +77,7 @@ source -e -v [getenv BENCHMARK_GEN_ROOT]/scripts/${DESIGN_NAME}/${DESIGN_NAME}.c
 
 #report_timing -max_paths 10000 -from [all_registers -clock_pins] -to [all_registers -data_pins] > ${REPORTS_DIR}/timing_report.rpt
 report_timing -max_paths 2000000  > ${TIMING_RPT_DIR}_post_route_timing.rpt
+report_global_timing > ${TIMING_RPT_DIR}_global_timing.rpt
 
 remove_design -all
 
@@ -84,7 +85,6 @@ read_verilog ${RESULT_DIR}/${DESIGN_NAME}_compiled.v
 current_design ${TOP_DESIGN_NAME}
 
 read_parasitics -keep_capacitive_coupling ${PLACED_FILE_OUT}.prerout.spef.max
-
 
 ##################################################
 # TIMING CONSTRAINTS
@@ -94,6 +94,7 @@ source -e -v [getenv BENCHMARK_GEN_ROOT]/scripts/${DESIGN_NAME}/${DESIGN_NAME}.c
 
 #report_timing -max_paths 10000 -from [all_registers -clock_pins] -to [all_registers -data_pins] > ${REPORTS_DIR}/timing_report.rpt
 report_timing -max_paths 2000000 > ${TIMING_RPT_DIR}_pre_route_timing.rpt
+report_global_timing > ${TIMING_RPT_DIR}_global_timing.rpt
 
 remove_design -all
 

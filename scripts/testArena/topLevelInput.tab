@@ -4,17 +4,25 @@
 
 $SELECT	1
 *BEGIN
+-cluster_placer ntuplace
 -legalizer fastplace
 -detailed_placer fastplace
 *END
 
 $SELECT	1
 *BEGIN
--global_placer ntuplace
+-cluster_placer mpl6
+-legalizer fastplace
+-detailed_placer fastplace
 *END
 
 $SELECT	1
 *BEGIN
--global_placer mpl6
+-flat_placer ntuplace
+*END
+
+$SELECT	1
+*BEGIN
+-flat_placer mpl6
 *END
 
