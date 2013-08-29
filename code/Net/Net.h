@@ -10,7 +10,6 @@ using namespace std;
 
 class Net {
  private:
-  double weight;
   uint pinCount, driverCount,loadCount;
   int Id;
   bool isUnderCluster;
@@ -27,6 +26,7 @@ class Net {
   uint xhpwl, yhpwl;
   Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;
   string name;
+  double weight;
 
   Net();
   Net(int);

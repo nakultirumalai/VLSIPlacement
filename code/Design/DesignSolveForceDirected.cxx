@@ -57,14 +57,17 @@ Design::DesignSolveForAllCellsForceDirected(void)
   //       << " Y-HPWL: " << DesignGetYHPWL() 
   //       << " HPWL: " << totalHPWL << endl;
   DesignEnv.EnvSetHPWLAfterConstructive(totalHPWL);
+  string DesignName = DesignEnv.EnvGetDesignName();
   HyperGraph &myGraph = DesignGetGraph();
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPreFD.csv"));
   if (DesignEnv.EnvGetUseFDPlacer()) {
     iterCount = DesignEnv.EnvGetIterCount();
     abortLimit = DesignEnv.EnvGetAbortLimit();
+    iterCount = 100;
     FDPTopLevel((*this), clusterCells, numRows, numSites, rowHeight, siteWidth, 
 		iterCount, abortLimit);
   }
-
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPostFD.csv"));
   /* STEP : FINISH */
   DesignComputeHPWL();
   totalHPWL = DesignGetHPWL();

@@ -598,10 +598,11 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   uint iterCount, abortCount;
   uint counter, numCells;
   ulong HPWL, prevHPWL, bestHPWL;
+  ulong xHPWL, yHPWL;
   ulong prevHPWL1, prevHPWL2, prevHPWL3;
   double stepTime;
   bool endRipple, iterationComplete;
-  bool useFDPNetlist;
+  bool useFDPNetlist, useWeightedHPWL;
   Env &DesignEnv = myDesign.DesignGetEnv();
   useFDPNetlist = true;
   numCells = allCells.size();
@@ -617,7 +618,12 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   cout << "BEGIN: CPU TIME: " << getCPUTime() << "s" << endl;
   HPWL = 0;
   prevHPWL = 0; prevHPWL1 = 0; prevHPWL2 = 0; prevHPWL3 = 0;
+  useWeightedHPWL = DesignEnv.EnvGetUseWeightedHPWL();
+  myDesign.DesignComputeHPWL();
   bestHPWL = myDesign.DesignGetHPWL();
+  if (useWeightedHPWL) {
+    myDesign.DesignComputeWtHPWL(xHPWL, yHPWL, bestHPWL);
+  } 
   row_height = rowHeight;
   site_width = siteWidth;
   stepTime = getCPUTime();
@@ -632,6 +638,7 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
   FDPCreateGrid(gridMatrix, rowCap, numSitesInRow, numRows, siteWidth, rowHeight);
   FDPFixCellsInSites(gridMatrix, allCells, siteWidth, rowHeight);
   iterCount = 0; 
+
   /* MAIN ALGORITHM FORCE DIRECTED PLACEMENT STARTS HERE */
   uint dotLimit = 75;
   uint dotCount = 0;
@@ -734,6 +741,9 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
     usedCells.clear();
     myDesign.DesignComputeHPWL();
     HPWL = (ulong)myDesign.DesignGetHPWL();
+    if (useWeightedHPWL) {
+      myDesign.DesignComputeWtHPWL(xHPWL, yHPWL, HPWL);
+    }
     if (prevHPWL3 != 0 && prevHPWL2 != 0 && prevHPWL1 != 0) {
       if (HPWL == prevHPWL3 && prevHPWL3 == prevHPWL2 && prevHPWL2 == prevHPWL1) {
 	cout << endl << "ITER COUNT: " << iterCount << " HPWL: " << HPWL << endl;

@@ -119,6 +119,7 @@ Design::DesignGetForceOnCell(Cell &thisCell, double newXPos, double newYPos,
   }
 }
 
+# ifdef USEMOSEK
 void
 Design::DesignCreatePseudoPortOld(Cell &thisCell, double newXpos, double newYpos,
 				  double chipBoundLeft, double chipBoundRight,
@@ -224,6 +225,7 @@ Design::DesignCreatePseudoPortOld(Cell &thisCell, double newXpos, double newYpos
   qvalx[linCellIdx] += (coeffX);
   qvaly[linCellIdx] += (coeffY);
 }
+# endif
 
 void
 Design::DesignCreatePseudoPort(Cell &thisCell, double newXpos, double newYpos,
@@ -300,6 +302,8 @@ Design::DesignCreatePseudoPort(Cell &thisCell, double newXpos, double newYpos,
   springConstant = magnitude / spreadForce;
 }
 
+
+# ifdef USEMOSEK
 void
 spreadCellInBin(Design &myDesign, HyperGraph &myGraph, Bin *binPtr, 
 		double newBinRight, double newBinTop,
@@ -483,7 +487,7 @@ Design::DesignSpreadCellsFast(HyperGraph &myGraph, MSKrealt *qvalijx, MSKrealt *
   }
   _STEP_END("Perform bin spreading");
 }
-
+# endif
 void 
 Design::DesignStretchBins(void)
 {

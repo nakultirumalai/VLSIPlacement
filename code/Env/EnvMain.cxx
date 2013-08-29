@@ -20,6 +20,7 @@ Env::Env()
   EnvSetPlaceCellsInClusterPostTop(true);
   EnvSetClusterSwapping(DEFAULT_DO_CLUSTER_SWAPPING);
   EnvSetClusterMirroring(DEFAULT_DO_CLUSTER_MIRRORING);
+  EnvSetUseWeightedHPWL(DEFAULT_USE_WEIGHTED_HPWL);
   EnvSetUseFDPlacer(DEFAULT_USE_FD_PLACER);
   EnvSetGlobalPlacerType(DEFAULT_ENV_GLOBAL_PLACER_TYPE);
   EnvSetClusterPlacerType(DEFAULT_ENV_CLUSTER_PLACER_TYPE);
@@ -808,6 +809,18 @@ bool
 Env::EnvGetPlaceCellsInCluster(void)
 {
   return (this->PlaceCellsInCluster);
+}
+
+void
+Env::EnvSetUseWeightedHPWL(bool UseWeightedHPWL) 
+{
+  this->UseWeightedHPWL = UseWeightedHPWL;
+}
+
+bool
+Env::EnvGetUseWeightedHPWL(void)
+{
+  return (UseWeightedHPWL);
 }
 
 void

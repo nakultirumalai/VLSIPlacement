@@ -265,7 +265,7 @@ Design::DesignComputeHPWL()
   uint netCount;
   double wtXHPWL, wtYHPWL;
   bool useWeighted;
-  Env &DesignEnv = DesignGetEnv();
+  //  Env &DesignEnv = DesignGetEnv();
 
   totalXHPWL = 0.0;
   totalYHPWL = 0.0;
@@ -285,6 +285,35 @@ Design::DesignComputeHPWL()
   this->DesignHPWL = totalHPWL;
   //  cout << "Computed HPWL for : " << netCount << endl;
   //  DesignPrintNetsHPWL();
+}
+
+void
+Design::DesignComputeWtHPWL(ulong &totalXHPWL, ulong& totalYHPWL,
+			    ulong &totalHPWL)
+{
+  Net *netPtr;
+  string netName;
+  uint xHPWL, yHPWL;
+  uint netCount;
+  double netWeight;
+  double wtXHPWL, wtYHPWL;
+  bool useWeighted;
+
+  totalXHPWL = 0.0;
+  totalYHPWL = 0.0;
+  totalHPWL = 0.0;
+  netCount = 0;
+  
+  DESIGN_FOR_ALL_NETS((*this), netName, netPtr) {
+    (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    netWeight = (*netPtr).NetGetWeight();
+    wtXHPWL = netWeight * xHPWL;
+    wtYHPWL = netWeight * yHPWL;
+    totalXHPWL += wtXHPWL;
+    totalYHPWL += wtYHPWL;
+    totalHPWL += wtXHPWL + wtYHPWL;
+    netCount++;
+  } DESIGN_END_FOR;
 }
 
 void
@@ -405,6 +434,39 @@ Design::DesignFindModifiedHPWL(Cell *thisCell)
   this->DesignXHPWL += newXHPWL;
   this->DesignYHPWL += newYHPWL;
   this->DesignHPWL += (newXHPWL + newYHPWL);
+}
+
+void
+Design::DesignFindModifiedWtHPWL(Cell *thisCell, ulong &oldHPWL, 
+				 ulong &newHPWL)
+{
+  Net *netPtr;
+  Pin *pinPtr,  *connPinPtr;
+  Pin *pinMaxx, *pinMaxy, *pinMinx, *pinMiny;
+  Cell *cellPtr;
+  map<Net*, bool> visitedNets;
+  uint xHPWL, yHPWL;
+  double oldXHPWL, oldYHPWL, newXHPWL, newYHPWL;
+  double netWeight;
+
+  oldXHPWL = 0; oldYHPWL = 0;
+  newXHPWL = 0; newYHPWL = 0;
+  CELL_FOR_ALL_NETS_NO_DIR((*thisCell), netPtr) {
+    _KEY_EXISTS(visitedNets, netPtr) {
+      continue;
+    }
+    visitedNets[netPtr] = true;
+    (*netPtr).NetGetHPWL(xHPWL, yHPWL);
+    netWeight = (*netPtr).NetGetWeight();
+    oldXHPWL += (netWeight) * xHPWL;
+    oldYHPWL += (netWeight) * yHPWL;
+    (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    newXHPWL += (netWeight) * xHPWL;
+    newYHPWL += (netWeight) * yHPWL;
+  } CELL_END_FOR;
+  
+  oldHPWL = (ulong)(oldXHPWL + oldYHPWL);
+  newHPWL = (ulong)(newXHPWL + newYHPWL);
 }
 
 ulong 

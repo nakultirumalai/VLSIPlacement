@@ -452,9 +452,9 @@ parseArgsAndAddToEnv(string switchName, string switchValue, Env &topEnv)
   } else if (switchName == "use_wt_hpwl") {
     rtv = true;
     if (switchValue == "true") {
-      //      topEnv.EnvSetUseWeightedHPWL(true);
+      topEnv.EnvSetUseWeightedHPWL(true);
     } else if (switchValue == "false") {
-      //      topEnv.EnvSetUseWeightedHPWL(false);
+      topEnv.EnvSetUseWeightedHPWL(false);
     } else {
       cout << "Error: Option \"use_wt_hpwl\" can only take values \"true\" and \"false\"" << endl;
       rtv = false;
@@ -716,9 +716,9 @@ int placeMain(Env &topEnv)
   /****************************************************
    *  DO GLOBAL PLACEMENT                             *
    ****************************************************/
-  //  ProfilerStart("GlobalPlacement");
+  ProfilerStart("GlobalPlacement");
   myDesign.DesignDoGlobalPlacement();
-  //  ProfilerStop();
+  ProfilerStop();
     
   globalPlacerType = DesignEnv.EnvGetGlobalPlacerType();
   if (globalPlacerType != ENV_NO_PLACEMENT) {

@@ -1,8 +1,8 @@
 MODULE = Design
 SRCFILES:=  DesignMain DesignUtils DesignRead DesignGraph  DesignAnalysis DesignWrite \
-	    DesignProperties DesignSolveFastMosek7 DesignSpread  DesignSpreadILR DesignDebug \
+	    DesignProperties DesignSpread DesignSpreadILR DesignDebug \
 	    DesignSolveFastConjGrad DesignPlace DesignCluster DesignClusterStrategy \
 	    DesignClusterBestChoice DesignClusterNetCluster DesignClusterKWay DesignClusterLarge \
-	    DesignWriteCluster DesignSolveForceDirected
+	    DesignWriteCluster DesignSolveForceDirected DesignDump
 
 HFILES:= Design DesignIter PriorityQueue HyperGraph Cell Pin Net Env

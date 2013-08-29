@@ -144,6 +144,7 @@ Net::NetAddPin(Pin& pinToAdd)
 void
 Net::NetRemovePin(Pin& pinToRemove)
 {
+  Pin *pinPtr;
   string Name = pinToRemove.PinGetName();
   
   _KEY_EXISTS(Pins, Name) {
@@ -173,6 +174,14 @@ Net::NetRemovePin(Pin& pinToRemove)
     }
     this->driverCount--;
   }
+  uint idx = 0;
+  VECTOR_FOR_ALL_ELEMS(PinList, Pin*, pinPtr) {
+    if (pinPtr == &pinToRemove) {
+      PinList.erase(PinList.begin() + idx);
+      break;
+    }
+    idx++;
+  } END_FOR;
 }
 
 int
@@ -232,10 +241,8 @@ Net::NetComputeHPWL(uint &xHPWL, uint &yHPWL)
   uint pinXpos, pinYpos;
   uint idx;
   
-  maxx = 0;
-  maxy = 0;
-  minx = INT_MAX;
-  miny = INT_MAX;
+  maxx = 0; maxy = 0;
+  minx = INT_MAX; miny = INT_MAX;
 
   //  cout << "HPWL: Net: " << name << endl;
   for (idx = 0; idx < pinCount; idx++) {

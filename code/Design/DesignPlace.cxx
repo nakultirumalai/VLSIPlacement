@@ -51,57 +51,193 @@ Design::DesignDoClusterFlipping(void)
   DesignEnv.EnvSetHPWLAfterClusterMirroring(totalHPWL);
 }
 
+
+bool swapClustersGetHPWL(Cell *clusterCell1, Cell *clusterCell2, 
+			 bool useWeightedHPWL, ulong &oldHPWL, 
+			 ulong &newHPWL)
+{
+  Net *netPtr;
+  Pin *pinPtr;
+  Cell *cellPtr;
+  map<Net*, bool> visitedNets;
+  double cell1Xpos, cell2Xpos, cell1Ypos, cell2Ypos;
+  double oldHPWLDbl, newHPWLDbl;
+  double oldHPWLActual, newHPWLActual;
+  double netHPWL;
+  double netWeight;
+  double maxx, minx, maxy, miny;
+  double pinXpos, pinYpos;
+  uint xHPWL, yHPWL;
+  uint numPins;
+  bool rtv;
+
+  rtv = false;
+  cell1Xpos = (*clusterCell1).CellGetXpos();
+  cell1Ypos = (*clusterCell1).CellGetYpos();
+  cell2Xpos = (*clusterCell2).CellGetXpos();
+  cell2Ypos = (*clusterCell2).CellGetYpos();
+  (*clusterCell1).CellSetXpos(cell2Xpos);
+  (*clusterCell1).CellSetYpos(cell2Ypos);
+  (*clusterCell2).CellSetXpos(cell1Xpos);
+  (*clusterCell2).CellSetYpos(cell1Ypos);
+
+  oldHPWLDbl = 0; newHPWLDbl = 0;
+  oldHPWLActual = 0; newHPWLActual = 0;
+  CELL_FOR_ALL_NETS((*clusterCell1), PIN_DIR_ALL, netPtr) {
+    _KEY_EXISTS(visitedNets, netPtr) {
+      continue;
+    } 
+    visitedNets[netPtr] = true;
+    maxx = 0; minx = DBL_MAX; maxy = 0; miny = DBL_MAX;
+    vector<Pin *> &netPins = (*netPtr).NetGetAllPinsVector();
+    netWeight = (*netPtr).weight;
+    numPins = (uint)((1 / netWeight) + 1);
+    if (numPins > 50) {
+      continue;
+    }
+    if (!useWeightedHPWL) {
+      netWeight = 1;
+    }
+    netHPWL = (netPtr->maxx - netPtr->minx + netPtr->maxy - netPtr->miny);
+    oldHPWLDbl += (netWeight) * (netHPWL);
+    oldHPWLActual += netHPWL;
+    VECTOR_FOR_ALL_ELEMS(netPins, Pin*, pinPtr) {
+      if (pinPtr->isHidden) continue;
+      cellPtr = (*pinPtr).ParentCell;
+      pinXpos = pinPtr->xOffset + cellPtr->x;
+      pinYpos = pinPtr->yOffset + cellPtr->y;
+      if (maxx < pinXpos) maxx = pinXpos;
+      if (minx > pinXpos) minx = pinXpos;
+      if (maxy < pinYpos) maxy = pinYpos;
+      if (miny > pinYpos) miny = pinYpos;
+    } END_FOR;
+    netHPWL = (maxx - minx + maxy - miny);
+    newHPWLActual += netHPWL;
+    newHPWLDbl += (netWeight) * netHPWL;
+  } CELL_END_FOR;
+
+  //  cout << "**CP 1" << endl;
+  //  cout << "Old HPWL: " << oldHPWLActual << " New HPWL: " << newHPWLActual << endl;
+  //  cout << "Old HPWL Weighted: " << oldHPWLDbl << " New HPWL Weighted:  " << newHPWLDbl << endl;
+  //  cout << "**CP 1" << endl << endl;
+
+  CELL_FOR_ALL_NETS((*clusterCell2), PIN_DIR_ALL, netPtr) {
+    _KEY_EXISTS(visitedNets, netPtr) {
+      continue;
+    } 
+    visitedNets[netPtr] = true;
+    maxx = 0; minx = DBL_MAX; maxy = 0; miny = DBL_MAX;
+    vector<Pin *> &netPins = (*netPtr).NetGetAllPinsVector();
+    netWeight = (*netPtr).weight;
+    numPins = (uint)((1 / netWeight) + 1);    
+    if (numPins > 50) {
+      continue;
+    }
+    if (!useWeightedHPWL) {
+      netWeight = 1;
+    }
+    netHPWL = (netPtr->maxx - netPtr->minx + netPtr->maxy - netPtr->miny);
+    oldHPWLActual += netHPWL;
+    oldHPWLDbl += (netWeight) * netHPWL;
+    VECTOR_FOR_ALL_ELEMS(netPins, Pin*, pinPtr) {
+      if (pinPtr->isHidden) continue;
+      cellPtr = (*pinPtr).ParentCell;
+      pinXpos = pinPtr->xOffset + cellPtr->x;
+      pinYpos = pinPtr->yOffset + cellPtr->y;
+      if (maxx < pinXpos) maxx = pinXpos;
+      if (minx > pinXpos) minx = pinXpos;
+      if (maxy < pinYpos) maxy = pinYpos;
+      if (miny > pinYpos) miny = pinYpos;
+    } END_FOR;
+    netHPWL = (maxx - minx + maxy - miny);
+    newHPWLActual += netHPWL;
+    newHPWLDbl += (netWeight) * netHPWL;
+  } CELL_END_FOR;
+
+  //  cout << "**CP 2" << endl;
+  //  cout << "Old HPWL: " << oldHPWLActual << " New HPWL: " << newHPWLActual << endl;
+  //  cout << "Old HPWL Weighted: " << oldHPWLDbl << " New HPWL Weighted:  " << newHPWLDbl << endl;
+  //  cout << "**CP 2" << endl << endl;
+
+  if (newHPWLDbl < oldHPWLDbl) {
+    //    cout << "IMPROVEMENT FOUND!" << endl;
+    rtv = true;
+    MAP_FOR_ALL_KEYS(visitedNets, Net*, bool, netPtr) {
+      (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    } END_FOR;
+    oldHPWL = (ulong)oldHPWLActual;
+    newHPWL = (ulong)newHPWLActual;
+    //    exit(0);
+  } else {
+    (*clusterCell1).CellSetXpos(cell1Xpos);
+    (*clusterCell1).CellSetYpos(cell1Ypos);
+    (*clusterCell2).CellSetXpos(cell2Xpos);
+    (*clusterCell2).CellSetYpos(cell2Ypos);
+  }
+  
+  return (rtv);
+}
+
 void
 Design::DesignDoClusterSwapping(void)
 {
   Cell *clusterCell1, *clusterCell2;
   string clusterCellName1, clusterCellName2;
+  string DesignName;
   double cell1Xpos, cell2Xpos, cell1Ypos, cell2Ypos;
   double stepTime;
   ulong oldXHPWL, newXHPWL, oldYHPWL, newYHPWL;
   ulong newTotalHPWL;
   ulong totalHPWL, bestHPWL;
+  ulong totalXHPWL, totalYHPWL;
+  ulong oldHPWL, newHPWL;
   uint dotCount, dotLimit, iterCount;
   bool improved;
-  Env &DesignEnv = DesignGetEnv();
+  bool useWtHPWL;
 
+  Env &DesignEnv = DesignGetEnv();
+  useWtHPWL = DesignEnv.EnvGetUseWeightedHPWL();
+  DesignName = DesignEnv.EnvGetDesignName();
+  DesignComputeHPWL();
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPreSwapping.csv"));
   if (DesignEnv.EnvGetClusterSwapping()) {
     stepTime = getCPUTime();
     DesignComputeHPWL();
     totalHPWL = DesignGetHPWL();
+    //    if (useWtHPWL) {
+    //      DesignComputeWtHPWL(totalXHPWL, totalYHPWL, totalHPWL);
+    //    }
     bestHPWL = totalHPWL;
     dotCount = 0; dotLimit = 200;
     iterCount = 1;
     while (1) {
       improved = false;
       cout << "BEGIN: Cluster swapping ITER: " << iterCount << " HPWL: " << totalHPWL << endl;
+      map<Cell*, bool> visitedCells;
       DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName1, clusterCell1) {
+	visitedCells[clusterCell1] = true;
 	DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName2, clusterCell2) {
-	  cell1Xpos = (*clusterCell1).CellGetXpos();
-	  cell1Ypos = (*clusterCell1).CellGetYpos();
-	  cell2Xpos = (*clusterCell2).CellGetXpos();
-	  cell2Ypos = (*clusterCell2).CellGetYpos();
-	  (*clusterCell1).CellSetXpos(cell2Xpos);
-	  (*clusterCell1).CellSetYpos(cell2Ypos);
-	  (*clusterCell2).CellSetXpos(cell1Xpos);
-	  (*clusterCell2).CellSetYpos(cell1Ypos);
-	  DesignFindModifiedHPWL(clusterCell1);
-	  DesignFindModifiedHPWL(clusterCell2);
-	  totalHPWL = DesignGetHPWL();
-	  if (totalHPWL < bestHPWL) {
-	    bestHPWL = totalHPWL;
+	  _KEY_EXISTS(visitedCells, clusterCell2) {
+	    continue;
+	  }
+	  //	  if (clusterCell1 == clusterCell2) {
+	  //	    continue;
+	  //	  }
+	  bool swapBenefits = swapClustersGetHPWL(clusterCell1, clusterCell2, useWtHPWL, oldHPWL, newHPWL);
+	  if (swapBenefits) {
+	    //	    cout << "Swapping benefitted" << endl;
+	    //	    cout << "old HPWL:" << oldHPWL << "  new HPWL:" << totalHPWL << endl;
 	    improved = true;
 	    cout << "*" << flush;
-	  } else {
-	    (*clusterCell1).CellSetXpos(cell1Xpos);
-	    (*clusterCell1).CellSetYpos(cell1Ypos);
-	    (*clusterCell2).CellSetXpos(cell2Xpos);
-	    (*clusterCell2).CellSetYpos(cell2Ypos);
-	    DesignFindModifiedHPWL(clusterCell1);
-	    DesignFindModifiedHPWL(clusterCell2);
-	  }
+	    this->DesignHPWL -= oldHPWL;
+	    this->DesignHPWL += newHPWL;
+	    totalHPWL = this->DesignHPWL;
+	    //	    cout << "Swapping benefitted" << endl;
+	    //	    cout << " Improved HPWL:" << totalHPWL << endl;
+	  } 
 	} DESIGN_END_FOR;
       } DESIGN_END_FOR;
+      //      break;
       iterCount++;
       cout << endl;
       if (improved == false) {
@@ -111,8 +247,10 @@ Design::DesignDoClusterSwapping(void)
     stepTime = getCPUTime() - stepTime;
     DesignEnv.EnvRecordClusterSwappingTime(stepTime);
   }
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPostSwapping.csv"));
   totalHPWL = DesignGetHPWL();
   DesignEnv.EnvSetHPWLAfterClusterSwapping(totalHPWL);
+  cout << endl << "Swapping Done. CPU Time:" << stepTime << endl;
 }
 
 void
@@ -142,6 +280,7 @@ Design::DesignCoarsenNetlist(void)
   inputMaxWidth = floor(maxWidth * maxx);
   inputMaxArea = maxArea * ((double)maxx * maxy);
 
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPreCluster.csv"));
   achievedClusteringRatio = DesignGetNumCells();
   switch (clusterType) {
   case ENV_NO_CLUSTERING: 
@@ -174,10 +313,10 @@ Design::DesignCoarsenNetlist(void)
     cout << "Clustering: Clustering strategy unknown. Not clustering netlist " << endl;
     break;
   }
-
   achievedClusteringRatio = DesignGetNumTopCells() / achievedClusteringRatio;
   cout << "CLUSTERING RATIO ACHIEVED: " << achievedClusteringRatio << endl;
   cout << "Dumping cluster information: PRE-TOP LEVEL PLACEMENT" << endl;
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPostCluster.csv"));
   DesignDumpClusterInfo((DesignName + ".csv"));
   //  DesignWriteBookShelfOutput((*this), "usb_sie_clust");
 }
@@ -194,6 +333,7 @@ Design::DesignCollapseClusters(void)
   string clustDir;
   HyperGraph &myGraph = DesignGetGraph();
 
+  DesignName = DesignEnv.EnvGetDesignName();
   stepTime = getCPUTime();
   map<string, Cell*> DesignClusterMap = DesignGetClusters();
   map<string, Cell*>::iterator mapIter;
@@ -202,6 +342,7 @@ Design::DesignCollapseClusters(void)
     cellPtr = mapIter->second;
     DesignUnclusterLargeCluster(cellPtr, /* noDissolve */false);
   }
+  DesignDumpNetDegreeProfile((DesignName + "_NetsPostUncluster.csv"));
   DesignComputeHPWL();
   stepTime = getCPUTime() - stepTime;
   totalHPWL = DesignGetHPWL();
@@ -219,7 +360,7 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
   
   switch (solverType) {
   case ENV_SOLVER_QUADRATIC_MOSEK:
-    DesignSolveForAllCellsMosekIter();
+    //    DesignSolveForAllCellsMosekIter();
     break;
   case ENV_SOLVER_QUADRATICXY_MOSEK:
     //    DesignSolveForAllCellsMosekIterSolveBoth();

@@ -10,7 +10,9 @@
 # include <PhysRow.h>
 # include <Flags.h>
 # include <DesignIter.h>
+# ifdef USEMOSEK
 # include <mosek.h>
+# endif
 # include <TimingModels.h>
 # include <CellSpread.h>
 # include <Path.h>
@@ -384,7 +386,9 @@ class Design {
 
   /* HPWL functions */
   void DesignComputeHPWL(void);
+  void DesignComputeWtHPWL(ulong &, ulong &, ulong &);
   void DesignFindModifiedHPWL(Cell*);
+  void DesignFindModifiedWtHPWL(Cell *, ulong &, ulong &);
   void DesignPrintNetsHPWL(void);
   ulong DesignGetHPWL(void);
   ulong DesignGetXHPWL(void);
@@ -544,6 +548,7 @@ class Design {
 				    double &);
   void DesignReadPlacerOutput(string, map<string, Cell*> &);
   void DesignDumpClusterInfo(string);
+  void DesignDumpNetDegreeProfile(string);
   void DesignFlipClusterHorizontal(Cell*);
   void DesignFlipClusterVertical(Cell*);
 
@@ -565,20 +570,24 @@ class Design {
   /* Spreading related : pseudo net add / get functions */
   void DesignAddPseudoNet(Net *);
   void DesignClearPseudoNetWeights(void);
+# ifdef USEMOSEK
   void DesignSpreadCellsFast(HyperGraph &, MSKrealt *, 
 			     MSKrealt *, MSKrealt *, 
 			     MSKrealt *, map<Cell *,uint> &,
 			     map<Cell *,uint> &);
+# endif
   bool DesignCellGetBestPosForILR(Cell &, Bin &, Bin *&, uint&, uint&);
   void DesignGetForceOnCell(Cell &, double, double, 
 			    double &, double &, double &, char&, 
 			    double&, double &, double &, double &, 
 			    bool);
+# ifdef USEMOSEK
   void DesignCreatePseudoPortOld(Cell &, double, double, double, double, 
 				 double, double, double, char, 
 				 MSKrealt *, MSKrealt *,  
 				 MSKrealt *, MSKrealt *, 
 				 map<Cell *, uint>&, map<Cell *, uint>&);
+# endif
   void DesignCreatePseudoPort(Cell &, double, double, double, double, 
 			      double, double, double, char, 
 			      double &, double &, double &);
