@@ -2528,34 +2528,26 @@ inline
 void resetPinOffsets(map<Pin*, Pin*> &pinMap) 
 {
   Pin *clusterPinPtr, *pinPtr;
+  int absXOffset, absYOffset;
+  int pinXOffset, pinYOffset;
+  double cellXPos, cellYPos;;
   static uint tempInt;
 
   string opFileName;
   ofstream opFile;
 
   tempInt++;
-  // opFileName = "reset_pin_" + getStrFromInt(tempInt);
-  // opFile.open(opFileName.data());
-  
   MAP_FOR_ALL_ELEMS(pinMap, Pin*, Pin*, clusterPinPtr, pinPtr) {
     Cell &thisCell = (*pinPtr).PinGetParentCell();
-    /*
-    opFile << thisCell.CellGetName() 
-	   << " " << thisCell.CellGetXpos() 
-	   << " " << (*pinPtr).PinGetXOffset() 
-	   << " " << (thisCell.CellGetXpos() + (*pinPtr).PinGetXOffset())
-	   << " " << thisCell.CellGetYpos() 
-	   << " " << (*pinPtr).PinGetYOffset() 
-	   << " " << (thisCell.CellGetYpos() + (*pinPtr).PinGetYOffset())
-	   << endl;
-    */
-    (*clusterPinPtr).PinSetXOffset(thisCell.CellGetXpos() + (*pinPtr).PinGetXOffset());
-    (*clusterPinPtr).PinSetYOffset(thisCell.CellGetYpos() + (*pinPtr).PinGetYOffset());
+    cellXPos = thisCell.CellGetXpos();
+    cellYPos = thisCell.CellGetYpos();
+    pinXOffset = (*pinPtr).PinGetXOffset();
+    pinYOffset = (*pinPtr).PinGetYOffset();
+    absXOffset = cellXPos + pinXOffset;
+    absYOffset = cellYPos + pinYOffset;
+    (*clusterPinPtr).PinSetXOffset(absXOffset);
+    (*clusterPinPtr).PinSetYOffset(absYOffset);
   } END_FOR;
-
-  /*
-  opFile.close();
-  */
 }
 
 void
@@ -2583,27 +2575,25 @@ Design::DesignFlipClusterHorizontal(Cell *clusterCell)
   //			 clusterCell, boundaryCells, cellsOfCluster);
   /* ITERATE OVER ALL CELLS OF THE CLUSTER */
   VECTOR_FOR_ALL_ELEMS(cellsOfCluster, Cell*, thisCell) {
+    //    cout << "BEFORE FLIPPING CELL: " << (*thisCell).CellGetName() << " Xpos: " << (*thisCell).CellGetXpos() << endl;
     cellXpos = (*thisCell).CellGetXpos();
     cellWidth = (*thisCell).CellGetWidth();
+    //    cout << "Cluster width: " << clusterWidth << " cellXpos: " << cellXpos << "  CellWidth: " << cellWidth 
+    //	 << " New position: " << (clusterWidth - cellXpos - cellWidth) << endl;
     cellXpos = clusterWidth - cellXpos - cellWidth;
+    if (cellXpos < 0) {
+      cout << "Error: Cluster cell flipping results in cell position being less than 0" << endl;
+      cout << "   Cluster Name  : " << (*clusterCell).CellGetName() << endl
+	   << "   Cluster Width : " << (*clusterCell).CellGetWidth() << endl
+	   << "   Cell Name     : " << (*thisCell).CellGetName() << endl
+	   << "   Cell x-pos    : " << (*thisCell).CellGetXpos() << endl
+	   << "   Cell Width    : " << (*thisCell).CellGetWidth() << endl
+	   << "   Resulting X-position after horizontal Flip: " << cellXpos << endl;
+      _ASSERT_TRUE("");
+    }
     (*thisCell).CellSetXpos(cellXpos);
-    # if 0
-    left = false; right = false;
-    if (cellXpos < midPoint) {
-      left = true;
-    }
-    if (cellRight > midPoint) {
-      right = true;
-    }
-    _ASSERT("Error: Left and right both are false", !left && !right);
-    if (left != right) {
-      /* Cell is completely to the left or right of the mid point line */
-      cellXpos = clusterWidth - cellXpos - cellWidth;
-    } else {
-      /* Mid point passes through the cell */
-      cellXpos = clusterWidth - cellXpos - cellWidth;
-    }
-    # endif
+    //    cout << "AFTER FLIPPING CELL: " << (*thisCell).CellGetName() << " Xpos: " << (*thisCell).CellGetXpos() << endl;
+    //    cout << "AFTER FLIPPING CELL: " << (*thisCell).CellGetName() << " Xpos: " << cellXpos << endl;
   } END_FOR;
 
   resetPinOffsets(pinMap);
@@ -2642,6 +2632,16 @@ Design::DesignFlipClusterVertical(Cell *clusterCell)
     cellYpos = (*thisCell).CellGetYpos();
     cellHeight = (*thisCell).CellGetHeight();
     cellYpos = clusterHeight - cellYpos - cellHeight;
+    if (cellYpos < 0) {
+      cout << "Error: Cluster cell flipping results in cell position being less than 0" << endl;
+      cout << "   Cluster Name   : " << (*clusterCell).CellGetName() << endl
+	   << "   Cluster Height : " << (*clusterCell).CellGetHeight() << endl
+	   << "   Cell Name      : " << (*thisCell).CellGetName() << endl
+	   << "   Cell y-pos     : " << (*thisCell).CellGetYpos() << endl
+	   << "   Cell Height    : " << (*thisCell).CellGetHeight() << endl
+	   << "   Resulting Y-position after vertical Flip: " << cellYpos << endl;
+      _ASSERT_TRUE("");
+    }
     (*thisCell).CellSetYpos(cellYpos);
   } END_FOR;
 
@@ -2729,6 +2729,11 @@ Design::DesignFlipClusters(bool horizontal)
   dotCount = 0;
   dotLimit = 50;
   DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCell) {
+    //    DesignPrintNetsHPWL();
+    //    DesignFlipClusterHorizontal(clusterCell);
+    //    DesignFlipClusterHorizontal(clusterCell);
+    //    DesignPrintNetsHPWL();
+    //    break;
     if (horizontal) {
       DesignFlipClusterHorizontal(clusterCell);
     } else {
@@ -2767,6 +2772,5 @@ Design::DesignFlipClusters(bool horizontal)
     cout << "END: Vertical Flipping of cluster cells. HPWL: " << totalHPWL << endl;
   }
   cout << endl;
-
   return (improved);
 }

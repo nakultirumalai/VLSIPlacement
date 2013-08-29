@@ -263,7 +263,6 @@ Design::DesignComputeHPWL()
   ulong totalHPWL;
   uint xHPWL, yHPWL;
   uint netCount;
-  double netWeight;
   double wtXHPWL, wtYHPWL;
   bool useWeighted;
   Env &DesignEnv = DesignGetEnv();
@@ -272,19 +271,12 @@ Design::DesignComputeHPWL()
   totalYHPWL = 0.0;
   totalHPWL = 0.0;
   netCount = 0;
-  useWeighted = DesignEnv.EnvGetUseWeightedHPWL();
-  
+
   DESIGN_FOR_ALL_NETS((*this), netName, netPtr) {
     (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
-    netWeight = 1.0;
-    if (useWeighted) {
-      netWeight = (*netPtr).NetGetWeight();
-    }
-    wtXHPWL = netWeight * xHPWL;
-    wtYHPWL = netWeight * yHPWL;
-    totalXHPWL += wtXHPWL;
-    totalYHPWL += wtYHPWL;
-    totalHPWL +=  wtXHPWL + wtYHPWL;
+    totalXHPWL += xHPWL;
+    totalYHPWL += yHPWL;
+    totalHPWL +=  xHPWL + yHPWL;
     //    cout << "Computed HPWL of Net: " << (xHPWL + yHPWL) << endl;
     netCount++;
   } DESIGN_END_FOR;
@@ -355,12 +347,27 @@ Design::DesignPrintNetsHPWL(void)
 	   << " Cell: " << (netPtr->pinMiny->ParentCell->name) << " y: " << (netPtr->pinMiny->ParentCell->y) 
 	   << "  Abs: " << (netPtr->pinMiny->yOffset + netPtr->pinMiny->ParentCell->y)
 	   << endl;
-
+    opFile << "Before computing:" << endl;
+    opFile << "Net maxx: " << netPtr->maxx << " Net minx: " << netPtr->minx << endl;
+    opFile << "Net maxy: " << netPtr->maxy << " Net miny: " << netPtr->miny << endl;
+    cout << "Before computing: " << (*netPtr).NetGetName() << endl;
+    cout << "Net maxx: " << netPtr->maxx << " Net minx: " << netPtr->minx << endl;
+    cout << "Net maxy: " << netPtr->maxy << " Net miny: " << netPtr->miny << endl;
     (*netPtr).NetComputeHPWL(xHPWL, yHPWL);
+    cout << "After computing:" << endl;
+    cout << "Net maxx: " << netPtr->maxx << " Net minx: " << netPtr->minx << endl;
+    cout << "Net maxy: " << netPtr->maxy << " Net miny: " << netPtr->miny << endl;
+    opFile << "After computing:" << endl;
+    opFile << "Net maxx: " << netPtr->maxx << " Net minx: " << netPtr->minx << endl;
+    opFile << "Net maxy: " << netPtr->maxy << " Net miny: " << netPtr->miny << endl;
+    opFile << "Computed xHPWL: " << (netPtr->maxx - netPtr->minx) << " Computed yHPWL: " << (netPtr->maxy - netPtr->miny) << endl;
+    xHPWL = netPtr->maxx - netPtr->minx;
+    yHPWL = netPtr->maxy - netPtr->miny;
     totalXHPWL += xHPWL;
     totalYHPWL += yHPWL;
-    totalHPWL += (xHPWL + yHPWL);
-    //    opFile << "Computed HPWL of Net " << netName << " : " << (xHPWL + yHPWL) << endl;
+    opFile << "Computed xHPWL of net:" << xHPWL << ",  yHPWL of net:" << yHPWL << endl;
+    totalHPWL += (((ulong)xHPWL) + ((ulong)yHPWL));
+    opFile << "Computed total HPWL of Net " << netName << " : " << (xHPWL + yHPWL) << endl;
   } DESIGN_END_FOR;
 
   opFile.close();

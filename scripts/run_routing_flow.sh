@@ -16,7 +16,7 @@ export DESIGN_NAME="$1"
 export DEF_FILE="$2"
 export SPEF_FILE_OUT="$3"
 
-echo "$SCRIPT_ROOT/genBookShelfTopLevel.pl $DESIGN_NAME"
+echo "$SCRIPT_ROOT/genRoutingFlow.pl $DESIGN_NAME"
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "Beginning routing for benchmark $DESIGN_NAME"

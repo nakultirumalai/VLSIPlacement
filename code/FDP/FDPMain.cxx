@@ -752,10 +752,8 @@ FDPTopLevel(Design &myDesign, vector<Cell*> &allCells, uint numRows, uint numSit
     if (dotCount == dotLimit) {
       dotCount = 0;
       cout << endl;
-    } else if (((HPWL - bestHPWL) / bestHPWL) < 0.2) {
-      cout << "." << flush;
     } else {
-      cout << "-" << flush;
+      cout << "." << flush;
     }
     prevHPWL3 = prevHPWL2; prevHPWL2 = prevHPWL1; prevHPWL1 = HPWL;
     iterCount++;

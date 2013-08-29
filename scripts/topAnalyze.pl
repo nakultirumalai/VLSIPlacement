@@ -394,9 +394,9 @@ if ($execType ne "place") {
 	    # STEP 9. RUN ICC TO GENERATE A ROUTED NETLIST
 	    ###############################################################
 	    print "STEP $stepCount: Run ICC to generate routed netlist\n"; $stepCount++;
-	    if ((-e "../DEF/${designName}.${currentFileName}.prerout.spef.max") && (-e "../DEF/${designName}.${currentFileName}.prerout.spef.min") && (-e "../DEF/${designName}.${currentFileName}.postrout.spef.max") && (-e "../DEF/${designName}.${currentFileName}.postrout.spef.min") && !(exists $forceHash{$currentFileName})){
+	    if ((-e "../DEF/${designName}.${currentFileName}_pre_route_timing.rpt") && (-e "../DEF/${designName}.${currentFileName}_pre_route_timing.rpt") && (-e "../DEF/${designName}.${currentFileName}_post_rout_timing.rpt") && (-e "../DEF/${designName}.${currentFileName}_post_rout_timing.rpt") && !(exists $forceHash{$currentFileName})){
 		my $modStepCount = $stepCount - 1;
-		print "Skipping STEP ${modStepCount}. spef files exist\n";
+		print "Skipping STEP ${modStepCount}. Timing report files exist\n";
 	    } else {
 		(system("$scriptRoot/run_routing_flow.sh $designName ../DEF/${designName}.${currentFileName}.placed.def ../DEF/${designName}.${currentFileName}") == 0) || die ("Routing failed\n");
 	    }
