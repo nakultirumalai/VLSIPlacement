@@ -9,7 +9,7 @@ LIB_DIR=$(CODE_ROOT)/libs
 LIBSOOQP= -lblas -lgfortran -lprofiler 
 
 LIBQUADPROG= #-lQuadProgpp
-LIBMOSEK= -lmosek64
+LIBMOSEK= #-lmosek64
 
 #LIBS= ./libs/text.a -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)
 LIBS= -L/usr/local/lib -lc -ldl -lm $(LIBMOSEK) $(LIBQUADPROG) $(LIBSOOQP)

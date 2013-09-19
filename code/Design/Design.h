@@ -641,6 +641,10 @@ class Design {
   /* Write out netlist in a created directory */
   void DesignWriteCurrentNetlist(string, string);
 
+  /* Change shapes to improve the HPWL */
+  void DesignDoClusterShaping(void);
+  void DesignGetBestShapeForCluster(Cell*, uint, uint, ulong&, bool&);
+
   /* DEFINING AN EXTENSIVE LIST OF DEBUG FUNCTIONS THAT 
      WILL BE HELPFUL */
   void DesignPrintPorts(uint);

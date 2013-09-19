@@ -1,5 +1,6 @@
 # include <Design.h>
 
+bool clusterShapeDebug = false;
 void
 Design::DesignFillCellsInCluster(void)
 {
@@ -390,6 +391,8 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     //ProfilerStop();
     DesignFillCellsInCluster();
     DesignDoClusterFlipping();
+    DesignDoClusterShaping();
+    DesignWriteBookShelfOutput((*this), "seq_align1_clust");
     //    return;
     break;
   default: cout << "Unknown solver type provided" << endl;
@@ -516,7 +519,7 @@ Design::DesignDoGlobalPlacement(void)
   DesignComputeHPWL();
   totalHPWL = DesignGetHPWL();
   DesignEnv.EnvSetHPWLTotalGlobal(totalHPWL);
-  DesignCollapseClusters();
+  //DesignCollapseClusters();
   //  ProfilerStop();
   cout << "Quality : X-HPWL: " << DesignGetXHPWL() 
        << " Y-HPWL: " << DesignGetYHPWL() 
@@ -593,4 +596,93 @@ Design::DesignDoDetailedPlacement(void)
   }
   DesignComputeHPWL();
   DesignEnv.EnvSetHPWLAfterDetailedPlacement(DesignGetHPWL());
+}
+
+void
+Design::DesignDoClusterShaping(void)
+{
+  Cell *clusterCellPtr;
+  string clusterCellName;
+  ulong designInitHPWL, designEndHPWL;
+  ulong iterBeginHPWL, iterEndHPWL;
+  uint maxx, maxy;
+  ulong minHPWL;
+  uint numShapesChanged, iterCount;
+  long iterDiffHPWL, overallDiffHPWL;
+  bool shapeChanged;
+  double iterPercentImp, percentImp;
+  
+  cout << "\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  cout << "                  BEGIN SHAPE SELECTION TO IMPROVE DESIGN           " << endl;
+  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  
+  DesignGetBoundingBox(maxx, maxy);
+  DesignComputeHPWL();
+  designInitHPWL = DesignGetHPWL();
+  minHPWL = designInitHPWL;
+  
+  cout << "\nINITIAL HPWL BEFORE SHAPING  :  " << designInitHPWL << endl;
+  iterCount = 0;
+  do {
+    numShapesChanged = 0;
+    shapeChanged = false;
+    DesignComputeHPWL();
+    iterBeginHPWL = DesignGetHPWL();
+    
+    if (clusterShapeDebug) {
+      cout << "BEGIN ITERATION : " << iterCount << endl;
+    }
+    
+    /* Iterate over each cluster and choose the best shape for each cluster
+       based on the improvement in HPWL. (GREEDY algorithm) */
+    DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCellPtr) {
+      if (clusterShapeDebug) {
+	cout << "^^DEBUG : " << endl;
+	cout << "\tProcessing Cluster : " << clusterCellName << endl;
+      }
+     
+      DesignGetBestShapeForCluster(clusterCellPtr, maxx, maxy, minHPWL, shapeChanged);
+      if (shapeChanged) {
+	numShapesChanged++;
+      }
+      shapeChanged = false;
+    } DESIGN_END_FOR;
+    
+  
+    DesignComputeHPWL();
+    iterEndHPWL = DesignGetHPWL();
+    iterDiffHPWL = iterBeginHPWL - iterEndHPWL;
+    iterPercentImp = ((double)iterDiffHPWL / iterBeginHPWL) * 100;
+    cout << "\n===============================================" << endl;
+    cout << "\tSHAPING STATS FOR ITERATION " << iterCount << endl;
+    cout << "===============================================" << endl;
+    cout << endl;
+    cout << "\tBEGIN HPWL               : " << iterBeginHPWL << endl;
+    cout << "\tEND HPWL                 : " << iterEndHPWL << endl;
+    if (iterDiffHPWL > 0) {
+      cout << "\tRESULT OF SHAPING        : IMPROVED" << endl;
+      cout << "\tPERCENT IMPROVED         : " << iterPercentImp << "%" << endl;
+    } else if (iterDiffHPWL == 0) {
+      cout << "\tRESULT OF SHAPING        : NO CHANGE" << endl;
+    } else if (iterDiffHPWL < 0) {
+      _ASSERT_TRUE("ERROR!!! Degradation in HPWL found beyond default\n");
+    }
+    iterCount++;
+    cout << "\tNUMBER OF SHAPES CHANGED : " << numShapesChanged << endl;
+  } while ((iterEndHPWL < iterBeginHPWL) && (iterCount < 100));
+
+  DesignComputeHPWL();
+  designEndHPWL = DesignGetHPWL();
+  overallDiffHPWL = designInitHPWL - designEndHPWL;
+  percentImp = ((double)overallDiffHPWL / designInitHPWL) * 100;
+
+  cout << "\n**********************************************************" << endl;
+  cout << "  GLOBAL STATISTICS FOR SHAPING" << endl;
+  cout << "**********************************************************" << endl;
+  cout << "\tINITIAL HPWL FOR DESIGN         : " << designInitHPWL << endl;
+  cout << "\tFINAL HPWL FOR DESIGN           : " << designEndHPWL << endl;
+  cout << "\tDIFFERENCE IN HPWL              : " << overallDiffHPWL << endl;
+  cout << "\tPERCENTAGE IMPROVEMENT          : " << percentImp << "%" << endl;
+  cout << "\tNUMBER OF ITERATIONS REQUIRED   : " << iterCount << endl;
+  cout << "\n**********************************************************" << endl;
 }

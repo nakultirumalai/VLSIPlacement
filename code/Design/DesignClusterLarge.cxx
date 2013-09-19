@@ -7,6 +7,9 @@ typedef enum boundaryDirectionType {
   BOUND_LEFT
 } boundaryDirection;
 
+
+bool shapeDebug = false;
+
 /* Inlined functions start here */
 inline 
 void getMPL6PlacementData(string placerLog, string placerTimeLog,
@@ -2574,4 +2577,165 @@ Design::DesignFlipClusters(bool horizontal)
   }
   cout << endl;
   return (improved);
+}
+
+inline
+bool checkAndFixShapeViolations(Cell *clusterCell, uint clusterWidth, 
+				uint clusterHeight, uint maxx, uint maxy)
+{
+  uint clusterXpos, clusterYpos;
+  uint newClusterXpos, newClusterYpos;
+  uint clusterXend, clusterYend;
+  uint violation;
+  bool violated;
+  string clusterName;
+  
+  clusterName = (*clusterCell).CellGetName();
+  clusterXpos = (*clusterCell).CellGetXpos();
+  clusterYpos = (*clusterCell).CellGetYpos();
+  clusterXend = clusterXpos + clusterWidth;
+  clusterYend = clusterYpos + clusterHeight;
+
+  if ((clusterXpos > maxx) || (clusterYpos > maxy)) {
+    _ASSERT_TRUE("Cluster lying outside the chip. ERROR in placement!!");
+  }
+  
+  if (clusterXend > maxx) {
+    violated = true;
+    cout << "** CLUSTER VIOLATED RIGHT BOUNDS. Pushing cluster left..." << endl;
+    violation = clusterXend - maxx;
+    newClusterXpos = clusterXpos - violation;
+    (*clusterCell).CellSetXpos(newClusterXpos);
+  }
+  
+  if (clusterYend > maxy) {
+    violated = true;
+    cout << "** CLUSTER VIOLATED TOP BOUNDS. Pushing cluster down..." << endl;
+    violation = clusterYend - maxy;
+    newClusterYpos = clusterYpos - violation;
+    (*clusterCell).CellSetYpos(newClusterYpos);
+  }
+  
+  return violated;
+}
+
+
+inline
+void changeToShapeForCluster(Cell *clusterCell, uint clusterWidth, 
+			     uint clusterHeight, uint shapeIdx)
+{
+  Cluster *clusterOfCell;
+  Cell *thisCell;
+  uint numCells, cellIdx;
+  uint positionIdx;
+  uint cellXpos, cellYpos;
+
+  /* Change the width and height of the cluster to the current 
+     variant */
+  (*clusterCell).CellSetWidth((int)clusterWidth);
+  (*clusterCell).CellSetHeight((int)clusterHeight);
+  
+  /* Change the cell positions of the cells inside a cluster to their
+     locations found by the academic placer */
+  clusterOfCell = (Cluster*)CellGetCluster(clusterCell);
+  numCells = (*clusterOfCell).ClusterGetNumCells();
+  positionIdx = shapeIdx * 2;
+  
+  vector<vector<double> > &cellPositions = (*clusterOfCell).ClusterGetCellPositions();
+  vector<Cell*> &cellsOfCluster = (*clusterOfCell).ClusterGetCellsOfCluster();
+  for(cellIdx = 0; cellIdx < numCells; cellIdx++) {
+    thisCell = cellsOfCluster[cellIdx];
+    cellXpos = cellPositions[cellIdx][positionIdx];
+    cellYpos = cellPositions[cellIdx][positionIdx+1];
+    (*thisCell).CellSetXpos(cellXpos);
+    (*thisCell).CellSetYpos(cellYpos);
+  }
+  map<Pin*, Pin*> &pinMap = (*clusterOfCell).ClusterGetPinMap();
+  resetPinOffsets(pinMap);
+}
+
+void 
+Design::DesignGetBestShapeForCluster(Cell *clusterCell, uint maxx, 
+			    uint maxy, ulong &minHPWL, bool &shapeChanged)
+{
+  Cluster *clusterOfCell;
+  uint numVariations;
+  uint shapeIdx, shapeIdxMinHPWL;
+  uint clusterWidth, clusterHeight;
+  uint clusterXpos, clusterYpos;
+  double aspectRatio;
+  ulong changedHPWL, initHPWL;
+  bool boundViolated;
+  string shapeType, bestShapeType;
+
+  shapeIdxMinHPWL = 0;
+  /* Initial HPWL before shaping of this cluster is the minHPWL 
+     recorded so far */
+  initHPWL = minHPWL;
+  clusterOfCell = (Cluster*)CellGetCluster(clusterCell);
+  
+  vector<pair<uint, uint> > &dimensions = (*clusterOfCell).ClusterGetDimensions();
+  numVariations = dimensions.size();
+  for (shapeIdx = 0; shapeIdx < numVariations; shapeIdx++) {
+    clusterWidth = dimensions[shapeIdx].first;
+    clusterHeight = dimensions[shapeIdx].second;
+    aspectRatio = ((double)clusterWidth / clusterHeight);
+    
+    if (aspectRatio < 0.95) {
+      shapeType = "NARROW";
+    } else if ((aspectRatio >= 0.95 ) && (aspectRatio <= 1.05)) {
+      shapeType = "SQUARE";
+    } else if (aspectRatio > 1.05) {
+      shapeType = "WIDE";
+    }
+    
+    if (shapeDebug) {
+      cout << "\tWIDTH : " << clusterWidth << "\tHEIGHT : " << clusterHeight;
+      cout << "\tSHAPE : " << shapeType << endl;
+    }
+
+    /* Check and fix the violations that appear as a result of changing the shape 
+       of a cluster */
+    boundViolated = checkAndFixShapeViolations(clusterCell, clusterWidth, 
+					       clusterHeight, maxx, maxy);
+    
+    /* Actually change the shape of the cluster to see if there is any improvement
+       in wirelength */
+    changeToShapeForCluster(clusterCell, clusterWidth, clusterHeight, shapeIdx);
+    DesignComputeHPWL();
+    changedHPWL = DesignGetHPWL();
+    if (shapeDebug) {
+      cout << "\tINITIAL HPWL BEFORE CHANGING TO SHAPE: " << initHPWL << endl;
+      cout << "\tHPWL AFTER CHANGING TO SHAPE         : " << changedHPWL << endl;
+    } 
+    
+    if (changedHPWL <= minHPWL) {
+      shapeIdxMinHPWL = shapeIdx;
+      minHPWL = changedHPWL;
+      bestShapeType = shapeType;
+      if (shapeDebug) {
+	cout << "## Found better Shape!!" << endl;
+      }
+    }
+  }
+  
+  if (minHPWL > initHPWL) {
+    _ASSERT_TRUE("** Fatal Error: Shape selected gives HPWL worse than default");
+  } else if (minHPWL == initHPWL) {
+    if (shapeDebug) {
+      cout << "@@ Best Shape for cluster is the DEFAULT: " << bestShapeType << endl;
+    }
+    shapeChanged = false;
+  } else if (minHPWL < initHPWL) {
+    if (shapeDebug) {
+      cout << "@@ Best Shape for cluster is : " << bestShapeType << endl;
+    }
+    shapeChanged = true;
+  }
+
+  /* All possible shapes for a clusters has been checked and the 
+     one that gives the minimum HPWL is selected */
+  clusterWidth = dimensions[shapeIdxMinHPWL].first;
+  clusterHeight = dimensions[shapeIdxMinHPWL].second;
+  changeToShapeForCluster(clusterCell, clusterWidth, clusterHeight, shapeIdxMinHPWL);
 }
