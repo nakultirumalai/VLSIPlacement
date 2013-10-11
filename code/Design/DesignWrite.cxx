@@ -27,6 +27,7 @@ void DesignWriteNets(Design &myDesign, string fname)
   numCellsIterated = 0;
   DESIGN_FOR_ALL_CELLS(myDesign, cellName, cellPtr) {
     numPins += (*cellPtr).CellGetNumPins();
+    numCellsIterated++;
   } DESIGN_END_FOR;
 
   cout << "Read " << numPins << " pins from " 
@@ -51,7 +52,7 @@ void DesignWriteNets(Design &myDesign, string fname)
   DESIGN_FOR_ALL_NETS(myDesign, netName, netPtr) {
     numNetPins = 0;
     string netString;
-    NET_FOR_ALL_PINS_NO_FILT((*netPtr), pinPtr) {
+    NET_FOR_ALL_PINS((*netPtr), pinPtr) {
       if ((*pinPtr).PinGetDirection() == PIN_DIR_INPUT) {
 	pinDir = "I";
       } else {
@@ -148,6 +149,45 @@ DesignWritePlacement(Design &myDesign, string fname)
 
   _STEP_END("Writing placement for current design");
   
+  opFile.close();
+}
+
+void
+DesignWritePlacementFP(Design &myDesign, string fname) 
+{
+  string designName, fileName;
+  string cellName;
+  Cell *cellPtr;
+  ofstream opFile;
+
+  if (fname == "") {
+    designName = myDesign.DesignGetName();
+    fileName = designName + ".pl";
+  } else {
+    fileName = fname + ".pl";
+  }
+
+  _STEP_BEGIN("Writing placement for current design");
+  opFile.open(fileName.data(), ifstream::out);
+
+  opFile << "UCLA pl 1.0" << endl;
+  DesignWriteHeaderFile(myDesign, opFile);
+  opFile << endl;
+
+  DESIGN_FOR_ALL_CELLS(myDesign, cellName, cellPtr) {
+    uint cellXpos;
+    uint cellYpos;
+    cellXpos = (*cellPtr).CellGetXpos();
+    cellYpos = (*cellPtr).CellGetYpos();
+    opFile << cellName << "\t" << cellXpos << "\t" << cellYpos 
+	   << "\t:\t" << getStrForOrientation((*cellPtr).CellGetOrientation());
+    if ((*cellPtr).CellIsTerminal()) {
+      opFile << "\t" << "/FIXED";
+    }
+    opFile << endl;
+  } DESIGN_END_FOR;
+
+  _STEP_END("Writing placement for current design");
   opFile.close();
 }
 
@@ -258,6 +298,25 @@ void DesignWriteBookShelfOutput(Design &myDesign, string opBenchName)
   DesignWriteNets(myDesign, opBenchName);
   DesignWriteNodes(myDesign, opBenchName);
   DesignWritePlacement(myDesign, opBenchName);
+  DesignWriteScl(myDesign, opBenchName);
+
+  /* Create the wts file */
+  DesignWriteWtsFile(myDesign, opBenchName);
+  /* Create the aux file */
+  DesignWriteAuxFile(myDesign, opBenchName);
+}
+
+void DesignWriteBookShelfOutput(Design &myDesign, string opBenchName,
+				bool forMacroPlacer)
+{
+  /* Write the nets, nodes and pl file */
+  DesignWriteNets(myDesign, opBenchName);
+  DesignWriteNodes(myDesign, opBenchName);
+  if (forMacroPlacer) {
+    DesignWritePlacementFP(myDesign, opBenchName);
+  } else {
+    DesignWritePlacement(myDesign, opBenchName);
+  }
   DesignWriteScl(myDesign, opBenchName);
 
   /* Create the wts file */

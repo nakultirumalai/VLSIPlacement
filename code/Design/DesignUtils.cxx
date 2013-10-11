@@ -936,3 +936,55 @@ Design::DesignBreakSolverPhaseII(void)
   }
   return rtv;
 }
+
+int 
+Design::DesignRunMetaPlacerCapo(string shapesDirName, string shapesDesName, 
+				bool changeDirectory, bool readMPlacementTime, 
+				bool silent, string &MPlacerLogFile)
+{
+  int status;
+  string MPlacerPath; 
+  string MPlacerCommand, oldPlFileName;
+  string MPlacerTimeLogFile;
+  string DesignName;
+  Env &DesigEnv = DesignGetEnv();
+
+  //placerPath = getenv("NTUPLACE_FULL_PATH");
+  MPlacerPath = "~/Downloads/UMpack-45-120708/bin/MetaPl-Capo10.5-Lnx32.exe";
+  if (changeDirectory) {
+    changeDir(shapesDirName);
+  }
+
+  MPlacerCommand = "{ time ";
+  /*
+  if (placerPath == NIL(char *)) {
+    placerCommand += "~/Downloads/ntuplace/NTUPlace3/ntuplace3";
+  } else {
+    string pathFromEnv(placerPath);
+    placerCommand += pathFromEnv;
+    }*/
+
+  MPlacerCommand += MPlacerPath;
+
+  MPlacerLogFile = shapesDesName + "_MetaPlacer-CapoLog";
+  MPlacerTimeLogFile = shapesDesName + "_MetaPlacer-CapoTimeLog";
+  if (silent) {
+    MPlacerCommand += " -f ../inputShaping/" + shapesDesName + ".aux -ispd05 -fixOr -useHPWL -noFPEvadeObstacles -skipLegal -saveAsBookshelf " + shapesDesName +  " > " + MPlacerLogFile + "; } 2> " + MPlacerTimeLogFile;
+  } else {
+    MPlacerCommand += " -f ../inputShaping/" + shapesDesName + ".aux -ispd05 -fixOr -useHPWL -noPrePartFix -noFPEvadeObstacles -smallWS 1 -skipLegal -saveAsBookshelf " + shapesDesName +  " | tee " + MPlacerLogFile + "; } 2> " + MPlacerTimeLogFile;
+  }
+  status = executeCommand(MPlacerCommand);
+  
+  //  DesignEnv.EnvRecordGlobalPlacementTime(globalPlacementTime);
+  if (readMPlacementTime) {
+    oldPlFileName = this->DesignPlFileName;
+    this->DesignPlFileName = shapesDesName + ".pl";
+    DesignReadCellPlacement(true);
+    this->DesignPlFileName = oldPlFileName;
+  }
+  if (changeDirectory) {
+    changeDir("..");
+  }
+
+  return (status);
+}

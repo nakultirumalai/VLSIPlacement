@@ -379,6 +379,7 @@ class Design {
   void DesignReadNets();
   void DesignReadRows();
   void DesignReadCellPlacement(bool skipFixed);
+  void DesignReadCellPlacementFP(bool skipFixed);
   void DesignReadCmdsFile();
   void DesignReadPinsMapFile();
   void DesignReadCellDelaysFile();
@@ -476,6 +477,7 @@ class Design {
   int DesignRunFastPlaceLegalizerForCluster(string, string, string);
   int DesignRunFastPlaceDetailedPlacer(string, string, bool, bool);
   int DesignRunMPL6(string, string, double &, bool, bool, bool, bool);
+  int DesignRunMetaPlacerCapo(string, string, bool, bool, bool, string &);
 
   /* Clustering functions */
   bool DesignDoDefaultCluster(HyperGraph&);
@@ -498,7 +500,9 @@ class Design {
   bool DesignFlipClusters(bool);
   void DesignDoClusterFlipping(void);
   void DesignDoClusterSwapping(void);
-
+  void DesignResetOrientations(void);
+  uint DesignResetAllClustersOrient(void);
+  
   //  bool DesignDoFCCluster(HyperGraph&);
   //  bool DesignDoNetCluster(HyperGraph&);
   //  bool DesignDoESCCluster(HyperGraph&);
@@ -547,6 +551,7 @@ class Design {
 				    vector<double> &, string, uint, uint, double &, 
 				    double &);
   void DesignReadPlacerOutput(string, map<string, Cell*> &);
+  void DesignReadPlacerOutput(string, map<string, Cell*> &, uint, uint);
   void DesignDumpClusterInfo(string);
   void DesignDumpNetDegreeProfile(string);
   void DesignFlipClusterHorizontal(Cell*);
@@ -643,6 +648,9 @@ class Design {
 
   /* Change shapes to improve the HPWL */
   void DesignDoClusterShaping(void);
+  void DesignDoClusterShapingOld(void);
+  void DesignGetClusterShapes(vector<uint> &, uint, uint);
+  void DesignChangeClusterShapes(vector<uint> &);
   void DesignGetBestShapeForCluster(Cell*, uint, uint, ulong&, bool&);
 
   /* DEFINING AN EXTENSIVE LIST OF DEBUG FUNCTIONS THAT 
@@ -661,6 +669,8 @@ extern bool DesignCellIsStdCell(Design &myDesign, Cell &thisCell);
 extern void DesignWriteOutputPlacement(Design& myDesign);
 extern void DesignWriteOutputPlacement(Design& myDesign, string outputFileName);
 extern void DesignWriteBookShelfOutput(Design& myDesign, string opName);
+extern void DesignWriteBookShelfOutput(Design& myDesign, string opName, bool forMacroPlacer);
+
 extern void DesignWriteClusterData(vector<Cell *> &, vector<Net *> &, 
 				   vector<Net *> &, vector<pair<double, double> > &,
 				   vector<double> &netWeights, map<Cell *, bool> &, 

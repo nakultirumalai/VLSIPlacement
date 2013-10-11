@@ -168,6 +168,7 @@ typedef enum {
 # define DEFAULT_NUM_HVARIATION_STEPS 0
 # define DEFAULT_CLUSTER_NUM_ROWS 0
 # define DEFAULT_NUM_CLUSTERS 100
+# define DEFAULT_NUM_SHAPE_VARIATIONS 0
 # define DEFAULT_IMBALANCE_FACTOR 5
 # define DEFAULT_NUM_KHMETIS_RUNS 3
 # define DEFAULT_ENV_ITER_COUNT 500
@@ -283,6 +284,9 @@ class Env {
   /* Variable to indicate the number of partitions the k-way
      partitioner should distribute the cells into */
   uint NumClusters;
+  /* Variable to indicate the number of variations of shape
+     for a square cluster */
+  uint NumShapeVariations;     
   /* Variable to indicate the Imbalance factor 
      ranges from 5-49 */
   uint ImbalanceFactor;
@@ -553,6 +557,9 @@ class Env {
 
   void EnvSetNumClusters(uint);
   uint EnvGetNumClusters(void);
+  
+  void EnvSetNumShapeVariations(uint);
+  uint EnvGetNumShapeVariations(void);
 
   void EnvSetImbalanceFactor(uint);
   uint EnvGetImbalanceFactor(void);

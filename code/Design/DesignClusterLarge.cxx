@@ -1693,6 +1693,95 @@ Design::DesignReadPlacerOutput(string outputName, map<string, Cell*> &mapOfCells
       msg = "Error: Cell " + cellName + " in pl file for cluster not found";
       _ASSERT_TRUE(msg);
     }
+    
+    
+    
+    (*thisCell).CellSetXpos(xPos);
+    (*thisCell).CellSetYpos(yPos);
+    //    cout << "  Set position of cell " << (*thisCell).CellGetName() << " to: " << (*thisCell).CellGetXpos() << ", " << (*thisCell).CellGetYpos() << endl;
+    orientation = N;
+    if (orient != "") {
+      orientation = getOrientationFromStr(orient);
+    }
+    (*thisCell).CellSetOrientation(orientation);
+  }
+  //  cout << "END: Read placement for cluster " << outputName << endl;
+}
+
+
+void
+Design::DesignReadPlacerOutput(string outputName, map<string, Cell*> &mapOfCells,
+			       uint clusterWidth, uint clusterHeight) 
+{
+  Cell *cellPtr;
+  double xPos, yPos;
+  map<string, Cell*>::iterator mapIter;
+  ifstream file;
+  string line, cellName, orient;
+  uint cellWidth, cellHeight;
+  uint cellXend, cellYend;
+  
+
+  if (!fileExists(outputName)) {
+    _ASSERT_TRUE("Error: Cannot open output file name");
+  }
+
+  //  cout << "BEGIN: Read placement for cluster " << outputName << endl;
+  file.open(outputName.data());
+  while (!file.eof()) {
+    string fixed;
+    getline(file, line);
+    if (line == "") {
+      continue;
+    }
+    if (line.find("#") == 0) {
+      continue;
+    }
+    if (line.find("UCLA") == 0) {
+      continue;
+    }
+    istringstream stream(line, istringstream::in);
+    stream >> cellName;
+    stream >> xPos;
+    stream >> yPos;
+    stream >> orient;
+    stream >> orient;
+    stream >> fixed;
+    
+    //    cout << " READ line:" << line << endl;
+    if (fixed != "") {
+      //      cout << " FIXED cell, continue" << endl;
+      continue;
+    }
+    if (cellName.find("p") == 0) {
+      //      cout << " Port found continue" << endl;
+      continue;
+    }
+    //    cout << " Reading cell" << endl;
+    Cell *thisCell = NIL(Cell *);
+    objOrient orientation;
+    _KEY_EXISTS_WITH_VAL(mapOfCells, cellName, mapIter) {
+      thisCell = mapIter->second;
+    } else {
+      string msg;
+      msg = "Error: Cell " + cellName + " in pl file for cluster not found";
+      _ASSERT_TRUE(msg);
+    }
+    
+    /* Check if cell lies within the cluster */
+    cellWidth = (*thisCell).CellGetWidth();
+    cellHeight = (*thisCell).CellGetHeight();
+    cellXend = xPos + cellWidth;
+    cellYend = yPos + cellHeight;
+    if ((xPos < 0) || (cellXend > clusterWidth)) {
+      _ASSERT_TRUE("Cell has violated X bounds..");
+    }
+        
+    if ((yPos < 0) || (cellYend > clusterHeight)) {
+      _ASSERT_TRUE("Cell has violated Y bounds..");
+    }
+     
+    
     (*thisCell).CellSetXpos(xPos);
     (*thisCell).CellSetYpos(yPos);
     //    cout << "  Set position of cell " << (*thisCell).CellGetName() << " to: " << (*thisCell).CellGetXpos() << ", " << (*thisCell).CellGetYpos() << endl;
@@ -1829,7 +1918,8 @@ Design::DesignPlaceCellsInClusterNew(vector<Cell *> &clusterCells,
   }
   /* If control of program reaches here, we have to assume that the 
      placement of this cluster is done */
-  DesignReadPlacerOutput(clusterPlacerOpFile, mapOfCellsStr);
+  DesignReadPlacerOutput(clusterPlacerOpFile, mapOfCellsStr, clusterWidth,
+			 clusterHeight);
   changeDir("..");
   if (placeDebug) {
     cout << " Placed cells for cluster " << benchName 
@@ -1930,6 +2020,8 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
   string clusterCellName, clusterShapeName;
   bool placeCellsInClusterPreTop;
   EnvFlowType flowType = DesignEnv.EnvGetFlowType();
+  uint numShapeVariations;
+
 
   clusterCreationTime = 0;
   clusterPlacementTime = 0;
@@ -1963,6 +2055,13 @@ Design::DesignCreateClusterObject(vector<Cell *> &clusterCells, double xPercent,
   heightVariations.push_back(0);
   numHeightVariations = heightVariations.size();
   
+  /* Set the environment variable for number of shape variations */
+  numShapeVariations = DesignEnv.EnvGetNumShapeVariations();
+  if (numShapeVariations == 0) {
+    /* Indicates Env NumShapeVariations not set yet, so set it */
+    DesignEnv.EnvSetNumShapeVariations(numHeightVariations);
+  }
+
   for (idx = 0; idx < numHeightVariations; idx++) {
     stepTime = getCPUTime();
     map<Cell *, bool> mapOfCells; 
@@ -2160,6 +2259,10 @@ Design::DesignClusterPlaceCells(Cell *clusterCell,
     /* Create fixed cells for the placement region so that 
        the placer may place cells */
     shapeName = clusterCellName + "_" + getStrFromInt(idx);
+    VECTOR_FOR_ALL_ELEMS(clusterCells, Cell *, cellPtr) {
+      (*cellPtr).CellSetIsClusterFixed(false);
+    } END_FOR;
+
     cout << "Generating placement for cluster shape: " << shapeName << endl;
     if (flowType == ENV_PLACE_CLUSTERS_POST_TOP_WITH_PORTS) {
       doTerminalPropagationForCluster(cellXpos, cellYpos, mapOfCells, 
@@ -2739,3 +2842,91 @@ Design::DesignGetBestShapeForCluster(Cell *clusterCell, uint maxx,
   clusterHeight = dimensions[shapeIdxMinHPWL].second;
   changeToShapeForCluster(clusterCell, clusterWidth, clusterHeight, shapeIdxMinHPWL);
 }
+
+uint
+Design::DesignResetAllClustersOrient(void)
+{
+  Cell *clusterCell;
+  string clusterCellName;
+  bool clusterFlipped;
+  objOrient clusterOrient;
+  uint numClustersFlipped;
+  
+  numClustersFlipped = 0;
+  clusterFlipped = false;
+
+  DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCell) {
+    clusterOrient = (*clusterCell).CellGetOrientation();
+    if (clusterOrient == N) {
+      continue;
+    } else if (clusterOrient == FN) {
+      DesignFlipClusterHorizontal(clusterCell);
+      clusterFlipped = true;
+    } else if (clusterOrient == S) {
+      DesignFlipClusterHorizontal(clusterCell);
+      DesignFlipClusterVertical(clusterCell);
+      clusterFlipped = true;
+    } else if (clusterOrient == FS) {
+      DesignFlipClusterVertical(clusterCell);
+      clusterFlipped = true;
+    } else {
+      _ASSERT_TRUE("Invalid Cluster Orientation Found");
+    }
+   
+    if (clusterFlipped) {
+      numClustersFlipped++;
+    }
+  } DESIGN_END_FOR;
+
+  return (numClustersFlipped);
+}
+
+inline
+uint random_gen(uint max) 
+{
+  static bool first = true;
+  if (first) {
+    srand(time(NULL));
+    first = false;
+  }
+  return ((uint)(rand() % (int)max));
+}
+  
+
+
+
+
+void
+Design::DesignGetClusterShapes(vector<uint> &shapeIndices, 
+			       uint numShapeVariations, uint numClusters)
+{
+  uint clusterIdx;
+  uint rndShapeIdx;
+  cout << "NUM SHAPE VARIATIONS = " << numShapeVariations << endl;
+  for(clusterIdx = 0; clusterIdx < numClusters; clusterIdx++) {
+    rndShapeIdx = random_gen(numShapeVariations);
+    shapeIndices.push_back(rndShapeIdx);
+  }
+}
+
+void
+Design::DesignChangeClusterShapes(vector<uint> &shapeIndices)
+{
+  string clusterCellName;
+  Cell *clusterCell;
+  Cluster *clusterOfCell;
+  uint clusterIdx, shapeIdx;
+  uint clusterWidth, clusterHeight;
+
+  clusterIdx = 0;
+  /* Iterate over all clusters and actually change their dimensions */
+  DESIGN_FOR_ALL_CLUSTERS((*this), clusterCellName, clusterCell) {
+    clusterOfCell = (Cluster*)CellGetCluster(clusterCell);
+    vector<pair<uint, uint> > &dimensions = (*clusterOfCell).ClusterGetDimensions();
+    shapeIdx = shapeIndices[clusterIdx];
+    clusterWidth = dimensions[shapeIdx].first;
+    clusterHeight = dimensions[shapeIdx].second;
+    changeToShapeForCluster(clusterCell, clusterWidth, clusterHeight, shapeIdx);
+    clusterIdx++;
+  } DESIGN_END_FOR;
+}  

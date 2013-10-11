@@ -51,6 +51,7 @@ Env::Env()
   /* Initialization of other integer variables */
   EnvSetClusterNumRows(DEFAULT_CLUSTER_NUM_ROWS);
   EnvSetNumClusters(DEFAULT_NUM_CLUSTERS);
+  EnvSetNumShapeVariations(DEFAULT_NUM_SHAPE_VARIATIONS);
   EnvSetImbalanceFactor(DEFAULT_IMBALANCE_FACTOR);
   EnvSetNumKHmetisRuns(DEFAULT_NUM_KHMETIS_RUNS);
   EnvSetNumHVariationSteps(DEFAULT_NUM_HVARIATION_STEPS);
@@ -122,6 +123,7 @@ Env::EnvSetHyperGraphBuildStartTime(void)
 {
   this->HyperGraphBuildStartTime = getCPUTime();
 }
+
 double 
 Env::EnvGetHyperGraphBuildStartTime(void)
 {
@@ -673,10 +675,22 @@ Env::EnvSetNumClusters(uint NumClusters)
   this->NumClusters = NumClusters;
 }
 
+void 
+Env::EnvSetNumShapeVariations(uint NumShapeVariations)
+{
+  this->NumShapeVariations = NumShapeVariations;
+}
+
 uint
 Env::EnvGetNumClusters(void)
 {
   return (this->NumClusters);
+}
+
+uint
+Env::EnvGetNumShapeVariations(void)
+{
+  return (this->NumShapeVariations);
 }
 
 void

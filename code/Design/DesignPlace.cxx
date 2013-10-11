@@ -355,8 +355,13 @@ void
 Design::DesignRunInternalPlacer(EnvSolverType solverType)
 {
   EnvNetModel netModel;
+  string DesignName;
+  string finalOutputName;
+
   Env &DesignEnv = this->DesignEnv;
-  
+  DesignName = DesignEnv.EnvGetDesignName();
+  finalOutputName = DesignName + "postMP";
+  string MPlacerLogFile = DesignName + "_shaping_log";
   netModel = DesignEnv.EnvGetNetModel();
   
   switch (solverType) {
@@ -391,8 +396,27 @@ Design::DesignRunInternalPlacer(EnvSolverType solverType)
     //ProfilerStop();
     DesignFillCellsInCluster();
     DesignDoClusterFlipping();
+
+    /*************************************/
+    /***      BEGIN SHAPING FLOW      ***/
+    /************************************/
     DesignDoClusterShaping();
-    DesignWriteBookShelfOutput((*this), "seq_align1_clust");
+    DesignComputeHPWL();
+    cout << "BEFORE FLOORPLANNING HPWL : " << DesignGetHPWL() << endl;
+    changeDir("inputShaping");
+    DesignWriteBookShelfOutput((*this), DesignName, true);
+    changeDir("..");
+    DesignRunMetaPlacerCapo("forShaping", DesignName, 1, 1, 0, MPlacerLogFile);
+    changeDir("afterMP");
+    DesignWriteBookShelfOutput((*this), DesignName);
+    changeDir("..");
+    DesignComputeHPWL();
+    cout << "AFTER FLOORPLANNING HPWL : " << DesignGetHPWL() << endl;
+    DesignResetOrientations();
+    DesignWriteBookShelfOutput((*this), finalOutputName);
+
+    DesignComputeHPWL();
+    cout << "AFTER RESET ORIENTATIONS HPWL : " << DesignGetHPWL() << endl;
     //    return;
     break;
   default: cout << "Unknown solver type provided" << endl;
@@ -598,8 +622,19 @@ Design::DesignDoDetailedPlacement(void)
   DesignEnv.EnvSetHPWLAfterDetailedPlacement(DesignGetHPWL());
 }
 
+inline
+void printShapeIndexVector(vector<uint> &shapeIndices)
+{
+  uint shapeIdx;
+  cout << "VECTOR INDICATING SHAPE INDICES" << endl;
+  VECTOR_FOR_ALL_ELEMS(shapeIndices, uint, shapeIdx) {
+    cout << shapeIdx << "  ";
+  } END_FOR;
+  cout << endl;
+}
+    
 void
-Design::DesignDoClusterShaping(void)
+Design::DesignDoClusterShapingOld(void)
 {
   Cell *clusterCellPtr;
   string clusterCellName;
@@ -685,4 +720,67 @@ Design::DesignDoClusterShaping(void)
   cout << "\tPERCENTAGE IMPROVEMENT          : " << percentImp << "%" << endl;
   cout << "\tNUMBER OF ITERATIONS REQUIRED   : " << iterCount << endl;
   cout << "\n**********************************************************" << endl;
+}
+
+void
+Design::DesignDoClusterShaping(void)
+{
+  Cell *clusterCellPtr;
+  vector<uint> shapeIndices;
+  /* Required to store the last accepted shapes for restoring,
+     if move is not accepted */
+  vector<uint> laShapeIndices;
+  string clusterCellName;
+  ulong designInitHPWL, designEndHPWL;
+  ulong iterBeginHPWL, iterEndHPWL;
+  uint maxx, maxy, clusterIdx;
+  ulong minHPWL;
+  uint numShapesChanged, iterCount;
+  uint numClusters, numShapeVariations;
+  long iterDiffHPWL, overallDiffHPWL;
+  bool shapeChanged;
+  double iterPercentImp, percentImp;
+
+  Env &DesignEnv = DesignGetEnv();
+  numClusters = DesignEnv.EnvGetNumClusters();
+  numShapeVariations = DesignEnv.EnvGetNumShapeVariations();
+  
+  cout << "\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  cout << "                  BEGIN SHAPING AND MACRO PLACEMENT           " << endl;
+  cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+  
+  DesignGetBoundingBox(maxx, maxy);
+  DesignComputeHPWL();
+  designInitHPWL = DesignGetHPWL();
+  cout << "\nINITIAL HPWL BEFORE SHAPING  :  " << designInitHPWL << endl;
+  
+  if (clusterShapeDebug) {
+    cout << "Number of Clusters : " << numClusters << endl;
+  }
+  
+  /* Assign shapes randomly to all the clusters initially */
+  DesignGetClusterShapes(shapeIndices, numShapeVariations, numClusters);
+  
+  /* The initial shape assignment is stored before the annealer is invoked */
+  laShapeIndices = shapeIndices;
+  //printShapeIndexVector(shapeIndices);
+  
+  /* Change the cluster to the assigned shapes and also change the placement
+     of cells inside the cluster */
+  DesignChangeClusterShapes(shapeIndices);
+
+  /* Invoke the annealer to find the optimal solution */
+  
+
+
+
+
+}
+
+void
+Design::DesignResetOrientations(void) 
+{
+  uint numClustersReset;
+  numClustersReset = DesignResetAllClustersOrient();
+  cout << "NUMBER OF CLUSTERS FLIPPED TO RESET: " << numClustersReset << endl;
 }
